@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-
+import "./ExecutableInterface.sol";
 
 interface GenesisProtocolCallbacksInterface {
     function getTotalReputationSupply() external returns(uint256);
@@ -8,4 +8,5 @@ interface GenesisProtocolCallbacksInterface {
     function burnReputation(uint _amount,address _owner) external returns(bool);
     function reputationOf(address _owner) external returns(uint);
     function stakingTokenTransfer(address _beneficiary,uint _amount) external returns(bool);
+    function execute(bytes32 _proposalId,int _decision,ExecutableInterface _executable) external returns(bool);
 }

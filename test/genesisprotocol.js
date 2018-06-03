@@ -1,6 +1,6 @@
 const helpers = require('./helpers');
 import { getValueFromLogs } from './helpers';
-const GenesisProtocol = artifacts.require("./GenesisProtocolLite.sol");
+const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 const ExecutableTest = artifacts.require("./ExecutableTest.sol");
 const constants = require("./constants");
 const ERC827TokenMock = artifacts.require('./test/ERC827TokenMock.sol');
@@ -88,6 +88,7 @@ const setup = async function (accounts,_preBoostedVoteRequiredPercentage=50,
    await testSetup.stakingToken.transfer(accounts[1],1000);
    await testSetup.stakingToken.transfer(accounts[2],1000);
 
+   testSetup.executable = await ExecutableTest.new();
    testSetup.genesisProtocolCallbacks = await GenesisProtocolCallbacks.new(testSetup.org.reputation.address,testSetup.stakingToken.address,testSetup.genesisProtocol.address);
    await testSetup.org.reputation.transferOwnership(testSetup.genesisProtocolCallbacks.address);
    testSetup.genesisProtocolParams= await setupGenesisProtocolParams(testSetup,_preBoostedVoteRequiredPercentage,
@@ -105,7 +106,6 @@ const setup = async function (accounts,_preBoostedVoteRequiredPercentage=50,
                                          _daoBountyConst,
                                          _daoBountyLimt);
    var permissions = "0x00000000";
-   testSetup.executable = await ExecutableTest.new();
 
    return testSetup;
 };

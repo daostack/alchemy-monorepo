@@ -8,9 +8,9 @@ import "openzeppelin-solidity/contracts/token/ERC827/ERC827Token.sol";
 
 
 /**
- * @title GenesisProtocolLite implementation -an organization's voting machine scheme.
+ * @title GenesisProtocol implementation -an organization's voting machine scheme.
  */
-contract GenesisProtocolLite is IntVoteInterface {
+contract GenesisProtocol is IntVoteInterface {
     using SafeMath for uint;
     using RealMath for int216;
     using RealMath for int256;
@@ -436,7 +436,8 @@ contract GenesisProtocolLite is IntVoteInterface {
                 proposal.daoBountyRemain = daoBountyRemain;
             }
             emit ExecuteProposal(_proposalId, proposal.organization, proposal.winningVote, totalReputation, executionState);
-            (tmpProposal.executable).execute(_proposalId, tmpProposal.organization, int(proposal.winningVote));
+            GenesisProtocolCallbacksInterface(proposal.organization).execute(_proposalId,int(proposal.winningVote),tmpProposal.executable);
+            //(tmpProposal.executable).execute(_proposalId, tmpProposal.organization, int(proposal.winningVote));
         }
         return (executionState != ExecutionState.None);
     }

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "../VotingMachines/GenesisProtocolCallbacksInterface.sol";
-import "../VotingMachines/GenesisProtocolLite.sol";
+import "../VotingMachines/GenesisProtocol.sol";
 import "../Reputation.sol";
 
 
@@ -9,13 +9,12 @@ contract GenesisProtocolCallbacksMock is GenesisProtocolCallbacksInterface {
 
     Reputation public reputation;
     ERC827Token public stakingToken;
-    GenesisProtocolLite genesisProtocol;
-
+    GenesisProtocol genesisProtocol;
 
     /**
      * @dev Constructor
      */
-    constructor(Reputation _reputation,ERC827Token _stakingToken,GenesisProtocolLite _genesisProtocol) public
+    constructor(Reputation _reputation,ERC827Token _stakingToken,GenesisProtocol _genesisProtocol) public
     {
         reputation = _reputation;
         stakingToken = _stakingToken;
@@ -45,4 +44,9 @@ contract GenesisProtocolCallbacksMock is GenesisProtocolCallbacksInterface {
     function setParameters(uint[14] _params) external returns(bytes32) {
         return genesisProtocol.setParameters(_params);
     }
+
+    function execute(bytes32 _proposalId,int _decision,ExecutableInterface _executable) external returns(bool) {
+        return  _executable.execute(_proposalId, 0, _decision);
+    }
+
 }
