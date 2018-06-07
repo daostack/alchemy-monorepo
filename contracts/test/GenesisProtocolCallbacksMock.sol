@@ -21,23 +21,23 @@ contract GenesisProtocolCallbacksMock is GenesisProtocolCallbacksInterface {
         genesisProtocol = _genesisProtocol;
     }
 
-    function getTotalReputationSupply() external returns(uint256) {
+    function getTotalReputationSupply(bytes32 ) external returns(uint256) {
         return reputation.totalSupply();
     }
 
-    function mintReputation(uint _amount,address _beneficiary) external returns(bool) {
+    function mintReputation(uint _amount,address _beneficiary,bytes32) external returns(bool) {
         return reputation.mint(_beneficiary,_amount);
     }
 
-    function burnReputation(uint _amount,address _beneficiary) external returns(bool) {
+    function burnReputation(uint _amount,address _beneficiary,bytes32) external returns(bool) {
         return reputation.burn(_beneficiary,_amount);
     }
 
-    function reputationOf(address _owner) external returns(uint) {
+    function reputationOf(address _owner,bytes32) external returns(uint) {
         return reputation.reputationOf(_owner);
     }
 
-    function stakingTokenTransfer(address _beneficiary,uint _amount) external returns(bool) {
+    function stakingTokenTransfer(address _beneficiary,uint _amount,bytes32) external returns(bool) {
         return stakingToken.transfer(_beneficiary,_amount);
     }
 
