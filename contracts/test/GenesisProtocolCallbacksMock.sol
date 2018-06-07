@@ -41,8 +41,8 @@ contract GenesisProtocolCallbacksMock is GenesisProtocolCallbacksInterface {
         return stakingToken.transfer(_beneficiary,_amount);
     }
 
-    function setParameters(uint[14] _params) external returns(bytes32) {
-        return genesisProtocol.setParameters(_params);
+    function setParameters(uint[14] _params,address _voteOnBehalf) external returns(bytes32) {
+        return genesisProtocol.setParameters(_params,_voteOnBehalf);
     }
 
     function executeProposal(bytes32 _proposalId,int _decision,ExecutableInterface _executable) external returns(bool) {

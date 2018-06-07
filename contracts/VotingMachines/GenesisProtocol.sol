@@ -43,6 +43,7 @@ contract GenesisProtocol is IntVoteInterface {
                                 //  daoBountyConst should be greater than stakerFeeRatioForVoters and less than 2 * stakerFeeRatioForVoters.
                                 //daoBountyParams[1] = daoBountyLimit The daoBounty cannot be greater than daoBountyLimit.
         address organization;
+        address voteOnBehalf; //this address is allowd to vote of behalf of someone else.
     }
     struct Voter {
         uint vote; // YES(1) ,NO(2)
@@ -217,8 +218,17 @@ contract GenesisProtocol is IntVoteInterface {
    * @return bool true - the proposal has been executed
    *              false - otherwise.
    */
-    function vote(bytes32 _proposalId, uint _vote) external votable(_proposalId) returns(bool) {
-        return internalVote(_proposalId, msg.sender, _vote, 0);
+    function vote(bytes32 _proposalId, uint _vote,address _voter) external votable(_proposalId) returns(bool) {
+        Proposal storage proposal = proposals[_proposalId];
+        Parameters memory params = parameters[proposal.paramsHash];
+        address voter;
+        if (params.voteOnBehalf != address(0)) {
+            require(msg.sender == params.voteOnBehalf);
+            voter = _voter;
+        } else {
+            voter = msg.sender;
+        }
+        return internalVote(_proposalId, voter, _vote, 0);
     }
 
   /**
@@ -231,8 +241,17 @@ contract GenesisProtocol is IntVoteInterface {
         return false;
     }
 
-    function voteWithSpecifiedAmounts(bytes32 _proposalId,uint _vote,uint _rep,uint) external votable(_proposalId) returns(bool) {
-        return internalVote(_proposalId,msg.sender,_vote,_rep);
+    function voteWithSpecifiedAmounts(bytes32 _proposalId,uint _vote,uint _rep,uint,address _voter) external votable(_proposalId) returns(bool) {
+        Proposal storage proposal = proposals[_proposalId];
+        Parameters memory params = parameters[proposal.paramsHash];
+        address voter;
+        if (params.voteOnBehalf != address(0)) {
+            require(msg.sender == params.voteOnBehalf);
+            voter = _voter;
+        } else {
+            voter = msg.sender;
+        }
+        return internalVote(_proposalId,voter,_vote,_rep);
     }
 
   /**
@@ -684,7 +703,8 @@ contract GenesisProtocol is IntVoteInterface {
      *    _params[13] - _daoBountyLimit
     */
     function setParameters(
-        uint[14] _params //use array here due to stack too deep issue.
+        uint[14] _params, //use array here due to stack too deep issue.
+        address _voteOnBehalf
     )
     public
     returns(bytes32)
@@ -701,8 +721,10 @@ contract GenesisProtocol is IntVoteInterface {
         require(_params[12] < (2 * _params[9])); //_daoBountyConst < 2 * stakerFeeRatioForVoters
         require(_params[12] > _params[9]);//_daoBountyConst > stakerFeeRatioForVoters
 
-
-        bytes32 paramsHash = getParametersHash(_params,msg.sender);
+        address[2] memory addressesParams;
+        addressesParams[0] = _voteOnBehalf;
+        addressesParams[1] = msg.sender;
+        bytes32 paramsHash = getParametersHash(_params,addressesParams);
 
         uint[2] memory _daoBountyParams;
         _daoBountyParams[0] = _params[12];
@@ -722,7 +744,8 @@ contract GenesisProtocol is IntVoteInterface {
             votersReputationLossRatio:_params[10],
             votersGainRepRatioFromLostRep:_params[11],
             daoBountyParams:_daoBountyParams,
-            organization:msg.sender
+            organization:msg.sender,
+            voteOnBehalf:_voteOnBehalf
         });
         return paramsHash;
     }
@@ -732,7 +755,7 @@ contract GenesisProtocol is IntVoteInterface {
    */
     function getParametersHash(
         uint[14] _params,//use array here due to stack too deep issue.
-        address _organization
+        address[2] _addressesParams
     )
         public
         pure
@@ -758,7 +781,7 @@ contract GenesisProtocol is IntVoteInterface {
                 _params[12],
                 _params[13]
              )),
-             _organization));
+             _addressesParams[0],_addressesParams[1]));
     }
 
     /**

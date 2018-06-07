@@ -113,7 +113,7 @@ contract AbsoluteVote is IntVoteInterface {
    * @return bool true - the proposal has been executed
    *              false - otherwise.
    */
-    function vote(bytes32 _proposalId, uint _vote) external votable(_proposalId) returns(bool) {
+    function vote(bytes32 _proposalId, uint _vote,address) external votable(_proposalId) returns(bool) {
         return internalVote(_proposalId, msg.sender, _vote, 0);
     }
 
@@ -137,7 +137,7 @@ contract AbsoluteVote is IntVoteInterface {
         return  internalVote(_proposalId, _voter, _vote, 0);
     }
 
-    function voteWithSpecifiedAmounts(bytes32 _proposalId,uint _vote,uint _rep,uint) external votable(_proposalId) returns(bool) {
+    function voteWithSpecifiedAmounts(bytes32 _proposalId,uint _vote,uint _rep,uint,address) external votable(_proposalId) returns(bool) {
         return internalVote(_proposalId,msg.sender,_vote,_rep);
     }
 

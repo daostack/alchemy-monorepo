@@ -33,13 +33,18 @@ interface IntVoteInterface {
     // Only owned proposals and only the owner:
     function ownerVote(bytes32 _proposalId, uint _vote, address _voter) external onlyProposalOwner(_proposalId) returns(bool);
 
-    function vote(bytes32 _proposalId, uint _vote) external votable(_proposalId) returns(bool);
+    function vote(bytes32 _proposalId, uint _vote,address _voter) external votable(_proposalId) returns(bool);
 
     function voteWithSpecifiedAmounts(
         bytes32 _proposalId,
         uint _vote,
         uint _rep,
-        uint _token) external votable(_proposalId) returns(bool);
+        uint _token,
+        address _voter
+    )
+    external
+    votable(_proposalId)
+    returns(bool);
 
     function cancelVote(bytes32 _proposalId) external votable(_proposalId);
 
