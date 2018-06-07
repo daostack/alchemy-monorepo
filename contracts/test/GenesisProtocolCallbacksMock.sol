@@ -45,7 +45,7 @@ contract GenesisProtocolCallbacksMock is GenesisProtocolCallbacksInterface {
         return genesisProtocol.setParameters(_params);
     }
 
-    function execute(bytes32 _proposalId,int _decision,ExecutableInterface _executable) external returns(bool) {
+    function executeProposal(bytes32 _proposalId,int _decision,ExecutableInterface _executable) external returns(bool) {
         return  _executable.execute(_proposalId, 0, _decision);
     }
 

@@ -436,7 +436,7 @@ contract GenesisProtocol is IntVoteInterface {
                 proposal.daoBountyRemain = daoBountyRemain;
             }
             emit ExecuteProposal(_proposalId, proposal.organization, proposal.winningVote, totalReputation, executionState);
-            GenesisProtocolCallbacksInterface(proposal.organization).execute(_proposalId,int(proposal.winningVote),tmpProposal.executable);
+            GenesisProtocolCallbacksInterface(proposal.organization).executeProposal(_proposalId,int(proposal.winningVote),tmpProposal.executable);
             //(tmpProposal.executable).execute(_proposalId, tmpProposal.organization, int(proposal.winningVote));
         }
         return (executionState != ExecutionState.None);
