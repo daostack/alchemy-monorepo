@@ -84,6 +84,6 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
-    "openzeppelin-solidity": "1.9.0"
+    "openzeppelin-solidity": "1.10.0"
   }
 }
