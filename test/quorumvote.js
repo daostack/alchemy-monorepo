@@ -5,7 +5,7 @@ const QuorumVote = artifacts.require("./QuorumVote.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const ExecutableTest = artifacts.require("./ExecutableTest.sol");
 
-let reputation, avatar, quorumVote, executable, accounts, reputationArray;
+let reputation, quorumVote, executable, accounts, reputationArray;
 
 
 const setupQuorumVote = async function (isOwnedVote=true, precReq=50) {

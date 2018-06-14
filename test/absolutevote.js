@@ -5,7 +5,7 @@ const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const ExecutableTest = artifacts.require("./ExecutableTest.sol");
 
-let reputation, avatar, absoluteVote, executable, accounts, reputationArray;
+let reputation, absoluteVote, executable, accounts, reputationArray;
 
 const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50) {
   accounts = web3.eth.accounts;
@@ -14,7 +14,6 @@ const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50) {
 
   // set up a reputation system
   reputation = await Reputation.new();
-  //avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
   reputationArray = [20, 10, 70 ];
   await reputation.mint(accounts[0], reputationArray[0]);
   await reputation.mint(accounts[1], reputationArray[1]);
@@ -691,7 +690,6 @@ contract('AbsoluteVote', function (accounts) {
   it("Should behave sensibly when voting with an empty reputation system", async function () {
       // Initiate objects
       const absoluteVote = await AbsoluteVote.new();
-      const reputation = await Reputation.new();
       const executable = await ExecutableTest.new();
 
       // Send empty rep system to the absoluteVote contract

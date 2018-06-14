@@ -8,13 +8,13 @@ import "../Reputation.sol";
 contract GenesisProtocolCallbacksMock is GenesisProtocolCallbacksInterface {
 
     Reputation public reputation;
-    ERC827Token public stakingToken;
+    StandardToken public stakingToken;
     GenesisProtocol genesisProtocol;
 
     /**
      * @dev Constructor
      */
-    constructor(Reputation _reputation,ERC827Token _stakingToken,GenesisProtocol _genesisProtocol) public
+    constructor(Reputation _reputation,StandardToken _stakingToken,GenesisProtocol _genesisProtocol) public
     {
         reputation = _reputation;
         stakingToken = _stakingToken;

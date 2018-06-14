@@ -2,10 +2,10 @@ const helpers = require('./helpers');
 import { getValueFromLogs } from './helpers';
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 const ExecutableTest = artifacts.require("./ExecutableTest.sol");
-const constants = require("./constants");
 const ERC827TokenMock = artifacts.require('./test/ERC827TokenMock.sol');
 const GenesisProtocolCallbacks = artifacts.require("./GenesisProtocolCallbacksMock.sol");
 const Reputation = artifacts.require("./Reputation.sol");
+var ethereumjs = require('ethereumjs-abi');
 
 export class GenesisProtocolParams {
   constructor() {
@@ -109,7 +109,6 @@ const setup = async function (accounts,_voteOnBehalf = 0,
                                          _votersGainRepRatioFromLostRep,
                                          _daoBountyConst,
                                          _daoBountyLimt);
-   var permissions = "0x00000000";
 
    return testSetup;
 };
@@ -167,10 +166,19 @@ const checkVoteInfo = async function(proposalId, voterAddress, _voteInfo, genesi
   assert.equal(voteInfo[1], _voteInfo[1]);
 };
 
+var nonce = 0;
 const stake = async function(_testSetup,_proposalId,_vote,_amount,_staker) {
-  const extraData = await _testSetup.genesisProtocol.stake.request(_proposalId,_vote,_amount,_staker);
+  var textMsg = "0x"+ethereumjs.soliditySHA3(
+    ["address","bytes32","uint", "uint","uint"],
+    [_testSetup.genesisProtocol.address, _proposalId,_vote,_amount, nonce]
+  ).toString("hex");
+  const signature = web3.eth.sign(_staker, textMsg);
+  const extraData = await _testSetup.genesisProtocol.stakeWithSignature.request(_proposalId,_vote,_amount,nonce,signature);
+
+  nonce++;
+
   const transaction = await _testSetup.stakingToken.approveAndCall(
-    _testSetup.genesisProtocol.address, _amount, extraData.params[0].data
+    _testSetup.genesisProtocol.address, _amount, extraData.params[0].data ,{from : _staker}
   );
   const stakeLog = await new Promise((resolve) => {
               _testSetup.genesisProtocol.Stake({_proposalId: _proposalId}, {fromBlock: transaction.blockNumber})
@@ -180,6 +188,47 @@ const stake = async function(_testSetup,_proposalId,_vote,_amount,_staker) {
               });
   return stakeLog;
 };
+
+
+
+//use this method to approve and call stake with GEN token
+//GEN token use old version of ERC827 which implemnt approve with data abi by
+//overloading standardToken approve function approve(address _spender,uint256 _amount,bytes data);
+//  const stakeGENToken = async function(_testSetup,_proposalId,_vote,_amount,_staker) {
+//    var textMsg = "0x"+ethereumjs.soliditySHA3(
+//      ["address","bytes32","uint", "uint","uint"],
+//      [_testSetup.genesisProtocol.address, _proposalId,_vote,_amount, nonce]
+//    ).toString("hex");
+//    const signature = web3.eth.sign(_staker, textMsg);
+//   var ethjsABI = require('ethjs-abi');
+//   const extraData = await _testSetup.genesisProtocol.stake.request(_proposalId,_vote,_amount,nonce,signature);
+//
+//   const abiMethodString = '{ "constant": false,' +
+//      '"inputs":[ { "name": "_spender", "type": "address" },' +
+//      '{ "name": "_value", "type": "uint256" },' +
+//      '{ "name": "_data", "type": "bytes" } ],' +
+//      '"name": "approve",' +
+//      '"outputs": [ { "name": "", "type": "bool"} ],'+
+//      '"payable": false,' +
+//      '"stateMutability": "nonpayable",' +
+//      '"type": "function" }';
+//   var abiMethod = JSON.parse(abiMethodString);
+//
+//   const approveData = ethjsABI.encodeMethod(abiMethod,
+//     [_testSetup.genesisProtocol.address, _amount, extraData.params[0].data]
+//   );
+//   const transaction = await _testSetup.stakingToken.sendTransaction(
+//     { from : _staker,data: approveData }
+//   );
+//   const stakeLog = await new Promise((resolve) => {
+//               _testSetup.genesisProtocol.Stake({_proposalId: _proposalId}, {fromBlock: transaction.blockNumber})
+//                   .get((err,events) => {
+//                           resolve(events);
+//                   });
+//               });
+//   return stakeLog;
+// };
+
 
 contract('GenesisProtocol Lite', function (accounts) {
 
@@ -587,7 +636,6 @@ contract('GenesisProtocol Lite', function (accounts) {
 
   it("Non-existent parameters hash shouldn't work - propose with wrong avatar", async function() {
     var testSetup = await setup(accounts);
-    var testSetup2 = await setup(accounts);
     await testSetup.genesisProtocol.propose(2, testSetup.genesisProtocolParams.paramsHash,0, testSetup.executable.address,accounts[0]);
 
     try {
@@ -771,19 +819,102 @@ contract('GenesisProtocol Lite', function (accounts) {
     }
   });
 
+  it("stake with approveAndCall log", async () => {
+
+    var testSetup = await setup(accounts);
+    let tx = await testSetup.genesisProtocol.propose(2, testSetup.genesisProtocolParams.paramsHash,0, testSetup.executable.address,accounts[0]);
+    var proposalId = await getValueFromLogs(tx, '_proposalId');
+    assert.isOk(proposalId);
+
+    tx = await stake(testSetup,proposalId,1,10,accounts[0]);
+    assert.equal(tx.length, 1);
+    assert.equal(tx[0].event, "Stake");
+    assert.equal(tx[0].args._staker, accounts[0]);
+    assert.equal(tx[0].args._vote, 1);
+    assert.equal(tx[0].args._amount, 10);
+  });
+
   it("stake log", async () => {
 
     var testSetup = await setup(accounts);
     let tx = await testSetup.genesisProtocol.propose(2, testSetup.genesisProtocolParams.paramsHash,0, testSetup.executable.address,accounts[0]);
     var proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
+
+    await testSetup.stakingToken.approve(testSetup.genesisProtocol.address,10);
+
+    tx = await testSetup.genesisProtocol.stake(proposalId,1,10);
+    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs[0].event, "Stake");
+    assert.equal(tx.logs[0].args._staker, accounts[0]);
+    assert.equal(tx.logs[0].args._vote, 1);
+    assert.equal(tx.logs[0].args._amount, 10);
+  });
+
+  it("check nonce ", async () => {
+
+    var testSetup = await setup(accounts,50,60,60,100,100);
+    let tx = await testSetup.genesisProtocol.propose(2, testSetup.genesisProtocolParams.paramsHash,0, testSetup.executable.address,accounts[0]);
+    var proposalId = await getValueFromLogs(tx, '_proposalId');
+    assert.isOk(proposalId);
+    let staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    assert.equal(staker[0],0);
+    assert.equal(staker[1],0);
+
     tx = await stake(testSetup,proposalId,1,10,accounts[0]);
+    assert.equal(tx.length, 1);
     assert.equal(tx[0].event, "Stake");
     assert.equal(tx[0].args._staker, accounts[0]);
     assert.equal(tx[0].args._vote, 1);
     assert.equal(tx[0].args._amount, 10);
+    staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    assert.equal(staker[0],1);
+    assert.equal(staker[1],10);
+     nonce--;
+    var textMsg = "0x"+ethereumjs.soliditySHA3(
+        ["address","bytes32","uint", "uint","uint"],
+        [testSetup.genesisProtocol.address, proposalId,1,10, nonce]
+      ).toString("hex");
+    const signature = web3.eth.sign(accounts[0], textMsg);
+    const extraData = await testSetup.genesisProtocol.stakeWithSignature.request(proposalId,1,10,nonce,signature);
 
+    try {
+     await testSetup.stakingToken.approveAndCall(
+        testSetup.genesisProtocol.address, 10, extraData.params[0].data ,{from : accounts[0]}
+      );
+      assert(false, 'stake should fail with the same nonce');
+    } catch (ex) {
+      helpers.assertVMException(ex);
+    }
   });
+
+  it("check stake with wrong signature ", async () => {
+
+    var testSetup = await setup(accounts,50,60,60,100,100);
+    let tx = await testSetup.genesisProtocol.propose(2, testSetup.genesisProtocolParams.paramsHash,0, testSetup.executable.address,accounts[0]);
+    var proposalId = await getValueFromLogs(tx, '_proposalId');
+    assert.isOk(proposalId);
+    let staker = await testSetup.genesisProtocol.staker(proposalId,accounts[0]);
+    assert.equal(staker[0],0);
+    assert.equal(staker[1],0);
+    var textMsg = "0x"+ethereumjs.soliditySHA3(
+        ["address","bytes32","uint", "uint","uint"],
+        [testSetup.genesisProtocol.address, proposalId,1,10, nonce]
+      ).toString("hex");
+    const signature = web3.eth.sign(accounts[0], textMsg);
+    proposalId = 123; //change proposalId
+    const extraData = await testSetup.genesisProtocol.stakeWithSignature.request(proposalId,1,10,nonce,signature);
+
+    try {
+     await testSetup.stakingToken.approveAndCall(
+        testSetup.genesisProtocol.address, 10, extraData.params[0].data ,{from : accounts[0]}
+      );
+      assert(false, 'stake should fail due to wrong signature');
+    } catch (ex) {
+      helpers.assertVMException(ex);
+    }
+  });
+
 
   it("multiple stakes ", async () => {
 
@@ -832,7 +963,7 @@ contract('GenesisProtocol Lite', function (accounts) {
     assert.isOk(proposalId);
 
       try {
-        await testSetup.genesisProtocol.stake(proposalId,2,10,accounts[0]);
+        await testSetup.genesisProtocol.stake(proposalId,2,10);
         assert(false, 'stake without approval should revert');
       } catch (ex) {
         helpers.assertVMException(ex);
