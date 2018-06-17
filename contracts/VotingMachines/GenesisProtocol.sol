@@ -105,13 +105,19 @@ contract GenesisProtocol is IntVoteInterface {
     mapping(address=>uint) public orgBoostedProposalsCnt;
     StandardToken public stakingToken;
     mapping(bytes=>bool) stakeSignatures; //stake signatures
+    address constant GEN_TOKEN_ADDRESS = 0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf;
 
     /**
      * @dev Constructor
      */
     constructor(StandardToken _stakingToken) public
     {
-        stakingToken = _stakingToken;
+
+        if (isContract(address(GEN_TOKEN_ADDRESS))) {
+            stakingToken = StandardToken(GEN_TOKEN_ADDRESS);
+        } else {
+            stakingToken = _stakingToken;
+        }
     }
 
   /**
@@ -925,6 +931,20 @@ contract GenesisProtocol is IntVoteInterface {
     function _isVotable(bytes32 _proposalId) private view returns(bool) {
         ProposalState pState = proposals[_proposalId].state;
         return ((pState == ProposalState.PreBoosted)||(pState == ProposalState.Boosted)||(pState == ProposalState.QuietEndingPeriod));
+    }
+
+    /**
+      * @dev isContract check if a given address is a contract address
+      * @param _addr the address to check.
+      * @return bool true or false
+    */
+    function isContract(address _addr) private view returns (bool) {
+        uint32 size;
+        // solium-disable-next-line security/no-inline-assembly
+        assembly {
+          size := extcodesize(_addr)
+        }
+        return (size > 0);
     }
 
 }

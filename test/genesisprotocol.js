@@ -232,6 +232,11 @@ const stake = async function(_testSetup,_proposalId,_vote,_amount,_staker) {
 
 contract('GenesisProtocol Lite', function (accounts) {
 
+  it("staking token address", async function() {
+    var testSetup = await setup(accounts);
+    assert.equal(await testSetup.genesisProtocol.stakingToken(),testSetup.stakingToken.address);
+  });
+
   it("Sanity checks", async function () {
       var testSetup = await setup(accounts);
       let winningVote = 2;
