@@ -66,7 +66,7 @@ contract('Reputation', accounts => {
     it("check total reputation overflow", async () => {
         let rep = await Reputation.new();
         let BigNumber = require('bignumber.js');
-        let bigNum = ((new BigNumber(2)).toPower(256).sub(1));
+        let bigNum = ((new BigNumber(2)).toPower(128).sub(1));
 
         await rep.mint(accounts[0], bigNum);
 
@@ -254,5 +254,24 @@ contract('Reputation', accounts => {
         assert.equal(reputationOf1.toNumber(), rep1);
         assert.equal(reputationOf2.toNumber(), rep2);
         assert.equal(reputationOf3.toNumber(), rep3);
+    });
+
+    it("reputation at ", async () => {
+        let reputation = await Reputation.new();
+        const rep1 = Math.floor(Math.random() * 1e6);
+        await reputation.mint(accounts[1], rep1, { from: accounts[0] });
+        var tx = await reputation.mint(accounts[1], rep1, { from: accounts[0] });
+        await reputation.mint(accounts[3], rep1, { from: accounts[0] });
+
+
+        assert.equal (await reputation.totalSupply(),rep1+rep1+rep1);
+
+        assert.equal (await reputation.totalSupplyAt(tx.receipt.blockNumber),rep1+rep1);
+        assert.equal (await reputation.totalSupplyAt(tx.receipt.blockNumber-1),rep1);
+        assert.equal (await reputation.balanceOfAt(accounts[1],tx.receipt.blockNumber),rep1+rep1);
+        assert.equal (await reputation.balanceOfAt(accounts[1],tx.receipt.blockNumber-1),rep1);
+
+        assert.equal (await reputation.balanceOfAt(accounts[3],tx.receipt.blockNumber),0);
+
     });
 });

@@ -2,6 +2,7 @@ pragma solidity ^0.4.24;
 
 import "../Reputation.sol";
 import "./IntVoteInterface.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 
 contract AbsoluteVote is IntVoteInterface {
