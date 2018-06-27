@@ -3,9 +3,10 @@ pragma solidity ^0.4.24;
 import "../VotingMachines/GenesisProtocolCallbacksInterface.sol";
 import "../VotingMachines/GenesisProtocol.sol";
 import "../Reputation.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
-contract GenesisProtocolCallbacksMock is GenesisProtocolCallbacksInterface {
+contract GenesisProtocolCallbacksMock is GenesisProtocolCallbacksInterface,Ownable {
 
     Reputation public reputation;
     StandardToken public stakingToken;
@@ -23,17 +24,26 @@ contract GenesisProtocolCallbacksMock is GenesisProtocolCallbacksInterface {
         reputation = _reputation;
         stakingToken = _stakingToken;
         genesisProtocol = _genesisProtocol;
+        transferOwnership(genesisProtocol);
     }
 
     function getTotalReputationSupply(bytes32 _proposalId) external returns(uint256) {
         return reputation.totalSupplyAt(proposalsBlockNumbers[_proposalId]);
     }
 
-    function mintReputation(uint _amount,address _beneficiary,bytes32) external returns(bool) {
+    function mintReputation(uint _amount,address _beneficiary,bytes32)
+    external
+    onlyOwner
+    returns(bool)
+    {
         return reputation.mint(_beneficiary,_amount);
     }
 
-    function burnReputation(uint _amount,address _beneficiary,bytes32) external returns(bool) {
+    function burnReputation(uint _amount,address _beneficiary,bytes32)
+    external
+    onlyOwner
+    returns(bool)
+    {
         return reputation.burn(_beneficiary,_amount);
     }
 
@@ -41,7 +51,11 @@ contract GenesisProtocolCallbacksMock is GenesisProtocolCallbacksInterface {
         return reputation.balanceOfAt(_owner,proposalsBlockNumbers[_proposalId]);
     }
 
-    function stakingTokenTransfer(address _beneficiary,uint _amount,bytes32) external returns(bool) {
+    function stakingTokenTransfer(address _beneficiary,uint _amount,bytes32)
+    external
+    onlyOwner
+    returns(bool)
+    {
         return stakingToken.transfer(_beneficiary,_amount);
     }
 
@@ -63,6 +77,14 @@ contract GenesisProtocolCallbacksMock is GenesisProtocolCallbacksInterface {
         emit NewProposal(proposalId, this, _numOfChoices, msg.sender, _paramsHash);
 
         return proposalId;
+    }
+
+    //this function is used only for testing purpose on this mock contract
+    function burnReputationTest(uint _amount,address _beneficiary,bytes32)
+    external
+    returns(bool)
+    {
+        return reputation.burn(_beneficiary,_amount);
     }
 
 }

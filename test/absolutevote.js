@@ -31,7 +31,7 @@ const checkProposalInfo = async function(proposalId, _proposalInfo) {
   // proposalInfo has the following structure
   // address owner;
   assert.equal(proposalInfo[0], _proposalInfo[0]);
-  // address avatar;
+  // address organization;
   assert.equal(proposalInfo[1], _proposalInfo[1]);
   // uint numOfChoices;
   assert.equal(proposalInfo[2], _proposalInfo[2]);
@@ -84,7 +84,7 @@ const checkProposalInfoWithAbsoluteVote = async function(proposalId, _proposalIn
   // proposalInfo has the following structure
   // address owner;
   assert.equal(proposalInfo[0], _proposalInfo[0]);
-  // address avatar;
+  // address organization;
   assert.equal(proposalInfo[1], _proposalInfo[1]);
   // address numOfChoices;
   assert.equal(proposalInfo[2], _proposalInfo[2]);
@@ -180,13 +180,12 @@ contract('AbsoluteVote', function (accounts) {
 
     let voteTX = await absoluteVote.vote(proposalId, 1,0);
 
-    assert.equal(voteTX.logs.length, 1);
+    assert.equal(voteTX.logs.length, 2);
     assert.equal(voteTX.logs[0].event, "VoteProposal");
     assert.equal(voteTX.logs[0].args._proposalId, proposalId);
     assert.equal(voteTX.logs[0].args._voter, accounts[0]);
     assert.equal(voteTX.logs[0].args._vote, 1);
     assert.equal(voteTX.logs[0].args._reputation, reputationArray[0]);
-    assert.equal(voteTX.logs[0].args._isOwnerVote, false);
 
     let cancelVoteTX = await absoluteVote.cancelVote(proposalId);
     assert.equal(cancelVoteTX.logs.length, 1);
@@ -213,10 +212,10 @@ contract('AbsoluteVote', function (accounts) {
     // the decisive vote is cast now and the proposal will be executed
     tx = await absoluteVote.ownerVote(proposalId, 4, accounts[2]);
 
-    assert.equal(tx.logs.length, 2);
-    assert.equal(tx.logs[1].event, "ExecuteProposal");
-    assert.equal(tx.logs[1].args._proposalId, proposalId);
-    assert.equal(tx.logs[1].args._decision, 4);
+    assert.equal(tx.logs.length, 3);
+    assert.equal(tx.logs[2].event, "ExecuteProposal");
+    assert.equal(tx.logs[2].args._proposalId, proposalId);
+    assert.equal(tx.logs[2].args._decision, 4);
   });
 
   it("refreshReputation reputation positive update ", async function() {

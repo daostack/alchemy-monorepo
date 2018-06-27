@@ -28,8 +28,8 @@ contract QuorumVote is IntVoteInterface, AbsoluteVote {
             }
             Proposal memory tmpProposal = proposal;
             deleteProposal(_proposalId);
-            emit ExecuteProposal(_proposalId, maxInd, totalReputation);
-            (tmpProposal.executable).execute(_proposalId, tmpProposal.avatar, int(maxInd));
+            emit ExecuteProposal(_proposalId, tmpProposal.organization, maxInd, totalReputation);
+            (tmpProposal.executable).execute(_proposalId, tmpProposal.organization, int(maxInd));
             return true;
         }
         return false;

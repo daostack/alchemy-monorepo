@@ -33,7 +33,7 @@ const checkProposalInfo = async function(proposalId, _proposalInfo) {
   // proposalInfo has the following structure
   // address owner;
   assert.equal(proposalInfo[0], _proposalInfo[0]);
-  // address avatar;
+  // address organization;
   assert.equal(proposalInfo[1], _proposalInfo[1]);
   // uint numOfChoices;
   assert.equal(proposalInfo[2], _proposalInfo[2]);
@@ -486,13 +486,12 @@ contract('QuorumVote', function (accounts) {
 
     let voteTX = await quorumVote.vote(proposalId, 1,0);
 
-    assert.equal(voteTX.logs.length, 1);
+    assert.equal(voteTX.logs.length, 2);
     assert.equal(voteTX.logs[0].event, "VoteProposal");
     assert.equal(voteTX.logs[0].args._proposalId, proposalId);
     assert.equal(voteTX.logs[0].args._voter, accounts[0]);
     assert.equal(voteTX.logs[0].args._vote, 1);
     assert.equal(voteTX.logs[0].args._reputation, reputationArray[0]);
-    assert.equal(voteTX.logs[0].args._isOwnerVote, false);
 
     let cancelVoteTX = await quorumVote.cancelVote(proposalId);
     assert.equal(cancelVoteTX.logs.length, 1);
@@ -513,10 +512,10 @@ contract('QuorumVote', function (accounts) {
 
     let voteTX = await quorumVote.vote(proposalId, 0,0);
 
-    assert.equal(voteTX.logs.length, 2);
-    assert.equal(voteTX.logs[1].event, "ExecuteProposal");
-    assert.equal(voteTX.logs[1].args._proposalId, proposalId);
-    assert.equal(voteTX.logs[1].args._decision, 0);
+    assert.equal(voteTX.logs.length, 3);
+    assert.equal(voteTX.logs[2].event, "ExecuteProposal");
+    assert.equal(voteTX.logs[2].args._proposalId, proposalId);
+    assert.equal(voteTX.logs[2].args._decision, 0);
   });
 
   it('cannot vote for another user', async function () {
@@ -541,7 +540,7 @@ contract('QuorumVote', function (accounts) {
   //   const quorumVote = await QuorumVote.new();
   //   const reputation = await Reputation.new();
   //   const executable = await ExecutableTest.new();
-  //   avatar = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
+  //   organization = await Avatar.new('name', helpers.NULL_ADDRESS, reputation.address);
   //
   //   // Send empty rep system to the absoluteVote contract
   //   await quorumVote.setParameters(helpers.NULL_ADDRESS, 50, true);

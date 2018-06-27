@@ -82,18 +82,11 @@ contract GenesisProtocol is IntVoteInterface {
         mapping(address=>Staker) stakers;
     }
 
-    event NewProposal(bytes32 indexed _proposalId, address indexed _organization, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
-    event ExecuteProposal(bytes32 indexed _proposalId,
-                          address indexed _organization,
-                          uint _decision,
-                          uint _totalReputation,
-                          ExecutionState _executionState
-    );
-    event VoteProposal(bytes32 indexed _proposalId, address indexed _organization, address indexed _voter, uint _vote, uint _reputation);
     event Stake(bytes32 indexed _proposalId, address indexed _organization, address indexed _staker,uint _vote,uint _amount);
     event Redeem(bytes32 indexed _proposalId, address indexed _organization, address indexed _beneficiary,uint _amount);
     event RedeemDaoBounty(bytes32 indexed _proposalId, address indexed _organization, address indexed _beneficiary,uint _amount);
     event RedeemReputation(bytes32 indexed _proposalId, address indexed _organization, address indexed _beneficiary,uint _amount);
+    event GPExecuteProposal(bytes32 indexed _proposalId, ExecutionState _executionState);
 
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
@@ -469,7 +462,8 @@ contract GenesisProtocol is IntVoteInterface {
                 }
                 proposal.daoBountyRemain = daoBountyRemain;
             }
-            emit ExecuteProposal(_proposalId, proposal.organization, proposal.winningVote, totalReputation, executionState);
+            emit ExecuteProposal(_proposalId, proposal.organization, proposal.winningVote, totalReputation);
+            emit GPExecuteProposal(_proposalId, executionState);
             GenesisProtocolCallbacksInterface(proposal.organization).executeProposal(_proposalId,int(proposal.winningVote),tmpProposal.executable);
             //(tmpProposal.executable).execute(_proposalId, tmpProposal.organization, int(proposal.winningVote));
         }

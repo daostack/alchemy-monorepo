@@ -119,7 +119,7 @@ const checkProposalInfo = async function(proposalId, _proposalInfo,genesisProtoc
   proposalInfo = await genesisProtocol.proposals(proposalId);
 
   // proposalInfo has the following structure
-  // address avatar;
+  // address organization;
   assert.equal(proposalInfo[0], _proposalInfo[0]);
   // uint numOfChoices;
   assert.equal(proposalInfo[1], _proposalInfo[1]);
@@ -573,19 +573,19 @@ contract('GenesisProtocol Lite', function (accounts) {
     //test that reputation change does not effect the snapshot
     var account2Rep =await testSetup.org.reputation.reputationOf(accounts[2]);
     assert.equal(account2Rep,70);
-    await testSetup.genesisProtocolCallbacks.burnReputation(account2Rep,accounts[2],0);
+    await testSetup.genesisProtocolCallbacks.burnReputationTest(account2Rep,accounts[2],0);
 
     account2Rep =await testSetup.org.reputation.reputationOf(accounts[2]);
     assert.equal(account2Rep,0);
 
     // // the decisive vote is cast now and the proposal will be executed
     tx = await testSetup.genesisProtocol.vote(proposalId, 2,0, { from: accounts[2] });
-
-    assert.equal(tx.logs.length, 2);
+    assert.equal(tx.logs.length, 3);
     assert.equal(tx.logs[1].event, "ExecuteProposal");
     assert.equal(tx.logs[1].args._proposalId, proposalId);
     assert.equal(tx.logs[1].args._decision, 2);
-    assert.equal(tx.logs[1].args._executionState, 2);
+    assert.equal(tx.logs[2].event, "GPExecuteProposal");
+    assert.equal(tx.logs[2].args._executionState, 2);
   });
 
   it("should log the ExecuteProposal event after time pass for preBoostedVotePeriodLimit (decision == 2 )", async function() {
@@ -599,11 +599,12 @@ contract('GenesisProtocol Lite', function (accounts) {
     await helpers.increaseTime(3);
     // the decisive vote is cast now and the proposal will be executed
     tx = await testSetup.genesisProtocol.vote(proposalId, 1,0, { from: accounts[2] });
-    assert.equal(tx.logs.length, 1);
+    assert.equal(tx.logs.length, 2);
     assert.equal(tx.logs[0].event, "ExecuteProposal");
     assert.equal(tx.logs[0].args._proposalId, proposalId);
     assert.equal(tx.logs[0].args._decision, 2);
-    assert.equal(tx.logs[0].args._executionState, 1);
+    assert.equal(tx.logs[1].event, "GPExecuteProposal");
+    assert.equal(tx.logs[1].args._executionState, 1);
   });
 
   it("All options can be voted (1-2)", async function() {
@@ -647,13 +648,13 @@ contract('GenesisProtocol Lite', function (accounts) {
 
 
 
-  it("Non-existent parameters hash shouldn't work - propose with wrong avatar", async function() {
+  it("Non-existent parameters hash shouldn't work - propose with wrong organization", async function() {
     var testSetup = await setup(accounts);
     await testSetup.genesisProtocolCallbacks.propose(2, testSetup.genesisProtocolParams.paramsHash,0, testSetup.executable.address,accounts[0]);
 
     try {
       await testSetup.genesisProtocolCallbacks.propose(2, 0, 0, testSetup.executable.address,accounts[0]);
-      assert(false, "propose was supposed to throw because wrong avatar address was sent");
+      assert(false, "propose was supposed to throw because wrong organization address was sent");
     } catch(error) {
       helpers.assertVMException(error);
     }
@@ -1395,7 +1396,7 @@ contract('GenesisProtocol Lite', function (accounts) {
         } catch (ex) {
           helpers.assertVMException(ex);
         }
-      //send tokens to org avatar
+      //send tokens to org organization
       await testSetup.stakingToken.transfer(testSetup.genesisProtocolCallbacks.address,stakerRedeemAmountBaunty);
       tx = await testSetup.genesisProtocol.redeemDaoBounty(proposalId,accounts[0]);
       assert.equal(tx.logs.length,1);
@@ -1418,7 +1419,7 @@ contract('GenesisProtocol Lite', function (accounts) {
       await testSetup.genesisProtocol.vote(proposalId,2,0,{from:accounts[2]});
       var stakerRedeemAmountBaunty = await testSetup.genesisProtocol.getRedeemableTokensStakerBounty(proposalId,accounts[0]);
       assert.equal(stakerRedeemAmountBaunty,0);
-      //send tokens to org avatar
+      //send tokens to org organization
       tx = await testSetup.genesisProtocol.redeemDaoBounty(proposalId,accounts[0]);
       assert.equal(tx.logs.length,0);
       assert.equal(await testSetup.stakingToken.balanceOf(accounts[0]),900);
@@ -1443,7 +1444,7 @@ contract('GenesisProtocol Lite', function (accounts) {
 
       let voteTX = await testSetup.genesisProtocol.vote(proposalId, 1,accounts[2],{from:voteOnBehalf});
 
-      assert.equal(voteTX.logs.length, 2);
+      assert.equal(voteTX.logs.length, 3);
       assert.equal(voteTX.logs[0].event, "VoteProposal");
       assert.equal(voteTX.logs[0].args._proposalId, proposalId);
       assert.equal(voteTX.logs[0].args._voter, accounts[2]);

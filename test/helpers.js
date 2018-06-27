@@ -44,7 +44,7 @@ export function getValueFromLogs(tx, arg, eventName, index=0) {
    *     address: '0xd6a2a42b97ba20ee8655a80a842c2a723d7d488d',
    *     type: 'mined',
    *     event: 'NewOrg',
-   *     args: { _avatar: '0xcc05f0cde8c3e4b6c41c9b963031829496107bbb' } } ]
+   *     args: { _organization: '0xcc05f0cde8c3e4b6c41c9b963031829496107bbb' } } ]
    */
   if (!tx.logs || !tx.logs.length) {
     throw new Error('getValueFromLogs: Transaction has no logs');
