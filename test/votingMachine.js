@@ -1,4 +1,5 @@
 const helpers = require('./helpers');
+const constants = require('./constants');
 const AbsoluteVote = artifacts.require('AbsoluteVote');
 const QuorumVote = artifacts.require('QuorumVote');
 const StandardToken = artifacts.require('StandardToken');
@@ -27,7 +28,7 @@ const setupGenesisProtocol = async function (accounts,_voteOnBehalf = 0,
                                       _daoBountyLimt =10 ) {
    var testSetup = new helpers.TestSetup();
    testSetup.stakingToken = await ERC827TokenMock.new(accounts[0],3000);
-   testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.stakingToken.address);
+   testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.stakingToken.address,{gas:constants.GAS_LIMIT});
 
    testSetup.reputationArray = [20, 10, 70 ];
    testSetup.org = {};
