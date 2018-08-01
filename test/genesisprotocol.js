@@ -1,4 +1,5 @@
 const helpers = require('./helpers');
+const constants = require('./constants');
 import { getValueFromLogs } from './helpers';
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 const ExecutableTest = artifacts.require("./ExecutableTest.sol");
@@ -79,7 +80,7 @@ const setup = async function (accounts,_voteOnBehalf = 0,
                                       _daoBountyLimt =10 ) {
    var testSetup = new helpers.TestSetup();
    testSetup.stakingToken = await ERC827TokenMock.new(accounts[0],3000);
-   testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.stakingToken.address);
+   testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.stakingToken.address,{gas:constants.GAS_LIMIT});
 
    testSetup.reputationArray = [20, 10, 70 ];
    testSetup.org = {};
