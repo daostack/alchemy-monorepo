@@ -6,6 +6,7 @@ import "./GenesisProtocolCallbacksInterface.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 import "openzeppelin-solidity/contracts/ECRecovery.sol";
+import { OrderStatisticTree } from "../libs/OrderStatisticTree.sol";
 
 
 /**
@@ -16,6 +17,7 @@ contract GenesisProtocol is IntVoteInterface {
     using RealMath for int216;
     using RealMath for int256;
     using ECRecovery for bytes32;
+    using OrderStatisticTree for OrderStatisticTree.Tree;
 
     enum ProposalState { None ,Closed, Executed, PreBoosted,Boosted,QuietEndingPeriod }
     enum ExecutionState { None, PreBoostedTimeOut, PreBoostedBarCrossed, BoostedTimeOut,BoostedBarCrossed }
@@ -99,6 +101,7 @@ contract GenesisProtocol is IntVoteInterface {
     StandardToken public stakingToken;
     mapping(bytes=>bool) stakeSignatures; //stake signatures
     address constant GEN_TOKEN_ADDRESS = 0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf;
+    mapping(address=>OrderStatisticTree.Tree) proposalsExpiredTimes; //proposals expired times
 
     /**
      * @dev Constructor
@@ -492,8 +495,8 @@ contract GenesisProtocol is IntVoteInterface {
      * @return bool true or false.
      */
     function shouldBoost(bytes32 _proposalId) public view returns(bool) {
-        address organization = proposals[_proposalId].organization;
-        return (_score(_proposalId) >= threshold(_proposalId,organization));
+        Proposal memory proposal = proposals[_proposalId];
+        return (_score(_proposalId) >= threshold(proposal.paramsHash,proposal.organization));
     }
 
     /**
@@ -510,12 +513,21 @@ contract GenesisProtocol is IntVoteInterface {
      * a proposal to shift to boosted state.
      * This threshold is dynamically set and it depend on the number of boosted proposal.
      * @param _organization the organization organization
+     * @param _paramsHash the organization parameters hash
      * @return int organization's score threshold.
      */
-    function threshold(bytes32 _proposalId,address _organization) public view returns(int) {
+    function threshold(bytes32 _paramsHash,address _organization) public view returns(int) {
+        uint expiredProposals;
+        if (proposalsExpiredTimes[_organization].count() != 0) {
+          // solium-disable-next-line security/no-block-members
+            expiredProposals = proposalsExpiredTimes[_organization].rank(now);
+        }
+        uint boostedProposals = orgBoostedProposalsCnt[_organization].sub(expiredProposals);
         int216 e = 2;
-        Parameters memory params = parameters[proposals[_proposalId].paramsHash];
-        int256 power = int216(orgBoostedProposalsCnt[_organization]).toReal().div(int216(params.thresholdConstB).toReal());
+
+        Parameters memory params = parameters[_paramsHash];
+        require(params.thresholdConstB > 0,"should be a valid parameter hash");
+        int256 power = int216(boostedProposals).toReal().div(int216(params.thresholdConstB).toReal());
 
         if (power.fromReal() > 100 ) {
             power = int216(100).toReal();
@@ -770,6 +782,7 @@ contract GenesisProtocol is IntVoteInterface {
                 proposal.state = ProposalState.Boosted;
                 // solium-disable-next-line security/no-block-members
                 proposal.boostedPhaseTime = now;
+                proposalsExpiredTimes[proposal.organization].insert(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                 orgBoostedProposalsCnt[proposal.organization]++;
               }
            }
@@ -778,12 +791,14 @@ contract GenesisProtocol is IntVoteInterface {
             (proposal.state == ProposalState.QuietEndingPeriod)) {
             // solium-disable-next-line security/no-block-members
             if ((now - proposal.boostedPhaseTime) >= proposal.currentBoostedVotePeriodLimit) {
+                proposalsExpiredTimes[proposal.organization].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                 proposal.state = ProposalState.Executed;
                 orgBoostedProposalsCnt[tmpProposal.organization] = orgBoostedProposalsCnt[tmpProposal.organization].sub(1);
                 executionState = ExecutionState.BoostedTimeOut;
              } else if (proposal.votes[proposal.winningVote] > executionBar) {
                // someone crossed the absolute vote execution bar.
                 orgBoostedProposalsCnt[tmpProposal.organization] = orgBoostedProposalsCnt[tmpProposal.organization].sub(1);
+                proposalsExpiredTimes[proposal.organization].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                 proposal.state = ProposalState.Executed;
                 executionState = ExecutionState.BoostedBarCrossed;
             }
@@ -891,11 +906,13 @@ contract GenesisProtocol is IntVoteInterface {
             if ((proposal.state == ProposalState.QuietEndingPeriod) ||
                ((proposal.state == ProposalState.Boosted) && ((_now - proposal.boostedPhaseTime) >= (params.boostedVotePeriodLimit - params.quietEndingPeriod)))) {
                 //quietEndingPeriod
-                proposal.boostedPhaseTime = _now;
                 if (proposal.state != ProposalState.QuietEndingPeriod) {
+                    proposalsExpiredTimes[proposal.organization].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                     proposal.currentBoostedVotePeriodLimit = params.quietEndingPeriod;
+                    proposalsExpiredTimes[proposal.organization].insert(_now + proposal.currentBoostedVotePeriodLimit);
                     proposal.state = ProposalState.QuietEndingPeriod;
                 }
+                proposal.boostedPhaseTime = _now;
             }
             proposal.winningVote = _vote;
         }

@@ -1167,7 +1167,7 @@ contract('GenesisProtocol Lite', function (accounts) {
     let tx = await testSetup.genesisProtocolCallbacks.propose(2, testSetup.genesisProtocolParams.paramsHash,0, testSetup.executable.address,accounts[0]);
     var proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
-    assert.equal(await testSetup.genesisProtocol.threshold(proposalId,testSetup.genesisProtocolCallbacks.address),1);
+    assert.equal(await testSetup.genesisProtocol.threshold(testSetup.genesisProtocolParams.paramsHash,testSetup.genesisProtocolCallbacks.address),1);
 
   });
 
@@ -1227,14 +1227,16 @@ contract('GenesisProtocol Lite', function (accounts) {
 
       let tx = await testSetup.genesisProtocolCallbacks.propose(2, testSetup.genesisProtocolParams.paramsHash,0, testSetup.executable.address,accounts[0]);
       var proposalId = await getValueFromLogs(tx, '_proposalId');
-      assert.equal(await testSetup.genesisProtocol.threshold(proposalId,testSetup.genesisProtocolCallbacks.address),1);
+      assert.equal(await testSetup.genesisProtocol.threshold(testSetup.genesisProtocolParams.paramsHash,testSetup.genesisProtocolCallbacks.address),1);
       assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.genesisProtocolCallbacks.address),0);
+
       await testSetup.genesisProtocol.vote(proposalId,1,0);
       await stake(testSetup,proposalId,1,100,accounts[0]);
       assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),true);
       assert.equal(await testSetup.genesisProtocol.state(proposalId),4);
       assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.genesisProtocolCallbacks.address),1);
-      assert.equal(await testSetup.genesisProtocol.threshold(proposalId,testSetup.genesisProtocolCallbacks.address),2);
+      assert.equal(await testSetup.genesisProtocol.threshold(testSetup.genesisProtocolParams.paramsHash,testSetup.genesisProtocolCallbacks.address),2);
+
       //set up another proposal
       tx = await testSetup.genesisProtocolCallbacks.propose(2, testSetup.genesisProtocolParams.paramsHash,0, testSetup.executable.address,accounts[0]);
       proposalId = await getValueFromLogs(tx, '_proposalId');
@@ -1243,13 +1245,13 @@ contract('GenesisProtocol Lite', function (accounts) {
       await stake(testSetup,proposalId,1,100,accounts[0]);
       assert.equal(await testSetup.genesisProtocol.state(proposalId),4);
       assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.genesisProtocolCallbacks.address),2);
-      assert.equal(await testSetup.genesisProtocol.threshold(proposalId,testSetup.genesisProtocolCallbacks.address),4);
+      assert.equal(await testSetup.genesisProtocol.threshold(testSetup.genesisProtocolParams.paramsHash,testSetup.genesisProtocolCallbacks.address),4);
 
       //execute
       await helpers.increaseTime(61);
       await testSetup.genesisProtocol.execute(proposalId);
       assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.genesisProtocolCallbacks.address),1);
-      assert.equal(await testSetup.genesisProtocol.threshold(proposalId,testSetup.genesisProtocolCallbacks.address),2);
+      assert.equal(await testSetup.genesisProtocol.threshold(testSetup.genesisProtocolParams.paramsHash,testSetup.genesisProtocolCallbacks.address),1);
     });
 
     it("reputation flow ", async () => {
