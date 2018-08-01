@@ -1,6 +1,6 @@
 {
   "name": "@daostack/infra",
-  "version": "0.0.0-alpha.01",
+  "version": "0.0.0-alpha.02",
   "description": "Base layer DAO's components",
   "files": [
     "contracts/",
@@ -75,7 +75,7 @@
     "arc"
   ],
   "engines": {
-    "node": ">=9.10.0"
+    "node": ">=8.11.3"
   },
   "author": "DAOstack (https://www.daostack.io)",
   "license": "GPL-3.0",
