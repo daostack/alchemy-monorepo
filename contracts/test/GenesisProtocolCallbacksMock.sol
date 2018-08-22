@@ -74,7 +74,7 @@ contract GenesisProtocolCallbacksMock is GenesisProtocolCallbacksInterface,Ownab
     {
         bytes32 proposalId = genesisProtocol.propose(_numOfChoices,_paramsHash,0,_executable,_proposer);
         proposalsBlockNumbers[proposalId] = block.number;
-        emit NewProposal(proposalId, this, _numOfChoices, msg.sender, _paramsHash);
+        emit NewProposal(proposalId, this, _numOfChoices, _proposer, _paramsHash);
 
         return proposalId;
     }
