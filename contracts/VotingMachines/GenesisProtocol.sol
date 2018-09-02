@@ -169,6 +169,7 @@ contract GenesisProtocol is IntVoteInterface {
         proposal.winningVote = NO;
         proposal.paramsHash = _paramsHash;
         proposals[proposalId] = proposal;
+        GenesisProtocolCallbacksInterface(proposal.organization).setProposal(proposalId);
         emit NewProposal(proposalId, proposal.organization, _numOfChoices, _proposer, _paramsHash);
         return proposalId;
     }

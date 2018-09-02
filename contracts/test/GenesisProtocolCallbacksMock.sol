@@ -27,7 +27,7 @@ contract GenesisProtocolCallbacksMock is GenesisProtocolCallbacksInterface,Ownab
         transferOwnership(genesisProtocol);
     }
 
-    function getTotalReputationSupply(bytes32 _proposalId) external returns(uint256) {
+    function getTotalReputationSupply(bytes32 _proposalId) external view returns(uint256) {
         return reputation.totalSupplyAt(proposalsBlockNumbers[_proposalId]);
     }
 
@@ -73,7 +73,6 @@ contract GenesisProtocolCallbacksMock is GenesisProtocolCallbacksInterface,Ownab
     (bytes32)
     {
         bytes32 proposalId = genesisProtocol.propose(_numOfChoices,_paramsHash,0,_executable,_proposer);
-        proposalsBlockNumbers[proposalId] = block.number;
         emit NewProposal(proposalId, this, _numOfChoices, _proposer, _paramsHash);
 
         return proposalId;
@@ -85,6 +84,10 @@ contract GenesisProtocolCallbacksMock is GenesisProtocolCallbacksInterface,Ownab
     returns(bool)
     {
         return reputation.burn(_beneficiary,_amount);
+    }
+
+    function setProposal(bytes32 _proposalId) external returns(bool) {
+        proposalsBlockNumbers[_proposalId] = block.number;
     }
 
 }
