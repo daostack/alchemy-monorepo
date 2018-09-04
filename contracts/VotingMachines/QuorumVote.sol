@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "./AbsoluteVote.sol";
+import "./GenesisProtocolExecuteInterface.sol";
 
 
 contract QuorumVote is AbsoluteVote {
@@ -18,8 +19,7 @@ contract QuorumVote is AbsoluteVote {
     */
     function _execute(bytes32 _proposalId) internal votable(_proposalId) returns(bool) {
         Proposal storage proposal = proposals[_proposalId];
-
-        uint totalReputation = parameters[proposal.paramsHash].reputationSystem.totalSupply();
+        uint totalReputation = GenesisProtocolCallbacksInterface(proposal.organization).getTotalReputationSupply(_proposalId);
         uint precReq = parameters[proposal.paramsHash].precReq;
 
         // this is the actual voting rule:
@@ -35,7 +35,9 @@ contract QuorumVote is AbsoluteVote {
             Proposal memory tmpProposal = proposal;
             deleteProposal(_proposalId);
             emit ExecuteProposal(_proposalId, tmpProposal.organization, maxInd, totalReputation);
-            (tmpProposal.executable).execute(_proposalId, tmpProposal.organization, int(maxInd));
+            GenesisProtocolExecuteInterface(tmpProposal.organization).executeProposal(_proposalId,int(maxInd));
+
+            //(tmpProposal.executable).execute(_proposalId, tmpProposal.organization, int(maxInd));
             return true;
         }
         return false;

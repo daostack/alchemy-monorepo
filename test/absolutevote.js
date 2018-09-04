@@ -3,15 +3,14 @@ import { getValueFromLogs } from './helpers';
 
 const AbsoluteVote = artifacts.require("./AbsoluteVote.sol");
 const Reputation = artifacts.require("./Reputation.sol");
-const ExecutableTest = artifacts.require("./ExecutableTest.sol");
+const AbsoluteVoteExecuteMock = artifacts.require("./AbsoluteVoteExecuteMock.sol");
 
-let reputation, absoluteVote, executable, accounts, reputationArray;
+
+let reputation, absoluteVote, accounts, reputationArray,absoluteVoteExecuteMock;
 
 const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50) {
   accounts = web3.eth.accounts;
   absoluteVote = await AbsoluteVote.new();
-  executable = await ExecutableTest.new();
-
   // set up a reputation system
   reputation = await Reputation.new();
   reputationArray = [20, 10, 70 ];
@@ -20,7 +19,8 @@ const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50) {
   await reputation.mint(accounts[2], reputationArray[2]);
 
   // register some parameters
-  await absoluteVote.setParameters(reputation.address, precReq, isOwnedVote);
+  await absoluteVote.setParameters(precReq, isOwnedVote);
+  absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new(reputation.address,absoluteVote.address);
 
   return absoluteVote;
 };
@@ -35,14 +35,13 @@ const checkProposalInfo = async function(proposalId, _proposalInfo) {
   assert.equal(proposalInfo[1], _proposalInfo[1]);
   // uint numOfChoices;
   assert.equal(proposalInfo[2], _proposalInfo[2]);
-  // ExecutableInterface executable;
+    // bytes32 paramsHash;
   assert.equal(proposalInfo[3], _proposalInfo[3]);
-  // bytes32 paramsHash;
-  assert.equal(proposalInfo[4], _proposalInfo[4]);
   // uint totalVotes;
-  assert.equal(proposalInfo[5], _proposalInfo[5]);
+  assert.equal(proposalInfo[4], _proposalInfo[4]);
   // - the mapping is simply not returned at all in the array
   // bool opened; // voting opened flag
+  assert.equal(proposalInfo[5], _proposalInfo[5]);
   assert.equal(proposalInfo[6], _proposalInfo[6]);
 };
 
@@ -88,15 +87,13 @@ const checkProposalInfoWithAbsoluteVote = async function(proposalId, _proposalIn
   assert.equal(proposalInfo[1], _proposalInfo[1]);
   // address numOfChoices;
   assert.equal(proposalInfo[2], _proposalInfo[2]);
-  // ExecutableInterface executable;
-  assert.equal(proposalInfo[3], _proposalInfo[3]);
   // bytes32 paramsHash;
-  assert.equal(proposalInfo[4], _proposalInfo[4]);
+  assert.equal(proposalInfo[3], _proposalInfo[3]);
   // uint totalVotes;
-  assert.equal(proposalInfo[5], _proposalInfo[5]);
+  assert.equal(proposalInfo[4], _proposalInfo[4]);
   // - the mapping is simply not returned at all in the array
   // bool opened; // voting opened flag
-  assert.equal(proposalInfo[6], _proposalInfo[6]);
+  assert.equal(proposalInfo[5], _proposalInfo[5]);
 };
 
 contract('AbsoluteVote', function (accounts) {
@@ -105,34 +102,40 @@ contract('AbsoluteVote', function (accounts) {
       absoluteVote = await setupAbsoluteVote(true, 50);
 
       // propose a vote
-      const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-      let tx = await absoluteVote.propose(5, paramsHash, accounts[1], executable.address,accounts[0]);
+      const paramsHash = await absoluteVote.getParametersHash( 50, true);
+
+      let tx = await absoluteVoteExecuteMock.propose(5, paramsHash,0,accounts[0]);
+
       const proposalId = await getValueFromLogs(tx, '_proposalId');
       assert.isOk(proposalId);
       // no one has voted yet at this point
-      await checkProposalInfo(proposalId, [accounts[0], accounts[1], 5, executable.address, paramsHash, 0, true]);
+      await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 5, paramsHash, 0, true]);
       await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
       await checkIsVotable(proposalId, true);
 
       // now lets vote Option 1 with a minority reputation
+
       await absoluteVote.vote(proposalId, 1,0);
+
       await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
-      await checkProposalInfo(proposalId, [accounts[0], accounts[1], 5, executable.address, paramsHash, reputationArray[0], true]);
+      await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 5, paramsHash, reputationArray[0], true]);
       await checkVotesStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0]);
       await checkIsVotable(proposalId, true);
 
       // another minority reputation (Option 0):
       await absoluteVote.vote(proposalId, 0,0, { from: accounts[1] });
       await checkVoteInfo(proposalId, accounts[1], [0, reputationArray[1]]);
-      await checkProposalInfo(proposalId, [accounts[0], accounts[1], 5, executable.address, paramsHash, (reputationArray[0] + reputationArray[1]), true]);
+      await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 5, paramsHash, (reputationArray[0] + reputationArray[1]), true]);
       await checkVotesStatus(proposalId, [reputationArray[1], reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0]);
       await checkIsVotable(proposalId, true);
 
       // the decisive vote is cast now and the proposal will be executed with option 5
-      await absoluteVote.ownerVote(proposalId, 5, accounts[2]);
+
+      await absoluteVoteExecuteMock.ownerVote(proposalId, 5, accounts[2]);
+
       await checkVoteInfo(proposalId, accounts[2], [5, reputationArray[2]]);
       // Proposal should be empty (being deleted after execution)
-      await checkProposalInfo(proposalId, [helpers.NULL_ADDRESS, helpers.NULL_ADDRESS, 0, helpers.NULL_ADDRESS, helpers.NULL_HASH, 0, false]);
+      await checkProposalInfo(proposalId, [helpers.NULL_ADDRESS, helpers.NULL_ADDRESS, 0,helpers.NULL_HASH, 0, false]);
       await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
       await checkIsVotable(proposalId, false);
   });
@@ -141,15 +144,15 @@ contract('AbsoluteVote', function (accounts) {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
     assert.equal(tx.logs.length, 1);
     assert.equal(tx.logs[0].event, "NewProposal");
     assert.equal(tx.logs[0].args._proposalId, proposalId);
-    assert.equal(tx.logs[0].args._proposer, accounts[0]);
+    assert.equal(tx.logs[0].args._proposer, absoluteVoteExecuteMock.address);
     assert.equal(tx.logs[0].args._paramsHash, paramsHash);
   });
 
@@ -157,24 +160,28 @@ contract('AbsoluteVote', function (accounts) {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
-    let newtx = await absoluteVote.cancelProposal(proposalId);
+    let newtx = await absoluteVoteExecuteMock.cancelProposal(proposalId);
 
-    assert.equal(newtx.logs.length, 1);
-    assert.equal(newtx.logs[0].event, "CancelProposal");
-    assert.equal(newtx.logs[0].args._proposalId, proposalId);
+    var log = await new Promise((resolve) => {
+                absoluteVote.CancelProposal({fromBlock: newtx.blockNumber})
+                    .get((err,events) => {
+                            resolve(events);
+                    });
+                });
+    assert.equal(log[0].args._proposalId,proposalId);
   });
 
   it("should log the VoteProposal and CancelVoting events on voting and canceling the vote", async function() {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -198,8 +205,8 @@ contract('AbsoluteVote', function (accounts) {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -210,87 +217,24 @@ contract('AbsoluteVote', function (accounts) {
     await absoluteVote.vote(proposalId, 0,0, { from: accounts[1] });
 
     // the decisive vote is cast now and the proposal will be executed
-    tx = await absoluteVote.ownerVote(proposalId, 4, accounts[2]);
+    tx = await absoluteVoteExecuteMock.ownerVote(proposalId, 4, accounts[2]);
 
-    assert.equal(tx.logs.length, 3);
-    assert.equal(tx.logs[2].event, "ExecuteProposal");
-    assert.equal(tx.logs[2].args._proposalId, proposalId);
-    assert.equal(tx.logs[2].args._decision, 4);
+      var log = await new Promise((resolve) => {
+                  absoluteVote.ExecuteProposal({fromBlock: tx.blockNumber})
+                      .get((err,events) => {
+                              resolve(events);
+                      });
+                  });
+    assert.equal(log[0].args._proposalId, proposalId);
+    assert.equal(log[0].args._decision, 4);
   });
-
-  it("refreshReputation reputation positive update ", async function() {
-    absoluteVote = await setupAbsoluteVote(true, 50);
-
-    // propose a vote
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
-    const proposalId = await getValueFromLogs(tx, '_proposalId');
-    assert.isOk(proposalId);
-
-    // now lets vote with a minority reputation
-    await absoluteVote.vote(proposalId, 1,0);
-
-    // another minority reputation:
-    await absoluteVote.vote(proposalId, 0,0, { from: accounts[1] });
-
-    await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, reputationArray[0]+reputationArray[1], true]);
-
-
-    // not enough to execute yet
-    tx = await absoluteVote.execute(proposalId);
-    assert.equal(tx.logs.length, 0);
-    await reputation.mint(accounts[1], 90);
-    tx = await absoluteVote.execute(proposalId);
-    assert.equal(tx.logs.length, 0);
-    tx = await absoluteVote.refreshReputation(proposalId,[accounts[0],accounts[1]]);
-    assert.equal(tx.logs.length, 1);
-    assert.equal(tx.logs[0].event, "RefreshReputation");
-    assert.equal(tx.logs[0].args._proposalId, proposalId);
-    assert.equal(tx.logs[0].args._voter, accounts[1]);
-    assert.equal(tx.logs[0].args._reputation, reputationArray[1]+90);
-
-    await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, reputationArray[0]+reputationArray[1]+90, true]);
-
-    // the decisive vote is cast now and the proposal will be executed
-    tx = await absoluteVote.execute(proposalId);
-    assert.equal(tx.logs.length, 1);
-    assert.equal(tx.logs[0].event, "ExecuteProposal");
-    assert.equal(tx.logs[0].args._proposalId, proposalId);
-    assert.equal(tx.logs[0].args._decision, 0);
-  });
-
-  it("refreshReputation reputation negative update ", async function() {
-    absoluteVote = await setupAbsoluteVote(true, 50);
-
-    // propose a vote
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(2, paramsHash, accounts[1], executable.address,accounts[0]);
-    const proposalId = await getValueFromLogs(tx, '_proposalId');
-    assert.isOk(proposalId);
-
-    //  account[0] votes for option 1, but does not pass the bar
-    await absoluteVote.vote(proposalId, 1,0);
-    await checkProposalInfo(proposalId, [accounts[0], accounts[1], 2, executable.address, paramsHash, reputationArray[0], true]);
-    tx = await absoluteVote.refreshReputation(proposalId,[accounts[0],accounts[1]]);
-    //no change
-    assert.equal(tx.logs.length, 0);
-    await reputation.burn(accounts[0],100);
-    tx = await absoluteVote.refreshReputation(proposalId,[accounts[0],accounts[1]]);
-    assert.equal(tx.logs.length, 1);
-    assert.equal(tx.logs[0].event, "RefreshReputation");
-    assert.equal(tx.logs[0].args._proposalId, proposalId);
-    assert.equal(tx.logs[0].args._voter, accounts[0]);
-    assert.equal(tx.logs[0].args._reputation, 0);
-    await checkProposalInfo(proposalId, [accounts[0], accounts[1], 2, executable.address, paramsHash, 0, true]);
-  });
-
 
   it("All options can be voted (0-9)", async function() {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(10, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(10, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
     // Option 1
@@ -358,13 +302,13 @@ contract('AbsoluteVote', function (accounts) {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
     // Lets try to vote twice from the same address
     await absoluteVote.vote(proposalId, 1,0);
@@ -372,7 +316,7 @@ contract('AbsoluteVote', function (accounts) {
     await absoluteVote.vote(proposalId, 1,0);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
     // Total 'Option 2' should be equal to the voter's reputation exactly, even though we voted twice
-    await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, reputationArray[0], true]);
+    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 6, paramsHash, reputationArray[0], true]);
     await checkVotesStatus(proposalId, [0,reputationArray[0],0, 0, 0, 0, 0, 0, 0, 0]);
   });
 
@@ -380,13 +324,13 @@ contract('AbsoluteVote', function (accounts) {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
     // Lets try to vote and then cancel our vote
     await absoluteVote.vote(proposalId, 1,0);
@@ -395,7 +339,7 @@ contract('AbsoluteVote', function (accounts) {
     await checkVoteInfo(proposalId, accounts[0], [0, 0]);
 
     // Proposal's votes supposed to be zero again.
-    await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   });
 
@@ -403,20 +347,20 @@ contract('AbsoluteVote', function (accounts) {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
     // Lets try to vote on the behalf of someone else
-    await absoluteVote.ownerVote(proposalId, 1, accounts[1]);
+    await absoluteVoteExecuteMock.ownerVote(proposalId, 1, accounts[1]);
     await checkVoteInfo(proposalId, accounts[1], [1, reputationArray[1]]);
 
     // Proposal's 'yes' count should be equal to accounts[1] reputation
-    await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, reputationArray[1], true]);
+    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 6, paramsHash, reputationArray[1], true]);
     await checkVotesStatus(proposalId, [0, reputationArray[1], 0, 0, 0, 0, 0, 0, 0, 0]);
   });
 
@@ -424,32 +368,32 @@ contract('AbsoluteVote', function (accounts) {
     absoluteVote = await setupAbsoluteVote(false, 50);
 
     // propose a vote
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, false);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, false);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
     // Lets try to vote on the behalf of someone else
-    await absoluteVote.ownerVote(proposalId, 1, accounts[1]);
+    await absoluteVoteExecuteMock.ownerVote(proposalId, 1, accounts[1]);
 
     // The vote should not be counted
-    await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
   });
 
   it("if the voter is not the proposal's owner, he shouldn't be able to vote on the behalf of someone else", async function () {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
     // Lets try to vote on the behalf of someone else
     try {
@@ -460,7 +404,7 @@ contract('AbsoluteVote', function (accounts) {
     }
 
     // The vote should not be counted
-    await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
   });
 
   it("Non-existent parameters hash shouldn't work", async function() {
@@ -468,28 +412,28 @@ contract('AbsoluteVote', function (accounts) {
     var paramsHash;
 
     // propose a vote
-    paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    paramsHash = await absoluteVote.getParametersHash( 50, true);
+    await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
 
-    paramsHash = await absoluteVote.getParametersHash(helpers.NULL_ADDRESS, 50, true);
+    paramsHash = await absoluteVote.getParametersHash( 51, true);
     try {
-      await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+      await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
       assert(false, "propose was supposed to throw but didn't.");
     } catch(error) {
       helpers.assertVMException(error);
     }
 
-    paramsHash = await absoluteVote.getParametersHash(helpers.SOME_ADDRESS, 50, true);
+    paramsHash = await absoluteVote.getParametersHash( 52, true);
     try {
-      await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+      await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
       assert(false, "propose was supposed to throw but didn't.");
     } catch(error) {
       helpers.assertVMException(error);
     }
 
-    paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, false);
+    paramsHash = await absoluteVote.getParametersHash( 50, false);
     try {
-      await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+      await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
       assert(false, "propose was supposed to throw but didn't.");
     } catch(error) {
       helpers.assertVMException(error);
@@ -516,8 +460,8 @@ contract('AbsoluteVote', function (accounts) {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -526,7 +470,7 @@ contract('AbsoluteVote', function (accounts) {
 
     // Should not be able to cancel the proposal because it's already been executed
     try {
-      await absoluteVote.cancelProposal(proposalId);
+      await absoluteVoteExecuteMock.cancelProposal(proposalId);
       assert(false, "cancelProposal was supposed to throw but didn't.");
     } catch (error) {
       helpers.assertVMException(error);
@@ -554,17 +498,17 @@ contract('AbsoluteVote', function (accounts) {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a vote
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
     // lets try to vote by the owner on the behalf of non-existent voters(they do exist but they aren't registered to the reputation system).
     for (var i = 3; i < accounts.length; i++) {
-        await absoluteVote.ownerVote(proposalId, 3, accounts[i], { from: accounts[0] });
+        await absoluteVoteExecuteMock.ownerVote(proposalId, 3, accounts[i], { from: accounts[0] });
     }
 
     // everything should be 0
@@ -586,13 +530,13 @@ contract('AbsoluteVote', function (accounts) {
       absoluteVote = await setupAbsoluteVote(true, 50);
 
       // propose a vote
-      const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-      let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+      const paramsHash = await absoluteVote.getParametersHash( 50, true);
+      let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
       const proposalId = await getValueFromLogs(tx, '_proposalId');
       assert.isOk(proposalId);
 
       // no one has voted yet at this point
-      await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, 0, true]);
+      await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
       await absoluteVote.vote(proposalId, 0,0, { from: accounts[1] });
 
@@ -607,13 +551,13 @@ contract('AbsoluteVote', function (accounts) {
       absoluteVote = await setupAbsoluteVote(true, 50);
 
       // propose a vote
-      const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-      let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+      const paramsHash = await absoluteVote.getParametersHash( 50, true);
+      let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
       const proposalId = await getValueFromLogs(tx, '_proposalId');
       assert.isOk(proposalId);
 
       // no one has voted yet at this point
-      await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, 0, true]);
+      await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
       await absoluteVote.vote(proposalId, 2,0, { from: accounts[1] });
 
@@ -630,19 +574,19 @@ contract('AbsoluteVote', function (accounts) {
       absoluteVote = await setupAbsoluteVote(true, 50);
 
       // propose a vote
-      const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-      let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+      const paramsHash = await absoluteVote.getParametersHash( 50, true);
+      let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
       const proposalId = await getValueFromLogs(tx, '_proposalId');
       assert.isOk(proposalId);
 
       // no one has voted yet at this point
-      await checkProposalInfo(proposalId, [accounts[0], accounts[1],6 , executable.address, paramsHash, 0, true]);
+      await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address,6 , paramsHash, 0, true]);
 
-      await absoluteVote.ownerVote(proposalId, 0, accounts[1], { from: accounts[0] });
+      await absoluteVoteExecuteMock.ownerVote(proposalId, 0, accounts[1], { from: accounts[0] });
 
       await checkVotesStatus(proposalId, [reputationArray[1], 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
-      await absoluteVote.ownerVote(proposalId, 1, accounts[1], { from: accounts[0] });
+      await absoluteVoteExecuteMock.ownerVote(proposalId, 1, accounts[1], { from: accounts[0] });
 
       await checkVotesStatus(proposalId, [0, reputationArray[1], 0, 0, 0, 0, 0, 0, 0, 0]);
     });
@@ -651,19 +595,19 @@ contract('AbsoluteVote', function (accounts) {
       absoluteVote = await setupAbsoluteVote(true, 50);
 
       // propose a vote
-      const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-      let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+      const paramsHash = await absoluteVote.getParametersHash( 50, true);
+      let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
       const proposalId = await getValueFromLogs(tx, '_proposalId');
       assert.isOk(proposalId);
 
       // no one has voted yet at this point
-      await checkProposalInfo(proposalId, [accounts[0], accounts[1], 6, executable.address, paramsHash, 0, true]);
+      await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
-      await absoluteVote.ownerVote(proposalId, 2, accounts[1], { from: accounts[0] });
+      await absoluteVoteExecuteMock.ownerVote(proposalId, 2, accounts[1], { from: accounts[0] });
 
       await checkVotesStatus(proposalId, [0, 0, reputationArray[1], 0, 0, 0, 0, 0, 0, 0]);
 
-      await absoluteVote.ownerVote(proposalId, 3, accounts[1], { from: accounts[0] });
+      await absoluteVoteExecuteMock.ownerVote(proposalId, 3, accounts[1], { from: accounts[0] });
 
       await checkVotesStatus(proposalId, [0, 0, 0, reputationArray[1], 0, 0, 0, 0, 0, 0]);
     });
@@ -673,8 +617,8 @@ contract('AbsoluteVote', function (accounts) {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a new proposal
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -686,38 +630,21 @@ contract('AbsoluteVote', function (accounts) {
     }
   });
 
-  it("Should behave sensibly when voting with an empty reputation system", async function () {
-      // Initiate objects
-      const absoluteVote = await AbsoluteVote.new();
-      const executable = await ExecutableTest.new();
-
-      // Send empty rep system to the absoluteVote contract
-      await absoluteVote.setParameters(helpers.NULL_ADDRESS, 50, true);
-      const paramsHash = await absoluteVote.getParametersHash(helpers.NULL_ADDRESS, 50, true);
-
-      // Try to propose - an exception should be raised
-      try {
-        await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
-        assert(false, 'Should throw an exception but didn\'t');
-      } catch (ex) {
-        helpers.assertVMException(ex);
-      }
-  });
-
   it("Should behave sensibly without an executable [TODO] execution isn't implemented yet", async function () {
 
     // Initiate objects & give reputation
     const absoluteVote = await AbsoluteVote.new();
     const reputation = await Reputation.new();
+    absoluteVoteExecuteMock =  await AbsoluteVoteExecuteMock.new(reputation.address,absoluteVote.address);
     reputationArray = [20, 10, 70];
     await reputation.mint(accounts[0], reputationArray[0]);
     await reputation.mint(accounts[1], reputationArray[1]);
     await reputation.mint(accounts[2], reputationArray[2]);
 
     // Send empty rep system to the absoluteVote contract
-    await absoluteVote.setParameters(reputation.address, 50, true);
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], helpers.NULL_ADDRESS,helpers.NULL_ADDRESS);
+    await absoluteVote.setParameters(50, true);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address, helpers.NULL_ADDRESS);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
 
     // Minority vote - no execution - no exception
@@ -729,12 +656,12 @@ contract('AbsoluteVote', function (accounts) {
   it('Proposal with wrong num of options', async function () {
     // 6 Option - no exception should be raised
     absoluteVote = await setupAbsoluteVote(true, 50);
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    await absoluteVote.propose(6, paramsHash, accounts[1], helpers.NULL_ADDRESS,helpers.NULL_ADDRESS);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address, helpers.NULL_ADDRESS);
 
     // 12 options - max is 10 - exception should be raised
     try {
-      await absoluteVote.propose(12, paramsHash, accounts[1], helpers.NULL_ADDRESS,helpers.NULL_ADDRESS);
+      await absoluteVoteExecuteMock.propose(12, paramsHash, absoluteVoteExecuteMock.address, helpers.NULL_ADDRESS);
       assert(false, 'Tried to create an absolute vote with 12 options - max is 10');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -742,7 +669,7 @@ contract('AbsoluteVote', function (accounts) {
 
     // -5 options - exception should be raised
     try {
-      await absoluteVote.propose(-5, paramsHash, accounts[1], helpers.NULL_ADDRESS,helpers.NULL_ADDRESS);
+      await absoluteVoteExecuteMock.propose(-5, paramsHash, absoluteVoteExecuteMock.address, helpers.NULL_ADDRESS);
       assert(false, 'Tried to create an absolute vote with negative number of options');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -750,7 +677,7 @@ contract('AbsoluteVote', function (accounts) {
 
     // 0 options - exception should be raised
     try {
-      await absoluteVote.propose(0, paramsHash, accounts[1], helpers.NULL_ADDRESS,helpers.NULL_ADDRESS);
+      await absoluteVoteExecuteMock.propose(0, paramsHash, absoluteVoteExecuteMock.address, helpers.NULL_ADDRESS);
       assert(false, 'Tried to create an absolute vote with 0 number of options');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -762,8 +689,8 @@ contract('AbsoluteVote', function (accounts) {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a new proposal
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -803,8 +730,8 @@ contract('AbsoluteVote', function (accounts) {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a new proposal
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -832,8 +759,8 @@ contract('AbsoluteVote', function (accounts) {
     absoluteVote = await setupAbsoluteVote(true, 50);
 
     // propose a new proposal
-    const paramsHash = await absoluteVote.getParametersHash(reputation.address, 50, true);
-    let tx = await absoluteVote.propose(6, paramsHash, accounts[1], executable.address,accounts[0]);
+    const paramsHash = await absoluteVote.getParametersHash( 50, true);
+    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId = await getValueFromLogs(tx, '_proposalId');
     assert.isOk(proposalId);
 
@@ -863,7 +790,7 @@ contract('AbsoluteVote', function (accounts) {
 
     // Lets try to call ownerVote with invalid proposal id
     try {
-      await absoluteVote.ownerVote('asdsada', 1, accounts[0]);
+      await absoluteVoteExecuteMock.ownerVote('asdsada', 1, accounts[0]);
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -882,7 +809,6 @@ contract('AbsoluteVote', function (accounts) {
 
     // Initiate parameters
     accounts = web3.eth.accounts;
-    executable = await ExecutableTest.new();
     reputation = await Reputation.new();
     reputationArray = [20, 10, 70 ];
     await reputation.mint(accounts[0], reputationArray[0]);
@@ -891,30 +817,33 @@ contract('AbsoluteVote', function (accounts) {
 
     // proposal 1 - 6 choices - 30% - ownerVote disabled
     let absoluteVote1 = await AbsoluteVote.new();
-    await absoluteVote1.setParameters(reputation.address, 30, false);
-    const paramsHash1 = await absoluteVote1.getParametersHash(reputation.address, 30, false);
-    let tx1 = await absoluteVote1.propose(6, paramsHash1, accounts[1], executable.address,accounts[0]);
+    absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new(reputation.address,absoluteVote1.address);
+    await absoluteVote1.setParameters(30, false);
+    const paramsHash1 = await absoluteVote1.getParametersHash( 30, false);
+    let tx1 = await absoluteVoteExecuteMock.propose(6, paramsHash1, absoluteVoteExecuteMock.address,accounts[0]);
     const proposalId1 = await getValueFromLogs(tx1, '_proposalId');
     assert.isOk(proposalId1);
 
     // proposal 2 - Yes/No - 50% - ownerVote enabled
     let absoluteVote2 = await AbsoluteVote.new();
-    await absoluteVote2.setParameters(reputation.address, 50, true);
-    const paramsHash2 = await absoluteVote2.getParametersHash(reputation.address, 50, true);
-    let tx2 = await absoluteVote2.propose(2, paramsHash2, accounts[1], executable.address,accounts[0], { from: accounts[1] });
+    var absoluteVoteExecuteMock2 = await AbsoluteVoteExecuteMock.new(reputation.address,absoluteVote2.address);
+
+    await absoluteVote2.setParameters( 50, true);
+    const paramsHash2 = await absoluteVote2.getParametersHash( 50, true);
+    let tx2 = await absoluteVoteExecuteMock2.propose(2, paramsHash2, absoluteVoteExecuteMock2.address,accounts[0], { from: accounts[1] });
     const proposalId2 = await getValueFromLogs(tx2, '_proposalId');
     assert.isOk(proposalId2);
 
     // Lets check the proposals
-    await checkProposalInfoWithAbsoluteVote(proposalId1, [accounts[0], accounts[1], 6, executable.address, paramsHash1, 0, true], absoluteVote1);
-    await checkProposalInfoWithAbsoluteVote(proposalId2, [accounts[1], accounts[1], 2, executable.address, paramsHash2, 0, true], absoluteVote2);
+    await checkProposalInfoWithAbsoluteVote(proposalId1, [absoluteVoteExecuteMock.address, absoluteVoteExecuteMock.address, 6, paramsHash1, 0, true], absoluteVote1);
+    await checkProposalInfoWithAbsoluteVote(proposalId2, [absoluteVoteExecuteMock2.address, absoluteVoteExecuteMock2.address, 2, paramsHash2, 0, true], absoluteVote2);
 
     // Account 0 votes in both proposals, and on behalf of Account 1 - should get an exception for that
     await absoluteVote1.voteWithSpecifiedAmounts(proposalId1, 2, 2, 0,0);
     await absoluteVote2.vote(proposalId2, 0,0);
     try {
-      await absoluteVote2.ownerVote(proposalId2, 0, accounts[1]);
-      assert(false, 'Account 0 is not the owner of proposal 2');
+      await absoluteVoteExecuteMock.ownerVote(proposalId2, 0, accounts[1]);
+      assert(false, 'absoluteVoteExecuteMock is not the owner of proposal 2');
     } catch (ex) {
       helpers.assertVMException(ex);
     }
@@ -925,7 +854,7 @@ contract('AbsoluteVote', function (accounts) {
     await absoluteVote1.vote(proposalId1, 3,0, { from: accounts[1] });
     await absoluteVote2.vote(proposalId2, 1,0, { from: accounts[1] });
     // Account 1 changing Account 0 vote from 0 to 1
-    await absoluteVote2.ownerVote(proposalId2, 1, accounts[0], { from: accounts[1] });
+    await absoluteVoteExecuteMock2.ownerVote(proposalId2, 1, accounts[0], { from: accounts[1] });
 
     // Lets check the proposals status
     await checkVotesStatusWithAbsoluteVote(proposalId1, [0, 0, 2, reputationArray[1], 0, 0, 0, 0, 0, 0], absoluteVote1);

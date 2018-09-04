@@ -1,18 +1,17 @@
 pragma solidity ^0.4.24;
 
-import "../VotingMachines/GenesisProtocolCallbacksInterface.sol";
 import "../VotingMachines/GenesisProtocolExecuteInterface.sol";
-import "../VotingMachines/GenesisProtocol.sol";
-import "../Reputation.sol";
+import "../VotingMachines/GenesisProtocolCallbacksInterface.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./Debug.sol";
+import "../Reputation.sol";
+import "../VotingMachines/AbsoluteVote.sol";
 
 
-contract GenesisProtocolCallbacksMock is Debug,GenesisProtocolCallbacksInterface,GenesisProtocolExecuteInterface,Ownable {
+contract AbsoluteVoteExecuteMock is Debug,GenesisProtocolCallbacksInterface,GenesisProtocolExecuteInterface,Ownable {
 
     Reputation public reputation;
-    StandardToken public stakingToken;
-    GenesisProtocol genesisProtocol;
+    AbsoluteVote public absoluteVote;
     mapping (bytes32=>uint) proposalsBlockNumbers;
 
 
@@ -21,12 +20,11 @@ contract GenesisProtocolCallbacksMock is Debug,GenesisProtocolCallbacksInterface
     /**
      * @dev Constructor
      */
-    constructor(Reputation _reputation,StandardToken _stakingToken,GenesisProtocol _genesisProtocol) public
+    constructor(Reputation _reputation,AbsoluteVote _absoluteVote) public
     {
         reputation = _reputation;
-        stakingToken = _stakingToken;
-        genesisProtocol = _genesisProtocol;
-        transferOwnership(genesisProtocol);
+        absoluteVote = _absoluteVote;
+        transferOwnership(address(_absoluteVote));
     }
 
     function getTotalReputationSupply(bytes32 _proposalId) external view returns(uint256) {
@@ -61,14 +59,18 @@ contract GenesisProtocolCallbacksMock is Debug,GenesisProtocolCallbacksInterface
         return _stakingToken.transfer(_beneficiary,_amount);
     }
 
-    function setParameters(uint[14] _params,address _voteOnBehalf) external returns(bytes32) {
-        return genesisProtocol.setParameters(_params,_voteOnBehalf);
-    }
-
     function executeProposal(bytes32 _proposalId,int _decision) external returns(bool) {
         emit LogBytes32(_proposalId);
         emit LogInt(_decision);
         return true;
+    }
+
+    function ownerVote(bytes32 _proposalId,uint _vote, address _voter) external returns(bool) {
+        return absoluteVote.ownerVote(_proposalId,_vote,_voter);
+    }
+
+    function cancelProposal(bytes32 _proposalId) external returns(bool) {
+        return absoluteVote.cancelProposal(_proposalId);
     }
 
     function propose(uint _numOfChoices, bytes32 _paramsHash, address ,address _proposer)
@@ -76,8 +78,7 @@ contract GenesisProtocolCallbacksMock is Debug,GenesisProtocolCallbacksInterface
     returns
     (bytes32)
     {
-        bytes32 proposalId = genesisProtocol.propose(_numOfChoices,_paramsHash,_proposer);
-        emit NewProposal(proposalId, this, _numOfChoices, _proposer, _paramsHash);
+        bytes32 proposalId = absoluteVote.propose(_numOfChoices,_paramsHash,_proposer);
         proposalsBlockNumbers[proposalId] = block.number;
 
         return proposalId;
