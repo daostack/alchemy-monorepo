@@ -9,7 +9,7 @@ contract('Reputation', accounts => {
 
         await reputation.mint(accounts[1], 3131);
 
-        value = await reputation.reputationOf(accounts[1]);
+        value = await reputation.balanceOf(accounts[1]);
         assert.equal(value.valueOf(), 3131);
     });
 
@@ -31,9 +31,9 @@ contract('Reputation', accounts => {
             helpers.assertVMException(error);
         }
 
-        let account0Rep = await rep.reputationOf(accounts[0]);
-        let account1Rep = await rep.reputationOf(accounts[1]);
-        let account2Rep = await rep.reputationOf(accounts[2]);
+        let account0Rep = await rep.balanceOf(accounts[0]);
+        let account1Rep = await rep.balanceOf(accounts[1]);
+        let account2Rep = await rep.balanceOf(accounts[2]);
         let totalRep = await rep.totalSupply();
 
         assert.equal(account1Rep, 1000, "account 1 reputation should be 1000");
@@ -50,9 +50,9 @@ contract('Reputation', accounts => {
         await rep.mint(accounts[2], 3000);
 
         // this tx should have no effect
-        let account0Rep = await rep.reputationOf(accounts[0]);
-        let account1Rep = await rep.reputationOf(accounts[1]);
-        let account2Rep = await rep.reputationOf(accounts[2]);
+        let account0Rep = await rep.balanceOf(accounts[0]);
+        let account1Rep = await rep.balanceOf(accounts[1]);
+        let account2Rep = await rep.balanceOf(accounts[2]);
 
         // assert.equal(account0Rep, 2001, "account 0 reputation should be 2000");
         assert.equal(account1Rep.valueOf(), 1500, "account 1 reputation should be 1000 + 500");
@@ -91,7 +91,7 @@ contract('Reputation', accounts => {
         await reputation.mint(accounts[1], 1500);
         await reputation.burn(accounts[1], 500);
 
-        value = await reputation.reputationOf(accounts[1]);
+        value = await reputation.balanceOf(accounts[1]);
         let totalRepSupply = await reputation.totalSupply();
 
         assert.equal(value.valueOf(), 1000);
@@ -154,7 +154,7 @@ contract('Reputation', accounts => {
 
         await reputation.mint(accounts[1], 1000, { from: accounts[0] });
 
-        const amount = await reputation.reputationOf(accounts[1]);
+        const amount = await reputation.balanceOf(accounts[1]);
 
         assert.equal(amount.toNumber(), 1000);
     });
@@ -181,12 +181,12 @@ contract('Reputation', accounts => {
         await reputation.mint(accounts[1], 1000, { from: accounts[0] });
         await reputation.burn(accounts[1], 500, { from: accounts[0] });
 
-        let amount = await reputation.reputationOf(accounts[1]);
+        let amount = await reputation.balanceOf(accounts[1]);
 
         assert.equal(amount.toNumber(), 500);
 
         await reputation.burn(accounts[1], 700, { from: accounts[0] });
-        amount = await reputation.reputationOf(accounts[1]);
+        amount = await reputation.balanceOf(accounts[1]);
         assert.equal(amount.toNumber(), 0);
     });
 
@@ -217,10 +217,10 @@ contract('Reputation', accounts => {
 
         await reputation.mint(accounts[1], 1, { from: accounts[0] });
 
-        let amount = await reputation.reputationOf(accounts[1]);
+        let amount = await reputation.balanceOf(accounts[1]);
         assert.equal(amount.toNumber(), 1);
         await reputation.burn(accounts[1], 2, { from: accounts[0] });
-        let rep = await reputation.reputationOf(accounts[1]);
+        let rep = await reputation.balanceOf(accounts[1]);
         assert.equal(rep.toNumber(), 0);
     });
 
@@ -236,7 +236,7 @@ contract('Reputation', accounts => {
         assert.equal(rep.toNumber(), 0);
     });
 
-    it("reputationOf = balances", async () => {
+    it("balanceOf = balances", async () => {
         const reputation = await Reputation.new();
 
         const rep1 = Math.floor(Math.random() * 1e6);
@@ -247,13 +247,13 @@ contract('Reputation', accounts => {
         await reputation.mint(accounts[2], rep2, { from: accounts[0] });
         await reputation.mint(accounts[3], rep3, { from: accounts[0] });
 
-        const reputationOf1 = await reputation.reputationOf(accounts[1]);
-        const reputationOf2 = await reputation.reputationOf(accounts[2]);
-        const reputationOf3 = await reputation.reputationOf(accounts[3]);
+        const balanceOf1 = await reputation.balanceOf(accounts[1]);
+        const balanceOf2 = await reputation.balanceOf(accounts[2]);
+        const balanceOf3 = await reputation.balanceOf(accounts[3]);
 
-        assert.equal(reputationOf1.toNumber(), rep1);
-        assert.equal(reputationOf2.toNumber(), rep2);
-        assert.equal(reputationOf3.toNumber(), rep3);
+        assert.equal(balanceOf1.toNumber(), rep1);
+        assert.equal(balanceOf2.toNumber(), rep2);
+        assert.equal(balanceOf3.toNumber(), rep3);
     });
 
     it("reputation at ", async () => {

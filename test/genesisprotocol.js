@@ -625,11 +625,11 @@ contract('GenesisProtocol Lite', function (accounts) {
     await testSetup.genesisProtocol.vote(proposalId, 1,0);
 
     //test that reputation change does not effect the snapshot
-    var account2Rep =await testSetup.org.reputation.reputationOf(accounts[2]);
+    var account2Rep =await testSetup.org.reputation.balanceOf(accounts[2]);
     assert.equal(account2Rep,70);
     await testSetup.genesisProtocolCallbacks.burnReputationTest(account2Rep,accounts[2],0);
 
-    account2Rep =await testSetup.org.reputation.reputationOf(accounts[2]);
+    account2Rep =await testSetup.org.reputation.balanceOf(accounts[2]);
     assert.equal(account2Rep,0);
 
     // // the decisive vote is cast now and the proposal will be executed
@@ -1348,7 +1348,7 @@ contract('GenesisProtocol Lite', function (accounts) {
       assert.equal(tx.logs[1].args._beneficiary, voterY);
       assert.equal(tx.logs[1].args._amount, RedeemReputation);
       assert.equal(await testSetup.stakingToken.balanceOf(voterY),500+redeemToken);
-      assert.equal(await testSetup.org.reputation.reputationOf(voterY),Math.round(repVoterY+(repVoterY *((lostReputation*votersGainRepRatioFromLostRep)/100)/ preBoostedVotes)));
+      assert.equal(await testSetup.org.reputation.balanceOf(voterY),Math.round(repVoterY+(repVoterY *((lostReputation*votersGainRepRatioFromLostRep)/100)/ preBoostedVotes)));
     });
 
     it("reputation flow for unsuccessful voting", async () => {
@@ -1372,7 +1372,7 @@ contract('GenesisProtocol Lite', function (accounts) {
       assert.equal(tx.logs[0].args._amount, totalRep);
       assert.equal(await testSetup.stakingToken.balanceOf(accounts[0]),1000);
       var loss = (10*testSetup.reputationArray[0])/100;  //votersReputationLossRatio
-      assert.equal(await testSetup.org.reputation.reputationOf(accounts[0]),testSetup.reputationArray[0] + totalRep - loss);
+      assert.equal(await testSetup.org.reputation.balanceOf(accounts[0]),testSetup.reputationArray[0] + totalRep - loss);
     });
 
     it("quite window ", async () => {
