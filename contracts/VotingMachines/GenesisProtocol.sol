@@ -888,7 +888,7 @@ contract GenesisProtocol is IntVoteInterface {
             vote: _vote,
             preBoosted:(proposal.state == ProposalState.PreBoosted)
         });
-        if (proposal.state != ProposalState.Boosted) {
+        if (proposal.state == ProposalState.PreBoosted) {
             proposal.preBoostedVotes[_vote] = rep.add(proposal.preBoostedVotes[_vote]);
             uint reputationDeposit = (params.votersReputationLossRatio * rep)/100;
             GenesisProtocolCallbacksInterface(proposal.organization).burnReputation(reputationDeposit,_voter,_proposalId);
