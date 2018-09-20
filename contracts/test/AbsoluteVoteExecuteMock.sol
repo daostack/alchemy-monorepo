@@ -47,7 +47,7 @@ contract AbsoluteVoteExecuteMock is Debug,GenesisProtocolCallbacksInterface,Gene
         return reputation.burn(_beneficiary,_amount);
     }
 
-    function reputationOf(address _owner,bytes32 _proposalId) view external returns(uint) {
+    function reputationOf(address _owner,bytes32 _proposalId) external view returns(uint) {
         return reputation.balanceOfAt(_owner,proposalsBlockNumbers[_proposalId]);
     }
 

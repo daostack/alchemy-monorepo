@@ -138,7 +138,7 @@ export const checkVotesStatus = async function(proposalId, _votesStatus,votingMa
 // Increases testrpc time by the passed duration in seconds
 export const increaseTime = async function(duration) {
   const id = Date.now();
-
+  web3.providers.HttpProvider.prototype.sendAsync = web3.providers.HttpProvider.prototype.send;
   return new Promise((resolve, reject) => {
     web3.currentProvider.sendAsync({
       jsonrpc: '2.0',

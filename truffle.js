@@ -43,6 +43,15 @@ module.exports = {
       runs: 200
     }
   },
+  compilers: {
+    solc: {
+      version: "0.4.24",    // Fetch exact version from solc-bin (default: truffle's version)
+      optimizer: {
+        enabled: true,
+        runs: 200
+      }
+      }
+  },
   rpc: {
     host: "localhost",
     port: 8545

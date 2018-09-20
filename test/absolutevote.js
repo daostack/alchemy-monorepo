@@ -6,10 +6,9 @@ const Reputation = artifacts.require("./Reputation.sol");
 const AbsoluteVoteExecuteMock = artifacts.require("./AbsoluteVoteExecuteMock.sol");
 
 
-let reputation, absoluteVote, accounts, reputationArray,absoluteVoteExecuteMock;
+let reputation, absoluteVote,reputationArray,absoluteVoteExecuteMock;
 
-const setupAbsoluteVote = async function (isOwnedVote=true, precReq=50) {
-  accounts = web3.eth.accounts;
+const setupAbsoluteVote = async function (accounts,isOwnedVote=true, precReq=50) {
   absoluteVote = await AbsoluteVote.new();
   // set up a reputation system
   reputation = await Reputation.new();
@@ -96,15 +95,15 @@ const checkProposalInfoWithAbsoluteVote = async function(proposalId, _proposalIn
   assert.equal(proposalInfo[5], _proposalInfo[5]);
 };
 
-contract('AbsoluteVote', function (accounts) {
+contract('AbsoluteVote', accounts => {
 
-  it("Sanity checks", async function () {
-      absoluteVote = await setupAbsoluteVote(true, 50);
+  it("Sanity checks", async()=> {
+      absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
       // propose a vote
       const paramsHash = await absoluteVote.getParametersHash( 50, true);
 
-      let tx = await absoluteVoteExecuteMock.propose(5, paramsHash,0,accounts[0]);
+      let tx = await absoluteVoteExecuteMock.propose(5, paramsHash,helpers.NULL_ADDRESS,accounts[0]);
 
       const proposalId = await getValueFromLogs(tx, '_proposalId');
       assert.isOk(proposalId);
@@ -141,7 +140,7 @@ contract('AbsoluteVote', function (accounts) {
   });
 
   it("log the NewProposal event on proposing new proposal", async function() {
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
     // propose a vote
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -157,7 +156,7 @@ contract('AbsoluteVote', function (accounts) {
   });
 
   it("should log the CancelProposal event on canceling a proposal", async function() {
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
     // propose a vote
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -167,17 +166,17 @@ contract('AbsoluteVote', function (accounts) {
 
     let newtx = await absoluteVoteExecuteMock.cancelProposal(proposalId);
 
-    var log = await new Promise((resolve) => {
-                absoluteVote.CancelProposal({fromBlock: newtx.blockNumber})
-                    .get((err,events) => {
-                            resolve(events);
-                    });
-                });
-    assert.equal(log[0].args._proposalId,proposalId);
+    await absoluteVote.getPastEvents('CancelProposal', {
+            fromBlock: newtx.blockNumber,
+            toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events[0].args._proposalId,proposalId);
+        });
   });
 
   it("should log the VoteProposal and CancelVoting events on voting and canceling the vote", async function() {
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
     // propose a vote
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -202,7 +201,7 @@ contract('AbsoluteVote', function (accounts) {
   });
 
   it("should log the ExecuteProposal event", async function() {
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
     // propose a vote
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -219,18 +218,18 @@ contract('AbsoluteVote', function (accounts) {
     // the decisive vote is cast now and the proposal will be executed
     tx = await absoluteVoteExecuteMock.ownerVote(proposalId, 4, accounts[2]);
 
-      var log = await new Promise((resolve) => {
-                  absoluteVote.ExecuteProposal({fromBlock: tx.blockNumber})
-                      .get((err,events) => {
-                              resolve(events);
-                      });
-                  });
-    assert.equal(log[0].args._proposalId, proposalId);
-    assert.equal(log[0].args._decision, 4);
+    await absoluteVote.getPastEvents('ExecuteProposal', {
+            fromBlock: tx.blockNumber,
+            toBlock: 'latest'
+        })
+        .then(function(events){
+            assert.equal(events[0].args._proposalId,proposalId);
+            assert.equal(events[0].args._decision, 4);
+        });
   });
 
   it("All options can be voted (0-9)", async function() {
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
     // propose a vote
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -299,7 +298,7 @@ contract('AbsoluteVote', function (accounts) {
   });
 
   it("Double vote shouldn't double proposal's 'Option 2' count", async function() {
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
     // propose a vote
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -321,7 +320,7 @@ contract('AbsoluteVote', function (accounts) {
   });
 
   it("Vote cancellation should revert proposal's counters", async function() {
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
     // propose a vote
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -344,7 +343,7 @@ contract('AbsoluteVote', function (accounts) {
   });
 
   it("As allowOwner is set to true, Vote on the behalf of someone else should work", async function() {
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
     // propose a vote
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -365,7 +364,7 @@ contract('AbsoluteVote', function (accounts) {
   });
 
   it("As allowOwner is set to false, Vote on the behalf of someone else should NOT work", async function() {
-    absoluteVote = await setupAbsoluteVote(false, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,false, 50);
 
     // propose a vote
     const paramsHash = await absoluteVote.getParametersHash( 50, false);
@@ -384,7 +383,7 @@ contract('AbsoluteVote', function (accounts) {
   });
 
   it("if the voter is not the proposal's owner, he shouldn't be able to vote on the behalf of someone else", async function () {
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
     // propose a vote
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -408,7 +407,7 @@ contract('AbsoluteVote', function (accounts) {
   });
 
   it("Non-existent parameters hash shouldn't work", async function() {
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
     var paramsHash;
 
     // propose a vote
@@ -442,14 +441,14 @@ contract('AbsoluteVote', function (accounts) {
 
   it("Invalid percentage required( < 0 || > 100) shouldn't work", async function() {
     try {
-      absoluteVote = await setupAbsoluteVote(true, 150);
+      absoluteVote = await setupAbsoluteVote(accounts,true, 150);
       assert(false, "setParameters(we call it here: test/absolutevote.js:setupAbsoluteVote()) was supposed to throw but didn't.");
     } catch(error) {
       helpers.assertVMException(error);
     }
 
     try {
-      absoluteVote = await setupAbsoluteVote(true, -50);
+      absoluteVote = await setupAbsoluteVote(accounts,true, -50);
       assert(false, "setParameters(we call it here: test/absolutevote.js:setupAbsoluteVote()) was supposed to throw but didn't.");
     } catch(error) {
       helpers.assertVMException(error);
@@ -457,7 +456,7 @@ contract('AbsoluteVote', function (accounts) {
   });
 
   it("Proposal voting or cancelling shouldn't be able after proposal has been executed", async function () {
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
     // propose a vote
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -495,7 +494,7 @@ contract('AbsoluteVote', function (accounts) {
   });
 
   it("the vote function should behave as expected", async function () {
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
     // propose a vote
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -527,7 +526,7 @@ contract('AbsoluteVote', function (accounts) {
   describe("as _not_ proposal owner - vote for myself", async function () {
 
     it('vote "Option 1" then vote "Option 2" should register "Option 2"', async function () {
-      absoluteVote = await setupAbsoluteVote(true, 50);
+      absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
       // propose a vote
       const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -548,7 +547,7 @@ contract('AbsoluteVote', function (accounts) {
     });
 
     it('vote "Option 3" then vote "Option 4" should register "Option 4"', async function () {
-      absoluteVote = await setupAbsoluteVote(true, 50);
+      absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
       // propose a vote
       const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -571,7 +570,7 @@ contract('AbsoluteVote', function (accounts) {
 
   describe("as proposal owner - vote for another user", async function () {
     it('vote "Option 1" then vote "Option 2" should register "Option 2"', async function () {
-      absoluteVote = await setupAbsoluteVote(true, 50);
+      absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
       // propose a vote
       const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -592,7 +591,7 @@ contract('AbsoluteVote', function (accounts) {
     });
 
     it('vote "Option 3" then vote "Option 4" should register "Option 4"', async function () {
-      absoluteVote = await setupAbsoluteVote(true, 50);
+      absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
       // propose a vote
       const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -614,7 +613,7 @@ contract('AbsoluteVote', function (accounts) {
   });
 
   it('cannot vote for another user', async function () {
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
     // propose a new proposal
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -655,7 +654,7 @@ contract('AbsoluteVote', function (accounts) {
 
   it('Proposal with wrong num of options', async function () {
     // 6 Option - no exception should be raised
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
     await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address, helpers.NULL_ADDRESS);
 
@@ -686,7 +685,7 @@ contract('AbsoluteVote', function (accounts) {
   });
 
   it('Test voteWithSpecifiedAmounts - More reputation than I own, negative reputation, etc..', async function () {
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
     // propose a new proposal
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -727,7 +726,7 @@ contract('AbsoluteVote', function (accounts) {
 
   it("Internal functions can not be called externally", async () => {
 
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
     // propose a new proposal
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -756,7 +755,7 @@ contract('AbsoluteVote', function (accounts) {
 
   it("Try to send wrong proposal id to the voting/cancel functions", async () => {
 
-    absoluteVote = await setupAbsoluteVote(true, 50);
+    absoluteVote = await setupAbsoluteVote(accounts,true, 50);
 
     // propose a new proposal
     const paramsHash = await absoluteVote.getParametersHash( 50, true);
@@ -766,7 +765,7 @@ contract('AbsoluteVote', function (accounts) {
 
     // Lets try to call vote with invalid proposal id
     try {
-      await absoluteVote.vote('asdsada', 1,0, {from: accounts[0]});
+      await absoluteVote.vote(helpers.NULL_HASH, 1,0, {from: accounts[0]});
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -774,7 +773,7 @@ contract('AbsoluteVote', function (accounts) {
 
     // Lets try to call voteWithSpecifiedAmounts with invalid proposal id
     try {
-      await absoluteVote.voteWithSpecifiedAmounts('asdsada', 1, 1, 1,0);
+      await absoluteVote.voteWithSpecifiedAmounts(helpers.NULL_HASH, 1, 1, 1,0);
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -782,7 +781,7 @@ contract('AbsoluteVote', function (accounts) {
 
     // Lets try to call execute with invalid proposal id
     try {
-      await absoluteVote.execute('asdsada');
+      await absoluteVote.execute(helpers.NULL_HASH);
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -790,7 +789,7 @@ contract('AbsoluteVote', function (accounts) {
 
     // Lets try to call ownerVote with invalid proposal id
     try {
-      await absoluteVoteExecuteMock.ownerVote('asdsada', 1, accounts[0]);
+      await absoluteVoteExecuteMock.ownerVote(helpers.NULL_HASH, 1, accounts[0]);
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -798,7 +797,7 @@ contract('AbsoluteVote', function (accounts) {
 
     // Lets try to call cancel a vote with invalid proposal id
     try {
-      await absoluteVote.cancelVote('asdsada');
+      await absoluteVote.cancelVote(helpers.NULL_HASH);
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -808,7 +807,7 @@ contract('AbsoluteVote', function (accounts) {
   it('2 proposals, 1 Reputation system', async function () {
 
     // Initiate parameters
-    accounts = web3.eth.accounts;
+    //accounts = web3.eth.accounts;
     reputation = await Reputation.new();
     reputationArray = [20, 10, 70 ];
     await reputation.mint(accounts[0], reputationArray[0]);

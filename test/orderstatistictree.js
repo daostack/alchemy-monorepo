@@ -45,7 +45,7 @@ contract('OrderStatisticTree', function () {
     var maxGasUsed = 0;
     var values = {};
     var elementNumber = 50;
-    
+
     for (var i = 0;i<elementNumber;i++) {
       values[i] = await getRandomInt(500);
       tx = await orderStatisticTree.insert(values[i]);
@@ -58,9 +58,8 @@ contract('OrderStatisticTree', function () {
     for (i = 0;i<elementNumber;i++) {
       val = await getRandomInt(500);
       var txhash = await orderStatisticTree.rank.sendTransaction(val);
-      var receipt = await web3.eth.getTransactionReceipt(txhash);
-      if (receipt.gasUsed > maxGasUsed) {
-        maxGasUsed = receipt.gasUsed;
+      if (txhash.receipt.gasUsed > maxGasUsed) {
+        maxGasUsed = txhash.receipt.gasUsed;
       }
     }
     assert.isBelow(maxGasUsed,35000);

@@ -113,7 +113,7 @@ contract Reputation is Ownable {
       /// @param _owner The address that will lose the reputation
       /// @param _amount The quantity of reputation to burn
       /// @return True if the reputation are burned correctly
-    function burn(address _owner, uint _amount) onlyOwner public returns (bool) {
+    function burn(address _owner, uint _amount) public onlyOwner returns (bool) {
         uint curTotalSupply = totalSupply();
         uint amountBurned = _amount;
         if (curTotalSupply < amountBurned) {
@@ -138,7 +138,7 @@ contract Reputation is Ownable {
       /// @param checkpoints The history of values being queried
       /// @param _block The block number to retrieve the value at
       /// @return The number of reputation being queried
-    function getValueAt(Checkpoint[] storage checkpoints, uint _block) view internal returns (uint) {
+    function getValueAt(Checkpoint[] storage checkpoints, uint _block) internal view returns (uint) {
         if (checkpoints.length == 0) {
             return 0;
         }

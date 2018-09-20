@@ -81,7 +81,7 @@ contract('Reputation', accounts => {
 
         let totalRepAfter = await rep.totalSupply();
 
-        assert(totalRepBefore.equals(totalRepAfter), "reputation should remain the same");
+        assert(totalRepBefore.eq(totalRepAfter),true);
     });
 
     it("test reducing reputation", async () => {

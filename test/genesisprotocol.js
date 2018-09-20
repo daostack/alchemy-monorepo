@@ -203,20 +203,23 @@ const stake = async function(_testSetup,_proposalId,_vote,_amount,_staker) {
     ["address","bytes32","uint", "uint","uint"],
     [_testSetup.genesisProtocol.address, _proposalId,_vote,_amount, nonce]
   ).toString("hex");
-  const signature = web3.eth.sign(_staker, textMsg);
-  const extraData = await _testSetup.genesisProtocol.stakeWithSignature.request(_proposalId,_vote,_amount,nonce,signatureType,signature);
+  const signature = await web3.eth.sign(textMsg, _staker);
+  const encodeABI = await new web3.eth.Contract(_testSetup.genesisProtocol.abi).methods.stakeWithSignature(_proposalId,_vote,_amount,nonce,signatureType,signature).encodeABI();
 
   nonce++;
 
   const transaction = await _testSetup.stakingToken.approveAndCall(
-    _testSetup.genesisProtocol.address, _amount, extraData.params[0].data ,{from : _staker}
+    _testSetup.genesisProtocol.address, _amount, encodeABI ,{from : _staker}
   );
-  const stakeLog = await new Promise((resolve) => {
-              _testSetup.genesisProtocol.Stake({_proposalId: _proposalId}, {fromBlock: transaction.blockNumber})
-                  .get((err,events) => {
-                          resolve(events);
-                  });
-              });
+  var stakeLog;
+  await _testSetup.genesisProtocol.getPastEvents('Stake',
+          {_proposalId: _proposalId},
+          {fromBlock: transaction.blockNumber}
+       )
+      .then(function(events){
+          stakeLog = events;
+      });
+
   return stakeLog;
 };
 
@@ -261,9 +264,9 @@ const stake = async function(_testSetup,_proposalId,_vote,_amount,_staker) {
 // };
 
 
-contract('GenesisProtocol Lite', function (accounts) {
+contract('GenesisProtocol Lite', accounts => {
 
-  it("staking token address", async function() {
+  it("staking token address", async() => {
     var testSetup = await setup(accounts);
     assert.equal(await testSetup.genesisProtocol.stakingToken(),testSetup.stakingToken.address);
   });
@@ -275,7 +278,7 @@ contract('GenesisProtocol Lite', function (accounts) {
 
       //propose a vote
       const proposalId = await propose(testSetup);
-      var submittedTime = await  web3.eth.getBlock("latest").timestamp;
+      var submittedTime = (await  web3.eth.getBlock("latest")).timestamp;
 
       await checkProposalInfo(proposalId, [
                                           testSetup.genesisProtocolCallbacks.address,
@@ -486,7 +489,7 @@ contract('GenesisProtocol Lite', function (accounts) {
     } catch(error) {
       helpers.assertVMException(error);
     }
-    scoreThresholdParamsB = web3.toWei(100000001);
+    scoreThresholdParamsB = web3.utils.toWei("100000001");
 
     try {
       await setup(accounts,0,
@@ -509,7 +512,7 @@ contract('GenesisProtocol Lite', function (accounts) {
     }
 
     scoreThresholdParamsB = 1;
-    scoreThresholdParamsA = web3.toWei(100000001);
+    scoreThresholdParamsA = web3.utils.toWei("100000001");
 
     try {
       await setup(accounts,0,
@@ -530,7 +533,7 @@ contract('GenesisProtocol Lite', function (accounts) {
     } catch(error) {
       helpers.assertVMException(error);
     }
-    scoreThresholdParamsA = web3.toWei(100000001);
+    scoreThresholdParamsA = web3.utils.toWei("100000001");
 
     try {
       await setup(accounts,0,
@@ -552,7 +555,7 @@ contract('GenesisProtocol Lite', function (accounts) {
       helpers.assertVMException(error);
     }
     scoreThresholdParamsA = 1;
-    proposingRepRewardConstB = web3.toWei(100000001);
+    proposingRepRewardConstB = web3.utils.toWei("100000001");
     try {
       await setup(accounts,0,
                   preBoostedVoteRequiredPercentage,
@@ -574,7 +577,7 @@ contract('GenesisProtocol Lite', function (accounts) {
     }
 
     proposingRepRewardConstB = 1;
-    let proposingRepRewardConstA = web3.toWei(100000001);
+    let proposingRepRewardConstA = web3.utils.toWei("100000001");
     try {
       await setup(accounts,0,
                   preBoostedVoteRequiredPercentage,
@@ -627,7 +630,7 @@ contract('GenesisProtocol Lite', function (accounts) {
     //test that reputation change does not effect the snapshot
     var account2Rep =await testSetup.org.reputation.balanceOf(accounts[2]);
     assert.equal(account2Rep,70);
-    await testSetup.genesisProtocolCallbacks.burnReputationTest(account2Rep,accounts[2],0);
+    await testSetup.genesisProtocolCallbacks.burnReputationTest(account2Rep,accounts[2],helpers.NULL_HASH);
 
     account2Rep =await testSetup.org.reputation.balanceOf(accounts[2]);
     assert.equal(account2Rep,0);
@@ -659,13 +662,12 @@ contract('GenesisProtocol Lite', function (accounts) {
     assert.equal(tx.logs[0].args._decision, 2);
     assert.equal(tx.logs[1].event, "GPExecuteProposal");
     assert.equal(tx.logs[1].args._executionState, 1);
-    var log = await new Promise((resolve) => {
-                testSetup.genesisProtocolCallbacks.LogBytes32({fromBlock: tx.blockNumber})
-                    .get((err,events) => {
-                            resolve(events);
-                    });
-                });
-    assert.equal(log[0].args._msg,proposalId);
+    await testSetup.genesisProtocolCallbacks.getPastEvents('LogBytes32',
+            {fromBlock: tx.blockNumber}
+         )
+        .then(function(events){
+            assert.equal(events[0].args._msg,proposalId);
+        });
 
   });
 
@@ -715,7 +717,7 @@ contract('GenesisProtocol Lite', function (accounts) {
     await testSetup.genesisProtocolCallbacks.propose(2, testSetup.genesisProtocolParams.paramsHash,0,accounts[0]);
 
     try {
-      await testSetup.genesisProtocolCallbacks.propose(2, 0, 0,accounts[0]);
+      await testSetup.genesisProtocolCallbacks.propose(2, helpers.NULL_HASH, 0,accounts[0]);
       assert(false, "propose was supposed to throw because wrong organization address was sent");
     } catch(error) {
       helpers.assertVMException(error);
@@ -765,7 +767,7 @@ contract('GenesisProtocol Lite', function (accounts) {
 
 
     // no one has voted yet at this point
-    var submittedTime = await  web3.eth.getBlock("latest").timestamp;
+    var submittedTime = (await  web3.eth.getBlock("latest")).timestamp;
     var state = 3;
     var winningVote = 2;
     await checkProposalInfo(proposalId, [testSetup.genesisProtocolCallbacks.address,
@@ -794,7 +796,7 @@ contract('GenesisProtocol Lite', function (accounts) {
 
     // 3 options - max is 2 - exception should be raised
     try {
-      await testSetup.genesisProtocolCallbacks.propose(3, 0, testSetup.genesisProtocolCallbacks.address,accounts[0]);
+      await testSetup.genesisProtocolCallbacks.propose(3, helpers.NULL_HASH, testSetup.genesisProtocolCallbacks.address,accounts[0]);
       assert(false, 'Tried to create a proposal with 3 options - max is 2');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -802,7 +804,7 @@ contract('GenesisProtocol Lite', function (accounts) {
 
     // -5 options - exception should be raised
     try {
-      await testSetup.genesisProtocolCallbacks.propose(-5, 0, testSetup.genesisProtocolCallbacks.address,accounts[0]);
+      await testSetup.genesisProtocolCallbacks.propose(-5, helpers.NULL_HASH, testSetup.genesisProtocolCallbacks.address,accounts[0]);
       assert(false, 'Tried to create an absolute vote with negative number of options');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -810,7 +812,7 @@ contract('GenesisProtocol Lite', function (accounts) {
 
     // 0 options - exception should be raised
     try {
-      await testSetup.genesisProtocolCallbacks.propose(0, 0, testSetup.genesisProtocolCallbacks.address,accounts[0]);
+      await testSetup.genesisProtocolCallbacks.propose(0, helpers.NULL_HASH ,testSetup.genesisProtocolCallbacks.address,accounts[0]);
       assert(false, 'Tried to create an absolute vote with 0 number of options');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -870,7 +872,7 @@ contract('GenesisProtocol Lite', function (accounts) {
 
     // Lets try to call vote with invalid proposal id
     try {
-      await testSetup.genesisProtocol.vote('asdsada', 1,0, {from: accounts[0]});
+      await testSetup.genesisProtocol.vote(helpers.NULL_HASH, 1,0, {from: accounts[0]});
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -878,7 +880,7 @@ contract('GenesisProtocol Lite', function (accounts) {
 
     // Lets try to call voteWithSpecifiedAmounts with invalid proposal id
     try {
-      await testSetup.genesisProtocol.voteWithSpecifiedAmounts('asdsada', 1, 1, 1,0);
+      await testSetup.genesisProtocol.voteWithSpecifiedAmounts(helpers.NULL_HASH, 1, 1, 1,0);
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -886,7 +888,7 @@ contract('GenesisProtocol Lite', function (accounts) {
 
     // Lets try to call execute with invalid proposal id
     try {
-      await testSetup.genesisProtocol.execute('asdsada');
+      await testSetup.genesisProtocol.execute(helpers.NULL_HASH);
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -924,8 +926,7 @@ contract('GenesisProtocol Lite', function (accounts) {
 
   it("check nonce ", async () => {
 
-    var testSetup = await setup(accounts,50,60,60,100,100);
-
+    var testSetup = await setup(accounts,0,50,60,60,100,100);
     var proposalId = await propose(testSetup);
 
     let staker = await testSetup.genesisProtocol.getStaker(proposalId,accounts[0]);
@@ -946,12 +947,11 @@ contract('GenesisProtocol Lite', function (accounts) {
         ["address","bytes32","uint", "uint","uint"],
         [testSetup.genesisProtocol.address, proposalId,1,10, nonce]
       ).toString("hex");
-    const signature = web3.eth.sign(accounts[0], textMsg);
-    const extraData = await testSetup.genesisProtocol.stakeWithSignature.request(proposalId,1,10,nonce,signatureType,signature);
-
+    const signature = await web3.eth.sign(textMsg ,accounts[0]);
+    const encodeABI = await new web3.eth.Contract(testSetup.genesisProtocol.abi).methods.stakeWithSignature(proposalId,1,10,nonce,signatureType,signature).encodeABI();
     try {
      await testSetup.stakingToken.approveAndCall(
-        testSetup.genesisProtocol.address, 10, extraData.params[0].data ,{from : accounts[0]}
+        testSetup.genesisProtocol.address, 10, encodeABI ,{from : accounts[0]}
       );
       assert(false, 'stake should fail with the same nonce');
     } catch (ex) {
@@ -961,7 +961,7 @@ contract('GenesisProtocol Lite', function (accounts) {
 
   it("check stake with wrong signature ", async () => {
 
-    var testSetup = await setup(accounts,50,60,60,100,100);
+    var testSetup = await setup(accounts,0,50,60,60,100,100);
 
     var proposalId = await propose(testSetup);
 
@@ -972,13 +972,12 @@ contract('GenesisProtocol Lite', function (accounts) {
         ["address","bytes32","uint", "uint","uint"],
         [testSetup.genesisProtocol.address, proposalId,1,10, nonce]
       ).toString("hex");
-    const signature = web3.eth.sign(accounts[0], textMsg);
-    proposalId = 123; //change proposalId
-    const extraData = await testSetup.genesisProtocol.stakeWithSignature.request(proposalId,1,10,nonce,signatureType,signature);
-
+    const signature = await web3.eth.sign(textMsg , accounts[0]);
+    proposalId = "0x1234"; //change proposalId
+    const encodeABI = await new web3.eth.Contract(testSetup.genesisProtocol.abi).methods.stakeWithSignature(proposalId,1,10,nonce,signatureType,signature).encodeABI();
     try {
      await testSetup.stakingToken.approveAndCall(
-        testSetup.genesisProtocol.address, 10, extraData.params[0].data ,{from : accounts[0]}
+        testSetup.genesisProtocol.address, 10, encodeABI ,{from : accounts[0]}
       );
       assert(false, 'stake should fail due to wrong signature');
     } catch (ex) {
