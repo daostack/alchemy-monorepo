@@ -44,7 +44,8 @@ const setupGenesisProtocolParams = async function(
                                                  _votersReputationLossRatio,
                                                  _votersGainRepRatioFromLostRep,
                                                  _daoBountyConst,
-                                                 _daoBountyLimt],voteOnBehalf);
+                                                 _daoBountyLimt],
+                                                 voteOnBehalf);
   genesisProtocolParams.paramsHash = await testSetup.genesisProtocol.getParametersHash([_preBoostedVoteRequiredPercentage,
                                                  _preBoostedVotePeriodLimit,
                                                  _boostedVotePeriodLimit,
@@ -58,7 +59,8 @@ const setupGenesisProtocolParams = async function(
                                                  _votersReputationLossRatio,
                                                  _votersGainRepRatioFromLostRep,
                                                  _daoBountyConst,
-                                                 _daoBountyLimt],voteOnBehalf);
+                                                 _daoBountyLimt],
+                                                 voteOnBehalf);
   return genesisProtocolParams;
 };
 
@@ -77,7 +79,7 @@ const setup = async function (accounts,_voteOnBehalf = 0,
                                       _votersReputationLossRatio=10,
                                       _votersGainRepRatioFromLostRep=80,
                                       _daoBountyConst = 15,
-                                      _daoBountyLimt =10 ) {
+                                      _daoBountyLimt =10) {
    var testSetup = new helpers.TestSetup();
    testSetup.stakingToken = await ERC827TokenMock.new(accounts[0],3000);
    testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.stakingToken.address,{gas:constants.GAS_LIMIT});
@@ -116,8 +118,8 @@ const setup = async function (accounts,_voteOnBehalf = 0,
    return testSetup;
 };
 
-const proposalStateIndex = 5;
-const proposalVotersStakesIndex = 2;
+const proposalStateIndex = 6;
+const proposalVotersStakesIndex = 3;
 const proposalTotalStakesIndex = 2;
 const numberOfChoices = 2;
 const checkProposalInfo = async function(proposalId, _proposalInfo,genesisProtocol) {
@@ -147,6 +149,7 @@ const checkProposalInfo = async function(proposalId, _proposalInfo,genesisProtoc
   assert.equal(proposalInfo[9], _proposalInfo[9]);
   //paramsHash;
   assert.equal(proposalInfo[10], _proposalInfo[10]);
+  assert.equal(proposalInfo[11], _proposalInfo[11]);
   //daoBountyRemain;
   // - the mapping and array are simply not returned at all in the array
 };
@@ -181,19 +184,22 @@ const propose = async function(_testSetup,_proposer = 0) {
       let tx = await _testSetup.genesisProtocolCallbacks.propose(numberOfChoices,
                                                                 _testSetup.genesisProtocolParams.paramsHash,
                                                                 _testSetup.genesisProtocolCallbacks.address,
-                                                                _proposer);
+                                                                _proposer,
+                                                                 helpers.NULL_ADDRESS);
       const proposalId = await getValueFromLogs(tx, '_proposalId');
-      assert.equal(tx.logs.length, 2);
-      assert.equal(tx.logs[1].event, "NewProposal");
-      assert.equal(tx.logs[1].args._proposalId, proposalId);
-      assert.equal(tx.logs[1].args._proposer, _proposer);
-      assert.equal(tx.logs[1].args._paramsHash, _testSetup.genesisProtocolParams.paramsHash);
+      assert.equal(tx.logs.length, 1);
+      assert.equal(tx.logs[0].event, "NewProposal");
+      assert.equal(tx.logs[0].args._proposalId, proposalId);
+      assert.equal(tx.logs[0].args._proposer, _proposer);
+      assert.equal(tx.logs[0].args._paramsHash, _testSetup.genesisProtocolParams.paramsHash);
+      assert.equal(proposalId,await helpers.getProposalId(tx,_testSetup.genesisProtocol,"NewProposal"));
       assert.isOk(proposalId);
       return proposalId;
   };
 
 const threshold = async function(_testSetup) {
-      return await _testSetup.genesisProtocol.threshold(_testSetup.genesisProtocolParams.paramsHash,_testSetup.genesisProtocolCallbacks.address);
+      const organizationId = await web3.utils.soliditySha3(_testSetup.genesisProtocolCallbacks.address,helpers.NULL_ADDRESS);
+      return await _testSetup.genesisProtocol.threshold(_testSetup.genesisProtocolParams.paramsHash,organizationId);
 };
 
 const signatureType = 1;
@@ -278,9 +284,11 @@ contract('GenesisProtocol Lite', accounts => {
 
       //propose a vote
       const proposalId = await propose(testSetup);
+      const organizationId = await web3.utils.soliditySha3(testSetup.genesisProtocolCallbacks.address,helpers.NULL_ADDRESS);
       var submittedTime = (await  web3.eth.getBlock("latest")).timestamp;
 
       await checkProposalInfo(proposalId, [
+                                          organizationId,
                                           testSetup.genesisProtocolCallbacks.address,
                                           numberOfChoices,
                                           0,
@@ -305,6 +313,7 @@ contract('GenesisProtocol Lite', accounts => {
       assert.equal(testSetup.reputationArray[0],proposalStatus[0]);
       assert.equal(0,proposalStatus[1]);
       await checkProposalInfo(proposalId, [
+                                           organizationId,
                                            testSetup.genesisProtocolCallbacks.address,
                                            numberOfChoices,
                                            0,
@@ -328,6 +337,7 @@ contract('GenesisProtocol Lite', accounts => {
       assert.equal(testSetup.reputationArray[1],proposalStatus[1]);
 
       await checkProposalInfo(proposalId,[
+                                           organizationId,
                                            testSetup.genesisProtocolCallbacks.address,
                                            numberOfChoices,
                                            0,
@@ -684,7 +694,7 @@ contract('GenesisProtocol Lite', accounts => {
 
 
     testSetup = await setup(accounts);
-    var tx = await testSetup.genesisProtocolCallbacks.propose(2, testSetup.genesisProtocolParams.paramsHash,0,accounts[0]);
+    var tx = await testSetup.genesisProtocolCallbacks.propose(2, testSetup.genesisProtocolParams.paramsHash,0,accounts[0],helpers.NULL_ADDRESS);
     proposalId = await getValueFromLogs(tx, '_proposalId');
 
     // Option 2
@@ -714,10 +724,10 @@ contract('GenesisProtocol Lite', accounts => {
 
   it("Non-existent parameters hash shouldn't work - propose with wrong organization", async function() {
     var testSetup = await setup(accounts);
-    await testSetup.genesisProtocolCallbacks.propose(2, testSetup.genesisProtocolParams.paramsHash,0,accounts[0]);
+    await testSetup.genesisProtocolCallbacks.propose(2, testSetup.genesisProtocolParams.paramsHash,0,accounts[0],helpers.NULL_ADDRESS);
 
     try {
-      await testSetup.genesisProtocolCallbacks.propose(2, helpers.NULL_HASH, 0,accounts[0]);
+      await testSetup.genesisProtocolCallbacks.propose(2, helpers.NULL_HASH, 0,accounts[0],helpers.NULL_ADDRESS);
       assert(false, "propose was supposed to throw because wrong organization address was sent");
     } catch(error) {
       helpers.assertVMException(error);
@@ -764,13 +774,13 @@ contract('GenesisProtocol Lite', accounts => {
     var testSetup = await setup(accounts);
 
     var proposalId = await propose(testSetup);
-
-
+    const organizationId = await web3.utils.soliditySha3(testSetup.genesisProtocolCallbacks.address,helpers.NULL_ADDRESS);
     // no one has voted yet at this point
     var submittedTime = (await  web3.eth.getBlock("latest")).timestamp;
     var state = 3;
     var winningVote = 2;
-    await checkProposalInfo(proposalId, [testSetup.genesisProtocolCallbacks.address,
+    await checkProposalInfo(proposalId, [organizationId,
+                                        testSetup.genesisProtocolCallbacks.address,
                                              2,
                                             0,
                                             submittedTime,
@@ -796,7 +806,7 @@ contract('GenesisProtocol Lite', accounts => {
 
     // 3 options - max is 2 - exception should be raised
     try {
-      await testSetup.genesisProtocolCallbacks.propose(3, helpers.NULL_HASH, testSetup.genesisProtocolCallbacks.address,accounts[0]);
+      await testSetup.genesisProtocolCallbacks.propose(3, helpers.NULL_HASH, testSetup.genesisProtocolCallbacks.address,accounts[0],helpers.NULL_ADDRESS);
       assert(false, 'Tried to create a proposal with 3 options - max is 2');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -804,7 +814,7 @@ contract('GenesisProtocol Lite', accounts => {
 
     // -5 options - exception should be raised
     try {
-      await testSetup.genesisProtocolCallbacks.propose(-5, helpers.NULL_HASH, testSetup.genesisProtocolCallbacks.address,accounts[0]);
+      await testSetup.genesisProtocolCallbacks.propose(-5, helpers.NULL_HASH, testSetup.genesisProtocolCallbacks.address,accounts[0],helpers.NULL_ADDRESS);
       assert(false, 'Tried to create an absolute vote with negative number of options');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -812,7 +822,7 @@ contract('GenesisProtocol Lite', accounts => {
 
     // 0 options - exception should be raised
     try {
-      await testSetup.genesisProtocolCallbacks.propose(0, helpers.NULL_HASH ,testSetup.genesisProtocolCallbacks.address,accounts[0]);
+      await testSetup.genesisProtocolCallbacks.propose(0, helpers.NULL_HASH ,testSetup.genesisProtocolCallbacks.address,accounts[0],helpers.NULL_ADDRESS);
       assert(false, 'Tried to create an absolute vote with 0 number of options');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -1280,14 +1290,17 @@ contract('GenesisProtocol Lite', accounts => {
 
 
       var proposalId = await propose(testSetup);
+      const organizationId = await web3.utils.soliditySha3(testSetup.genesisProtocolCallbacks.address,helpers.NULL_ADDRESS);
+
       assert.equal(await threshold(testSetup),1);
-      assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.genesisProtocolCallbacks.address),0);
+
+      assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(organizationId),0);
 
       await testSetup.genesisProtocol.vote(proposalId,YES,0);
       await stake(testSetup,proposalId,YES,100,accounts[0]);
       assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),true);
       assert.equal(await testSetup.genesisProtocol.state(proposalId),4);
-      assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.genesisProtocolCallbacks.address),1);
+      assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(organizationId),1);
       assert.equal(await threshold(testSetup),2);
 
       //set up another proposal
@@ -1296,13 +1309,13 @@ contract('GenesisProtocol Lite', accounts => {
       await testSetup.genesisProtocol.vote(proposalId,YES,0);
       await stake(testSetup,proposalId,YES,100,accounts[0]);
       assert.equal(await testSetup.genesisProtocol.state(proposalId),4);
-      assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.genesisProtocolCallbacks.address),2);
+      assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(organizationId),2);
       assert.equal(await threshold(testSetup),4);
 
       //execute
       await helpers.increaseTime(61);
       await testSetup.genesisProtocol.execute(proposalId);
-      assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(testSetup.genesisProtocolCallbacks.address),1);
+      assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(organizationId),1);
       assert.equal(await threshold(testSetup),1);
     });
 
@@ -1445,8 +1458,8 @@ contract('GenesisProtocol Lite', accounts => {
       var testSetup = await setup(accounts,0,50,60,60,scoreThresholdParamsA,scoreThresholdParamsB,0,20,60,1,10,10,0,15,10);
 
       var proposalId = await propose(testSetup);
-
-      assert.equal(await testSetup.genesisProtocol.getProposalOrganization(proposalId),testSetup.genesisProtocolCallbacks.address);
+      const organizationId = await web3.utils.soliditySha3(testSetup.genesisProtocolCallbacks.address,helpers.NULL_ADDRESS);
+      assert.equal(await testSetup.genesisProtocol.getProposalOrganization(proposalId),organizationId);
     });
 
     it('getAllowedRangeOfChoices', async function () {
@@ -1535,6 +1548,7 @@ contract('GenesisProtocol Lite', accounts => {
     var testSetup = await setup(accounts,0,50,60,60,1,1,0,quietEndingPeriod,60,1,10,10,0,15,10);
 
     var proposalId = await propose(testSetup);
+    const organizationId = await web3.utils.soliditySha3(testSetup.genesisProtocolCallbacks.address,helpers.NULL_ADDRESS);
 
     //boost proposal
     await stake(testSetup,proposalId,YES,100,accounts[0]);
@@ -1546,10 +1560,10 @@ contract('GenesisProtocol Lite', accounts => {
     proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
     assert.equal(proposalInfo[proposalStateIndex],5);//quiteEndperiod
     await helpers.increaseTime(10); //increase time
-    assert.equal(await testSetup.genesisProtocol.getBoostedProposalsCount(testSetup.genesisProtocolCallbacks.address),1);
+    assert.equal(await testSetup.genesisProtocol.getBoostedProposalsCount(organizationId),1);
     //vote NO to toggle direction again and extend the quite end period
     await testSetup.genesisProtocol.vote(proposalId,NO,0,{from:accounts[2]}); //change winning vote and execute
-    assert.equal(await testSetup.genesisProtocol.getBoostedProposalsCount(testSetup.genesisProtocolCallbacks.address),0);
+    assert.equal(await testSetup.genesisProtocol.getBoostedProposalsCount(organizationId),0);
     //increase time after the proposal expiration
     await helpers.increaseTime(61); //increase time
     assert.equal(await threshold(testSetup),1);
@@ -1608,5 +1622,19 @@ contract('GenesisProtocol Lite', accounts => {
     assert.equal(preBoostedVotes,0);
     assert.equal(redeemValues[2].toNumber(),0);
   });
+
+  it("set organization ", async () => {
+      var testSetup = await setup(accounts);
+      var tx = await testSetup.genesisProtocol.propose(2, testSetup.genesisProtocolParams.paramsHash,0,accounts[1]);
+      assert.equal(tx.logs.length, 1);
+      assert.equal(tx.logs[0].event, "NewProposal");
+      assert.equal(tx.logs[0].args._organization,await web3.utils.soliditySha3(accounts[0],accounts[1]));
+
+      tx = await testSetup.genesisProtocol.propose(2, testSetup.genesisProtocolParams.paramsHash,0,accounts[1],{from : accounts[1]});
+      assert.equal(tx.logs.length, 1);
+      assert.equal(tx.logs[0].event, "NewProposal");
+      assert.equal(tx.logs[0].args._organization,await web3.utils.soliditySha3(accounts[1],accounts[1]));
+  });
+
 
 });

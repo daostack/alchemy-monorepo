@@ -2,8 +2,8 @@ pragma solidity ^0.4.24;
 
 import "./IntVoteInterface.sol";
 import { RealMath } from "../libs/RealMath.sol";
-import "./GenesisProtocolCallbacksInterface.sol";
-import "./GenesisProtocolExecuteInterface.sol";
+import "./VotingMachineCallbacksInterface.sol";
+import "./ProposalExecuteInterface.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 import "openzeppelin-solidity/contracts/ECRecovery.sol";
@@ -47,7 +47,7 @@ contract GenesisProtocol is IntVoteInterface {
                                 //and  daoBountyConst is a constant factor that is configurable and changeable by the DAO given.
                                 //  daoBountyConst should be greater than stakerFeeRatioForVoters and less than 2 * stakerFeeRatioForVoters.
                                 //daoBountyParams[1] = daoBountyLimit The daoBounty cannot be greater than daoBountyLimit.
-        address voteOnBehalf; //this address is allowd to vote of behalf of someone else.
+        address voteOnBehalf; //this address is allowed to vote of behalf of someone else.
     }
     struct Voter {
         uint vote; // YES(1) ,NO(2)
@@ -62,7 +62,8 @@ contract GenesisProtocol is IntVoteInterface {
     }
 
     struct Proposal {
-        address organization; // the organization's address the proposal is target to. fullfill genesisProtocol callbacks interface.
+        bytes32 organization; // the organization unique identifier the proposal is target to.
+        address callbacks;    // should fulfill voting callbacks interface.
         uint numOfChoices;
         uint votersStakes;
         uint submittedTime;
@@ -87,10 +88,10 @@ contract GenesisProtocol is IntVoteInterface {
         mapping(address  => Staker   ) stakers;
     }
 
-    event Stake(bytes32 indexed _proposalId, address indexed _organization, address indexed _staker,uint _vote,uint _amount);
-    event Redeem(bytes32 indexed _proposalId, address indexed _organization, address indexed _beneficiary,uint _amount);
-    event RedeemDaoBounty(bytes32 indexed _proposalId, address indexed _organization, address indexed _beneficiary,uint _amount);
-    event RedeemReputation(bytes32 indexed _proposalId, address indexed _organization, address indexed _beneficiary,uint _amount);
+    event Stake(bytes32 indexed _proposalId, bytes32 indexed _organization, address indexed _staker,uint _vote,uint _amount);
+    event Redeem(bytes32 indexed _proposalId, bytes32 indexed _organization, address indexed _beneficiary,uint _amount);
+    event RedeemDaoBounty(bytes32 indexed _proposalId, bytes32 indexed _organization, address indexed _beneficiary,uint _amount);
+    event RedeemReputation(bytes32 indexed _proposalId, bytes32 indexed _organization, address indexed _beneficiary,uint _amount);
     event GPExecuteProposal(bytes32 indexed _proposalId, ExecutionState _executionState);
 
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
@@ -100,11 +101,11 @@ contract GenesisProtocol is IntVoteInterface {
     uint constant public NO = 2;
     uint constant public YES = 1;
     uint public proposalsCnt; // Total number of proposals
-    mapping(address=>uint) public orgBoostedProposalsCnt;
+    mapping(bytes32=>uint) public orgBoostedProposalsCnt;
     StandardToken public stakingToken;
     mapping(bytes=>bool) stakeSignatures; //stake signatures
     address constant GEN_TOKEN_ADDRESS = 0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf;
-    mapping(address=>OrderStatisticTree.Tree) proposalsExpiredTimes; //proposals expired times
+    mapping(bytes32=>OrderStatisticTree.Tree) proposalsExpiredTimes; //proposals expired times
 
     // Digest describing the data the user signs according EIP 712.
     // Needs to match what is passed to Metamask.
@@ -112,13 +113,15 @@ contract GenesisProtocol is IntVoteInterface {
     keccak256(abi.encodePacked("address GenesisProtocolAddress","bytes32 ProposalId", "uint Vote","uint AmountToStake","uint Nonce"));
     // web3.eth.sign prefix
     string public constant ETH_SIGN_PREFIX= "\x19Ethereum Signed Message:\n32";
-
     /**
      * @dev Constructor
      */
     constructor(StandardToken _stakingToken) public
     {
-
+      //The GEN token (staking token) address is hard coded in the contract by GEN_TOKEN_ADDRESS .
+      //This will work for a network which already hosted the GEN token on this address (e.g mainnet).
+      //If such contract address does not exist in the network (e.g ganache) the contract will use the _stakingToken param as the
+      //staking token address.
         if (isContract(address(GEN_TOKEN_ADDRESS))) {
             stakingToken = StandardToken(GEN_TOKEN_ADDRESS);
         } else {
@@ -140,9 +143,9 @@ contract GenesisProtocol is IntVoteInterface {
      * @param _numOfChoices number of voting choices
      * @param _paramsHash parameters hash
      * @param _proposer address
-     * @return proposal's id.
+     * @param _organization address
      */
-    function propose(uint _numOfChoices, bytes32 _paramsHash,address _proposer)
+    function propose(uint _numOfChoices, bytes32 _paramsHash,address _proposer,address _organization)
         external
         returns(bytes32)
     {
@@ -156,7 +159,9 @@ contract GenesisProtocol is IntVoteInterface {
          // Open proposal:
         Proposal memory proposal;
         proposal.numOfChoices = _numOfChoices;
-        proposal.organization = msg.sender;
+        proposal.callbacks = msg.sender;
+        proposal.organization = keccak256(abi.encodePacked(msg.sender,_organization));
+
         proposal.state = ProposalState.PreBoosted;
         // solium-disable-next-line security/no-block-members
         proposal.submittedTime = now;
@@ -165,7 +170,6 @@ contract GenesisProtocol is IntVoteInterface {
         proposal.winningVote = NO;
         proposal.paramsHash = _paramsHash;
         proposals[proposalId] = proposal;
-        //GenesisProtocolCallbacksInterface(proposal.organization).setProposal(proposalId);
         emit NewProposal(proposalId, proposal.organization, _numOfChoices, _proposer, _paramsHash);
         return proposalId;
     }
@@ -365,24 +369,11 @@ contract GenesisProtocol is IntVoteInterface {
   /**
     * @dev getProposalOrganization return the organization for a given proposal
     * @param _proposalId the ID of the proposal
-    * @return uint total reputation supply
+    * @return bytes32 organization identifier
     */
-    function getProposalOrganization(bytes32 _proposalId) external view returns(address) {
+    function getProposalOrganization(bytes32 _proposalId) external view returns(bytes32) {
         return (proposals[_proposalId].organization);
     }
-
-  /**
-    * @dev scoreThresholdParams return the score threshold params for a given
-    * organization.
-    * @param _organization the organization's organization
-    * @return uint thresholdConstA
-    * @return uint thresholdConstB
-    */
-    /*function scoreThresholdParams(address _organization) external view returns(uint,uint) {
-        bytes32 paramsHash = GenesisProtocolCallbacksInterface(_organization).getParametersHash();
-        Parameters memory params = parameters[paramsHash];
-        return (params.thresholdConstA,params.thresholdConstB);
-    }*/
 
     /**
       * @dev getStaker return the vote and stake amount for a given proposal and staker
@@ -519,7 +510,7 @@ contract GenesisProtocol is IntVoteInterface {
             emit Redeem(_proposalId,proposal.organization,_beneficiary,amount);
         }
         if (reputation != 0 ) {
-            GenesisProtocolCallbacksInterface(proposal.organization).mintReputation(reputation,_beneficiary,_proposalId);
+            VotingMachineCallbacksInterface(proposal.callbacks).mintReputation(reputation,_beneficiary,_proposalId);
             emit RedeemReputation(_proposalId,proposal.organization,_beneficiary,reputation);
         }
     }
@@ -552,9 +543,11 @@ contract GenesisProtocol is IntVoteInterface {
                 potentialAmount = beneficiaryLimit;
             }
         }
-        if ((potentialAmount != 0)&&(stakingToken.balanceOf(proposal.organization) >= potentialAmount)) {
+        if ((potentialAmount != 0)&&
+            (VotingMachineCallbacksInterface(proposal.callbacks).balanceOfStakingToken(stakingToken,_proposalId) >= potentialAmount))
+        {
             proposal.daoBountyRemain = proposal.daoBountyRemain.sub(potentialAmount);
-            require(GenesisProtocolCallbacksInterface(proposal.organization).stakingTokenTransfer(stakingToken,_beneficiary,potentialAmount,_proposalId));
+            require(VotingMachineCallbacksInterface(proposal.callbacks).stakingTokenTransfer(stakingToken,_beneficiary,potentialAmount,_proposalId));
             proposal.stakers[_beneficiary].amountForBounty = 0;
             redeemedAmount = potentialAmount;
             emit RedeemDaoBounty(_proposalId,proposal.organization,_beneficiary,redeemedAmount);
@@ -582,10 +575,10 @@ contract GenesisProtocol is IntVoteInterface {
 
     /**
      * @dev getBoostedProposalsCount return the number of boosted proposal for an organization
-     * @param _organization the organization
+     * @param _organization the organization identifier
      * @return uint number of boosted proposals
      */
-    function getBoostedProposalsCount(address _organization) public view returns(uint) {
+    function getBoostedProposalsCount(bytes32 _organization) public view returns(uint) {
         uint expiredProposals;
         if (proposalsExpiredTimes[_organization].count() != 0) {
           // solium-disable-next-line security/no-block-members
@@ -598,11 +591,11 @@ contract GenesisProtocol is IntVoteInterface {
      * @dev threshold return the organization's score threshold which required by
      * a proposal to shift to boosted state.
      * This threshold is dynamically set and it depend on the number of boosted proposal.
-     * @param _organization the organization
+     * @param _organization the organization identifier
      * @param _paramsHash the organization parameters hash
      * @return int organization's score threshold.
      */
-    function threshold(bytes32 _paramsHash,address _organization) public view returns(int) {
+    function threshold(bytes32 _paramsHash,bytes32 _organization) public view returns(int) {
         uint boostedProposals = getBoostedProposalsCount(_organization);
         int216 e = 2;
 
@@ -634,6 +627,7 @@ contract GenesisProtocol is IntVoteInterface {
      *    _params[11] -_votersGainRepRatioFromLostRep
      *    _params[12] - _daoBountyConst
      *    _params[13] - _daoBountyLimit
+     * @param _voteOnBehalf - authorized to vote on behalf of others.
     */
     function setParameters(
         uint[14] _params, //use array here due to stack too deep issue.
@@ -654,7 +648,7 @@ contract GenesisProtocol is IntVoteInterface {
         require(_params[12] <= (2 * _params[9]),"daoBountyConst <= 2 * stakerFeeRatioForVoters");
         require(_params[12] >= _params[9],"daoBountyConst >= stakerFeeRatioForVoters");
 
-        bytes32 paramsHash = getParametersHash(_params,_voteOnBehalf);
+        bytes32 paramsHash = getParametersHash(_params, _voteOnBehalf);
 
         uint[2] memory _daoBountyParams;
         _daoBountyParams[0] = _params[12];
@@ -710,7 +704,7 @@ contract GenesisProtocol is IntVoteInterface {
                 _params[12],
                 _params[13]
              )),
-             _voteOnBehalf
+            _voteOnBehalf
         ));
     }
 
@@ -724,7 +718,7 @@ contract GenesisProtocol is IntVoteInterface {
         Proposal storage proposal = proposals[_proposalId];
         Parameters memory params = parameters[proposal.paramsHash];
         Proposal memory tmpProposal = proposal;
-        uint totalReputation = GenesisProtocolCallbacksInterface(proposal.organization).getTotalReputationSupply(_proposalId);
+        uint totalReputation = VotingMachineCallbacksInterface(proposal.callbacks).getTotalReputationSupply(_proposalId);
         uint executionBar = totalReputation * params.preBoostedVoteRequiredPercentage/100;
         ExecutionState executionState = ExecutionState.None;
 
@@ -775,8 +769,7 @@ contract GenesisProtocol is IntVoteInterface {
             }
             emit ExecuteProposal(_proposalId, proposal.organization, proposal.winningVote, totalReputation);
             emit GPExecuteProposal(_proposalId, executionState);
-            GenesisProtocolExecuteInterface(proposal.organization).executeProposal(_proposalId,int(proposal.winningVote));
-            //(tmpProposal.executable).execute(_proposalId, tmpProposal.organization, int(proposal.winningVote));
+            ProposalExecuteInterface(proposal.callbacks).executeProposal(_proposalId,int(proposal.winningVote));
         }
         return (executionState != ExecutionState.None);
     }
@@ -850,7 +843,7 @@ contract GenesisProtocol is IntVoteInterface {
         Proposal storage proposal = proposals[_proposalId];
 
         // Check voter has enough reputation:
-        uint reputation = GenesisProtocolCallbacksInterface(proposal.organization).reputationOf(_voter,_proposalId);
+        uint reputation = VotingMachineCallbacksInterface(proposal.callbacks).reputationOf(_voter,_proposalId);
         require(reputation >= _rep,"reputation >= _rep");
         uint rep = _rep;
         if (rep == 0) {
@@ -891,7 +884,7 @@ contract GenesisProtocol is IntVoteInterface {
         if (proposal.state == ProposalState.PreBoosted) {
             proposal.preBoostedVotes[_vote] = rep.add(proposal.preBoostedVotes[_vote]);
             uint reputationDeposit = (params.votersReputationLossRatio * rep)/100;
-            GenesisProtocolCallbacksInterface(proposal.organization).burnReputation(reputationDeposit,_voter,_proposalId);
+            VotingMachineCallbacksInterface(proposal.callbacks).burnReputation(reputationDeposit,_voter,_proposalId);
         }
         // Event:
         emit VoteProposal(_proposalId, proposal.organization, _voter, _vote, rep);

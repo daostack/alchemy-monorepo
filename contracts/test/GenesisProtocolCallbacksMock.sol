@@ -1,14 +1,14 @@
 pragma solidity ^0.4.24;
 
-import "../VotingMachines/GenesisProtocolCallbacksInterface.sol";
-import "../VotingMachines/GenesisProtocolExecuteInterface.sol";
+import "../VotingMachines/VotingMachineCallbacksInterface.sol";
+import "../VotingMachines/ProposalExecuteInterface.sol";
 import "../VotingMachines/GenesisProtocol.sol";
 import "../Reputation.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./Debug.sol";
 
 
-contract GenesisProtocolCallbacksMock is Debug,GenesisProtocolCallbacksInterface,GenesisProtocolExecuteInterface,Ownable {
+contract GenesisProtocolCallbacksMock is Debug,VotingMachineCallbacksInterface,ProposalExecuteInterface,Ownable {
 
     Reputation public reputation;
     StandardToken public stakingToken;
@@ -16,7 +16,13 @@ contract GenesisProtocolCallbacksMock is Debug,GenesisProtocolCallbacksInterface
     mapping (bytes32=>uint) proposalsBlockNumbers;
 
 
-    event NewProposal(bytes32 indexed _proposalId, address indexed _organization, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
+    event NewProposal(
+      bytes32 indexed _proposalId,
+      address indexed _organization,
+      uint _numOfChoices,
+      address _proposer,
+      bytes32 _paramsHash
+    );
 
     /**
      * @dev Constructor
@@ -61,6 +67,14 @@ contract GenesisProtocolCallbacksMock is Debug,GenesisProtocolCallbacksInterface
         return _stakingToken.transfer(_beneficiary,_amount);
     }
 
+    function balanceOfStakingToken(StandardToken _stakingToken,bytes32)
+    external
+    view
+    returns(uint)
+    {
+        return _stakingToken.balanceOf(this);
+    }
+
     function setParameters(uint[14] _params,address _voteOnBehalf) external returns(bytes32) {
         return genesisProtocol.setParameters(_params,_voteOnBehalf);
     }
@@ -71,12 +85,12 @@ contract GenesisProtocolCallbacksMock is Debug,GenesisProtocolCallbacksInterface
         return true;
     }
 
-    function propose(uint _numOfChoices, bytes32 _paramsHash, address ,address _proposer)
+    function propose(uint _numOfChoices, bytes32 _paramsHash, address ,address _proposer,address _organization)
     external
     returns
     (bytes32)
     {
-        bytes32 proposalId = genesisProtocol.propose(_numOfChoices,_paramsHash,_proposer);
+        bytes32 proposalId = genesisProtocol.propose(_numOfChoices,_paramsHash,_proposer,_organization);
         emit NewProposal(proposalId, this, _numOfChoices, _proposer, _paramsHash);
         proposalsBlockNumbers[proposalId] = block.number;
 

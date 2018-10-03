@@ -1,14 +1,14 @@
 pragma solidity ^0.4.24;
 
-import "../VotingMachines/GenesisProtocolExecuteInterface.sol";
-import "../VotingMachines/GenesisProtocolCallbacksInterface.sol";
+import "../VotingMachines/ProposalExecuteInterface.sol";
+import "../VotingMachines/VotingMachineCallbacksInterface.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./Debug.sol";
 import "../Reputation.sol";
 import "../VotingMachines/AbsoluteVote.sol";
 
 
-contract AbsoluteVoteExecuteMock is Debug,GenesisProtocolCallbacksInterface,GenesisProtocolExecuteInterface,Ownable {
+contract AbsoluteVoteExecuteMock is Debug,VotingMachineCallbacksInterface,ProposalExecuteInterface,Ownable {
 
     Reputation public reputation;
     AbsoluteVote public absoluteVote;
@@ -59,6 +59,14 @@ contract AbsoluteVoteExecuteMock is Debug,GenesisProtocolCallbacksInterface,Gene
         return _stakingToken.transfer(_beneficiary,_amount);
     }
 
+    function balanceOfStakingToken(StandardToken _stakingToken,bytes32)
+    external
+    view
+    returns(uint)
+    {
+        return _stakingToken.balanceOf(this);
+    }
+
     function executeProposal(bytes32 _proposalId,int _decision) external returns(bool) {
         emit LogBytes32(_proposalId);
         emit LogInt(_decision);
@@ -73,12 +81,12 @@ contract AbsoluteVoteExecuteMock is Debug,GenesisProtocolCallbacksInterface,Gene
         return absoluteVote.cancelProposal(_proposalId);
     }
 
-    function propose(uint _numOfChoices, bytes32 _paramsHash, address ,address _proposer)
+    function propose(uint _numOfChoices, bytes32 _paramsHash, address ,address _proposer,address _organization)
     external
     returns
     (bytes32)
     {
-        bytes32 proposalId = absoluteVote.propose(_numOfChoices,_paramsHash,_proposer);
+        bytes32 proposalId = absoluteVote.propose(_numOfChoices,_paramsHash,_proposer,_organization);
         proposalsBlockNumbers[proposalId] = block.number;
 
         return proposalId;

@@ -74,6 +74,30 @@ export function getValueFromLogs(tx, arg, eventName, index=0) {
   return result;
 }
 
+export async function getProposalId(tx,contract,eventName) {
+  var proposalId;
+  await contract.getPastEvents(eventName, {
+            fromBlock: tx.blockNumber,
+            toBlock: 'latest'
+      })
+        .then(function(events){
+            proposalId = events[0].args._proposalId;
+        });
+  return proposalId;
+}
+
+export async function getOrganizationId(tx,contract,eventName) {
+  var organization;
+  await contract.getPastEvents(eventName, {
+            fromBlock: tx.blockNumber,
+            toBlock: 'latest'
+      })
+        .then(function(events){
+            organization = events[0].args._organization;
+        });
+  return organization;
+}
+
 export async function getProposal(tx) {
     return await Proposal.at(getProposalAddress(tx));
 }
