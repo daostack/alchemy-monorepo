@@ -1628,12 +1628,12 @@ contract('GenesisProtocol Lite', accounts => {
       var tx = await testSetup.genesisProtocol.propose(2, testSetup.genesisProtocolParams.paramsHash,0,accounts[1]);
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewProposal");
-      assert.equal(tx.logs[0].args._organization,await web3.utils.soliditySha3(accounts[0],accounts[1]));
+      assert.equal(tx.logs[0].args._organizationId,await web3.utils.soliditySha3(accounts[0],accounts[1]));
 
       tx = await testSetup.genesisProtocol.propose(2, testSetup.genesisProtocolParams.paramsHash,0,accounts[1],{from : accounts[1]});
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewProposal");
-      assert.equal(tx.logs[0].args._organization,await web3.utils.soliditySha3(accounts[1],accounts[1]));
+      assert.equal(tx.logs[0].args._organizationId,await web3.utils.soliditySha3(accounts[1],accounts[1]));
   });
 
 

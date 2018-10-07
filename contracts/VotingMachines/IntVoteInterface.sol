@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 interface IntVoteInterface {
     //When implementing this interface please do not only override function and modifier,
@@ -6,11 +6,11 @@ interface IntVoteInterface {
     modifier onlyProposalOwner(bytes32 _proposalId) {revert(); _;}
     modifier votable(bytes32 _proposalId) {revert(); _;}
 
-    event NewProposal(bytes32 indexed _proposalId, bytes32 indexed _organization, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
-    event ExecuteProposal(bytes32 indexed _proposalId, bytes32 indexed _organization, uint _decision, uint _totalReputation);
-    event VoteProposal(bytes32 indexed _proposalId, bytes32 indexed _organization, address indexed _voter, uint _vote, uint _reputation);
-    event CancelProposal(bytes32 indexed _proposalId, bytes32 indexed _organization );
-    event CancelVoting(bytes32 indexed _proposalId, bytes32 indexed _organization, address indexed _voter);
+    event NewProposal(bytes32 indexed _proposalId, bytes32 indexed _organizationId, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
+    event ExecuteProposal(bytes32 indexed _proposalId, bytes32 indexed _organizationId, uint _decision, uint _totalReputation);
+    event VoteProposal(bytes32 indexed _proposalId, bytes32 indexed _organizationId, address indexed _voter, uint _vote, uint _reputation);
+    event CancelProposal(bytes32 indexed _proposalId, bytes32 indexed _organizationId );
+    event CancelVoting(bytes32 indexed _proposalId, bytes32 indexed _organizationId, address indexed _voter);
 
     /**
      * @dev register a new proposal with the given parameters. Every proposal has a unique ID which is being
@@ -18,7 +18,7 @@ interface IntVoteInterface {
      * @param _numOfChoices number of voting choices
      * @param _proposalParameters defines the parameters of the voting machine used for this proposal
      * @param _proposer address
-     * @param _organization address
+     * @param _organization address - if this address is zero the msg.sender will be used as the organization address.
      * @return proposal's id.
      */
     function propose(

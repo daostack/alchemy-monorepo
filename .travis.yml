@@ -3,7 +3,7 @@ dist: trusty
 language: node_js
 
 node_js:
-  - "8.11.4"
+  - "8.12.0"
 
 before_install:
   - sudo apt-get update -qq

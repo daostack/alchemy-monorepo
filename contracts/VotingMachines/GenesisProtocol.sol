@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "./IntVoteInterface.sol";
 import { RealMath } from "../libs/RealMath.sol";
@@ -62,7 +62,7 @@ contract GenesisProtocol is IntVoteInterface {
     }
 
     struct Proposal {
-        bytes32 organization; // the organization unique identifier the proposal is target to.
+        bytes32 organizationId; // the organization unique identifier the proposal is target to.
         address callbacks;    // should fulfill voting callbacks interface.
         uint numOfChoices;
         uint votersStakes;
@@ -88,10 +88,10 @@ contract GenesisProtocol is IntVoteInterface {
         mapping(address  => Staker   ) stakers;
     }
 
-    event Stake(bytes32 indexed _proposalId, bytes32 indexed _organization, address indexed _staker,uint _vote,uint _amount);
-    event Redeem(bytes32 indexed _proposalId, bytes32 indexed _organization, address indexed _beneficiary,uint _amount);
-    event RedeemDaoBounty(bytes32 indexed _proposalId, bytes32 indexed _organization, address indexed _beneficiary,uint _amount);
-    event RedeemReputation(bytes32 indexed _proposalId, bytes32 indexed _organization, address indexed _beneficiary,uint _amount);
+    event Stake(bytes32 indexed _proposalId, bytes32 indexed _organizationId, address indexed _staker,uint _vote,uint _amount);
+    event Redeem(bytes32 indexed _proposalId, bytes32 indexed _organizationId, address indexed _beneficiary,uint _amount);
+    event RedeemDaoBounty(bytes32 indexed _proposalId, bytes32 indexed _organizationId, address indexed _beneficiary,uint _amount);
+    event RedeemReputation(bytes32 indexed _proposalId, bytes32 indexed _organizationId, address indexed _beneficiary,uint _amount);
     event GPExecuteProposal(bytes32 indexed _proposalId, ExecutionState _executionState);
 
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
@@ -102,11 +102,10 @@ contract GenesisProtocol is IntVoteInterface {
     uint constant public YES = 1;
     uint public proposalsCnt; // Total number of proposals
     mapping(bytes32=>uint) public orgBoostedProposalsCnt;
+    mapping(bytes32=>OrderStatisticTree.Tree) proposalsExpiredTimes; //proposals expired times
     StandardToken public stakingToken;
     mapping(bytes=>bool) stakeSignatures; //stake signatures
     address constant GEN_TOKEN_ADDRESS = 0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf;
-    mapping(bytes32=>OrderStatisticTree.Tree) proposalsExpiredTimes; //proposals expired times
-
     // Digest describing the data the user signs according EIP 712.
     // Needs to match what is passed to Metamask.
     bytes32 public constant DELEGATION_HASH_EIP712 =
@@ -160,7 +159,7 @@ contract GenesisProtocol is IntVoteInterface {
         Proposal memory proposal;
         proposal.numOfChoices = _numOfChoices;
         proposal.callbacks = msg.sender;
-        proposal.organization = keccak256(abi.encodePacked(msg.sender,_organization));
+        proposal.organizationId = keccak256(abi.encodePacked(msg.sender,_organization));
 
         proposal.state = ProposalState.PreBoosted;
         // solium-disable-next-line security/no-block-members
@@ -170,7 +169,7 @@ contract GenesisProtocol is IntVoteInterface {
         proposal.winningVote = NO;
         proposal.paramsHash = _paramsHash;
         proposals[proposalId] = proposal;
-        emit NewProposal(proposalId, proposal.organization, _numOfChoices, _proposer, _paramsHash);
+        emit NewProposal(proposalId, proposal.organizationId, _numOfChoices, _proposer, _paramsHash);
         return proposalId;
     }
 
@@ -367,12 +366,12 @@ contract GenesisProtocol is IntVoteInterface {
     }
 
   /**
-    * @dev getProposalOrganization return the organization for a given proposal
+    * @dev getProposalOrganization return the organizationId for a given proposal
     * @param _proposalId the ID of the proposal
     * @return bytes32 organization identifier
     */
     function getProposalOrganization(bytes32 _proposalId) external view returns(bytes32) {
-        return (proposals[_proposalId].organization);
+        return (proposals[_proposalId].organizationId);
     }
 
     /**
@@ -507,11 +506,11 @@ contract GenesisProtocol is IntVoteInterface {
         if (amount != 0) {
             proposal.totalStakes[1] = proposal.totalStakes[1].sub(amount);
             require(stakingToken.transfer(_beneficiary, amount));
-            emit Redeem(_proposalId,proposal.organization,_beneficiary,amount);
+            emit Redeem(_proposalId,proposal.organizationId,_beneficiary,amount);
         }
         if (reputation != 0 ) {
             VotingMachineCallbacksInterface(proposal.callbacks).mintReputation(reputation,_beneficiary,_proposalId);
-            emit RedeemReputation(_proposalId,proposal.organization,_beneficiary,reputation);
+            emit RedeemReputation(_proposalId,proposal.organizationId,_beneficiary,reputation);
         }
     }
 
@@ -550,7 +549,7 @@ contract GenesisProtocol is IntVoteInterface {
             require(VotingMachineCallbacksInterface(proposal.callbacks).stakingTokenTransfer(stakingToken,_beneficiary,potentialAmount,_proposalId));
             proposal.stakers[_beneficiary].amountForBounty = 0;
             redeemedAmount = potentialAmount;
-            emit RedeemDaoBounty(_proposalId,proposal.organization,_beneficiary,redeemedAmount);
+            emit RedeemDaoBounty(_proposalId,proposal.organizationId,_beneficiary,redeemedAmount);
         }
     }
 
@@ -561,7 +560,7 @@ contract GenesisProtocol is IntVoteInterface {
      */
     function shouldBoost(bytes32 _proposalId) public view returns(bool) {
         Proposal memory proposal = proposals[_proposalId];
-        return (_score(_proposalId) >= threshold(proposal.paramsHash,proposal.organization));
+        return (_score(_proposalId) >= threshold(proposal.paramsHash,proposal.organizationId));
     }
 
     /**
@@ -575,28 +574,28 @@ contract GenesisProtocol is IntVoteInterface {
 
     /**
      * @dev getBoostedProposalsCount return the number of boosted proposal for an organization
-     * @param _organization the organization identifier
+     * @param _organizationId the organization identifier
      * @return uint number of boosted proposals
      */
-    function getBoostedProposalsCount(bytes32 _organization) public view returns(uint) {
+    function getBoostedProposalsCount(bytes32 _organizationId) public view returns(uint) {
         uint expiredProposals;
-        if (proposalsExpiredTimes[_organization].count() != 0) {
+        if (proposalsExpiredTimes[_organizationId].count() != 0) {
           // solium-disable-next-line security/no-block-members
-            expiredProposals = proposalsExpiredTimes[_organization].rank(now);
+            expiredProposals = proposalsExpiredTimes[_organizationId].rank(now);
         }
-        return orgBoostedProposalsCnt[_organization].sub(expiredProposals);
+        return orgBoostedProposalsCnt[_organizationId].sub(expiredProposals);
     }
 
     /**
      * @dev threshold return the organization's score threshold which required by
      * a proposal to shift to boosted state.
      * This threshold is dynamically set and it depend on the number of boosted proposal.
-     * @param _organization the organization identifier
+     * @param _organizationId the organization identifier
      * @param _paramsHash the organization parameters hash
      * @return int organization's score threshold.
      */
-    function threshold(bytes32 _paramsHash,bytes32 _organization) public view returns(int) {
-        uint boostedProposals = getBoostedProposalsCount(_organization);
+    function threshold(bytes32 _paramsHash,bytes32 _organizationId) public view returns(int) {
+        uint boostedProposals = getBoostedProposalsCount(_organizationId);
         int216 e = 2;
 
         Parameters memory params = parameters[_paramsHash];
@@ -738,8 +737,8 @@ contract GenesisProtocol is IntVoteInterface {
                 proposal.state = ProposalState.Boosted;
                 // solium-disable-next-line security/no-block-members
                 proposal.boostedPhaseTime = now;
-                proposalsExpiredTimes[proposal.organization].insert(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
-                orgBoostedProposalsCnt[proposal.organization]++;
+                proposalsExpiredTimes[proposal.organizationId].insert(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
+                orgBoostedProposalsCnt[proposal.organizationId]++;
               }
            }
 
@@ -747,14 +746,14 @@ contract GenesisProtocol is IntVoteInterface {
             (proposal.state == ProposalState.QuietEndingPeriod)) {
             // solium-disable-next-line security/no-block-members
             if ((now - proposal.boostedPhaseTime) >= proposal.currentBoostedVotePeriodLimit) {
-                proposalsExpiredTimes[proposal.organization].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
+                proposalsExpiredTimes[proposal.organizationId].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                 proposal.state = ProposalState.Executed;
-                orgBoostedProposalsCnt[tmpProposal.organization] = orgBoostedProposalsCnt[tmpProposal.organization].sub(1);
+                orgBoostedProposalsCnt[tmpProposal.organizationId] = orgBoostedProposalsCnt[tmpProposal.organizationId].sub(1);
                 executionState = ExecutionState.BoostedTimeOut;
              } else if (proposal.votes[proposal.winningVote] > executionBar) {
                // someone crossed the absolute vote execution bar.
-                orgBoostedProposalsCnt[tmpProposal.organization] = orgBoostedProposalsCnt[tmpProposal.organization].sub(1);
-                proposalsExpiredTimes[proposal.organization].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
+                orgBoostedProposalsCnt[tmpProposal.organizationId] = orgBoostedProposalsCnt[tmpProposal.organizationId].sub(1);
+                proposalsExpiredTimes[proposal.organizationId].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                 proposal.state = ProposalState.Executed;
                 executionState = ExecutionState.BoostedBarCrossed;
             }
@@ -767,7 +766,7 @@ contract GenesisProtocol is IntVoteInterface {
                 }
                 proposal.daoBountyRemain = daoBountyRemain;
             }
-            emit ExecuteProposal(_proposalId, proposal.organization, proposal.winningVote, totalReputation);
+            emit ExecuteProposal(_proposalId, proposal.organizationId, proposal.winningVote, totalReputation);
             emit GPExecuteProposal(_proposalId, executionState);
             ProposalExecuteInterface(proposal.callbacks).executeProposal(_proposalId,int(proposal.winningVote));
         }
@@ -816,7 +815,7 @@ contract GenesisProtocol is IntVoteInterface {
         amount = amount - ((params.stakerFeeRatioForVoters*amount)/100);
         proposal.totalStakes[0] = amount.add(proposal.totalStakes[0]);
       // Event:
-        emit Stake(_proposalId, proposal.organization, _staker, _vote, _amount);
+        emit Stake(_proposalId, proposal.organizationId, _staker, _vote, _amount);
       // execute the proposal if this vote was decisive:
         return _execute(_proposalId);
     }
@@ -866,13 +865,13 @@ contract GenesisProtocol is IntVoteInterface {
             if ((proposal.state == ProposalState.QuietEndingPeriod) ||
                ((proposal.state == ProposalState.Boosted) && ((_now - proposal.boostedPhaseTime) >= (params.boostedVotePeriodLimit - params.quietEndingPeriod)))) {
                 //quietEndingPeriod
-                proposalsExpiredTimes[proposal.organization].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
+                proposalsExpiredTimes[proposal.organizationId].remove(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
                 if (proposal.state != ProposalState.QuietEndingPeriod) {
                     proposal.currentBoostedVotePeriodLimit = params.quietEndingPeriod;
                     proposal.state = ProposalState.QuietEndingPeriod;
                 }
                 proposal.boostedPhaseTime = _now;
-                proposalsExpiredTimes[proposal.organization].insert(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
+                proposalsExpiredTimes[proposal.organizationId].insert(proposal.boostedPhaseTime + proposal.currentBoostedVotePeriodLimit);
             }
             proposal.winningVote = _vote;
         }
@@ -887,7 +886,7 @@ contract GenesisProtocol is IntVoteInterface {
             VotingMachineCallbacksInterface(proposal.callbacks).burnReputation(reputationDeposit,_voter,_proposalId);
         }
         // Event:
-        emit VoteProposal(_proposalId, proposal.organization, _voter, _vote, rep);
+        emit VoteProposal(_proposalId, proposal.organizationId, _voter, _vote, rep);
         // execute the proposal if this vote was decisive:
         return _execute(_proposalId);
     }

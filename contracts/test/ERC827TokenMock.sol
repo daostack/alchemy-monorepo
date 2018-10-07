@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "../token/ERC827/ERC827Token.sol";// mock class using ERC827 Token
 

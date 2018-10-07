@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "./AbsoluteVote.sol";
 import "./ProposalExecuteInterface.sol";
@@ -34,7 +34,7 @@ contract QuorumVote is AbsoluteVote {
             }
             Proposal memory tmpProposal = proposal;
             deleteProposal(_proposalId);
-            emit ExecuteProposal(_proposalId, tmpProposal.organization, maxInd, totalReputation);
+            emit ExecuteProposal(_proposalId, tmpProposal.organizationId, maxInd, totalReputation);
             ProposalExecuteInterface(tmpProposal.callbacks).executeProposal(_proposalId,int(maxInd));
             return true;
         }
