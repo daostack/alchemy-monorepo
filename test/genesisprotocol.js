@@ -187,7 +187,7 @@ const propose = async function(_testSetup,_proposer = 0) {
                                                                 _proposer,
                                                                  helpers.NULL_ADDRESS);
       const proposalId = await getValueFromLogs(tx, '_proposalId');
-      assert.equal(tx.logs.length, 1);
+      assert.equal(tx.logs.length, 2);
       assert.equal(tx.logs[0].event, "NewProposal");
       assert.equal(tx.logs[0].args._proposalId, proposalId);
       assert.equal(tx.logs[0].args._proposer, _proposer);
@@ -1628,12 +1628,19 @@ contract('GenesisProtocol Lite', accounts => {
       var tx = await testSetup.genesisProtocol.propose(2, testSetup.genesisProtocolParams.paramsHash,0,accounts[1]);
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewProposal");
-      assert.equal(tx.logs[0].args._organizationId,await web3.utils.soliditySha3(accounts[0],accounts[1]));
+      assert.equal(tx.logs[0].args._organization,accounts[1]);
+      var proposalId = await getValueFromLogs(tx, '_proposalId');
+      var proposal = await testSetup.genesisProtocol.proposals(proposalId);
+      assert.equal(proposal[0],await web3.utils.soliditySha3(accounts[0],accounts[1]));
+
 
       tx = await testSetup.genesisProtocol.propose(2, testSetup.genesisProtocolParams.paramsHash,0,accounts[1],{from : accounts[1]});
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewProposal");
-      assert.equal(tx.logs[0].args._organizationId,await web3.utils.soliditySha3(accounts[1],accounts[1]));
+      assert.equal(tx.logs[0].args._organization,accounts[1]);
+      proposalId = await getValueFromLogs(tx, '_proposalId');
+      proposal = await testSetup.genesisProtocol.proposals(proposalId);
+      assert.equal(proposal[0],await web3.utils.soliditySha3(accounts[1],accounts[1]));
   });
 
 

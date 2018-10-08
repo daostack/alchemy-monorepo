@@ -86,16 +86,16 @@ export async function getProposalId(tx,contract,eventName) {
   return proposalId;
 }
 
-export async function getOrganizationId(tx,contract,eventName) {
-  var organizationId;
+export async function getOrganization(tx,contract,eventName) {
+  var organization;
   await contract.getPastEvents(eventName, {
             fromBlock: tx.blockNumber,
             toBlock: 'latest'
       })
         .then(function(events){
-            organizationId = events[0].args._organizationId;
+            organization = events[0].args._organization;
         });
-  return organizationId;
+  return organization;
 }
 
 export async function getProposal(tx) {

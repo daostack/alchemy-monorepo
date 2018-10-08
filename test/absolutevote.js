@@ -107,8 +107,7 @@ contract('AbsoluteVote', accounts => {
       const proposalId =  await helpers.getProposalId(tx,absoluteVote,"NewProposal");
       assert.isOk(proposalId);
 
-      var organizationId = await  helpers.getOrganizationId(tx,absoluteVote,"NewProposal");
-      assert.equal(organizationId,await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS));
+      var organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
       // no one has voted yet at this point
       await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address,
                                            organizationId,
@@ -168,8 +167,8 @@ contract('AbsoluteVote', accounts => {
     const proposalId =  await helpers.getProposalId(tx,absoluteVote,"NewProposal");
     assert.isOk(proposalId);
 
-    assert.equal(await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS),
-                 await helpers.getOrganizationId(tx,absoluteVote,"NewProposal"));
+    assert.equal(absoluteVoteExecuteMock.address,
+                 await helpers.getOrganization(tx,absoluteVote,"NewProposal"));
   });
 
   it("should log the CancelProposal event on canceling a proposal", async function() {
@@ -323,7 +322,8 @@ contract('AbsoluteVote', accounts => {
     const proposalId =  await helpers.getProposalId(tx,absoluteVote,"NewProposal");
     assert.isOk(proposalId);
 
-    const organizationId = await helpers.getOrganizationId(tx,absoluteVote,"NewProposal");
+    const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
+
 
     // no one has voted yet at this point
     await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address,
@@ -352,7 +352,7 @@ contract('AbsoluteVote', accounts => {
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId =  await helpers.getProposalId(tx,absoluteVote,"NewProposal");
     assert.isOk(proposalId);
-    const organizationId = await helpers.getOrganizationId(tx,absoluteVote,"NewProposal");
+    const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
     // no one has voted yet at this point
     await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
@@ -376,8 +376,7 @@ contract('AbsoluteVote', accounts => {
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId =  await helpers.getProposalId(tx,absoluteVote,"NewProposal");
     assert.isOk(proposalId);
-    const organizationId = await helpers.getOrganizationId(tx,absoluteVote,"NewProposal");
-
+    const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
     // no one has voted yet at this point
     await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
@@ -399,7 +398,8 @@ contract('AbsoluteVote', accounts => {
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId =  await helpers.getProposalId(tx,absoluteVote,"NewProposal");
     assert.isOk(proposalId);
-    const organizationId = await helpers.getOrganizationId(tx,absoluteVote,"NewProposal");
+    const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
+
     // no one has voted yet at this point
     await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
@@ -418,9 +418,7 @@ contract('AbsoluteVote', accounts => {
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId =  await helpers.getProposalId(tx,absoluteVote,"NewProposal");
     assert.isOk(proposalId);
-    const organizationId = await helpers.getOrganizationId(tx,absoluteVote,"NewProposal");
-
-
+    const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
     // no one has voted yet at this point
     await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
@@ -531,7 +529,7 @@ contract('AbsoluteVote', accounts => {
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId =  await helpers.getProposalId(tx,absoluteVote,"NewProposal");
     assert.isOk(proposalId);
-    var organizationId = await  helpers.getOrganizationId(tx,absoluteVote,"NewProposal");
+    const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
     // no one has voted yet at this point
     await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
@@ -564,7 +562,7 @@ contract('AbsoluteVote', accounts => {
       let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
       const proposalId =  await helpers.getProposalId(tx,absoluteVote,"NewProposal");
       assert.isOk(proposalId);
-      const organizationId = await helpers.getOrganizationId(tx,absoluteVote,"NewProposal");
+      const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
       // no one has voted yet at this point
       await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
@@ -586,7 +584,7 @@ contract('AbsoluteVote', accounts => {
       let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
       const proposalId =  await helpers.getProposalId(tx,absoluteVote,"NewProposal");
       assert.isOk(proposalId);
-      const organizationId = await helpers.getOrganizationId(tx,absoluteVote,"NewProposal");
+      const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
 
       // no one has voted yet at this point
@@ -611,7 +609,7 @@ contract('AbsoluteVote', accounts => {
       let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
       const proposalId =  await helpers.getProposalId(tx,absoluteVote,"NewProposal");
       assert.isOk(proposalId);
-      var organizationId = await  helpers.getOrganizationId(tx,absoluteVote,"NewProposal");
+      const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
       // no one has voted yet at this point
       await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address,6 , paramsHash, 0, true]);
@@ -633,7 +631,7 @@ contract('AbsoluteVote', accounts => {
       let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
       const proposalId =  await helpers.getProposalId(tx,absoluteVote,"NewProposal");
       assert.isOk(proposalId);
-      var organizationId = await  helpers.getOrganizationId(tx,absoluteVote,"NewProposal");
+      const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
       // no one has voted yet at this point
       await checkProposalInfo(proposalId, [ absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
@@ -859,7 +857,8 @@ contract('AbsoluteVote', accounts => {
     const proposalId1 = await helpers.getProposalId(tx1,absoluteVote1,"NewProposal");
 
     assert.isOk(proposalId1);
-    var organizationId = await  helpers.getOrganizationId(tx1,absoluteVote1,"NewProposal");
+    const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
+
 
 
     // proposal 2 - Yes/No - 50% - ownerVote enabled
@@ -871,9 +870,7 @@ contract('AbsoluteVote', accounts => {
     let tx2 = await absoluteVoteExecuteMock2.propose(2, paramsHash2, absoluteVoteExecuteMock2.address,accounts[0],helpers.NULL_ADDRESS, { from: accounts[1] });
 
     const proposalId2 = await helpers.getProposalId(tx2,absoluteVote2,"NewProposal");
-
-    var organization2Id = await  helpers.getOrganizationId(tx2,absoluteVote2,"NewProposal");
-
+    const organization2Id = await web3.utils.soliditySha3(absoluteVoteExecuteMock2.address,helpers.NULL_ADDRESS);
     assert.isOk(proposalId2);
 
     // Lets check the proposals

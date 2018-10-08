@@ -39,6 +39,7 @@ contract AbsoluteVote is IntVoteInterface {
 
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
+    mapping(bytes32        => address     ) organizations;
 
     uint public constant MAX_NUM_OF_CHOICES = 10;
     uint public proposalsCnt; // Total amount of proposals
@@ -86,7 +87,14 @@ contract AbsoluteVote is IntVoteInterface {
         proposal.owner = msg.sender;
         proposal.open = true;
         proposals[proposalId] = proposal;
-        emit NewProposal(proposalId, proposal.organizationId, _numOfChoices, msg.sender, _paramsHash);
+        if (organizations[proposal.organizationId] == 0) {
+            if (_organization == address(0)) {
+                organizations[proposal.organizationId] = msg.sender;
+            } else {
+                organizations[proposal.organizationId] = _organization;
+            }
+        }
+        emit NewProposal(proposalId, organizations[proposal.organizationId], _numOfChoices, msg.sender, _paramsHash);
         return proposalId;
     }
 
@@ -100,7 +108,7 @@ contract AbsoluteVote is IntVoteInterface {
         }
         bytes32 organizationId = proposals[_proposalId].organizationId;
         deleteProposal(_proposalId);
-        emit CancelProposal(_proposalId, organizationId);
+        emit CancelProposal(_proposalId, organizations[organizationId]);
         return true;
     }
 
@@ -241,7 +249,7 @@ contract AbsoluteVote is IntVoteInterface {
         proposal.votes[voter.vote] = (proposal.votes[voter.vote]).sub(voter.reputation);
         proposal.totalVotes = (proposal.totalVotes).sub(voter.reputation);
         delete proposal.voters[_voter];
-        emit CancelVoting(_proposalId, proposal.organizationId, _voter);
+        emit CancelVoting(_proposalId, organizations[proposal.organizationId], _voter);
     }
 
     function deleteProposal(bytes32 _proposalId) internal {
@@ -267,7 +275,7 @@ contract AbsoluteVote is IntVoteInterface {
             if (proposal.votes[cnt] > totalReputation*precReq/100) {
                 Proposal memory tmpProposal = proposal;
                 deleteProposal(_proposalId);
-                emit ExecuteProposal(_proposalId, tmpProposal.organizationId, cnt, totalReputation);
+                emit ExecuteProposal(_proposalId, organizations[tmpProposal.organizationId], cnt, totalReputation);
                 ProposalExecuteInterface(tmpProposal.callbacks).executeProposal(_proposalId,int(cnt));
                 return true;
             }
@@ -307,7 +315,7 @@ contract AbsoluteVote is IntVoteInterface {
             vote: _vote
         });
         // Event:
-        emit VoteProposal(_proposalId, proposal.organizationId, _voter, _vote, reputation);
+        emit VoteProposal(_proposalId, organizations[proposal.organizationId], _voter, _vote, reputation);
         emit AVVoteProposal(_proposalId, (_voter != msg.sender));
         // execute the proposal if this vote was decisive:
         return _execute(_proposalId);

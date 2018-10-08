@@ -34,7 +34,7 @@ contract QuorumVote is AbsoluteVote {
             }
             Proposal memory tmpProposal = proposal;
             deleteProposal(_proposalId);
-            emit ExecuteProposal(_proposalId, tmpProposal.organizationId, maxInd, totalReputation);
+            emit ExecuteProposal(_proposalId, organizations[tmpProposal.organizationId], maxInd, totalReputation);
             ProposalExecuteInterface(tmpProposal.callbacks).executeProposal(_proposalId,int(maxInd));
             return true;
         }

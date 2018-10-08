@@ -88,10 +88,10 @@ contract GenesisProtocol is IntVoteInterface {
         mapping(address  => Staker   ) stakers;
     }
 
-    event Stake(bytes32 indexed _proposalId, bytes32 indexed _organizationId, address indexed _staker,uint _vote,uint _amount);
-    event Redeem(bytes32 indexed _proposalId, bytes32 indexed _organizationId, address indexed _beneficiary,uint _amount);
-    event RedeemDaoBounty(bytes32 indexed _proposalId, bytes32 indexed _organizationId, address indexed _beneficiary,uint _amount);
-    event RedeemReputation(bytes32 indexed _proposalId, bytes32 indexed _organizationId, address indexed _beneficiary,uint _amount);
+    event Stake(bytes32 indexed _proposalId, address indexed _organization, address indexed _staker,uint _vote,uint _amount);
+    event Redeem(bytes32 indexed _proposalId, address indexed _organization, address indexed _beneficiary,uint _amount);
+    event RedeemDaoBounty(bytes32 indexed _proposalId, address indexed _organization, address indexed _beneficiary,uint _amount);
+    event RedeemReputation(bytes32 indexed _proposalId, address indexed _organization, address indexed _beneficiary,uint _amount);
     event GPExecuteProposal(bytes32 indexed _proposalId, ExecutionState _executionState);
 
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
@@ -103,6 +103,8 @@ contract GenesisProtocol is IntVoteInterface {
     uint public proposalsCnt; // Total number of proposals
     mapping(bytes32=>uint) public orgBoostedProposalsCnt;
     mapping(bytes32=>OrderStatisticTree.Tree) proposalsExpiredTimes; //proposals expired times
+          //organizationId => organization
+    mapping(bytes32        => address     ) organizations;
     StandardToken public stakingToken;
     mapping(bytes=>bool) stakeSignatures; //stake signatures
     address constant GEN_TOKEN_ADDRESS = 0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf;
@@ -169,7 +171,14 @@ contract GenesisProtocol is IntVoteInterface {
         proposal.winningVote = NO;
         proposal.paramsHash = _paramsHash;
         proposals[proposalId] = proposal;
-        emit NewProposal(proposalId, proposal.organizationId, _numOfChoices, _proposer, _paramsHash);
+        if (organizations[proposal.organizationId] == 0) {
+            if (_organization == address(0)) {
+                organizations[proposal.organizationId] = msg.sender;
+            } else {
+                organizations[proposal.organizationId] = _organization;
+            }
+        }
+        emit NewProposal(proposalId, organizations[proposal.organizationId], _numOfChoices, _proposer, _paramsHash);
         return proposalId;
     }
 
@@ -506,11 +515,11 @@ contract GenesisProtocol is IntVoteInterface {
         if (amount != 0) {
             proposal.totalStakes[1] = proposal.totalStakes[1].sub(amount);
             require(stakingToken.transfer(_beneficiary, amount));
-            emit Redeem(_proposalId,proposal.organizationId,_beneficiary,amount);
+            emit Redeem(_proposalId,organizations[proposal.organizationId],_beneficiary,amount);
         }
         if (reputation != 0 ) {
             VotingMachineCallbacksInterface(proposal.callbacks).mintReputation(reputation,_beneficiary,_proposalId);
-            emit RedeemReputation(_proposalId,proposal.organizationId,_beneficiary,reputation);
+            emit RedeemReputation(_proposalId,organizations[proposal.organizationId],_beneficiary,reputation);
         }
     }
 
@@ -549,7 +558,7 @@ contract GenesisProtocol is IntVoteInterface {
             require(VotingMachineCallbacksInterface(proposal.callbacks).stakingTokenTransfer(stakingToken,_beneficiary,potentialAmount,_proposalId));
             proposal.stakers[_beneficiary].amountForBounty = 0;
             redeemedAmount = potentialAmount;
-            emit RedeemDaoBounty(_proposalId,proposal.organizationId,_beneficiary,redeemedAmount);
+            emit RedeemDaoBounty(_proposalId,organizations[proposal.organizationId],_beneficiary,redeemedAmount);
         }
     }
 
@@ -766,7 +775,7 @@ contract GenesisProtocol is IntVoteInterface {
                 }
                 proposal.daoBountyRemain = daoBountyRemain;
             }
-            emit ExecuteProposal(_proposalId, proposal.organizationId, proposal.winningVote, totalReputation);
+            emit ExecuteProposal(_proposalId, organizations[proposal.organizationId], proposal.winningVote, totalReputation);
             emit GPExecuteProposal(_proposalId, executionState);
             ProposalExecuteInterface(proposal.callbacks).executeProposal(_proposalId,int(proposal.winningVote));
         }
@@ -815,7 +824,7 @@ contract GenesisProtocol is IntVoteInterface {
         amount = amount - ((params.stakerFeeRatioForVoters*amount)/100);
         proposal.totalStakes[0] = amount.add(proposal.totalStakes[0]);
       // Event:
-        emit Stake(_proposalId, proposal.organizationId, _staker, _vote, _amount);
+        emit Stake(_proposalId, organizations[proposal.organizationId], _staker, _vote, _amount);
       // execute the proposal if this vote was decisive:
         return _execute(_proposalId);
     }
@@ -886,7 +895,7 @@ contract GenesisProtocol is IntVoteInterface {
             VotingMachineCallbacksInterface(proposal.callbacks).burnReputation(reputationDeposit,_voter,_proposalId);
         }
         // Event:
-        emit VoteProposal(_proposalId, proposal.organizationId, _voter, _vote, rep);
+        emit VoteProposal(_proposalId, organizations[proposal.organizationId], _voter, _vote, rep);
         // execute the proposal if this vote was decisive:
         return _execute(_proposalId);
     }
