@@ -1,6 +1,6 @@
 {
   "name": "@daostack/infra",
-  "version": "0.0.0-alpha.08",
+  "version": "0.0.0-alpha.09",
   "description": "Base layer DAO's components",
   "files": [
     "contracts/",

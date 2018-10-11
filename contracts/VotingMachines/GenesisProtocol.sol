@@ -104,7 +104,7 @@ contract GenesisProtocol is IntVoteInterface {
     mapping(bytes32=>uint) public orgBoostedProposalsCnt;
     mapping(bytes32=>OrderStatisticTree.Tree) proposalsExpiredTimes; //proposals expired times
           //organizationId => organization
-    mapping(bytes32        => address     ) organizations;
+    mapping(bytes32        => address     ) public organizations;
     StandardToken public stakingToken;
     mapping(bytes=>bool) stakeSignatures; //stake signatures
     address constant GEN_TOKEN_ADDRESS = 0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf;
