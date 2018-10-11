@@ -1,11 +1,11 @@
 pragma solidity ^0.4.25;
 
-import "../VotingMachines/ProposalExecuteInterface.sol";
-import "../VotingMachines/VotingMachineCallbacksInterface.sol";
+import "../votingMachines/ProposalExecuteInterface.sol";
+import "../votingMachines/VotingMachineCallbacksInterface.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./Debug.sol";
 import "../Reputation.sol";
-import "../VotingMachines/AbsoluteVote.sol";
+import "../votingMachines/AbsoluteVote.sol";
 
 
 contract AbsoluteVoteExecuteMock is Debug,VotingMachineCallbacksInterface,ProposalExecuteInterface,Ownable {
