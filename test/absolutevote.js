@@ -728,8 +728,11 @@ contract('AbsoluteVote', accounts => {
     assert.isOk(proposalId);
 
     // Vote with the reputation the I own - should work
-    await absoluteVote.voteWithSpecifiedAmounts(proposalId, 1, reputationArray[0], 0,0);
+    tx = await absoluteVote.voteWithSpecifiedAmounts(proposalId, 1, reputationArray[0] / 10, 0,0);
 
+    var repVoted = await helpers.getValueFromLogs(tx, "_reputation");
+
+    assert.equal(repVoted, reputationArray[0] / 10, 'Should vote with specified amount');
     // Vote with negative reputation - exception should be raised
     try {
       await absoluteVote.voteWithSpecifiedAmounts(proposalId, 1, -100, 0,0);

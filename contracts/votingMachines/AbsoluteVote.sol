@@ -315,7 +315,7 @@ contract AbsoluteVote is IntVoteInterface {
             vote: _vote
         });
         // Event:
-        emit VoteProposal(_proposalId, organizations[proposal.organizationId], _voter, _vote, reputation);
+        emit VoteProposal(_proposalId, organizations[proposal.organizationId], _voter, _vote, rep);
         emit AVVoteProposal(_proposalId, (_voter != msg.sender));
         // execute the proposal if this vote was decisive:
         return _execute(_proposalId);

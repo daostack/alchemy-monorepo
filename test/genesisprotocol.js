@@ -836,7 +836,11 @@ contract('GenesisProtocol Lite', accounts => {
 
 
     // Vote with the reputation the I own - should work
-    await testSetup.genesisProtocol.voteWithSpecifiedAmounts(proposalId, 1, testSetup.reputationArray[0], 0,0);
+    let tx = await testSetup.genesisProtocol.voteWithSpecifiedAmounts(proposalId, 1, testSetup.reputationArray[0] / 10, 0,0);
+
+    var repVoted = await helpers.getValueFromLogs(tx, "_reputation");
+
+    assert.equal(repVoted, testSetup.reputationArray[0] / 10, 'Should vote with specified amount');
 
     // Vote with more reputation that i own - exception should be raised
     try {
