@@ -1,0 +1,2 @@
+# client
+DAOstack JavaScript Client
