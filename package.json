@@ -1,0 +1,34 @@
+{
+  "name": "@daostack/ganache",
+  "version": "0.0.0-alpha.56",
+  "description": "A fully migrated Ganache with all DAOstack base contracts migrated and an example DAO.",
+  "main": "index.js",
+  "files": [
+    "db/*",
+    "addresses.json",
+    "Dockerfile"
+  ],
+  "scripts": {
+    "build": "rm -rf db && mkdir -p db && node build.js && node set-version.js",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daostack/ganache.git"
+  },
+  "author": "Matan Tsuberi <tsuberim@gmail.com>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/daostack/ganache/issues"
+  },
+  "homepage": "https://github.com/daostack/ganache#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@daostack/arc": "0.0.0-alpha.56",
+    "dotenv": "^6.1.0",
+    "ethereumjs-wallet": "^0.6.2",
+    "ganache-cli": "^6.1.8",
+    "hdwallet-accounts": "0.0.1",
+    "web3": "^1.0.0-beta.36"
+  }
+}
