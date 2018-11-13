@@ -5,7 +5,7 @@ const package = require("./package.json");
 const arcVersion =
   package.dependencies["@daostack/arc"] ||
   package.devDependencies["@daostack/arc"];
-package.version = arcVersion;
+package.version = arcVersion + "-test1";
 fs.writeFileSync(
   "package.json",
   JSON.stringify(package, undefined, 2),
