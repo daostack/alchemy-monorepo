@@ -20,6 +20,28 @@ hdwallet.accounts.forEach(({ privateKey }) => {
 });
 web3.eth.defaultAccount = web3.eth.accounts.wallet[0].address;
 
+function getMigrationParams() {
+  const params = require("./params.json");
+  params.ContributionReward.orgNativeTokenFee = web3.utils.toWei(
+    params.ContributionReward.orgNativeTokenFee.toString()
+  );
+  params.GenesisProtocol.daoBountyLimit = web3.utils.toWei(
+    params.GenesisProtocol.daoBountyLimit.toString()
+  );
+  params.GenesisProtocol.minimumStakingFee = web3.utils.toWei(
+    params.GenesisProtocol.minimumStakingFee.toString()
+  );
+  params.GenesisProtocol.thresholdConstA = web3.utils.toWei(
+    params.GenesisProtocol.thresholdConstA.toString()
+  );
+  params.GenesisProtocol.voteOnBehalf = web3.utils.padLeft(
+    web3.utils.toHex(params.GenesisProtocol.voteOnBehalf.toString()),
+    40
+  );
+
+  return params;
+}
+
 async function getOpts() {
   return {
     from: web3.eth.defaultAccount,
@@ -118,10 +140,14 @@ async function migrateDAO({
   SchemeRegistrar,
   GlobalConstraintRegistrar,
   UpgradeScheme,
-  ContributionReward
+  ContributionReward,
+  GenesisProtocol,
+  AbsoluteVote
 }) {
   const accounts = web3.eth.accounts.wallet;
   const opts = await getOpts();
+  const migrationParams = getMigrationParams();
+
   const daoCreator = new web3.eth.Contract(
     require("@daostack/arc/build/contracts/DaoCreator.json").abi,
     DaoCreator,
@@ -145,6 +171,16 @@ async function migrateDAO({
   const contributionReward = new web3.eth.Contract(
     require("@daostack/arc/build/contracts/ContributionReward.json").abi,
     ContributionReward,
+    opts
+  );
+  const genesisProtocol = new web3.eth.Contract(
+    require("@daostack/arc/build/contracts/GenesisProtocol.json").abi,
+    GenesisProtocol,
+    opts
+  );
+  const absoluteVote = new web3.eth.Contract(
+    require("@daostack/arc/build/contracts/AbsoluteVote.json").abi,
+    AbsoluteVote,
     opts
   );
 
@@ -186,19 +222,62 @@ async function migrateDAO({
   const Avatar = await forgeOrg.call();
   await forgeOrg.send();
 
-  const schemeRegistrarSetParams = schemeRegistrar.methods.setParameters(/* TODO */);
+  const absoluteVoteSetParams = absoluteVote.methods.setParameters(
+    migrationParams.AbsoluteVote.votePerc,
+    migrationParams.AbsoluteVote.ownerVote
+  );
+  const absoluteVoteParams = await absoluteVoteSetParams.call();
+  await absoluteVoteSetParams.send();
+
+  const schemeRegistrarSetParams = schemeRegistrar.methods.setParameters(
+    absoluteVoteParams,
+    absoluteVoteParams,
+    AbsoluteVote
+  );
   const schemeRegistrarParams = await schemeRegistrarSetParams.call();
   await schemeRegistrarSetParams.send();
 
-  const globalConstraintRegistrarSetParams = globalConstraintRegistrar.methods.setParameters(/* TODO */);
+  const globalConstraintRegistrarSetParams = globalConstraintRegistrar.methods.setParameters(
+    absoluteVoteParams,
+    AbsoluteVote
+  );
   const globalConstraintRegistrarParams = await globalConstraintRegistrarSetParams.call();
   await globalConstraintRegistrarSetParams.send();
 
-  const upgradeSchemeSetParams = upgradeScheme.methods.setParameters(/* TODO */);
+  const upgradeSchemeSetParams = upgradeScheme.methods.setParameters(
+    absoluteVoteParams,
+    AbsoluteVote
+  );
   const upgradeSchemeParams = await upgradeSchemeSetParams.call();
-  awaitupgradeSchemeSetParams.send();
+  await upgradeSchemeSetParams.send();
 
-  const contributionRewardSetParams = contributionReward.methods.setParameters(/* TODO */);
+  const genesisProtocolSetParams = genesisProtocol.methods.setParameters(
+    [
+      migrationParams.GenesisProtocol.preBoostedVoteRequiredPercentage,
+      migrationParams.GenesisProtocol.preBoostedVotePeriodLimit,
+      migrationParams.GenesisProtocol.boostedVotePeriodLimit,
+      migrationParams.GenesisProtocol.thresholdConstA,
+      migrationParams.GenesisProtocol.thresholdConstB,
+      migrationParams.GenesisProtocol.minimumStakingFee,
+      migrationParams.GenesisProtocol.quietEndingPeriod,
+      migrationParams.GenesisProtocol.proposingRepRewardConstA,
+      migrationParams.GenesisProtocol.proposingRepRewardConstB,
+      migrationParams.GenesisProtocol.stakerFeeRatioForVoters,
+      migrationParams.GenesisProtocol.votersReputationLossRatio,
+      migrationParams.GenesisProtocol.votersGainRepRatioFromLostRep,
+      migrationParams.GenesisProtocol.daoBountyConst,
+      migrationParams.GenesisProtocol.daoBountyLimit
+    ],
+    migrationParams.GenesisProtocol.voteOnBehalf
+  );
+  const genesisProtocolParams = await genesisProtocolSetParams.call();
+  await genesisProtocolSetParams.send();
+
+  const contributionRewardSetParams = contributionReward.methods.setParameters(
+    migrationParams.ContributionReward.orgNativeTokenFee, // orgNativeTokenFee
+    genesisProtocolParams,
+    GenesisProtocol
+  );
   const contributionRewardParams = await contributionRewardSetParams.call();
   await contributionRewardSetParams.send();
 
@@ -216,17 +295,17 @@ async function migrateDAO({
   ];
   const permissions = [
     "0x0000001F" /* all permissions */,
+    "0x00000004" /* manage global constraints */,
     "0x0000000A" /* manage schemes + upgrade controller */,
-    "0x00000000" /* no permissions */,
-    "0x00000010" /* delegate call */
+    "0x00000000" /* no permissions */
   ];
 
-  // await daoCreator.methods
-  //   .setSchemes(Avatar, schemes, params, permissions)
-  //   .send();
+  await daoCreator.methods
+    .setSchemes(Avatar, schemes, params, permissions)
+    .send();
 
   const avatar = new web3.eth.Contract(
-    require("@daostack/arc/build/contracts/Avatar.json"),
+    require("@daostack/arc/build/contracts/Avatar.json").abi,
     Avatar,
     opts
   );
@@ -246,8 +325,17 @@ async function build() {
   const base = await migrateBase();
   const DAO = await migrateDAO(base);
   fs.writeFileSync(
-    "addresses.json",
-    JSON.stringify({ ...base, DAO }, undefined, 2),
+    "migration.json",
+    JSON.stringify(
+      {
+        mnemonic,
+        total_accounts,
+        addresses: base,
+        DAO
+      },
+      undefined,
+      2
+    ),
     "utf-8"
   );
 }

@@ -1,8 +1,11 @@
 {
   "name": "@daostack/ganache",
-  "version": "0.0.0-alpha.56-test1",
+  "version": "0.0.0-alpha.56-test2",
   "description": "A fully migrated Ganache with all DAOstack base contracts migrated and an example DAO.",
   "main": "index.js",
+  "engines": {
+    "node": ">=8"
+  },
   "files": [
     "index.js",
     "db/*",
@@ -15,8 +18,8 @@
   ],
   "scripts": {
     "build": "rm -rf db && mkdir -p db && node build.js && node set-version.js",
-    "prepublish": "npm run build",
-    "publish:docker": "docker build . -t daostack/ganache:$(cat package.json | jq -r '.version')"
+    "build:docker": "docker build . -t daostack/ganache:$(cat package.json | jq -r '.version')",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
