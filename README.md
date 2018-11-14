@@ -5,8 +5,8 @@ This repo is exposed both as an npm package, a CLI and a docker container which 
 
 ## Versioning
 
-Both the npm package and the docker image are versioned identically according to the `@daostack/arc` package.
-Example: `@daostack/arc@X.Y.Z` -> npm: `@daostack/ganache@X.Y.Z` and dockerhub: `daostack/ganache:X.Y.Z`
+Both the npm package and the docker image are versioned according to the `@daostack/arc` package and the migration version.
+Example: `@daostack/arc@<arc version>` -> npm: `@daostack/ganache@<arcversion>-v<migration version>` and dockerhub: `daostack/ganache:X.Y.Z-v<migration version>`
 
 ## Use the docker image
 

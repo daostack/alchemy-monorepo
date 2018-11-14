@@ -1,4 +1,5 @@
 {
+  "migrationVersion": "1",
   "ContributionReward": {
     "orgNativeTokenFee": 0
   },
