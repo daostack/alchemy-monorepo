@@ -1,8 +1,9 @@
 require("dotenv").config({ path: __dirname });
 const Ganache = require("ganache-cli");
 const path = require("path");
+const config = require("./package.json").config;
 
-const { mnemonic, total_accounts } = process.env;
+const { mnemonic, total_accounts } = config;
 
 const defaults = {
   db_path: path.normalize(path.join(__dirname, "./db")),

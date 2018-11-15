@@ -1,6 +1,7 @@
 // Set the package version to @daostack/arc version
 
 const fs = require("fs");
+const ora = require("ora");
 const { migrationVersion } = require("./params.json");
 const package = require("./package.json");
 const arcVersion =
@@ -12,3 +13,4 @@ fs.writeFileSync(
   JSON.stringify(package, undefined, 2),
   "utf-8"
 );
+ora().succeed(`Updated package version to ${package.version}`);

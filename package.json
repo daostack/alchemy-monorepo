@@ -7,19 +7,29 @@
     "node": ">=8"
   },
   "files": [
+    "package.json",
     "index.js",
     "db/*",
-    "migration.json",
-    ".env",
+    "base.json",
+    "dao.json",
     "Dockerfile",
     "entry.sh",
     "LICENCE",
     "README.md"
   ],
+  "config": {
+    "mnemonic": "behave pipe turkey animal voyage dial relief menu blush match jeans general",
+    "total_accounts": 10,
+    "provider": "http://localhost:8545",
+    "gasPriceGWei": 3.9
+  },
   "scripts": {
-    "build": "rm -rf db && mkdir -p db && node build.js && node set-version.js",
-    "prepublish": "npm run build",
-    "build:docker": "docker build . -t daostack/ganache:$(cat package.json | jq -r '.version')",
+    "ganache": "rm -rf db && mkdir -p db && ganache-cli --db=db --mnemonic=\"$npm_package_config_mnemonic\" --accounts=$npm_package_config_total_accounts",
+    "migrate:base": "node migrate-base.js",
+    "migrate:dao": "node migrate-dao.js",
+    "migrate": "node migrate.js",
+    "prepublish": "npm run migrate -- --provider http://localhost:8545 && node set-version.js",
+    "build:docker": "npm run prepublish && docker build . -t daostack/ganache:$(cat package.json | jq -r '.version')",
     "publish:docker": "npm run build:docker && docker push daostack/ganache:$(cat package.json | jq -r '.version')"
   },
   "repository": {
@@ -36,9 +46,15 @@
   "devDependencies": {
     "@daostack/arc": "0.0.0-alpha.56",
     "dotenv": "^6.1.0",
+    "env-cmd": "^8.0.2",
+    "eth-price": "^0.1.5",
     "ethereumjs-wallet": "^0.6.2",
     "ganache-cli": "^6.1.8",
     "hdwallet-accounts": "0.0.1",
-    "web3": "^1.0.0-beta.36"
+    "moment": "^2.22.2",
+    "ora": "^3.0.0",
+    "prompt-confirm": "^2.0.4",
+    "web3": "^1.0.0-beta.36",
+    "yargs": "^12.0.2"
   }
 }
