@@ -5,5 +5,4 @@ RUN npm install
 
 EXPOSE 8545
 
-ENTRYPOINT [ "npm", "run" ]
-CMD [ "ganache" ]
+ENTRYPOINT [ "npm", "run", "ganache", "--" ]
