@@ -1,5 +1,8 @@
 # DAOstack Migration
 
+![npm (scoped)](https://img.shields.io/npm/v/@daostack/ganache.svg)
+![Docker Pulls](https://img.shields.io/docker/pulls/daostack/ganache.svg)
+
 Migration scripts and a ganache with all DAOstack contracts and an example DAO already migrated.
 This repo is exposed both as an npm package, a CLI and a docker container which you can use as a drop-in replacement for [`ganache-cli`](https://github.com/trufflesuite/ganache-cli#using-ganache-cli).
 
