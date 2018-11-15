@@ -1,6 +1,6 @@
 {
   "name": "@daostack/ganache",
-  "version": "0.0.0-alpha.56-v1",
+  "version": "0.0.0-alpha.56-v2",
   "description": "A fully migrated Ganache with all DAOstack base contracts migrated and an example DAO.",
   "main": "index.js",
   "engines": {

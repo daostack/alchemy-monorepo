@@ -1,7 +1,9 @@
-FROM trufflesuite/ganache-cli
+FROM node:8
 
-ADD .env .env
-ADD entry.sh entry.sh
-ADD db db
+COPY . .
+RUN npm install
 
-ENTRYPOINT [ "./entry.sh" ]
+EXPOSE 8545
+
+ENTRYPOINT [ "npm", "run" ]
+CMD [ "ganache" ]
