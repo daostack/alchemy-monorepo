@@ -1,6 +1,6 @@
-# DAOstack Ganache
+# DAOstack Migration
 
-A ganache with all DAOstack contracts and an example DAO already migrated.
+Migration scripts and a ganache with all DAOstack contracts and an example DAO already migrated.
 This repo is exposed both as an npm package, a CLI and a docker container which you can use as a drop-in replacement for [`ganache-cli`](https://github.com/trufflesuite/ganache-cli#using-ganache-cli).
 
 ## Commands
@@ -48,6 +48,15 @@ Example: `@daostack/arc@<arc version>` -> npm: `@daostack/ganache@<arcversion>-v
 1. `npm install @daostack/ganache`
 2. `const Ganache = require('@daostack/ganache') // instead of: require('ganache-cli')` - use as a drop-in replacement for the `ganache-cli` library.
 
+The library also exposes the two migration scripts `migrateBase` & `migrateDAO`:
+
+```javascript
+const { migrateBase, migrateDAO } = require("@daostack/ganache");
+const web3 = new Web3(...);
+await migrateBase(web3); // migrates all base contracts writes addresses to 'base.json' and returns them.
+await migrateDAO(web3); // migrates new DAO writes info to 'dao.json' and returns them.
+```
+
 ## `base.json`
 
 To get the base migrated contract addresses:
@@ -74,7 +83,7 @@ const {
 } = migration;
 ```
 
-## `base.json`
+## `dao.json`
 
 To get information about the migrated DAO:
 

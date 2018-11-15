@@ -15,7 +15,10 @@
     "Dockerfile",
     "entry.sh",
     "LICENCE",
-    "README.md"
+    "README.md",
+    "migrate.js",
+    "migrate-base.js",
+    "migrate-dao.js"
   ],
   "config": {
     "mnemonic": "behave pipe turkey animal voyage dial relief menu blush match jeans general",
