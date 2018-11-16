@@ -15,7 +15,7 @@ export class Member implements Stateful<MemberState> {
   state: Observable<MemberState> = of()
   constructor(private dao: string, private address: string) {}
 
-  rewards(): Observable<Reward> {
+  rewards(): Observable<Reward[]> {
     throw new Error('not implemented')
   }
 }

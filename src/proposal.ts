@@ -29,6 +29,7 @@ export interface ProposalState {
   createdAt: number
   dao: string
   proposer: string
+  resolvedAt: number
   stage: ProposalStage
 
   ipfsHash: string
@@ -87,7 +88,7 @@ export class Proposal implements Stateful<ProposalState> {
     throw new Error('not implmented')
   }
 
-  rewards(): Observable<Reward> {
+  rewards(): Observable<Reward[]> {
     throw new Error('not implemented')
   }
 }
