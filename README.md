@@ -44,7 +44,13 @@ Example: `@daostack/arc@<arc version>` -> npm: `@daostack/ganache@<arcversion>-v
 ## Use the docker image
 
 1. `docker pull daostack/ganache`
-2. `docker run daostack/ganache ...` - use arguments as specified in `ganache-cli`
+2. `docker run --name=ganache daostack/ganache ...` - use arguments as specified in `ganache-cli`
+
+To get information about the deployed contract addresses, you can run:
+```sh
+docker exec ganache cat /base.json
+docker exec ganache cat /dao.json
+```
 
 ## Use as a library
 

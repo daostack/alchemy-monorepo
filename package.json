@@ -27,7 +27,7 @@
     "gasPriceGWei": 3.9
   },
   "scripts": {
-    "ganache": "rm -rf db && mkdir -p db && ganache-cli --db=db --mnemonic=\"$npm_package_config_mnemonic\" --accounts=$npm_package_config_total_accounts",
+    "ganache": "rm -rf db && mkdir -p db && ganache-cli --db=db --mnemonic=\"$npm_package_config_mnemonic\" --accounts=$npm_package_config_total_accounts --hostname=0.0.0.0",
     "migrate:base": "node migrate-base.js",
     "migrate:dao": "node migrate-dao.js",
     "migrate": "node migrate.js",
