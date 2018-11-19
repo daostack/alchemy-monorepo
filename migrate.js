@@ -82,7 +82,7 @@ const wrapCommand = fn => async ({ quiet, force, provider, gasPrice, privateKey,
 	// check for an existing migration
 	let existingFile;
 	if (fs.existsSync(output)) {
-		spinner.warn(`Found an existing previous migration file (${output})`);
+		spinner.info(`Found an existing previous migration file (${output})`);
 		existingFile = JSON.parse(fs.readFileSync(output, 'utf-8'));
 	} else {
 		existingFile = {};
@@ -155,7 +155,7 @@ function cli() {
 			default: 'migration.json',
 		})
 		.option('params', {
-			alias: 'o',
+			alias: 'i',
 			type: 'string',
 			describe: 'path to the file containing the migration parameters',
 			default: 'migration-params.json',
@@ -192,7 +192,6 @@ if (require.main == module) {
 		migrate: wrapCommand(migrate),
 		migrateBase: wrapCommand(migrateBase),
 		migrateDAO: wrapCommand(migrateDAO),
-		wrapCommand,
 		cli,
 	};
 }

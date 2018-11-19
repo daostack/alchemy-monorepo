@@ -13,11 +13,11 @@ echo "Publishing to npm..."
 npm publish
 # publish docker
 echo "Publishing to dockerhub..."
-npm run build:docker
-npm run publish:docker
+npm run docker:build
+npm run docker:push
 # commit addresses
 echo "Commiting changes..."
-git commit -a -m "release $(cat package.json | jq -r '.version')"
+git add -A && git commit -m "release $(cat package.json | jq -r '.version')"
 # push to git
 echo "Pushing to github..."
 git push -f

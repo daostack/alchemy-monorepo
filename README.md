@@ -30,6 +30,13 @@ dockerhub: `daostack/ganache:X.Y.Z-v<migration version>`
 ```javascript
 const DAOstackMigration = require('@daostack/migration');
 
+// ganache-core object with already migrated contracts
+// options are as specified in https://github.com/trufflesuite/ganache-cli#library
+DAOstackMigration.Ganache.server(..);
+DAOstackMigration.Ganache.provider(..);
+// migration result object for ganache
+DAOstackMigration.migration;
+
 const options = {
   // web3 provider url
   provider: 'http://localhost:8545',
@@ -68,12 +75,8 @@ migrationBaseResult.dao.Avatar // DAO avatar address
 // migrate both base and an example DAO
 const migrationResult = await DAOstackMigration.migrate(options); // migrate
 
-// ganache-core object with already migrated contracts
-// options are as specified in https://github.com/trufflesuite/ganache-cli#library
-DAOstackMigration.Ganache.server(..);
-DAOstackMigration.Ganache.provider(..);
-// migration result object for ganache
-DAOstackMigration.migration;
+// run the cli
+DAOstackMigration.cli()
 ```
 
 ### As a CLI
