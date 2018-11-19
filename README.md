@@ -1,112 +1,199 @@
-[![npm (scoped)](https://img.shields.io/npm/v/@daostack/ganache.svg)](https://www.npmjs.com/package/@daostack/ganache)
-[![Docker Pulls](https://img.shields.io/docker/pulls/daostack/ganache.svg)](https://hub.docker.com/r/daostack/ganache/)
+[![npm (scoped)](https://img.shields.io/npm/v/@daostack/migration.svg)](https://www.npmjs.com/package/@daostack/migration)
+[![Docker Pulls](https://img.shields.io/docker/pulls/daostack/migration.svg)](https://hub.docker.com/r/daostack/migration/)
 
 # DAOstack Migration
 
-Migration scripts and a ganache with all DAOstack contracts and an example DAO already migrated.
-This repo is exposed both as an npm package, a CLI and a docker container which you can use as a drop-in replacement for [`ganache-cli`](https://github.com/trufflesuite/ganache-cli#using-ganache-cli).
+A repo for handeling the migration of DAOstack contracts and DAOs. This repo is packaged both as an
+[npm package](https://www.npmjs.com/package/@daostack/migration) and a
+[Docker image](https://hub.docker.com/r/daostack/migration/) that exposes a pre-migrated ganache instance and other
+utilities related to migration.
 
-## Commands
+Migration is seperated into two phases:
 
-1. `ganache` - start a local Ganache process.
-2. `migrate:base` - migrate base contracts.
-3. `migrate:dao` - migrate DAO.
-4. `migrate` - migrate base contracts & DAO.
-5. `build:docker` - build the `daostack/ganache` docker image.
-6. `publish:docker` - push the `daostack/ganache` image to [DockerHub](https://hub.docker.com/).
+1. Base migration - of universal contracts from the [`@daostack/arc`](https://www.npmjs.com/package/@daostack/arc)
+   package.
+2. DAO migration - of an [example DAO](#The_Example_DAO).
 
-## Configuration
+#### Versioning
 
-### Package config
+Both the npm package and the docker image are versioned according to the `@daostack/arc` package and the migration
+version. Example: `@daostack/arc@<arc version>` -> npm: `@daostack/ganache@<arcversion>-v<migration version>` and
+dockerhub: `daostack/ganache:X.Y.Z-v<migration version>`
 
-Configration related to the migration process lives in the `config` section in `package.json`.
-You can override it locally using `npm config set @daostack/ganache:<key> <value>`
-Available configurable parameters:
+## Usage
 
-- `mnemonic` - the mnemonic used to generate accounts.
-- `total_accounts` - the number of accounts to generate.
-- `provider` - the web3 provider to be used.
-- `gasPriceGWei` - the gas price in GWei units to use in transactions.
+### As a library
 
-Example: `npm config set @daostack/ganache:provider https://kovan.infura.io/v3/<infura key>` - run on kovan using infura.
-
-### `params.json`
-
-Configuration related to specific contract params can be configured in `params.json`.
-
-**Note: This file also includes the `migrationVersion` which must be incremented before publishing a new version.**
-
-## Versioning
-
-Both the npm package and the docker image are versioned according to the `@daostack/arc` package and the migration version.
-Example: `@daostack/arc@<arc version>` -> npm: `@daostack/ganache@<arcversion>-v<migration version>` and dockerhub: `daostack/ganache:X.Y.Z-v<migration version>`
-
-## Use the docker image
-
-1. `docker pull daostack/ganache`
-2. `docker run --name=ganache daostack/ganache ...` - use arguments as specified in `ganache-cli`
-
-To get information about the deployed contract addresses, you can run:
-```sh
-docker exec ganache cat /base.json
-docker exec ganache cat /dao.json
-```
-
-## Use as a library
-
-1. `npm install @daostack/ganache`
-2. `const Ganache = require('@daostack/ganache') // instead of: require('ganache-cli')` - use as a drop-in replacement for the `ganache-cli` library.
-
-The library also exposes the two migration scripts `migrateBase` & `migrateDAO`:
+1. `npm install --save @daostack/migration`
+2.
 
 ```javascript
-const { migrateBase, migrateDAO } = require("@daostack/ganache");
-const web3 = new Web3(...);
-await migrateBase(web3); // migrates all base contracts writes addresses to 'base.json' and returns them.
-await migrateDAO(web3); // migrates new DAO writes info to 'dao.json' and returns them.
+const DAOstackMigration = require('@daostack/migration');
+
+const options = {
+  // web3 provider url
+  provider: 'http://localhost:8545',
+  // gas price in GWei. If not specified, will use an automatically suggested price.
+  gasPrice: 3.4,
+  // surpress console output
+  quiet: true,
+  // disable confirmation messages
+  force: true,
+  // filepath to output the migration results
+  output: 'migration.json',
+  // private key of the account used in migration (overrides the 'mnemonic' option)
+  privateKey: '0x123...',
+  // mnemonic used to generate the private key of the account used in migration
+	mnemonic: 'one two three ...',
+	// migration parameters
+	params: {
+		default: {
+			// migration params as defined in the "Migration parameters" section below
+		},
+		private: {
+			// overide defaults on private network
+		},
+		kovan: {
+			// overide defaults on kovan
+		},
+	},
+};
+
+// migrate base contracts
+const migrationBaseResult = await DAOstackMigration.migrateBase(options);
+migrationBaseResult.base.GenesisProtocol // migrated genesis protocol address
+// migrate an example DAO (requires an existing `output` file with a base migration)
+const migrationDAOResult = await DAOstackMigration.migrateDAO(options);
+migrationBaseResult.dao.Avatar // DAO avatar address
+// migrate both base and an example DAO
+const migrationResult = await DAOstackMigration.migrate(options); // migrate
+
+// ganache-core object with already migrated contracts
+// options are as specified in https://github.com/trufflesuite/ganache-cli#library
+DAOstackMigration.Ganache.server(..);
+DAOstackMigration.Ganache.provider(..);
+// migration result object for ganache
+DAOstackMigration.migration;
 ```
 
-## `base.json`
+### As a CLI
 
-To get the base migrated contract addresses:
+1. `npm install --global @daostack/migration`
 
-```javascript
-const base = require("@daostack/ganache/base.json");
-const {
-  // Base contract addresses
-  DAOToken,
-  DaoCreator,
-  UController,
-  GenesisProtocol,
-  SchemeRegistrar,
-  UpgradeScheme,
-  GlobalConstraintRegistrar,
-  ContributionReward,
-  AbsoluteVote,
-  QuorumVote,
-  SimpleICO,
-  TokenCapGC,
-  VestingScheme,
-  VoteInOrganizationScheme,
-  OrganizationRegister
-} = migration;
+Usage:
+
+```
+Migrate base contracts and an example DAO
+
+Commands:
+  daostack-migrate             Migrate base contracts and an example DAO                                             [default]
+  daostack-migrate base        Migrate an example DAO
+  daostack-migrate dao         Migrate base contracts
+  daostack-migrate completion  generate bash completion script
+
+Options:
+  --version          Show version number                                                                       [boolean]
+  --provider, -p     web3 provider url                                       [string] [default: "http://localhost:8545"]
+  --gas-price, -g    gas price in GWei. If not specified, will use an automatically suggested price.            [number]
+  --quiet, -q        surpress console output                                                  [boolean] [default: false]
+  --force, -f        disable confirmation messages                                            [boolean] [default: false]
+  --output, -o       filepath to output the migration results                       [string] [default: "migration.json"]
+  --params, -o       path to the file containing the migration parameters           [string] [default: "migration.json"]
+  --private-key, -s  private key of the account used in migration (cannot be used with the 'mnemonic' option)
+                                [string] [default: "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"]
+  --mnemonic, -m     mnemonic used to generate the private key of the account used in migration (cannot be used with the
+                     'private-key' option)                                                                      [string]
+  --help             Show help                                                                                 [boolean]
 ```
 
-## `dao.json`
+### As a docker image
 
-To get information about the migrated DAO:
+1. `docker pull daostack/migration`
+2. Run: `docker run --rm --name=ganache daostack/migration <ganache-cli arguments>`
+3. Fetch migration result file: `docker exec ganache cat migration.json`
+4. Fetch migration params file: `docker exec ganache cat migration-params.json`
 
-```javascript
-const base = require("@daostack/ganache/dao.json");
-const {
-  orgName,            // name of the dao
-  Avatar              // avatar address
-  NativeToken,        // native token address
-  NativeReputation    // native reputation address
-} = migration;
+## Migration result
+
+Example migration result object:
+
+```json
+{
+	"base": {
+		"DAOToken": "0x123...",
+		"ControllerCreator": "0x123...",
+		"DaoCreator": "0x123...",
+		"UController": "0x123...",
+		"GenesisProtocol": "0x123...",
+		"SchemeRegistrar": "0x123...",
+		"UpgradeScheme": "0x123...",
+		"GlobalConstraintRegistrar": "0x123...",
+		"ContributionReward": "0x123...",
+		"AbsoluteVote": "0x123...",
+		"QuorumVote": "0x123...",
+		"SimpleICO": "0x123...",
+		"TokenCapGC": "0x123...",
+		"VestingScheme": "0x123...",
+		"VoteInOrganizationScheme": "0x123...",
+		"OrganizationRegister": "0x123...",
+		"Redeemer": "0x123..."
+	},
+	"dao": {
+		"name": "DAO Jones",
+		"Avatar": "0x123...",
+		"NativeToken": "0x123...",
+		"NativeReputation": "0x123..."
+	}
+}
 ```
 
-## The Migrated DAO
+## Migration parameters
+
+Example migration parameters object:
+
+```json
+{
+	"ContributionReward": {
+		"orgNativeTokenFeeGWei": 0
+	},
+	"AbsoluteVote": {
+		"ownerVote": true,
+		"votePerc": 50
+	},
+	"GenesisProtocol": {
+		"boostedVotePeriodLimit": 259200,
+		"daoBountyConst": 75,
+		"daoBountyLimitGWei": 100,
+		"minimumStakingFeeGWei": 0,
+		"preBoostedVotePeriodLimit": 1814400,
+		"preBoostedVoteRequiredPercentage": 50,
+		"proposingRepRewardConstA": 5,
+		"proposingRepRewardConstB": 5,
+		"quietEndingPeriod": 86400,
+		"stakerFeeRatioForVoters": 50,
+		"thresholdConstAGWei": 7,
+		"thresholdConstB": 3,
+		"voteOnBehalf": "0x0000000000000000000000000000000000000000",
+		"votersGainRepRatioFromLostRep": 80,
+		"votersReputationLossRatio": 1
+	},
+	"founders": [
+		{
+			"address": "0x123",
+			"tokens": 1000,
+			"reputation": 1000
+		},
+		//...
+		{
+			"address": "0x321",
+			"tokens": 1000,
+			"reputation": 1000
+		}
+	]
+}
+```
+
+## The Example DAO
 
 The migrated DAO is a simple DAO with the following configuration:
 
@@ -127,3 +214,19 @@ The migrated DAO is a simple DAO with the following configuration:
     - orgNativeTokenFee: no fee.
     - permissions: no permissions (`0x00000000`)
     - voting machine: `GenesisProtocol(<details in params.json file>)`
+
+## Develop
+
+1. `git clone https://github.com/daostack/migration.git && cd migration`
+2. `npm install`
+3. Install [`Docker`](https://docs.docker.com/install/linux/docker-ce/ubuntu/) and
+   [`jq`](https://stedolan.github.io/jq/)
+
+### Commands
+
+- `ganache` - run a fresh ganache instance.
+- `migrate ...` - run migration (same arguments as cli)
+- `docker:build` - build the docker image from current directory (make sure all to migrate on a fresh ganache
+  beforehand)
+- `docker:push` - push docker image to DockerHub.
+- `release ...` - fully release a version (same arguments as cli)

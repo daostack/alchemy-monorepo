@@ -1,4 +1,2 @@
 node_modules
-db
-base.json
-dao.json
+.env

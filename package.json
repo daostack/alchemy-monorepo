@@ -1,63 +1,41 @@
 {
-  "name": "@daostack/ganache",
-  "version": "0.0.0-alpha.56-v2",
-  "description": "A fully migrated Ganache with all DAOstack base contracts migrated and an example DAO.",
-  "main": "index.js",
-  "engines": {
-    "node": ">=8"
-  },
-  "files": [
-    "package.json",
-    "index.js",
-    "db/*",
-    "base.json",
-    "dao.json",
-    "Dockerfile",
-    "entry.sh",
-    "LICENCE",
-    "README.md",
-    "migrate.js",
-    "migrate-base.js",
-    "migrate-dao.js"
-  ],
-  "config": {
-    "mnemonic": "behave pipe turkey animal voyage dial relief menu blush match jeans general",
-    "total_accounts": 10,
-    "provider": "http://localhost:8545",
-    "gasPriceGWei": 3.9
-  },
-  "scripts": {
-    "ganache": "rm -rf db && mkdir -p db && ganache-cli --db=db --mnemonic=\"$npm_package_config_mnemonic\" --accounts=$npm_package_config_total_accounts --hostname=0.0.0.0",
-    "migrate:base": "node migrate-base.js",
-    "migrate:dao": "node migrate-dao.js",
-    "migrate": "node migrate.js",
-    "prepublish": "npm run migrate -- --provider http://localhost:8545 && node set-version.js",
-    "build:docker": "npm run prepublish && docker build . -t daostack/ganache:$(cat package.json | jq -r '.version')",
-    "publish:docker": "npm run build:docker && docker push daostack/ganache:$(cat package.json | jq -r '.version')"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/daostack/ganache.git"
-  },
-  "author": "Matan Tsuberi <tsuberim@gmail.com>",
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/daostack/ganache/issues"
-  },
-  "homepage": "https://github.com/daostack/ganache#readme",
-  "dependencies": {},
-  "devDependencies": {
-    "@daostack/arc": "0.0.0-alpha.56",
-    "dotenv": "^6.1.0",
-    "env-cmd": "^8.0.2",
-    "eth-price": "^0.1.5",
-    "ethereumjs-wallet": "^0.6.2",
-    "ganache-cli": "^6.1.8",
-    "hdwallet-accounts": "0.0.1",
-    "moment": "^2.22.2",
-    "ora": "^3.0.0",
-    "prompt-confirm": "^2.0.4",
-    "web3": "^1.0.0-beta.36",
-    "yargs": "^12.0.2"
-  }
+	"name": "@daostack/migration",
+	"version": "0.0.0-alpha.56-vasd",
+	"description": "A repo for handling DAOstack contract migrations",
+	"main": "index.js",
+	"bin": {
+		"daostack-migrate": "migrate.js"
+	},
+	"engines": {
+		"node": ">=8"
+	},
+	"scripts": {
+		"ganache": "rm -rf db && mkdir -p db && ganache-cli --db=db --deterministic --hostname=0.0.0.0",
+		"migrate": "node migrate.js",
+		"docker:build": "docker build . -t daostack/migration:$(cat package.json | jq -r '.version')",
+		"docker:push": "docker push daostack/migration:$(cat package.json | jq -r '.version')",
+		"release": "./release.sh"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/daostack/ganache.git"
+	},
+	"author": "Matan Tsuberi <tsuberim@gmail.com>",
+	"license": "GPL-3.0",
+	"bugs": {
+		"url": "https://github.com/daostack/ganache/issues"
+	},
+	"homepage": "https://github.com/daostack/ganache#readme",
+	"dependencies": {
+		"@daostack/arc": "0.0.0-alpha.56",
+		"ethereumjs-wallet": "^0.6.2",
+		"ganache-cli": "^6.1.8",
+		"hdwallet-accounts": "0.0.1",
+		"inquirer": "^6.2.0",
+		"moment": "^2.22.2",
+		"ora": "^3.0.0",
+		"prompt-confirm": "^2.0.4",
+		"web3": "^1.0.0-beta.36",
+		"yargs": "^12.0.2"
+	}
 }
