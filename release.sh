@@ -10,6 +10,7 @@ echo "Setting version..."
 node set-version.js
 # publish npm
 echo "Publishing to npm..."
+npm login
 npm publish
 # publish docker
 echo "Publishing to dockerhub..."
