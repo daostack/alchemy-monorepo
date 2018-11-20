@@ -19,10 +19,21 @@ async function migrate(opts) {
 	};
 }
 
+const defaults = {
+	quiet: false,
+	force: false,
+	provider: 'http://localhost:8545',
+	// this is the private key used by ganache when running with `--deterministic`
+	privateKey: '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d',
+	output: './migration.json',
+	params: JSON.parse(fs.readFileSync(__dirname + '/migration-params.json')),
+};
+
 /**
  * A wrapper function that performs tasks common to all migration commands.
  */
-const wrapCommand = fn => async ({ quiet, force, provider, gasPrice, privateKey, mnemonic, output, params }) => {
+const wrapCommand = fn => async opts => {
+	const { quiet, force, provider, gasPrice, privateKey, mnemonic, output, params } = { ...defaults, ...opts };
 	const emptySpinner = new Proxy({}, { get: () => () => {} }); // spinner that does nothing
 	const spinner = quiet ? emptySpinner : ora();
 
@@ -129,7 +140,7 @@ function cli() {
 			alias: 'p',
 			type: 'string',
 			describe: 'web3 provider url',
-			default: 'http://localhost:8545',
+			default: defaults.provider,
 		})
 		.option('gas-price', {
 			alias: 'g',
@@ -140,19 +151,19 @@ function cli() {
 			alias: 'q',
 			describe: 'surpress console output',
 			type: 'boolean',
-			default: false,
+			default: defaults.quiet,
 		})
 		.option('force', {
 			alias: 'f',
 			describe: 'disable confirmation messages',
 			type: 'boolean',
-			default: false,
+			default: defaults.force,
 		})
 		.option('output', {
 			alias: 'o',
 			type: 'string',
 			describe: 'filepath to output the migration results',
-			default: 'migration.json',
+			default: defaults.output,
 		})
 		.option('params', {
 			alias: 'i',
@@ -165,8 +176,7 @@ function cli() {
 			alias: 's',
 			type: 'string',
 			describe: `private key of the account used in migration (cannot be used with the 'mnemonic' option)`,
-			// this is the private key used by ganache when running with `--deterministic`
-			default: '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d',
+			default: defaults.privateKey,
 			conflicts: ['mnemonic'],
 		})
 		.option('mnemonic', {
