@@ -35,7 +35,7 @@ const DAOstackMigration = require('@daostack/migration');
 DAOstackMigration.Ganache.server(..);
 DAOstackMigration.Ganache.provider(..);
 // migration result object for ganache
-DAOstackMigration.migration;
+DAOstackMigration.migration('private');
 
 const options = {
   // web3 provider url
