@@ -32,8 +32,8 @@ const defaults = {
 /**
  * A wrapper function that performs tasks common to all migration commands.
  */
-const wrapCommand = fn => async opts => {
-	const { quiet, force, provider, gasPrice, privateKey, mnemonic, output, params } = { ...defaults, ...opts };
+const wrapCommand = fn => async options => {
+	const { quiet, force, provider, gasPrice, privateKey, mnemonic, output, params } = { ...defaults, ...options };
 	const emptySpinner = new Proxy({}, { get: () => () => {} }); // spinner that does nothing
 	const spinner = quiet ? emptySpinner : ora();
 
