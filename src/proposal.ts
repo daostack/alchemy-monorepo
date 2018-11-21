@@ -1,35 +1,39 @@
 import { Observable, of } from 'rxjs'
+import { map, switchMap } from 'rxjs/operators'
+
+import { DAO } from './dao'
 import { Operation } from './operation'
-import { Stateful } from './types'
 import { Reward } from './reward'
+import { Stateful, RewardQueryOptions, StakeQueryOptions, VoteQueryOptions } from './types'
 
 export enum Outcome {
   Pass,
   Fail
 }
 
-export type ProposalStage =
+export enum ProposalStage {
   // pre boosted
   // | { open: true }
-  | 'preboosted'
+  preboosted,
   // boosted
   // | { boosted: true; boostedAt: number }
-  | 'boosted'
+  boosted,
   // quiet ending
   // | { overtimed: true; boostedAt: number; overtimedAt: number }
-  | 'overtimed'
+  overtimed,
   // passed in pre boosted phase (via absolute vote)
   // | { passed: true; executedAt: number }
-  | 'passed'
+  passed,
   // passed in boosted phase
   // | { passed: true; executedAt: number; boosted: true; boostedAt: number; overtimedAt?: number }
-  | 'passed-boosted'
+  'passed-boosted',
   // failed in pre boosted phase
   // | { failed: true }
-  | 'failed'
+  failed,
   // failed in boosted phase
   // | { failed: true; boosted: true; boostedAt: number }
-  | 'failed-boosted'
+  'failed-boosted'
+}
 
 export interface ProposalState {
   id: string
@@ -37,7 +41,7 @@ export interface ProposalState {
   // address of the proposer
   proposer: string
 
-  // title, descriptino and url still to be implemented
+  // title, description and url still to be implemented
   ipfsHash: string
   title?: string
   description?: string
@@ -75,12 +79,14 @@ export interface Vote {
   address: string
   outcome: Outcome
   amount: number // amount of reputation that was voted with
+  proposalId: string
 }
 
 export interface Stake {
   address: string
   outcome: Outcome
   amount: number // amount staked
+  proposalId: string
 }
 
 export class Proposal implements Stateful<ProposalState> {
@@ -91,23 +97,46 @@ export class Proposal implements Stateful<ProposalState> {
 
   constructor(private id: string) {}
 
-  votes(): Observable<Vote[]> {
-    throw new Error('not implemented')
+  dao(): Observable<DAO> {
+    return this.state.pipe(
+      map(state => {
+        return new DAO(state.dao)
+      })
+    )
+  }
+
+  votes(options: VoteQueryOptions = {}): Observable<Vote[]> {
+    return this.dao().pipe(
+      switchMap(dao => {
+        options.proposalId = this.id
+        return dao.votes(options)
+      })
+    )
   }
 
   vote(outcome: Outcome): Operation<void> {
     throw new Error('not implemented')
   }
 
-  stakes(): Observable<Stake[]> {
-    throw new Error('not implemented')
+  stakes(options: StakeQueryOptions = {}): Observable<Stake[]> {
+    return this.dao().pipe(
+      switchMap(dao => {
+        options.proposalId = this.id
+        return dao.stakes(options)
+      })
+    )
   }
 
   stake(outcome: Outcome, amount: number): Operation<void> {
     throw new Error('not implemented')
   }
 
-  rewards(): Observable<Reward[]> {
-    throw new Error('not implemented')
+  rewards(options: RewardQueryOptions = {}): Observable<Reward[]> {
+    return this.dao().pipe(
+      switchMap(dao => {
+        options.proposalId = this.id
+        return dao.rewards(options)
+      })
+    )
   }
 }

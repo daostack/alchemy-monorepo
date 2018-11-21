@@ -1,4 +1,4 @@
-import { Stateful } from './types'
+import { Stateful, ProposalQueryOptions, StakeQueryOptions, VoteQueryOptions } from './types'
 import { of, Observable } from 'rxjs'
 import { Reward } from './reward'
 import { Proposal, Stake, Vote } from './proposal'
@@ -32,18 +32,18 @@ export class Member implements Stateful<MemberState> {
     throw new Error('not implemented')
   }
 
-  proposals(): Observable<Proposal[]> {
+  proposals(options: ProposalQueryOptions = {}): Observable<Proposal[]> {
     const dao = new DAO(this.dao)
-    return dao.proposals()
+    return dao.proposals(options)
   }
 
-  stakes(): Observable<Stake[]> {
+  stakes(options: StakeQueryOptions = {}): Observable<Stake[]> {
     const dao = new DAO(this.dao)
-    return dao.stakes()
+    return dao.stakes(options)
   }
 
-  votes(): Observable<Vote[]> {
+  votes(options: VoteQueryOptions = {}): Observable<Vote[]> {
     const dao = new DAO(this.dao)
-    return dao.votes()
+    return dao.votes(options)
   }
 }

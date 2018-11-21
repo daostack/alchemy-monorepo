@@ -30,7 +30,7 @@ export class DAO implements Stateful<DAOState> {
     throw new Error('not implemented')
   }
 
-  proposals(options?: ProposalQueryOptions): Observable<Proposal[]> {
+  proposals(options: ProposalQueryOptions = {}): Observable<Proposal[]> {
     throw new Error('not implemented')
   }
 
@@ -38,15 +38,15 @@ export class DAO implements Stateful<DAOState> {
     return new Proposal(id)
   }
 
-  rewards(options?: RewardQueryOptions): Observable<Reward[]> {
+  rewards(options: RewardQueryOptions = {}): Observable<Reward[]> {
     throw new Error('not implemented')
   }
 
-  votes(options?: VoteQueryOptions): Observable<Vote[]> {
+  votes(options: VoteQueryOptions = {}): Observable<Vote[]> {
     throw new Error('not implemented')
   }
 
-  stakes(options?: StakeQueryOptions): Observable<Stake[]> {
+  stakes(options: StakeQueryOptions = {}): Observable<Stake[]> {
     throw new Error('not implemented')
   }
 }

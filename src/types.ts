@@ -5,24 +5,30 @@ export interface Stateful<T> {
 }
 
 export interface CommonQueryOptions {
-  start: number
-  limit: number
-  orderBy: string
-  orderDirection: 'ASC' | 'DESC'
+  start?: number
+  limit?: number
+  orderBy?: string
+  orderDirection?: 'ASC' | 'DESC'
 }
 
 export interface DaoQueryOptions extends CommonQueryOptions {
-  address: string
-  name: string
+  address?: string
+  name?: string
 }
 
 export interface ProposalQueryOptions extends CommonQueryOptions {
-  active: boolean
-  boosted: boolean
+  active?: boolean
+  boosted?: boolean
 }
 
-export interface RewardQueryOptions extends CommonQueryOptions {}
+export interface RewardQueryOptions extends CommonQueryOptions {
+  proposalId?: string
+}
 
-export interface VoteQueryOptions extends CommonQueryOptions {}
+export interface VoteQueryOptions extends CommonQueryOptions {
+  proposalId?: string
+}
 
-export interface StakeQueryOptions extends CommonQueryOptions {}
+export interface StakeQueryOptions extends CommonQueryOptions {
+  proposalId?: string
+}
