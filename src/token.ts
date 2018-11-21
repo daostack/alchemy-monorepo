@@ -10,6 +10,7 @@ interface TokenState {
 
 export class Token implements Stateful<TokenState> {
   state: Observable<TokenState> = of()
+
   constructor(private address: string) {}
 
   balanceOf(address: string): Observable<number> {
