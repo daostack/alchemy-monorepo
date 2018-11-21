@@ -101,7 +101,7 @@ Options:
   --quiet, -q        surpress console output                                                  [boolean] [default: false]
   --force, -f        disable confirmation messages                                            [boolean] [default: false]
   --output, -o       filepath to output the migration results                       [string] [default: "migration.json"]
-  --params, -o       path to the file containing the migration parameters           [string] [default: "migration.json"]
+  --params, -i       path to the file containing the migration parameters           [string] [default: "migration-params.json"]
   --private-key, -s  private key of the account used in migration (cannot be used with the 'mnemonic' option)
                                 [string] [default: "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"]
   --mnemonic, -m     mnemonic used to generate the private key of the account used in migration (cannot be used with the
