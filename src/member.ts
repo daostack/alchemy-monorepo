@@ -1,11 +1,18 @@
-import { Stateful, ProposalQueryOptions, StakeQueryOptions, VoteQueryOptions } from './types'
+import { Address, CommonQueryOptions, Stateful } from './types'
 import { of, Observable } from 'rxjs'
 import { Reward } from './reward'
-import { Proposal, Stake, Vote } from './proposal'
+import {
+  Proposal,
+  ProposalQueryOptions,
+  Stake,
+  Vote,
+  StakeQueryOptions,
+  VoteQueryOptions
+} from './proposal'
 import { DAO } from './dao'
 
 interface MemberState {
-  address: string
+  address: Address
   dao: string
   eth: number
   reputation: number
@@ -46,4 +53,9 @@ export class Member implements Stateful<MemberState> {
     const dao = new DAO(this.dao)
     return dao.votes(options)
   }
+}
+
+export interface MemberQueryOptions extends CommonQueryOptions {
+  address?: Address
+  dao?: Address
 }

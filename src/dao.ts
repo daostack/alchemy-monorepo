@@ -1,20 +1,20 @@
 import { of, Observable } from 'rxjs'
+import { Address, CommonQueryOptions, Stateful } from './types'
 import {
-  Stateful,
-  CommonQueryOptions,
+  Proposal,
   ProposalQueryOptions,
-  VoteQueryOptions,
-  RewardQueryOptions,
-  StakeQueryOptions
-} from './types'
-import { Proposal, Vote, Stake } from './proposal'
+  Stake,
+  StakeQueryOptions,
+  Vote,
+  VoteQueryOptions
+} from './proposal'
 import { Token } from './token'
 import { Reputation } from './reputation'
-import { Member } from './member'
-import { Reward } from './reward'
+import { Member, MemberQueryOptions } from './member'
+import { Reward, RewardQueryOptions } from './reward'
 
 export interface DAOState {
-  address: string // address of the avatar
+  address: Address // address of the avatar
   name: string
   token: Token
   reputation: Reputation
@@ -26,7 +26,7 @@ export class DAO implements Stateful<DAOState> {
 
   constructor(private address: string) {}
 
-  members(): Observable<Member[]> {
+  members(options: MemberQueryOptions = {}): Observable<Member[]> {
     throw new Error('not implemented')
   }
 
@@ -49,4 +49,9 @@ export class DAO implements Stateful<DAOState> {
   stakes(options: StakeQueryOptions = {}): Observable<Stake[]> {
     throw new Error('not implemented')
   }
+}
+
+export interface DaoQueryOptions extends CommonQueryOptions {
+  address?: Address
+  name?: string
 }

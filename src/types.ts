@@ -1,5 +1,8 @@
 import { Observable } from 'rxjs'
 
+export type Address = string
+export type Date = number
+
 export interface Stateful<T> {
   state: Observable<T>
 }
@@ -9,26 +12,4 @@ export interface CommonQueryOptions {
   limit?: number
   orderBy?: string
   orderDirection?: 'ASC' | 'DESC'
-}
-
-export interface DaoQueryOptions extends CommonQueryOptions {
-  address?: string
-  name?: string
-}
-
-export interface ProposalQueryOptions extends CommonQueryOptions {
-  active?: boolean
-  boosted?: boolean
-}
-
-export interface RewardQueryOptions extends CommonQueryOptions {
-  proposalId?: string
-}
-
-export interface VoteQueryOptions extends CommonQueryOptions {
-  proposalId?: string
-}
-
-export interface StakeQueryOptions extends CommonQueryOptions {
-  proposalId?: string
 }

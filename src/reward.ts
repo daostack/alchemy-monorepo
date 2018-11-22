@@ -1,4 +1,4 @@
-import { Stateful } from './types'
+import { CommonQueryOptions, Stateful } from './types'
 import { of, Observable } from 'rxjs'
 
 export enum RewardType {
@@ -44,4 +44,11 @@ interface RewardState {
 export class Reward implements Stateful<RewardState> {
   public state: Observable<RewardState> = of()
   constructor(private id: string) {}
+}
+
+export interface RewardQueryOptions extends CommonQueryOptions {
+  proposalId?: string
+  beneficiary?: Address
+  createdAtAfter?: Date
+  createdAtBefore?: Date
 }
