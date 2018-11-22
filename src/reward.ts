@@ -1,4 +1,4 @@
-import { CommonQueryOptions, Stateful } from './types'
+import { Address, CommonQueryOptions, Stateful } from './types'
 import { of, Observable } from 'rxjs'
 
 export enum RewardType {

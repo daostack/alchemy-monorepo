@@ -109,8 +109,7 @@ export class Proposal implements Stateful<ProposalState> {
   votes(options: VoteQueryOptions = {}): Observable<Vote[]> {
     return this.dao().pipe(
       switchMap(dao => {
-        options.proposalId = this.id
-        return dao.votes(options)
+        return dao.votes({ ...options, proposalId: this.id })
       })
     )
   }
@@ -122,8 +121,7 @@ export class Proposal implements Stateful<ProposalState> {
   stakes(options: StakeQueryOptions = {}): Observable<Stake[]> {
     return this.dao().pipe(
       switchMap(dao => {
-        options.proposalId = this.id
-        return dao.stakes(options)
+        return dao.stakes({ ...options, proposalId: this.id })
       })
     )
   }
@@ -135,8 +133,7 @@ export class Proposal implements Stateful<ProposalState> {
   rewards(options: RewardQueryOptions = {}): Observable<Reward[]> {
     return this.dao().pipe(
       switchMap(dao => {
-        options.proposalId = this.id
-        return dao.rewards(options)
+        return dao.rewards({ ...options, proposalId: this.id })
       })
     )
   }
