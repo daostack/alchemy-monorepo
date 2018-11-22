@@ -1,5 +1,5 @@
 language: node_js
-# cache:
+cache: npm
 #   npm: true
 #   directories:
 #     - node_modules
