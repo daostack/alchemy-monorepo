@@ -3,8 +3,8 @@ import { map, switchMap } from 'rxjs/operators'
 
 import { DAO } from './dao'
 import { Operation } from './operation'
-import { Reward } from './reward'
-import { Stateful, RewardQueryOptions, StakeQueryOptions, VoteQueryOptions } from './types'
+import { Reward, RewardQueryOptions } from './reward'
+import { Address, CommonQueryOptions, Date, Stateful } from './types'
 
 export enum Outcome {
   Pass,
@@ -47,12 +47,13 @@ export interface ProposalState {
   description?: string
   url?: string
 
-  createdAt: number
-  boostedAt: number
-  overtimedAt: number
-  executedAt: number
-  // date when the proposal is resolved, null if not resolved yet
-  resolvedAt: number
+  createdAt: Date
+  boostedAt: Date
+  overtimedAt: Date
+  // date when the proposal is executed, null if not executed yet
+  executedAt: Date
+  // Date on which the proposal is resolved, or expected to be resolved
+  resolvesAt: Date
   // stage is calculated on the basis of the previous values
   stage: ProposalStage
 
@@ -76,14 +77,14 @@ export interface ProposalState {
 }
 
 export interface Vote {
-  address: string
+  address: Address
   outcome: Outcome
   amount: number // amount of reputation that was voted with
   proposalId: string
 }
 
 export interface Stake {
-  address: string
+  address: Address
   outcome: Outcome
   amount: number // amount staked
   proposalId: string
@@ -139,4 +140,29 @@ export class Proposal implements Stateful<ProposalState> {
       })
     )
   }
+}
+
+enum ProposalQuerySortOptions {
+  resolvesAt = 'resolvesAt'
+  // 'resolvesAt' should be ok for the current alchemy; will add more options as needed.
+}
+
+export interface ProposalQueryOptions extends CommonQueryOptions {
+  active?: boolean
+  boosted?: boolean
+  proposer?: Address
+  proposalId?: string
+  stage?: ProposalStage
+  orderBy?: ProposalQuerySortOptions
+  // the options above should be ok for the current alchemy; will add more options as needed
+  executedAfter?: Date
+  executedBefore?: Date
+}
+
+export interface VoteQueryOptions extends CommonQueryOptions {
+  proposalId?: string
+}
+
+export interface StakeQueryOptions extends CommonQueryOptions {
+  proposalId?: string
 }

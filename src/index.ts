@@ -2,7 +2,7 @@ import { Observable, of } from 'rxjs'
 import { Proposal } from './proposal'
 import { Operation } from './operation'
 import { DAO } from './dao'
-import { DaoQueryOptions } from './types'
+import { Address, DaoQueryOptions } from './types'
 
 export default class Arc {
   graphqlProvider: string
@@ -25,7 +25,7 @@ export default class Arc {
    * @param  address address of the dao Avatar
    * @return an instance of a DAO
    */
-  dao(address: string): DAO {
+  dao(address: Address): DAO {
     return new DAO(address)
   }
 

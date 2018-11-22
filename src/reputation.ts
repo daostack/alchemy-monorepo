@@ -1,8 +1,8 @@
-import { Stateful } from './types'
+import { Address, Stateful } from './types'
 import { Observable, of } from 'rxjs'
 
 interface ReputationState {
-  address: string
+  address: Address
   name: string
   symbol: string
   totalSupply: number
@@ -10,9 +10,9 @@ interface ReputationState {
 
 export class Reputation implements Stateful<ReputationState> {
   state: Observable<ReputationState> = of()
-  constructor(private address: string) {}
+  constructor(private address: Address) {}
 
-  reputationOf(address: string): Observable<number> {
+  reputationOf(address: Address): Observable<number> {
     throw new Error('not implemented')
   }
 }
