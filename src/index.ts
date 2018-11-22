@@ -1,8 +1,8 @@
 import { Observable, of } from 'rxjs'
 import { Proposal } from './proposal'
 import { Operation } from './operation'
-import { DAO } from './dao'
-import { Address, DaoQueryOptions } from './types'
+import { DAO, DaoQueryOptions } from './dao'
+import { Address } from './types'
 
 export default class Arc {
   graphqlProvider: string
