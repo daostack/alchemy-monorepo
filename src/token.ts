@@ -1,19 +1,19 @@
-import { Address, Stateful } from './types'
 import { Observable, of } from 'rxjs'
+import { Address, IStateful } from './types'
 
-interface TokenState {
+interface ITokenState {
   address: Address
   name: string
   symbol: string
   totalSupply: number
 }
 
-export class Token implements Stateful<TokenState> {
-  state: Observable<TokenState> = of()
+export class Token implements IStateful<ITokenState> {
+  public state: Observable<ITokenState> = of()
 
   constructor(private address: Address) {}
 
-  balanceOf(address: string): Observable<number> {
+  public balanceOf(address: string): Observable<number> {
     throw new Error('not implemented')
   }
 }

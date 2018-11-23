@@ -1,12 +1,13 @@
 import { Observable, of } from 'rxjs'
-import { Proposal } from './proposal'
+import { DAO, IDaoQueryOptions } from './dao'
 import { Operation } from './operation'
-import { DAO, DaoQueryOptions } from './dao'
+import { Proposal } from './proposal'
 import { Address } from './types'
 
 export default class Arc {
-  graphqlProvider: string
-  web3Provider: string
+  public graphqlProvider: string
+  public web3Provider: string
+  public pendingOperations: Observable<Array<Operation<any>>> = of()
 
   constructor(options: { graphqlProvider: string; web3Provider: string }) {
     this.graphqlProvider = options.graphqlProvider
@@ -16,7 +17,7 @@ export default class Arc {
   /**
    * @return an observable array of DAO instances
    */
-  daos(options: DaoQueryOptions): Observable<DAO[]> {
+  public daos(options: IDaoQueryOptions): Observable<DAO[]> {
     throw new Error('not implemented')
   }
 
@@ -25,12 +26,11 @@ export default class Arc {
    * @param  address address of the dao Avatar
    * @return an instance of a DAO
    */
-  dao(address: Address): DAO {
+  public dao(address: Address): DAO {
     return new DAO(address)
   }
 
   /**
    * An observable of the list of pending operations
    */
-  pendingOperations: Observable<Operation<any>[]> = of()
 }

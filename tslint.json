@@ -1,9 +1,6 @@
 {
   "extends": [
-    "tslint-config-standard",
+    "tslint:recommended",
     "tslint-config-prettier"
-  ],
-  "rules": {
-    "no-consecutive-blank-lines": true
-  }
+  ]
 }

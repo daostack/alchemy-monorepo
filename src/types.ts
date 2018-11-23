@@ -3,11 +3,11 @@ import { Observable } from 'rxjs'
 export type Address = string
 export type Date = number
 
-export interface Stateful<T> {
+export interface IStateful<T> {
   state: Observable<T>
 }
 
-export interface CommonQueryOptions {
+export interface ICommonQueryOptions {
   start?: number
   limit?: number
   orderBy?: string

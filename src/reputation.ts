@@ -1,18 +1,18 @@
-import { Address, Stateful } from './types'
 import { Observable, of } from 'rxjs'
+import { Address, IStateful } from './types'
 
-interface ReputationState {
+interface IReputationState {
   address: Address
   name: string
   symbol: string
   totalSupply: number
 }
 
-export class Reputation implements Stateful<ReputationState> {
-  state: Observable<ReputationState> = of()
+export class Reputation implements IStateful<IReputationState> {
+  public state: Observable<IReputationState> = of()
   constructor(private address: Address) {}
 
-  reputationOf(address: Address): Observable<number> {
+  public reputationOf(address: Address): Observable<number> {
     throw new Error('not implemented')
   }
 }

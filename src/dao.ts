@@ -1,19 +1,19 @@
-import { of, Observable } from 'rxjs'
-import { Address, CommonQueryOptions, Stateful } from './types'
+import { Observable, of } from 'rxjs'
+import { IMemberQueryOptions, Member } from './member'
 import {
-  Proposal,
-  ProposalQueryOptions,
-  Stake,
-  StakeQueryOptions,
-  Vote,
-  VoteQueryOptions
+  IProposalQueryOptions,
+  IStake,
+  IStakeQueryOptions,
+  IVote,
+  IVoteQueryOptions,
+  Proposal
 } from './proposal'
-import { Token } from './token'
 import { Reputation } from './reputation'
-import { Member, MemberQueryOptions } from './member'
-import { Reward, RewardQueryOptions } from './reward'
+import { IRewardQueryOptions, Reward } from './reward'
+import { Token } from './token'
+import { Address, ICommonQueryOptions, IStateful } from './types'
 
-export interface DAOState {
+export interface IDAOState {
   address: Address // address of the avatar
   name: string
   token: Token
@@ -21,37 +21,37 @@ export interface DAOState {
   members: number
 }
 
-export class DAO implements Stateful<DAOState> {
-  state: Observable<DAOState> = of()
+export class DAO implements IStateful<IDAOState> {
+  public state: Observable<IDAOState> = of()
 
   constructor(private address: string) {}
 
-  members(options: MemberQueryOptions = {}): Observable<Member[]> {
+  public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
     throw new Error('not implemented')
   }
 
-  proposals(options: ProposalQueryOptions = {}): Observable<Proposal[]> {
+  public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
     throw new Error('not implemented')
   }
 
-  proposal(id: string): Proposal {
+  public proposal(id: string): Proposal {
     return new Proposal(id)
   }
 
-  rewards(options: RewardQueryOptions = {}): Observable<Reward[]> {
+  public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
     throw new Error('not implemented')
   }
 
-  votes(options: VoteQueryOptions = {}): Observable<Vote[]> {
+  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
     throw new Error('not implemented')
   }
 
-  stakes(options: StakeQueryOptions = {}): Observable<Stake[]> {
+  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
     throw new Error('not implemented')
   }
 }
 
-export interface DaoQueryOptions extends CommonQueryOptions {
+export interface IDaoQueryOptions extends ICommonQueryOptions {
   address?: Address
   name?: string
 }

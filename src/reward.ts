@@ -1,5 +1,5 @@
-import { Address, CommonQueryOptions, Stateful } from './types'
-import { of, Observable } from 'rxjs'
+import { Observable, of } from 'rxjs'
+import { Address, ICommonQueryOptions, IStateful } from './types'
 
 export enum RewardType {
   Contribution,
@@ -9,7 +9,7 @@ export enum RewardType {
   Bounty
 }
 
-interface RewardState {
+interface IRewardState {
   id: string
   createdAt: number
   dao: string
@@ -41,12 +41,12 @@ interface RewardState {
   }
 }
 
-export class Reward implements Stateful<RewardState> {
-  public state: Observable<RewardState> = of()
+export class Reward implements IStateful<IRewardState> {
+  public state: Observable<IRewardState> = of()
   constructor(private id: string) {}
 }
 
-export interface RewardQueryOptions extends CommonQueryOptions {
+export interface IRewardQueryOptions extends ICommonQueryOptions {
   proposalId?: string
   beneficiary?: Address
   createdAtAfter?: Date

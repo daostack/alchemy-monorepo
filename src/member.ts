@@ -1,17 +1,17 @@
-import { Address, CommonQueryOptions, Stateful } from './types'
-import { of, Observable } from 'rxjs'
-import { Reward } from './reward'
-import {
-  Proposal,
-  ProposalQueryOptions,
-  Stake,
-  Vote,
-  StakeQueryOptions,
-  VoteQueryOptions
-} from './proposal'
+import { Observable, of } from 'rxjs'
 import { DAO } from './dao'
+import {
+  IProposalQueryOptions,
+  IStake,
+  IStakeQueryOptions,
+  IVote,
+  IVoteQueryOptions,
+  Proposal
+} from './proposal'
+import { Reward } from './reward'
+import { Address, ICommonQueryOptions, IStateful } from './types'
 
-interface MemberState {
+interface IMemberState {
   address: Address
   dao: string
   eth: number
@@ -25,8 +25,8 @@ interface MemberState {
  * Represents a user of a DAO
  */
 
-export class Member implements Stateful<MemberState> {
-  state: Observable<MemberState> = of()
+export class Member implements IStateful<IMemberState> {
+  public state: Observable<IMemberState> = of()
 
   /**
    * [constructor description]
@@ -35,27 +35,27 @@ export class Member implements Stateful<MemberState> {
    */
   constructor(private address: string, private dao: string) {}
 
-  rewards(): Observable<Reward[]> {
+  public rewards(): Observable<Reward[]> {
     throw new Error('not implemented')
   }
 
-  proposals(options: ProposalQueryOptions = {}): Observable<Proposal[]> {
+  public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
     const dao = new DAO(this.dao)
     return dao.proposals(options)
   }
 
-  stakes(options: StakeQueryOptions = {}): Observable<Stake[]> {
+  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
     const dao = new DAO(this.dao)
     return dao.stakes(options)
   }
 
-  votes(options: VoteQueryOptions = {}): Observable<Vote[]> {
+  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
     const dao = new DAO(this.dao)
     return dao.votes(options)
   }
 }
 
-export interface MemberQueryOptions extends CommonQueryOptions {
+export interface IMemberQueryOptions extends ICommonQueryOptions {
   address?: Address
   dao?: Address
 }

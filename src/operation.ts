@@ -8,7 +8,7 @@ export enum TransactionState {
 /**
  * A transaction update is a snapshot of the state of a transaction at a particular time.
  */
-export interface TransactionUpdate<T> {
+export interface ITransactionUpdate<T> {
   state: TransactionState
   /**
    * depth of the transaction in the blockchain.
@@ -24,4 +24,4 @@ export interface TransactionUpdate<T> {
 /**
  * An operation is a stream of transaction updates
  */
-export type Operation<T> = Observable<TransactionUpdate<T>>
+export type Operation<T> = Observable<ITransactionUpdate<T>>
