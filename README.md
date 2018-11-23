@@ -227,7 +227,8 @@ The migrated DAO is a simple DAO with the following configuration:
 
 ### Commands
 
-- `ganache` - run a fresh ganache instance.
+- `cleandb` - rm the existing local db.
+- `ganache` - run a ganache instance with local db.
 - `migrate ...` - run migration (same arguments as cli)
 - `docker:build` - build the docker image from current directory (make sure all to migrate on a fresh ganache
   beforehand)
