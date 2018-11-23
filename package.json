@@ -1,42 +1,42 @@
 {
-	"name": "@daostack/migration",
-	"version": "0.0.0-alpha.56-v3",
-	"description": "A repo for handling DAOstack contract migrations",
-	"main": "index.js",
-	"bin": {
-		"daostack-migrate": "migrate.js"
-	},
-	"engines": {
-		"node": ">=8"
-	},
-	"scripts": {
-		"cleandb": "rm -rf db",
-		"ganache": "mkdir -p db && ganache-cli --db=./db --deterministic --hostname=0.0.0.0",
-		"migrate": "./migrate.js",
-		"docker:build": "docker build . -t daostack/migration:$(cat package.json | jq -r '.version')",
-		"docker:push": "docker push daostack/migration:$(cat package.json | jq -r '.version')",
-		"release": "./release.sh"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/daostack/ganache.git"
-	},
-	"author": "Matan Tsuberi <tsuberim@gmail.com>",
-	"license": "GPL-3.0",
-	"bugs": {
-		"url": "https://github.com/daostack/ganache/issues"
-	},
-	"homepage": "https://github.com/daostack/ganache#readme",
-	"dependencies": {
-		"@daostack/arc": "0.0.0-alpha.56",
-		"ethereumjs-wallet": "^0.6.2",
-		"ganache-cli": "^6.2.3",
-		"hdwallet-accounts": "0.0.1",
-		"inquirer": "^6.2.0",
-		"moment": "^2.22.2",
-		"ora": "^3.0.0",
-		"prompt-confirm": "^2.0.4",
-		"web3": "^1.0.0-beta.36",
-		"yargs": "^12.0.2"
-	}
+  "name": "@daostack/migration",
+  "version": "0.0.0-alpha.56-v4",
+  "description": "A repo for handling DAOstack contract migrations",
+  "main": "index.js",
+  "bin": {
+    "daostack-migrate": "migrate.js"
+  },
+  "engines": {
+    "node": ">=8"
+  },
+  "scripts": {
+    "cleandb": "rm -rf db",
+    "ganache": "mkdir -p db && ganache-cli --db=./db --deterministic --hostname=0.0.0.0",
+    "migrate": "./migrate.js",
+    "docker:build": "docker build . -t daostack/migration:$(cat package.json | jq -r '.version')",
+    "docker:push": "docker push daostack/migration:$(cat package.json | jq -r '.version')",
+    "release": "./release.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daostack/ganache.git"
+  },
+  "author": "Matan Tsuberi <tsuberim@gmail.com>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/daostack/ganache/issues"
+  },
+  "homepage": "https://github.com/daostack/ganache#readme",
+  "dependencies": {
+    "@daostack/arc": "0.0.0-alpha.56",
+    "ethereumjs-wallet": "^0.6.2",
+    "ganache-cli": "^6.2.3",
+    "hdwallet-accounts": "0.0.1",
+    "inquirer": "^6.2.0",
+    "moment": "^2.22.2",
+    "ora": "^3.0.0",
+    "prompt-confirm": "^2.0.4",
+    "web3": "^1.0.0-beta.34",
+    "yargs": "^12.0.2"
+  }
 }

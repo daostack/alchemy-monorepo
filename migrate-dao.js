@@ -65,7 +65,7 @@ async function migrateDAO({ web3, spinner, confirm, opts, migrationParams, logTx
 	];
 
 	spinner.start('Creating a new organization...');
-	const forgeOrg = await daoCreator.methods.forgeOrg(
+	const forgeOrg = daoCreator.methods.forgeOrg(
 		orgName,
 		tokenName,
 		tokenSymbol,

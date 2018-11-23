@@ -1,8 +1,4 @@
-FROM mhart/alpine-node:8
-
-# install git
-RUN apk update && apk upgrade && \
-    apk add --no-cache bash git openssh
+FROM node:8
 
 WORKDIR /app
 COPY . .
