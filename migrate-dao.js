@@ -3,6 +3,12 @@ async function migrateDAO({ web3, spinner, confirm, opts, migrationParams, logTx
 		return;
 	}
 
+	if (!base) {
+		const msg = `Couldn't find existing base migration ('migration.json' > 'base').`;
+		spinner.fail(msg);
+		throw new Error(msg);
+	}
+
 	spinner.start('Migrating DAO...');
 	let tx;
 
