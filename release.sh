@@ -1,10 +1,14 @@
 #!/bin/bash
 
 set -e
+source .env
 
 # migrate ganache
 echo "Migrating ganache..."
 npm run migrate -- "$@"
+# migrate ganache
+echo "Migrating kovan..."
+npm run migrate -- --provider $kovan_provider --private-key $kovan_private_key "$@"
 # set version
 echo "Setting version..."
 node set-version.js

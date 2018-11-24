@@ -233,4 +233,5 @@ The migrated DAO is a simple DAO with the following configuration:
 - `docker:build` - build the docker image from current directory (make sure all to migrate on a fresh ganache
   beforehand)
 - `docker:push` - push docker image to DockerHub.
-- `release ...` - fully release a version (same arguments as cli)
+- `release ...` - fully release a version (requires an `.env` file with `kovan_provider` and `kovan_private_key`
+  variables set) (same arguments as cli)
