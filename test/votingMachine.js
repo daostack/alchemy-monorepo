@@ -10,7 +10,7 @@ const GenesisProtocolCallbacks = artifacts.require("./GenesisProtocolCallbacksMo
 
 
 
-const setupGenesisProtocol = async function (accounts,_voteOnBehalf = 0,
+const setupGenesisProtocol = async function (accounts,_voteOnBehalf = helpers.NULL_ADDRESS,
                                       _preBoostedVoteRequiredPercentage=50,
                                       _preBoostedVotePeriodLimit=60,
                                       _boostedVotePeriodLimit=60,

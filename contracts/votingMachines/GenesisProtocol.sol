@@ -717,6 +717,16 @@ contract GenesisProtocol is IntVoteInterface {
     }
 
     /**
+     * @dev getDaoBountyParams returns the daoBountyParams
+     * @param  _paramsHash - parameters hash
+     * @return daoBountyConst
+     *         daoBountyLimit
+     */
+    function getDaoBountyParams(bytes32 _paramsHash) public view returns(uint[2]) {
+        return parameters[_paramsHash].daoBountyParams;
+    }
+
+    /**
       * @dev execute check if the proposal has been decided, and if so, execute the proposal
       * @param _proposalId the id of the proposal
       * @return bool true - the proposal has been executed

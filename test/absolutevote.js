@@ -120,8 +120,7 @@ contract('AbsoluteVote', accounts => {
       await checkIsVotable(proposalId, true);
 
       // now lets vote Option 1 with a minority reputation
-
-      await absoluteVote.vote(proposalId, 1,0);
+      await absoluteVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
 
       await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
       await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address,
@@ -135,7 +134,7 @@ contract('AbsoluteVote', accounts => {
       await checkIsVotable(proposalId, true);
 
       // another minority reputation (Option 0):
-      await absoluteVote.vote(proposalId, 0,0, { from: accounts[1] });
+      await absoluteVote.vote(proposalId, 0,helpers.NULL_ADDRESS, { from: accounts[1] });
       await checkVoteInfo(proposalId, accounts[1], [0, reputationArray[1]]);
       await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address,
                                            organizationId,
@@ -200,7 +199,7 @@ contract('AbsoluteVote', accounts => {
     const proposalId =  await helpers.getProposalId(tx,absoluteVote,"NewProposal");
     assert.isOk(proposalId);
 
-    let voteTX = await absoluteVote.vote(proposalId, 1,0);
+    let voteTX = await absoluteVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
 
     assert.equal(voteTX.logs.length, 2);
     assert.equal(voteTX.logs[0].event, "VoteProposal");
@@ -226,10 +225,10 @@ contract('AbsoluteVote', accounts => {
     assert.isOk(proposalId);
 
     // now lets vote with a minority reputation
-    await absoluteVote.vote(proposalId, 1,0);
+    await absoluteVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
 
     // another minority reputation:
-    await absoluteVote.vote(proposalId, 0,0, { from: accounts[1] });
+    await absoluteVote.vote(proposalId, 0,helpers.NULL_ADDRESS, { from: accounts[1] });
 
     // the decisive vote is cast now and the proposal will be executed
     tx = await absoluteVoteExecuteMock.ownerVote(proposalId, 4, accounts[2]);
@@ -253,61 +252,61 @@ contract('AbsoluteVote', accounts => {
     const proposalId =  await helpers.getProposalId(tx,absoluteVote,"NewProposal");
     assert.isOk(proposalId);
     // Option 1
-    await absoluteVote.vote(proposalId, 0,0);
+    await absoluteVote.vote(proposalId, 0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [0, reputationArray[0]]);
     await checkVotesStatus(proposalId, [reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0]);
     await checkIsVotable(proposalId,true);
 
     // Option 2
-    await absoluteVote.vote(proposalId, 1,0);
+    await absoluteVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0]);
     await checkIsVotable(proposalId,true);
 
     // Option 3
-    await absoluteVote.vote(proposalId, 2,0);
+    await absoluteVote.vote(proposalId, 2,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [2, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0]);
     await checkIsVotable(proposalId,true);
 
     // Option 4
-    await absoluteVote.vote(proposalId, 3,0);
+    await absoluteVote.vote(proposalId, 3,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [3, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0]);
     await checkIsVotable(proposalId,true);
 
     // Option 5
-    await absoluteVote.vote(proposalId, 4,0);
+    await absoluteVote.vote(proposalId, 4,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [4, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0]);
     await checkIsVotable(proposalId,true);
 
     // Option 6
-    await absoluteVote.vote(proposalId, 5,0);
+    await absoluteVote.vote(proposalId, 5,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [5, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0]);
     await checkIsVotable(proposalId,true);
 
     // Option 7
-    await absoluteVote.vote(proposalId, 6,0);
+    await absoluteVote.vote(proposalId, 6,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [6, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0]);
     await checkIsVotable(proposalId,true);
 
     // Option 8
-    await absoluteVote.vote(proposalId, 7,0);
+    await absoluteVote.vote(proposalId, 7,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [7, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0]);
     await checkIsVotable(proposalId,true);
 
     // Option 9
-    await absoluteVote.vote(proposalId, 8,0);
+    await absoluteVote.vote(proposalId, 8,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [8, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0]);
     await checkIsVotable(proposalId,true);
 
     // Option 10
-    await absoluteVote.vote(proposalId, 9,0);
+    await absoluteVote.vote(proposalId, 9,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [9, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0]]);
     await checkIsVotable(proposalId,true);
@@ -335,9 +334,9 @@ contract('AbsoluteVote', accounts => {
                                         true]);
 
     // Lets try to vote twice from the same address
-    await absoluteVote.vote(proposalId, 1,0);
+    await absoluteVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
-    await absoluteVote.vote(proposalId, 1,0);
+    await absoluteVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
     // Total 'Option 2' should be equal to the voter's reputation exactly, even though we voted twice
     await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, reputationArray[0], true]);
@@ -358,7 +357,7 @@ contract('AbsoluteVote', accounts => {
     await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
     // Lets try to vote and then cancel our vote
-    await absoluteVote.vote(proposalId, 1,0);
+    await absoluteVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
     await absoluteVote.cancelVote(proposalId);
     await checkVoteInfo(proposalId, accounts[0], [0, 0]);
@@ -493,7 +492,7 @@ contract('AbsoluteVote', accounts => {
     assert.isOk(proposalId);
 
     // After this voting the proposal should be executed
-    await absoluteVote.vote(proposalId, 0,0, {from: accounts[2]});
+    await absoluteVote.vote(proposalId, 0,helpers.NULL_ADDRESS, {from: accounts[2]});
 
     // Should not be able to cancel the proposal because it's already been executed
     try {
@@ -513,7 +512,7 @@ contract('AbsoluteVote', accounts => {
 
     // Should not be able to vote because the proposal has been executed
     try {
-        await absoluteVote.vote(proposalId, 1,0, { from: accounts[1] });
+        await absoluteVote.vote(proposalId, 1,helpers.NULL_ADDRESS, { from: accounts[1] });
         assert(false, "vote was supposed to throw but didn't.");
     } catch (error) {
         helpers.assertVMException(error);
@@ -543,10 +542,10 @@ contract('AbsoluteVote', accounts => {
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // Let's try to change user voting choice. and also check that if it's the same choice, ignore.
-    await absoluteVote.vote(proposalId, 1,0, { from: accounts[1] });
-    await absoluteVote.vote(proposalId, 1,0, { from: accounts[1] });
-    await absoluteVote.vote(proposalId, 2,0, { from: accounts[1] });
-    await absoluteVote.vote(proposalId, 2,0, { from: accounts[1] });
+    await absoluteVote.vote(proposalId, 1,helpers.NULL_ADDRESS, { from: accounts[1] });
+    await absoluteVote.vote(proposalId, 1,helpers.NULL_ADDRESS, { from: accounts[1] });
+    await absoluteVote.vote(proposalId, 2,helpers.NULL_ADDRESS, { from: accounts[1] });
+    await absoluteVote.vote(proposalId, 2,helpers.NULL_ADDRESS, { from: accounts[1] });
     // Total 'Option 2' supposed to be 0, 'Option 3' supposed to be accounts[1] reputation.
     // everything should be 0
     await checkVotesStatus(proposalId, [0, 0, reputationArray[1], 0, 0, 0, 0, 0, 0, 0]);
@@ -567,11 +566,11 @@ contract('AbsoluteVote', accounts => {
       // no one has voted yet at this point
       await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
-      await absoluteVote.vote(proposalId, 0,0, { from: accounts[1] });
+      await absoluteVote.vote(proposalId, 0,helpers.NULL_ADDRESS, { from: accounts[1] });
 
       await checkVotesStatus(proposalId, [reputationArray[1], 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
-      await absoluteVote.vote(proposalId, 1,0, { from: accounts[1] });
+      await absoluteVote.vote(proposalId, 1,helpers.NULL_ADDRESS, { from: accounts[1] });
 
       await checkVotesStatus(proposalId, [0, reputationArray[1], 0, 0, 0, 0, 0, 0, 0, 0]);
     });
@@ -590,11 +589,11 @@ contract('AbsoluteVote', accounts => {
       // no one has voted yet at this point
       await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
-      await absoluteVote.vote(proposalId, 2,0, { from: accounts[1] });
+      await absoluteVote.vote(proposalId, 2,helpers.NULL_ADDRESS, { from: accounts[1] });
 
       await checkVotesStatus(proposalId, [0, 0, reputationArray[1], 0, 0, 0, 0, 0, 0, 0]);
 
-      await absoluteVote.vote(proposalId, 3,0, { from: accounts[1] });
+      await absoluteVote.vote(proposalId, 3,helpers.NULL_ADDRESS, { from: accounts[1] });
 
       await checkVotesStatus(proposalId, [0, 0, 0, reputationArray[1], 0, 0, 0, 0, 0, 0]);
     });
@@ -681,7 +680,7 @@ contract('AbsoluteVote', accounts => {
     const proposalId =  await helpers.getProposalId(tx,absoluteVote,"NewProposal");
 
     // Minority vote - no execution - no exception
-    tx = await absoluteVote.vote(proposalId, 5, 0,{ from: accounts[0] });
+    tx = await absoluteVote.vote(proposalId, 5, helpers.NULL_ADDRESS,{ from: accounts[0] });
     // The decisive vote - execution should be initiate execution with an empty address
     // await absoluteVote.vote(proposalId, 5, { from: accounts[2] });
   });
@@ -728,14 +727,14 @@ contract('AbsoluteVote', accounts => {
     assert.isOk(proposalId);
 
     // Vote with the reputation the I own - should work
-    tx = await absoluteVote.voteWithSpecifiedAmounts(proposalId, 1, reputationArray[0] / 10, 0,0);
+    tx = await absoluteVote.voteWithSpecifiedAmounts(proposalId, 1, reputationArray[0] / 10, 0,helpers.NULL_ADDRESS);
 
     var repVoted = await helpers.getValueFromLogs(tx, "_reputation");
 
     assert.equal(repVoted, reputationArray[0] / 10, 'Should vote with specified amount');
     // Vote with negative reputation - exception should be raised
     try {
-      await absoluteVote.voteWithSpecifiedAmounts(proposalId, 1, -100, 0,0);
+      await absoluteVote.voteWithSpecifiedAmounts(proposalId, 1, -100, 0,helpers.NULL_ADDRESS);
       assert(false, 'Vote with -100 reputation voting shouldn\'t work');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -743,7 +742,7 @@ contract('AbsoluteVote', accounts => {
 
     // Vote with more reputation that i own - exception should be raised
     try {
-      await absoluteVote.voteWithSpecifiedAmounts(proposalId, 1, (reputationArray[0] + 1), 0,0);
+      await absoluteVote.voteWithSpecifiedAmounts(proposalId, 1, (reputationArray[0] + 1), 0,helpers.NULL_ADDRESS);
       assert(false, 'Not enough reputation - voting shouldn\'t work');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -751,9 +750,10 @@ contract('AbsoluteVote', accounts => {
 
     // Vote with a very big number - exception should be raised
     let BigNumber = require('bignumber.js');
-    let bigNum = ((new BigNumber(2)).toPower(254));
+    let bigNum = ((new BigNumber(2)).toPower(254)).toString(10);
+
     try {
-      await absoluteVote.voteWithSpecifiedAmounts(proposalId, 1, bigNum, 0,0);
+      await absoluteVote.voteWithSpecifiedAmounts(proposalId, 1, bigNum, 0,helpers.NULL_ADDRESS);
       assert(false, 'Voting shouldn\'t work');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -779,7 +779,7 @@ contract('AbsoluteVote', accounts => {
       helpers.assertInternalFunctionException(ex);
     }
 
-    await absoluteVote.vote(proposalId, 1, 0,{ from: accounts[0] });
+    await absoluteVote.vote(proposalId, 1, helpers.NULL_ADDRESS,{ from: accounts[0] });
 
     // Lets try to call cancelVoteInternal function
     try {
@@ -802,7 +802,7 @@ contract('AbsoluteVote', accounts => {
 
     // Lets try to call vote with invalid proposal id
     try {
-      await absoluteVote.vote(helpers.NULL_HASH, 1,0, {from: accounts[0]});
+      await absoluteVote.vote(helpers.NULL_HASH, 1,helpers.NULL_ADDRESS, {from: accounts[0]});
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -810,7 +810,7 @@ contract('AbsoluteVote', accounts => {
 
     // Lets try to call voteWithSpecifiedAmounts with invalid proposal id
     try {
-      await absoluteVote.voteWithSpecifiedAmounts(helpers.NULL_HASH, 1, 1, 1,0);
+      await absoluteVote.voteWithSpecifiedAmounts(helpers.NULL_HASH, 1, 1, 1,helpers.NULL_ADDRESS);
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -881,8 +881,8 @@ contract('AbsoluteVote', accounts => {
     await checkProposalInfoWithAbsoluteVote(proposalId2, [absoluteVoteExecuteMock2.address, organization2Id,absoluteVoteExecuteMock2.address, 2, paramsHash2, 0, true], absoluteVote2);
 
     // Account 0 votes in both proposals, and on behalf of Account 1 - should get an exception for that
-    await absoluteVote1.voteWithSpecifiedAmounts(proposalId1, 2, 2, 0,0);
-    await absoluteVote2.vote(proposalId2, 0,0);
+    await absoluteVote1.voteWithSpecifiedAmounts(proposalId1, 2, 2, 0,helpers.NULL_ADDRESS);
+    await absoluteVote2.vote(proposalId2, 0,helpers.NULL_ADDRESS);
     try {
       await absoluteVoteExecuteMock.ownerVote(proposalId2, 0, accounts[1]);
       assert(false, 'absoluteVoteExecuteMock is not the owner of proposal 2');
@@ -891,10 +891,10 @@ contract('AbsoluteVote', accounts => {
     }
 
     // Account 1 voting on both proposals
-    await absoluteVote1.vote(proposalId1, 4,0, { from: accounts[1] });
+    await absoluteVote1.vote(proposalId1, 4,helpers.NULL_ADDRESS, { from: accounts[1] });
     // Made mistake and changed his vote
-    await absoluteVote1.vote(proposalId1, 3,0, { from: accounts[1] });
-    await absoluteVote2.vote(proposalId2, 1,0, { from: accounts[1] });
+    await absoluteVote1.vote(proposalId1, 3,helpers.NULL_ADDRESS, { from: accounts[1] });
+    await absoluteVote2.vote(proposalId2, 1,helpers.NULL_ADDRESS, { from: accounts[1] });
     // Account 1 changing Account 0 vote from 0 to 1
     await absoluteVoteExecuteMock2.ownerVote(proposalId2, 1, accounts[0], { from: accounts[1] });
 

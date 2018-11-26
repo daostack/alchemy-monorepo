@@ -66,7 +66,7 @@ contract('Reputation', accounts => {
     it("check total reputation overflow", async () => {
         let rep = await Reputation.new();
         let BigNumber = require('bignumber.js');
-        let bigNum = ((new BigNumber(2)).toPower(128).sub(1));
+        let bigNum = ((new BigNumber(2)).toPower(128).sub(1)).toString(10);
 
         await rep.mint(accounts[0], bigNum);
 

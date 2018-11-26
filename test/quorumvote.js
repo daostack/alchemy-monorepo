@@ -77,13 +77,13 @@ contract('QuorumVote', accounts => {
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // now lets vote Option 1 with a minority reputation
-    await quorumVote.vote(proposalId, 1,0);
+    await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
     await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 5, paramsHash, reputationArray[0], true]);
     await checkVotesStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // another minority reputation (Option 0):
-    await quorumVote.vote(proposalId, 0,0, { from: accounts[1] });
+    await quorumVote.vote(proposalId, 0,helpers.NULL_ADDRESS, { from: accounts[1] });
     await checkVoteInfo(proposalId, accounts[1], [0, reputationArray[1]]);
     await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 5, paramsHash, (reputationArray[0] + reputationArray[1]), true]);
     await checkVotesStatus(proposalId, [reputationArray[1], reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -112,13 +112,13 @@ contract('QuorumVote', accounts => {
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // now lets vote 'Option 0' with 20% of the reputation - should not be executed yet (didn't reach 25%).
-    await quorumVote.vote(proposalId, 0,0);
+    await quorumVote.vote(proposalId, 0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [0, reputationArray[0]]);
     await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId, absoluteVoteExecuteMock.address,6, paramsHash, reputationArray[0], true]);
     await checkVotesStatus(proposalId, [reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // now lets vote 'Option 1' with 10% of the reputation - should be executed with 'Option 0'! (reached 30% and the 'Option 1' is the majority).
-    await quorumVote.vote(proposalId, 1,0, { from: accounts[1] });
+    await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS, { from: accounts[1] });
     await checkVoteInfo(proposalId, accounts[1], [1, reputationArray[1]]);
     await checkProposalInfo(proposalId, [helpers.NULL_ADDRESS, helpers.NULL_HASH,helpers.NULL_ADDRESS, 0,helpers.NULL_HASH, 0, false]);
   });
@@ -170,7 +170,7 @@ contract('QuorumVote', accounts => {
 
     // Lets try to vote with the uint 99 (invalid vote)
     try {
-      await quorumVote.vote(proposalId, 99,0);
+      await quorumVote.vote(proposalId, 99,helpers.NULL_ADDRESS);
       throw 'an error'; // make sure that an error is thrown
     } catch (error) {
       helpers.assertVMException(error);
@@ -178,7 +178,7 @@ contract('QuorumVote', accounts => {
 
     // Lets try to vote with the -1 (invalid vote)
     try {
-      await quorumVote.vote(proposalId, -1,0);
+      await quorumVote.vote(proposalId, -1,helpers.NULL_ADDRESS);
       throw 'an error'; // make sure that an error is thrown
     } catch (error) {
       helpers.assertVMException(error);
@@ -195,52 +195,52 @@ contract('QuorumVote', accounts => {
     assert.isOk(proposalId);
 
     // Option 1
-    await quorumVote.vote(proposalId, 0,0);
+    await quorumVote.vote(proposalId, 0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [0, reputationArray[0]]);
     await checkVotesStatus(proposalId, [reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // Option 2
-    await quorumVote.vote(proposalId, 1,0);
+    await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // Option 3
-    await quorumVote.vote(proposalId, 2,0);
+    await quorumVote.vote(proposalId, 2,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [2, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0]);
 
     // Option 4
-    await quorumVote.vote(proposalId, 3,0);
+    await quorumVote.vote(proposalId, 3,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [3, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0]);
 
     // Option 5
-    await quorumVote.vote(proposalId, 4,0);
+    await quorumVote.vote(proposalId, 4,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [4, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0]);
 
     // Option 6
-    await quorumVote.vote(proposalId, 5,0);
+    await quorumVote.vote(proposalId, 5,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [5, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0]);
 
     // Option 7
-    await quorumVote.vote(proposalId, 6,0);
+    await quorumVote.vote(proposalId, 6,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [6, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0]);
 
     // Option 8
-    await quorumVote.vote(proposalId, 7,0);
+    await quorumVote.vote(proposalId, 7,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [7, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0]);
 
     // Option 9
-    await quorumVote.vote(proposalId, 8,0);
+    await quorumVote.vote(proposalId, 8,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [8, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0]);
 
     // Option 10
-    await quorumVote.vote(proposalId, 9,0);
+    await quorumVote.vote(proposalId, 9,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [9, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0]);
   });
@@ -259,9 +259,9 @@ contract('QuorumVote', accounts => {
     await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
     // Lets try to vote twice from the same address
-    await quorumVote.vote(proposalId, 1,0);
+    await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
-    await quorumVote.vote(proposalId, 1,0);
+    await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
 
     // Total 'Option 2' should be equal to the voter's reputation exactly, even though we voted twice
@@ -283,7 +283,7 @@ contract('QuorumVote', accounts => {
     await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
     // Lets try to vote and then cancel our vote
-    await quorumVote.vote(proposalId, 1,0);
+    await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
     await quorumVote.cancelVote(proposalId);
     await checkVoteInfo(proposalId, accounts[0], [0, 0]);
@@ -396,7 +396,7 @@ contract('QuorumVote', accounts => {
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
     // After that voting the proposal should be executed
-    await quorumVote.vote(proposalId, 0,0);
+    await quorumVote.vote(proposalId, 0,helpers.NULL_ADDRESS);
 
     // Should not be able to cancel the proposal because it's already been executed
     try {
@@ -416,7 +416,7 @@ contract('QuorumVote', accounts => {
 
     // Should not be able to vote because the proposal has been executed
     try {
-        await quorumVote.vote(proposalId, 1,0, { from: accounts[1] });
+        await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS, { from: accounts[1] });
         assert(false, "Can't vote because proposal already been executed.");
     } catch (error) {
         helpers.assertVMException(error);
@@ -488,7 +488,7 @@ contract('QuorumVote', accounts => {
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
 
-    let voteTX = await quorumVote.vote(proposalId, 1,0);
+    let voteTX = await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
 
     assert.equal(voteTX.logs.length, 2);
     assert.equal(voteTX.logs[0].event, "VoteProposal");
@@ -514,7 +514,7 @@ contract('QuorumVote', accounts => {
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
 
-    let voteTX = await quorumVote.vote(proposalId, 0,0);
+    let voteTX = await quorumVote.vote(proposalId, 0,helpers.NULL_ADDRESS);
 
     assert.equal(voteTX.logs.length, 3);
     assert.equal(voteTX.logs[2].event, "ExecuteProposal");
@@ -570,7 +570,7 @@ contract('QuorumVote', accounts => {
     assert.isOk(proposalId);
 
     // Vote with the reputation the I own - should work
-    tx = await quorumVote.voteWithSpecifiedAmounts(proposalId, 1, reputationArray[0] / 10, 0,0);
+    tx = await quorumVote.voteWithSpecifiedAmounts(proposalId, 1, reputationArray[0] / 10, 0,helpers.NULL_ADDRESS);
 
     var repVoted = await helpers.getValueFromLogs(tx, "_reputation");
 
@@ -578,7 +578,7 @@ contract('QuorumVote', accounts => {
 
     // Vote with negative reputation - exception should be raised
     try {
-      await quorumVote.voteWithSpecifiedAmounts(proposalId, 1, -100, 0,0);
+      await quorumVote.voteWithSpecifiedAmounts(proposalId, 1, -100, 0,helpers.NULL_ADDRESS);
       assert(false, 'Vote with -100 reputation voting shouldn\'t work');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -586,7 +586,7 @@ contract('QuorumVote', accounts => {
 
     // Vote with more reputation that i own - exception should be raised
     try {
-      await quorumVote.voteWithSpecifiedAmounts(proposalId, 1, (reputationArray[0] + 1), 0,0);
+      await quorumVote.voteWithSpecifiedAmounts(proposalId, 1, (reputationArray[0] + 1), 0,helpers.NULL_ADDRESS);
       assert(false, 'Not enough reputation - voting shouldn\'t work');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -594,9 +594,9 @@ contract('QuorumVote', accounts => {
 
     // Vote with a very big number - exception should be raised
     let BigNumber = require('bignumber.js');
-    let bigNum = ((new BigNumber(2)).toPower(254));
+    let bigNum = ((new BigNumber(2)).toPower(254)).toString(10);
     try {
-      await quorumVote.voteWithSpecifiedAmounts(proposalId, 1, bigNum, 0,0);
+      await quorumVote.voteWithSpecifiedAmounts(proposalId, 1, bigNum, 0,helpers.NULL_ADDRESS);
       assert(false, 'Voting shouldn\'t work');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -621,7 +621,7 @@ contract('QuorumVote', accounts => {
       helpers.assertInternalFunctionException(ex);
     }
 
-    await quorumVote.vote(proposalId, 1,0, {from: accounts[0]});
+    await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS, {from: accounts[0]});
 
     // Lets try to call cancelVoteInternal function
     try {
@@ -644,7 +644,7 @@ contract('QuorumVote', accounts => {
 
     // Lets try to call vote with invalid proposal id
     try {
-      await quorumVote.vote(helpers.NULL_HASH, 1,0, {from: accounts[0]});
+      await quorumVote.vote(helpers.NULL_HASH, 1,helpers.NULL_ADDRESS, {from: accounts[0]});
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -652,7 +652,7 @@ contract('QuorumVote', accounts => {
 
     // Lets try to call voteWithSpecifiedAmounts with invalid proposal id
     try {
-      await quorumVote.voteWithSpecifiedAmounts(helpers.NULL_HASH, 1, 1, 1,0);
+      await quorumVote.voteWithSpecifiedAmounts(helpers.NULL_HASH, 1, 1, 1,helpers.NULL_ADDRESS);
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
