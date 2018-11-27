@@ -15,7 +15,9 @@
     "migrate": "./migrate.js",
     "docker:build": "docker build . -t daostack/migration:$(cat package.json | jq -r '.version')",
     "docker:push": "docker push daostack/migration:$(cat package.json | jq -r '.version')",
-    "release": "./release.sh"
+    "release": "./release.sh",
+    "prune-arc-build": "node ./pruneArcBuild.js",
+    "postinstall": "npm run prune-arc-build"
   },
   "repository": {
     "type": "git",

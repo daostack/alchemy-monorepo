@@ -3,6 +3,9 @@
 set -e
 source .env
 
+# prune arc build
+echo "Pruning Arc build..."
+npm run prune-arc-build -- "$@"
 # migrate ganache
 echo "Migrating ganache..."
 npm run migrate -- "$@"
