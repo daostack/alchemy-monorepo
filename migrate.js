@@ -37,6 +37,11 @@ const wrapCommand = fn => async options => {
 	const emptySpinner = new Proxy({}, { get: () => () => {} }); // spinner that does nothing
 	const spinner = quiet ? emptySpinner : ora();
 
+	process.on('unhandledRejection', (reason, promise) => {
+		const msg = `Migration failed with error: ` + reason;
+		spinner.fail(msg);	
+	});
+
 	const confirm = async (msg, def) => {
 		if (force) {
 			return def === undefined ? true : def;
