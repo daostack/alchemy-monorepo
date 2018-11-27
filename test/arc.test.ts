@@ -6,7 +6,8 @@ import Arc from '../src/index'
 describe('Arc ', () => {
   it('Arc is instantiable', () => {
     const arc = new Arc({
-      graphqlProvider: 'https://graphql.provider',
+      graphqlHttpProvider: 'https://graphql.provider',
+      graphqlWSProvider: 'https://graphql.provider',
       web3Provider: 'https://web3.provider'
     })
     expect(arc).toBeInstanceOf(Arc)

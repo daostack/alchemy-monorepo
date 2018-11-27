@@ -1,4 +1,5 @@
 import { DAO } from '../src/dao'
+import { getArc } from './utils'
 
 /**
  * DAO test
@@ -19,4 +20,10 @@ describe('DAO', () => {
     // const { reputation } = await dao.state.toPromise()
     // const balance = await reputation.balanceOf(address).toPromise()
   })
+
+  it.skip('get the dao from Arc', async () => {
+    const arc = getArc()
+    const daos = await arc.daos().toPromise()
+    expect(daos.length).toBeGreaterThan(0)
+  }, 10000)
 })
