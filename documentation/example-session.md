@@ -2,7 +2,8 @@
 const Arc = require('@daostack/client').Arc
 
 const arc = new Arc({
-  graphqlProvider: 'https://url.to.graphql.subgraph/',
+  graphqlHttpProvider: 'https://url.to.graphql.subgraph/',
+  graphqlWsProvider: 'https://url.to.graphql.subgraph.websocket/',
   web3Provider: 'https://url.to.web3.node/',
 })
 
@@ -12,9 +13,9 @@ const daoObservable = arc.daos()
 const daos = await arc.daos().toPromise()
 
 // you can query for a particular DAO
-dsc.daos({ name: 'mydao'})
+arc.daos({ name: 'mydao'})
 
-const dao = await dsc.dao(daos[0].address)
+const dao = await arc.dao(daos[0].address)
 
 // get the DAO state
 const state  = await dao.state.toPromise()
