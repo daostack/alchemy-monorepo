@@ -30,6 +30,8 @@
     "start": "rollup -c rollup.config.ts -w",
     "semantic-release": "semantic-release",
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
+    "subgraph": "npm explore @daostack/subgraph -- npm install && npm explore @daostack/subgraph -- npm run configure:development && npm explore @daostack/subgraph -- docker-compose up",
+    "subgraph-test": "npm explore @daostack/subgraph -- npm run test",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:prod": "npm run lint && npm run test -- --coverage --no-cache",
@@ -49,14 +51,17 @@
   },
   "jest": {
     "transform": {
-      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      ".(ts|tsx)": "ts-jest"
     },
     "testEnvironment": "node",
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
-      "js"
+      "js",
+      "jsx",
+      "json",
+      "node"
     ],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
@@ -83,6 +88,8 @@
   "devDependencies": {
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
+    "@daostack/arc": "0.0.0-alpha.56",
+    "@daostack/subgraph": "git+https://github.com/daostack/subgraph.git#ea2f0e15b92b4e1bba8578aa813aa42d49b40390",
     "@types/jest": "^23.3.2",
     "@types/node": "^10.11.0",
     "colors": "^1.3.2",
@@ -115,10 +122,25 @@
     "typescript": "^3.0.3"
   },
   "dependencies": {
-    "apollo-boost": "^0.1.20",
+    "@types/graphql": "^14.0.3",
+    "@types/isomorphic-fetch": "0.0.34",
+    "@types/web3": "^1.0.12",
+    "@types/ws": "^6.0.1",
+    "apollo-cache-inmemory": "^1.3.11",
+    "apollo-client": "^2.4.7",
+    "apollo-client-ws": "^2.3.0",
+    "apollo-link-http": "^1.5.7",
+    "apollo-link-ws": "^1.0.10",
+    "axios": "^0.18.0",
     "graphql": "^14.0.2",
     "graphql-tag": "^2.10.0",
+    "hdwallet-accounts": "0.0.1",
+    "isomorphic-fetch": "^2.2.1",
     "moment": "^2.22.2",
-    "rxjs": "^6.3.3"
+    "node-gyp": "^3.8.0",
+    "rxjs": "^6.3.3",
+    "subscriptions-transport-ws": "^0.9.15",
+    "web3": "^1.0.0-beta.36",
+    "ws": "^6.1.2"
   }
 }
