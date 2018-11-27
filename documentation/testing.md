@@ -1,6 +1,12 @@
 # Overview
 
-Tests expect a running nodegraph that responds to http queries on ``
+Tests expect running ethereum and graphql nodes.
+You can start the docker containers by running
+```sh
+npm run subgraph
+```
+(It may take a while to build the docker containers)
+
 ```sh
 npm run test
 ```

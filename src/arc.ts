@@ -46,9 +46,7 @@ export class Arc {
     `
 
     const zenObservable: ZenObservable<DAO[]> = this.apolloClient
-      .subscribe<DAO[]>({
-        query
-      })
+      .subscribe<DAO[]>({ query })
       .map<DAO[]>((rs: object[]) => rs.map((r: any) => new DAO(r.address)))
     // cast as rxjsObservable
     return Observable.create((observer: Observer<DAO[]>) => zenObservable.subscribe(observer))

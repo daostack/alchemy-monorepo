@@ -77,7 +77,12 @@ export async function getWeb3() {
 }
 
 export function getContractAddresses() {
-  return require('../../node_modules/@daostack/subgraph/config.json').addresses
+  const path = '@daostack/subgraph/config.json'
+  const addresses = require(path).addresses
+  if (!addresses) {
+    throw Error(`No addresses found, does the file at ${path} exist?`)
+  }
+  return addresses
 }
 
 export async function getOptions(web3: any) {

@@ -25,5 +25,5 @@ describe('DAO', () => {
     const arc = getArc()
     const daos = await arc.daos().toPromise()
     expect(daos.length).toBeGreaterThan(0)
-  }, 10000)
+  })
 })

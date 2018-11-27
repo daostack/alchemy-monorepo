@@ -2,7 +2,8 @@ import { ApolloClient } from 'apollo-client'
 import gql from 'graphql-tag'
 import { from, Observable, Observer, of } from 'rxjs'
 import { createApolloClient } from '../src/utils'
-import { graphqlHttpProvider, graphqlWSProvider, web3Provider } from './utils'
+import { createSubscriptionObservable } from './from-subgraph/util'
+import { graphqlHttpProvider, graphqlWSProvider, mintSomeReputation, web3Provider } from './utils'
 
 function getClient() {
   const apolloClient = createApolloClient({
@@ -43,24 +44,54 @@ describe('apolloClient', () => {
     expect(result).toEqual(expected)
   })
 
-  it.skip('handles subscriptions', async () => {
+  it('handles subscriptions', async () => {
     client = getClient()
     const query = gql`
-      {
-        subscription {
-          reputationMints {
-            contract
-            amount
-            address
-          }
+      subscription {
+        reputationMints {
+          contract
+          amount
+          address
         }
       }
     `
-    const result = await client.subscribe({ query })
-    // console.log(client.graphqlWSProvider)
-    console.log(result)
-    const ob = Observable.create((observer: Observer<any>) => result.subscribe(observer))
-    console.log(ob)
-    console.log(await ob.toPromise())
+    // client.subcribe returns a zenObservable
+    const zenObservable = await client.subscribe({ query })
+    // cast it to an rxjs observable
+    const observable = Observable.create((observer: Observer<any>) =>
+      zenObservable.subscribe(observer)
+    )
+
+    let returnedData: object[] = []
+
+    const consumer = await observable.subscribe(
+      (eventData: any) => {
+        // Do something on receipt of the event
+        console.log(eventData)
+        returnedData = eventData.data.reputationMints
+      },
+      (err: any) => {
+        throw err
+      }
+    )
+
+    const promise = observable.toPromise()
+    promise.then((x: any) => {
+      console.log('FROM PROMISE')
+      console.log(x)
+      returnedData = x.data.reputationMints
+    })
+
+    mintSomeReputation()
+
+    // console.log(await promise)
+    // wait
+
+    await new Promise(res => setTimeout(res, 2000))
+
+    expect(returnedData.length).toBeGreaterThan(0)
+
+    // consumer.unsubscribe()
+    // console.log(ob)
   })
 })
