@@ -11,13 +11,12 @@ notifications:
   email: false
 node_js:
   - node
+
+before_install:
+  - sudo apt-get install libsecret-1-dev
 script:
-  - git clone https://github.com/daostack/subgraph.git /subgraph
-  - cd /subgraph && npm install
-  - cd /subgraph && npm run configure:development
-  - cd /subgraph && npm run codegen
-  # - cd /subgraph && sudo docker-compose build
-  - cd /subgraph && sudo docker-compose up --daemon
+  # start the subgraph docker containers
+  - npm run subgraph
   - sleep 5
   - npm run test:prod
   - npm run build
