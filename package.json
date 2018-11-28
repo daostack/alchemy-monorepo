@@ -1,10 +1,10 @@
 {
-  "name": "client",
+  "name": "@doastack/client",
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/client.umd.js",
-  "module": "dist/client.es5.js",
+  "main": "dist/lib/",
+  "module": "dist/lib/",
   "typings": "dist/types/client.d.ts",
   "files": [
     "dist"
