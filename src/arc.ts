@@ -48,7 +48,10 @@ export class Arc {
       .subscribe<DAO[]>({ query })
       .map<DAO[]>((rs: object[]) => rs.map((r: any) => new DAO(r.address)))
     // cast as rxjsObservable
-    return Observable.create((observer: Observer<DAO[]>) => zenObservable.subscribe(observer))
+    return Observable.create((observer: Observer<DAO[]>) => {
+      const subscription = zenObservable.subscribe(observer)
+      return () => subscription.unsubscribe()
+    })
   }
 
   /**
