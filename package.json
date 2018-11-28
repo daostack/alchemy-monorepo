@@ -135,6 +135,7 @@
     "graphql-tag": "^2.10.0",
     "hdwallet-accounts": "0.0.1",
     "isomorphic-fetch": "^2.2.1",
+    "isomorphic-ws": "^4.0.1",
     "moment": "^2.22.2",
     "node-gyp": "^3.8.0",
     "rxjs": "^6.3.3",

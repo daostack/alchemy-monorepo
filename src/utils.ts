@@ -5,7 +5,7 @@ import { HttpLink } from 'apollo-link-http'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 import fetch from 'isomorphic-fetch'
-import * as WebSocket from 'ws'
+import * as WebSocket from 'isomorphic-ws'
 
 export function createApolloClient(options: {
   graphqlHttpProvider: string
