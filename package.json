@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/lib/index.js",
-  "typings": "dist/types/index.d.ts",
+  "main": "dist/lib/arc.js",
+  "typings": "dist/types/arc.d.ts",
   "files": [
     "dist"
   ],
@@ -18,7 +18,7 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "build": "tsc --module commonjs && typedoc --out docs --target es6 --theme minimal --mode file src",
+    "build": "tsc && typedoc --out docs --target commonjs --theme minimal --mode file src",
     "commit": "git-cz",
     "deploy-docs": "ts-node tools/gh-pages-publish",
     "lint": "npm run prettier  && npm run tslint",
