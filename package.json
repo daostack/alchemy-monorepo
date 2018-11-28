@@ -1,10 +1,9 @@
 {
-  "name": "@doastack/client",
+  "name": "@daostack/client",
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/lib/",
-  "module": "dist/lib/",
+  "main": "dist/lib/index.js",
   "typings": "dist/types/client.d.ts",
   "files": [
     "dist"
