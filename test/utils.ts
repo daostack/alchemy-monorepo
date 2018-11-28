@@ -1,13 +1,13 @@
 import Arc from '../src/index'
 import { getContractAddresses, getOptions, getWeb3 } from './from-subgraph/util'
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/by-name/daostack/graphql'
-export const graphqlWSProvider: string = 'http://127.0.0.1:8001/by-name/daostack'
+export const graphqlWsProvider: string = 'http://127.0.0.1:8001/by-name/daostack'
 export const web3Provider: string = 'http://127.0.0.1:8545'
 
 export function getArc() {
   return new Arc({
     graphqlHttpProvider,
-    graphqlWSProvider,
+    graphqlWsProvider,
     web3Provider
   })
 }

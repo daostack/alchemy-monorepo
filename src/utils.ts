@@ -9,7 +9,7 @@ import * as WebSocket from 'ws'
 
 export function createApolloClient(options: {
   graphqlHttpProvider: string
-  graphqlWSProvider: string
+  graphqlWsProvider: string
 }) {
   const httpLink = new HttpLink({
     credentials: 'same-origin',
@@ -21,7 +21,7 @@ export function createApolloClient(options: {
     options: {
       reconnect: true
     },
-    uri: options.graphqlWSProvider,
+    uri: options.graphqlWsProvider,
     webSocketImpl: WebSocket
   })
 

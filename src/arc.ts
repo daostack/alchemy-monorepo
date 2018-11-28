@@ -12,23 +12,23 @@ import * as utils from './utils'
 
 export class Arc {
   public graphqlHttpProvider: string
-  public graphqlWSProvider: string
+  public graphqlWsProvider: string
   public web3Provider: string
   public pendingOperations: Observable<Array<Operation<any>>> = of()
   public apolloClient: ApolloClient<object>
 
   constructor(options: {
     graphqlHttpProvider: string
-    graphqlWSProvider: string
+    graphqlWsProvider: string
     web3Provider: string
   }) {
     this.graphqlHttpProvider = options.graphqlHttpProvider
-    this.graphqlWSProvider = options.graphqlWSProvider
+    this.graphqlWsProvider = options.graphqlWsProvider
     this.web3Provider = options.web3Provider
 
     this.apolloClient = utils.createApolloClient({
       graphqlHttpProvider: this.graphqlHttpProvider,
-      graphqlWSProvider: this.graphqlWSProvider
+      graphqlWsProvider: this.graphqlWsProvider
     })
   }
 

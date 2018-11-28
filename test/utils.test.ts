@@ -3,12 +3,12 @@ import gql from 'graphql-tag'
 import { from, Observable, Observer, of } from 'rxjs'
 import { createApolloClient } from '../src/utils'
 import { createSubscriptionObservable } from './from-subgraph/util'
-import { graphqlHttpProvider, graphqlWSProvider, mintSomeReputation, web3Provider } from './utils'
+import { graphqlHttpProvider, graphqlWsProvider, mintSomeReputation, web3Provider } from './utils'
 
 function getClient() {
   const apolloClient = createApolloClient({
     graphqlHttpProvider,
-    graphqlWSProvider
+    graphqlWsProvider
   })
   return apolloClient
 }
