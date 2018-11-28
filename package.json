@@ -19,7 +19,7 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
+    "build": "tsc --module commonjs && typedoc --out docs --target es6 --theme minimal --mode file src",
     "commit": "git-cz",
     "deploy-docs": "ts-node tools/gh-pages-publish",
     "lint": "npm run prettier  && npm run tslint",
@@ -27,7 +27,7 @@
     "prebuild": "rimraf dist",
     "precommit": "lint-staged",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
-    "start": "rollup -c rollup.config.ts -w",
+    "bundle": "rollup -c rollup.config.ts -w",
     "semantic-release": "semantic-release",
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
     "subgraph": "npm explore @daostack/subgraph -- npm install && npm explore @daostack/subgraph -- npm run configure:development && npm explore @daostack/subgraph -- npm run docker:run && npm explore @daostack/subgraph -- npm run migrate:development",
