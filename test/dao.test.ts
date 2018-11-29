@@ -21,9 +21,10 @@ describe('DAO', () => {
     // const balance = await reputation.balanceOf(address).toPromise()
   })
 
-  it.skip('get the dao from Arc', async () => {
+  it('get the dao from Arc', async () => {
     const arc = getArc()
-    const daos = await arc.daos().toPromise()
-    expect(daos.length).toBeGreaterThan(0)
+    const daos = arc.daos()
+    // const firstResult = await daos.toPromise()
+    // expect(firstResult.length).toBeGreaterThan(0)
   })
 })

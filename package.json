@@ -5,9 +5,6 @@
   "keywords": [],
   "main": "dist/lib/arc.js",
   "typings": "dist/types/arc.d.ts",
-  "files": [
-    "dist"
-  ],
   "author": "Matan Tsuberi <tsuberim@gmail.com>",
   "repository": {
     "type": "git",
@@ -31,7 +28,7 @@
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
     "subgraph": "npm explore @daostack/subgraph -- npm install && npm explore @daostack/subgraph -- npm run configure:development && npm explore @daostack/subgraph -- npm run docker:run && sleep 3 && npm explore @daostack/subgraph -- npm run migrate:development",
     "subgraph:test": "npm explore @daostack/subgraph -- npm run migrate:development && npm explore @daostack/subgraph -- npm run deploy && npm run test Subscription",
-    "test": "npm explore @daostack/subgraph -- npm run migrate:development && npm explore @daostack/subgraph -- npm run deploy && jest --forceExit",
+    "test": "npm explore @daostack/subgraph -- npm run configure:development && npm explore @daostack/subgraph -- npm run migrate:development && npm explore @daostack/subgraph -- npm run deploy && jest --forceExit",
     "test:watch": "jest --watch",
     "test:prod": "npm run lint && npm run test -- --coverage --no-cache",
     "tslint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
