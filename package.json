@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "src/arc.ts",
+  "main": "dist/lib/arc.js",
   "typings": "dist/types/arc.d.ts",
   "files": [
     "dist",
