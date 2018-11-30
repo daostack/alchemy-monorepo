@@ -3,8 +3,12 @@
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/lib/arc.js",
+  "main": "src/arc.ts",
   "typings": "dist/types/arc.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
   "author": "Matan Tsuberi <tsuberim@gmail.com>",
   "repository": {
     "type": "git",
