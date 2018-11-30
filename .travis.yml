@@ -16,7 +16,7 @@ before_install:
   - sudo apt-get install libsecret-1-dev
 script:
   # start the subgraph docker containers
-  - npm run subgraph
+  - npm run docker:up
   - sleep 5
   - npm run test:prod
   - npm run build
