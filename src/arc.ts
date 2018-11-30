@@ -32,15 +32,35 @@ export class Arc {
     })
   }
 
+  public daos() {
+    return this._getObjectListObservable(
+      'avatarContract',
+      ['id', 'address'],
+      (r: any) => new DAO(r.address)
+    )
+  }
+
   /**
-   * @return an observable array of DAO instances
+   * Returns an observable that:
+   * - sends a query over http and returns the current list of results
+   * - subscribes over a websocket to changes, and returns the updated list
+   * example:
+   *    _getObjectListObservable('avatarContract', ['id', 'address'], (r:any) => new DAO(r.address))
+   *
+   * @param  entity              name of the graphql entity to be queried. Use the singular, i.e avatarContract rather then avatarContracts
+   * @param  fields              fhe fields of the entity
+   * @param  itemMap a function that takes elements of the list and creates new objects
+   * @return
    */
-  public daos(options: IDaoQueryOptions = {}): Observable<DAO[]> {
+  public _getObjectListObservable(
+    entity: string,
+    fields: string[],
+    itemMap: (o: object) => object
+  ) {
     const query = gql`
       {
-        avatarContracts {
-          id
-          address
+        ${entity}s {
+          ${fields.concat('\n')}
         }
       }
     `
@@ -48,8 +68,8 @@ export class Arc {
       subscription ${query}
     `
 
-    const zenObservable: ZenObservable<DAO[]> = this.apolloClient.subscribe<DAO[]>({ query })
-    const subscriptionObservable = Observable.create((observer: Observer<DAO[]>) => {
+    const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({ query })
+    const subscriptionObservable = Observable.create((observer: Observer<object[]>) => {
       const subscription = zenObservable.subscribe(observer)
       return () => subscription.unsubscribe()
     })
@@ -62,12 +82,11 @@ export class Arc {
       // map to result set
       concat(subscriptionObservable),
       map(r => r.data.avatarContracts),
-      map((rs: object[]) => rs.map((r: any) => new DAO(r.address)))
+      map((rs: object[]) => rs.map(itemMap))
     )
 
     return queryObservable
   }
-
   /**
    * [dao description]
    * @param  address address of the dao Avatar
@@ -76,8 +95,4 @@ export class Arc {
   public dao(address: Address): DAO {
     return new DAO(address)
   }
-
-  /**
-   * An observable of the list of pending operations
-   */
 }
