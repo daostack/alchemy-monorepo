@@ -1,9 +1,9 @@
 import Avatar from '@daostack/arc/build/contracts/Avatar.json'
-import { ApolloClient } from 'apollo-client'
+import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { Observable as ZenObservable } from 'apollo-link'
 import gql from 'graphql-tag'
 import { from, Observable, Observer, of } from 'rxjs'
-import { map } from 'rxjs/operators'
+import { concat, map } from 'rxjs/operators'
 import { DAO, IDaoQueryOptions } from './dao'
 import { Operation } from './operation'
 import { Proposal } from './proposal'
@@ -37,21 +37,35 @@ export class Arc {
    */
   public daos(options: IDaoQueryOptions = {}): Observable<DAO[]> {
     const query = gql`
-      subscription {
+      {
         avatarContracts {
           id
           address
         }
       }
     `
-    const zenObservable: ZenObservable<DAO[]> = this.apolloClient
-      .subscribe<DAO[]>({ query })
-      .map<DAO[]>((rs: object[]) => rs.map((r: any) => new DAO(r.address)))
-    // cast as rxjsObservable
-    return Observable.create((observer: Observer<DAO[]>) => {
+    const subscriptionQuery = gql`
+      subscription ${query}
+    `
+
+    const zenObservable: ZenObservable<DAO[]> = this.apolloClient.subscribe<DAO[]>({ query })
+    const subscriptionObservable = Observable.create((observer: Observer<DAO[]>) => {
       const subscription = zenObservable.subscribe(observer)
       return () => subscription.unsubscribe()
     })
+
+    const queryPromise: Promise<
+      ApolloQueryResult<{ avatarContracts: object[] }>
+    > = this.apolloClient.query({ query })
+
+    const queryObservable = from(queryPromise).pipe(
+      // map to result set
+      concat(subscriptionObservable),
+      map(r => r.data.avatarContracts),
+      map((rs: object[]) => rs.map((r: any) => new DAO(r.address)))
+    )
+
+    return queryObservable
   }
 
   /**

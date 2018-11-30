@@ -16,7 +16,6 @@ export function getArc() {
 export async function mintSomeReputation() {
   const web3 = await getWeb3()
   const addresses = getContractAddresses()
-  // console.log(addresses)
   const opts = await getOptions(web3)
   const accounts = web3.eth.accounts.wallet
   const Reputation = require('@daostack/arc/build/contracts/Reputation.json')

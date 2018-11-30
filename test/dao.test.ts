@@ -21,10 +21,15 @@ describe('DAO', () => {
     // const balance = await reputation.balanceOf(address).toPromise()
   })
 
-  it('get the dao from Arc', async () => {
+  it('get the dao from Arc', async done => {
     const arc = getArc()
     const daos = arc.daos()
-    // const firstResult = await daos.toPromise()
-    // expect(firstResult.length).toBeGreaterThan(0)
+    daos.subscribe({
+      next: daoList => {
+        // we should get a first result immediately
+        expect(daoList).toEqual([])
+        done()
+      }
+    })
   })
 })

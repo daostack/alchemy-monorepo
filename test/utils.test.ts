@@ -19,10 +19,12 @@ function getClient() {
 describe('apolloClient', () => {
   let client
   jest.setTimeout(10000)
+
   it('can be instantiated', () => {
     client = getClient()
     expect(client).toBeInstanceOf(ApolloClient)
   })
+
   it('handles querying', async () => {
     client = getClient()
     const query = gql`
@@ -67,7 +69,6 @@ describe('apolloClient', () => {
     const consumer = await observable.subscribe(
       (eventData: any) => {
         // Do something on receipt of the event
-        console.log(eventData)
         returnedData = eventData.data.reputationMints
       },
       (err: any) => {
@@ -77,21 +78,13 @@ describe('apolloClient', () => {
 
     const promise = observable.toPromise()
     promise.then((x: any) => {
-      console.log('FROM PROMISE')
-      console.log(x)
       returnedData = x.data.reputationMints
     })
 
     mintSomeReputation()
 
-    // console.log(await promise)
-    // wait
-
     await new Promise(res => setTimeout(res, 2000))
 
     expect(returnedData.length).toBeGreaterThan(0)
-
-    // consumer.unsubscribe()
-    // console.log(ob)
   })
 })
