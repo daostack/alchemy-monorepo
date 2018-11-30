@@ -10,13 +10,12 @@ A frontend client library for the [DAOstack subgraph](https://github.com/daostac
 ### Usage
 
 1. `npm install --save @daostack/client`
-2. `import Client from '@daostack/client'`
+2. `import Arc from '@daostack/client'`
 
 ### Commands
 
- - `npm t`: Run test suite
- - `npm start`: Run `npm run build` in watch mode
- - `npm run test:watch`: Run test suite in [interactive watch mode](http://facebook.github.io/jest/docs/cli.html#watch)
+See [testing](./documentation/testing.md) for how to run the tests.
+
  - `npm run test:prod`: Run linting and generate coverage
  - `npm run build`: Generate bundles and typings, create docs
  - `npm run lint`: Lints code
