@@ -32,25 +32,25 @@
       "ControllerCreator": "0x27CB603aBe320D5909B1ca5A6D957127cc4A9AD1",
       "DaoCreator": "0xbfaF00C7F7f378eF403dcEaD20802276Ca12d6f7",
       "UController": "0xAc128f2Bd84DB02E4fB21A2daF845cC5AbE2A953",
-      "GenesisProtocol": "0x1EAe25B09604b3a9435521f3d8F8371AEb8B0c4e",
-      "SchemeRegistrar": "0x347a0184B81f324f9C0ED3370eFBEF88A8A57BdF",
-      "UpgradeScheme": "0xD1C5719abff2B10c6F452706cB5Cd6284D29D6D8",
-      "GlobalConstraintRegistrar": "0xdde4D88069E29C19d3AcB97b30Da2Df831E74D7a",
-      "ContributionReward": "0x4E053CD45879373de6abF40d638A33080fCB94a9",
-      "AbsoluteVote": "0xD2f4Eb916F27C899AE08E32832ee018302aaE4c2",
-      "QuorumVote": "0xE758F1b60552C6085c9D7650d5F9f6527e2814A4",
+      "GenesisProtocol": "0x49E7109fb01d08Fc70687Be59cE1E53A1444DAFa",
+      "SchemeRegistrar": "0x4e0d37d84acE92747b285449bD5F9bC07E51930E",
+      "UpgradeScheme": "0x24d1dE9d37b1792a1dE9c9CBfDd43b7e5C257B63",
+      "GlobalConstraintRegistrar": "0x8e0BAADBb0c66845b128aaF16115B700924705dC",
+      "ContributionReward": "0x0E82E841aE303BFe2D9A85B24BEF8dd51fa01cC6",
+      "AbsoluteVote": "0xEceEFd4cEE997F7E248cD4F26f925C3e468a6941",
+      "QuorumVote": "0x20C06475aF4b6c81bCf124c0AD8964180BFb8F38",
       "SimpleICO": "0xb362eba9348A60Fa2A0e1eecfB33F2aA87aBC57E",
       "TokenCapGC": "0x56155A9Fab7BAece74A2f4f33FBa219278034a72",
-      "VestingScheme": "0x03a5FD3135d6c46130e5Eb666475eA9C2c891B99",
-      "VoteInOrganizationScheme": "0xC641820c19Bd836ACfE1412d8C4E6D9D6843287c",
+      "VestingScheme": "0x8c9c886AB16E534BFd8080c2805407E88A084c1A",
+      "VoteInOrganizationScheme": "0x4fC336ACb9b3DD827a49C9BD513a39A993f70666",
       "OrganizationRegister": "0x8625EabCE5F7015Aa423Cc9fc31d3a98216A04EC",
-      "Redeemer": "0xa521612c1ff0697e80DF367961B37b7568FfBf20"
+      "Redeemer": "0x2E54FaC97444538e878BbC419936C4529691c25d"
     },
     "dao": {
       "name": "Genesis Test",
-      "Avatar": "0x8D086e1267A94309815C7a84149aA7B66650A8b6",
-      "NativeToken": "0x6fDa6C6E2bE8888B1A97EAE53960Cc275E6Ae13D",
-      "NativeReputation": "0xDf8c13E628E204e4D5C65DaC8bca3d0553D9B84f"
+      "Avatar": "0xD9694b16c52F485dd7Be4041CCFCfd4dc3F0EA60",
+      "NativeToken": "0x3828053e2Be8ddd3fcc5729465E86612BC30A485",
+      "NativeReputation": "0x0A5Dc1af95431043A91dAC87072Db514A2389E63"
     }
   }
 }
