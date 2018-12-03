@@ -91,7 +91,7 @@
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
     "@daostack/arc": "0.0.0-alpha.56",
-    "@daostack/subgraph": "git+https://github.com/daostack/subgraph.git#ea2f0e15b92b4e1bba8578aa813aa42d49b40390",
+    "@daostack/subgraph": "git+https://github.com/daostack/subgraph.git#master",
     "@types/jest": "^23.3.2",
     "@types/node": "^10.11.0",
     "colors": "^1.3.2",
