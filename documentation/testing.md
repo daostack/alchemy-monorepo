@@ -11,18 +11,17 @@ You can stop the containers using
 ```sh
 npm run docker:down
 ```
-
-[TODO: this is WIP, and should be made better. See the `docker` branch]
-
-Tests require some setup, which can be fragile, and sometimes needs to be re-run:
+Tests require some setup. The `test-setup`  command will (re-)deploy the DAOStack Smart Contracts and configure
+the subgraph to use the deployed contracts.
 
 ```sh
 npm run test-setup
 ```
-Now, with the docker-containers running, you can run the tests:
+Now, with the docker-containers running, you are ready to run the tests:
 ```sh
-npm run
+npm run test
 ```
+
 
 run a specific test:
 ```sh
