@@ -28,7 +28,7 @@
   },
   "kovan": {
     "base": {
-      "DAOToken": "0xB0766E7B45dCb071021A17472475fC39C1E51Bb6",
+      "DAOToken": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
       "ControllerCreator": "0x27CB603aBe320D5909B1ca5A6D957127cc4A9AD1",
       "DaoCreator": "0xbfaF00C7F7f378eF403dcEaD20802276Ca12d6f7",
       "UController": "0xAc128f2Bd84DB02E4fB21A2daF845cC5AbE2A953",
