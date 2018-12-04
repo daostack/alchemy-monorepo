@@ -20,6 +20,7 @@
   },
   "scripts": {
     "build": "tsc && typedoc --out docs --target commonjs --theme minimal --mode file src",
+    "build:watch": "tsc --watch",
     "commit": "git-cz",
     "deploy-docs": "ts-node tools/gh-pages-publish",
     "lint": "npm run prettier  && npm run tslint",
