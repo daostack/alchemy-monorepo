@@ -9,9 +9,10 @@ npm run prune-arc-build -- "$@"
 # migrate ganache
 echo "Migrating ganache..."
 npm run migrate -- "$@"
-# migrate ganache
+# migrate kovan
 echo "Migrating kovan..."
 npm run migrate -- --provider $kovan_provider --private-key $kovan_private_key "$@"
+# migrate rinkeby
 echo "Migrating rinkeby..."
 npm run migrate -- --provider $rinkeby_provider --private-key $rinkeby_private_key "$@"
 # set version
