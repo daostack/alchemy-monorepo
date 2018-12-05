@@ -8,7 +8,7 @@ async function migrateBase({ web3, spinner, confirm, opts, logTx, previousMigrat
 		deps = deps || [];
 		const existing = previousMigration.base || {};
 		const sameDeps = deps.reduce((acc, dep) => addresses[dep] === existing[dep] && acc, true);
-		const code = await web3.eth.getCode(existing[contractName]);
+		const code = existing[contractName] && (await web3.eth.getCode(existing[contractName]));
 		const sameCode = existing[contractName] && deployedBytecode === code;
 		if (
 			contractName == 'DAOToken' &&
