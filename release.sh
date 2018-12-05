@@ -12,6 +12,8 @@ npm run migrate -- "$@"
 # migrate ganache
 echo "Migrating kovan..."
 npm run migrate -- --provider $kovan_provider --private-key $kovan_private_key "$@"
+echo "Migrating rinkeby..."
+npm run migrate -- --provider $rinkeby_provider --private-key $rinkeby_private_key "$@"
 # set version
 echo "Setting version..."
 node set-version.js

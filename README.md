@@ -122,31 +122,31 @@ Example migration result object:
 
 ```json
 {
-  "base": {
-    "DAOToken": "0x123...",
-    "ControllerCreator": "0x123...",
-    "DaoCreator": "0x123...",
-    "UController": "0x123...",
-    "GenesisProtocol": "0x123...",
-    "SchemeRegistrar": "0x123...",
-    "UpgradeScheme": "0x123...",
-    "GlobalConstraintRegistrar": "0x123...",
-    "ContributionReward": "0x123...",
-    "AbsoluteVote": "0x123...",
-    "QuorumVote": "0x123...",
-    "SimpleICO": "0x123...",
-    "TokenCapGC": "0x123...",
-    "VestingScheme": "0x123...",
-    "VoteInOrganizationScheme": "0x123...",
-    "OrganizationRegister": "0x123...",
-    "Redeemer": "0x123..."
-  },
-  "dao": {
-    "name": "DAO Jones",
-    "Avatar": "0x123...",
-    "NativeToken": "0x123...",
-    "NativeReputation": "0x123..."
-  }
+	"base": {
+		"DAOToken": "0x123...",
+		"ControllerCreator": "0x123...",
+		"DaoCreator": "0x123...",
+		"UController": "0x123...",
+		"GenesisProtocol": "0x123...",
+		"SchemeRegistrar": "0x123...",
+		"UpgradeScheme": "0x123...",
+		"GlobalConstraintRegistrar": "0x123...",
+		"ContributionReward": "0x123...",
+		"AbsoluteVote": "0x123...",
+		"QuorumVote": "0x123...",
+		"SimpleICO": "0x123...",
+		"TokenCapGC": "0x123...",
+		"VestingScheme": "0x123...",
+		"VoteInOrganizationScheme": "0x123...",
+		"OrganizationRegister": "0x123...",
+		"Redeemer": "0x123..."
+	},
+	"dao": {
+		"name": "DAO Jones",
+		"Avatar": "0x123...",
+		"NativeToken": "0x123...",
+		"NativeReputation": "0x123..."
+	}
 }
 ```
 
@@ -156,43 +156,43 @@ Example migration parameters object:
 
 ```json
 {
-  "ContributionReward": {
-    "orgNativeTokenFeeGWei": 0
-  },
-  "AbsoluteVote": {
-    "ownerVote": true,
-    "votePerc": 50
-  },
-  "GenesisProtocol": {
-    "boostedVotePeriodLimit": 259200,
-    "daoBountyConst": 75,
-    "daoBountyLimitGWei": 100,
-    "minimumStakingFeeGWei": 0,
-    "preBoostedVotePeriodLimit": 1814400,
-    "preBoostedVoteRequiredPercentage": 50,
-    "proposingRepRewardConstA": 5,
-    "proposingRepRewardConstB": 5,
-    "quietEndingPeriod": 86400,
-    "stakerFeeRatioForVoters": 50,
-    "thresholdConstAGWei": 7,
-    "thresholdConstB": 3,
-    "voteOnBehalf": "0x0000000000000000000000000000000000000000",
-    "votersGainRepRatioFromLostRep": 80,
-    "votersReputationLossRatio": 1
-  },
-  "founders": [
-    {
-      "address": "0x123",
-      "tokens": 1000,
-      "reputation": 1000
-    },
-    //...
-    {
-      "address": "0x321",
-      "tokens": 1000,
-      "reputation": 1000
-    }
-  ]
+	"ContributionReward": {
+		"orgNativeTokenFeeGWei": 0
+	},
+	"AbsoluteVote": {
+		"ownerVote": true,
+		"votePerc": 50
+	},
+	"GenesisProtocol": {
+		"boostedVotePeriodLimit": 259200,
+		"daoBountyConst": 75,
+		"daoBountyLimitGWei": 100,
+		"minimumStakingFeeGWei": 0,
+		"preBoostedVotePeriodLimit": 1814400,
+		"preBoostedVoteRequiredPercentage": 50,
+		"proposingRepRewardConstA": 5,
+		"proposingRepRewardConstB": 5,
+		"quietEndingPeriod": 86400,
+		"stakerFeeRatioForVoters": 50,
+		"thresholdConstAGWei": 7,
+		"thresholdConstB": 3,
+		"voteOnBehalf": "0x0000000000000000000000000000000000000000",
+		"votersGainRepRatioFromLostRep": 80,
+		"votersReputationLossRatio": 1
+	},
+	"founders": [
+		{
+			"address": "0x123",
+			"tokens": 1000,
+			"reputation": 1000
+		},
+		//...
+		{
+			"address": "0x321",
+			"tokens": 1000,
+			"reputation": 1000
+		}
+	]
 }
 ```
 
@@ -236,3 +236,20 @@ The migrated DAO is a simple DAO with the following configuration:
 - `docker:push` - push docker image to DockerHub.
 - `release ...` - fully release a version (requires an `.env` file with `kovan_provider` and `kovan_private_key`
   variables set) (same arguments as cli)
+
+### How to release a version?
+
+In order to release a version:
+
+1. In one terminal tab:
+
+   1. `npm run cleandb` - Clean any existing ganache DB.
+   2. `npm run ganache` - Run a ganache, creating a fresh DB.
+
+2. In the another terminal tab:
+
+   1. Make sure you have the required `.env` variables set (`kovan_provider`, `kovan_private_key`, `rinkeby_provider`,
+      `rinkeby_private_key`).
+   2. Make sure that you have a Dockerhub ID with permission to push an image to the `daostack` organization.
+   3. Make sure that you have an `npm` account with permission to push an image to the `daostack` organization.
+   4. `npm run release` - This will perform all the nesserary steps to deploy a new release.
