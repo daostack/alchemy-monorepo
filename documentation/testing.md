@@ -15,7 +15,7 @@ Tests require some setup. The `test-setup`  command will (re-)deploy the DAOStac
 the subgraph to use the deployed contracts.
 
 ```sh
-npm run test-setup
+npm run setup-env
 ```
 Now, with the docker-containers running, you are ready to run the tests:
 ```sh
