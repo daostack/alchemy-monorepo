@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/lib/arc.js",
+  "main": "dist/lib/index.js",
   "typings": "dist/types/arc.d.ts",
   "files": [
     "dist",
@@ -34,7 +34,7 @@
     "docker:up": "npm explore @daostack/subgraph -- npm install && npm explore @daostack/subgraph -- npm run configure:development && npm explore @daostack/subgraph -- npm run docker:run && sleep 3 && npm explore @daostack/subgraph -- npm run migrate:development",
     "docker:down": "npm explore @daostack/subgraph -- docker-compose down -v",
     "subgraph:test": "npm explore @daostack/subgraph -- npm run migrate:development && npm explore @daostack/subgraph -- npm run deploy && npm run test Subscription",
-    "test:setup": "npm explore @daostack/subgraph -- npm run configure:development && npm explore @daostack/subgraph -- npm run migrate:development && npm explore @daostack/subgraph -- npm run deploy && jest --forceExit",
+    "setup-env": "npm explore @daostack/subgraph -- npm run configure:development && npm explore @daostack/subgraph -- npm run migrate:development && npm explore @daostack/subgraph -- npm run deploy",
     "test": "jest --forceExit",
     "test:watch": "jest --watch",
     "test:prod": "npm run lint && npm run test -- --coverage --no-cache",
