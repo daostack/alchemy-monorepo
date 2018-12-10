@@ -39,7 +39,7 @@ const wrapCommand = fn => async options => {
 
 	process.on('unhandledRejection', (reason, promise) => {
 		const msg = `Migration failed with error: ` + reason;
-		spinner.fail(msg);	
+		spinner.fail(msg);
 	});
 
 	const confirm = async (msg, def) => {
@@ -58,7 +58,9 @@ const wrapCommand = fn => async options => {
 
 	// set web3 default account
 	try {
-		const account = web3.eth.accounts.privateKeyToAccount(privateKey || HDWallet(1, mnemonic).accounts[0].privateKey);
+		const account = web3.eth.accounts.privateKeyToAccount(
+			mnemonic ? HDWallet(1, mnemonic).accounts[0].privateKey : privateKey
+		);
 		web3.eth.accounts.wallet.add(account);
 		web3.eth.defaultAccount = account.address;
 	} catch (e) {
@@ -128,13 +130,12 @@ const wrapCommand = fn => async options => {
 	);
 
 	// write results to file
-	fs.writeFileSync(
-		output,
-		JSON.stringify({ ...existingFile, [network]: { ...existingFile[network], ...result } }, undefined, 2),
-		'utf-8'
-	);
+	const results = { ...existingFile, [network]: { ...existingFile[network], ...result } };
+	if (JSON.stringify(results) !== JSON.stringify(existingFile)) {
+		fs.writeFileSync(output, JSON.stringify(results, undefined, 2), 'utf-8');
 
-	spinner.succeed(`Wrote results to ${output}.`);
+		spinner.succeed(`Wrote results to ${output}.`);
+	}
 
 	return result;
 };
@@ -182,13 +183,11 @@ function cli() {
 			type: 'string',
 			describe: `private key of the account used in migration (cannot be used with the 'mnemonic' option)`,
 			default: defaults.privateKey,
-			conflicts: ['mnemonic'],
 		})
 		.option('mnemonic', {
 			alias: 'm',
 			type: 'string',
 			describe: `mnemonic used to generate the private key of the account used in migration (cannot be used with the 'private-key' option)`,
-			conflicts: ['private-key'],
 		})
 		.command('$0', 'Migrate base contracts and an example DAO', yargs => yargs, wrapCommand(migrate))
 		.command('base', 'Migrate an example DAO', yargs => yargs, wrapCommand(migrateBase))
