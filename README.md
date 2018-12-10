@@ -71,7 +71,7 @@ const migrationBaseResult = await DAOstackMigration.migrateBase(options);
 migrationBaseResult.base.GenesisProtocol // migrated genesis protocol address
 // migrate an example DAO (requires an existing `output` file with a base migration)
 const migrationDAOResult = await DAOstackMigration.migrateDAO(options);
-migrationBaseResult.dao.Avatar // DAO avatar address
+migrationDAOResult.dao.Avatar // DAO avatar address
 // migrate both base and an example DAO
 const migrationResult = await DAOstackMigration.migrate(options); // migrate
 
@@ -112,7 +112,7 @@ Options:
 ### As a docker image
 
 1. `docker pull daostack/migration`
-2. Run: `docker run --rm --name=ganache daostack/migration <ganache-cli arguments>`
+2. Run: `docker run --rm --name=ganache daostack/migration:0.0.0-alpha.56-v7 <ganache-cli arguments>`
 3. Fetch migration result file: `docker exec ganache cat migration.json`
 4. Fetch migration params file: `docker exec ganache cat migration-params.json`
 
