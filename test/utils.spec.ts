@@ -6,6 +6,7 @@ import { graphqlHttpProvider, graphqlWsProvider, mintSomeReputation, web3Provide
 const { execute } = require('apollo-link')
 const { WebSocketLink } = require('apollo-link-ws')
 const { SubscriptionClient } = require('subscriptions-transport-ws')
+const WebSocket = require('isomorphic-ws')
 const ws = require('ws')
 import axios from 'axios'
 
@@ -61,7 +62,7 @@ describe('apolloClient', () => {
     expect(typeof result.data).toEqual(typeof [])
   })
 
-  it('handles subscriptions', async () => {
+  it.skip('handles subscriptions', async () => {
     client = getClient()
     const query = gql`
       subscription {
@@ -105,29 +106,28 @@ describe('apolloClient', () => {
 })
 
 describe('utils', () => {
-  it('checkWebsocket works', done => {
+  it.skip('checkWebsocket works', done => {
     // checkWebsocket({ url: graphqlWsProvider})
-    const WebSocket = require('isomorphic-ws')
 
-    const ws = new WebSocket(graphqlWsProvider, {
+    const wsProvider = new WebSocket(graphqlWsProvider, {
       // origin: 'https://websocket.org'
     })
 
-    ws.onopen = function open() {
+    wsProvider.onopen = function open() {
       console.log('connected')
-      ws.send(Date.now())
+      wsProvider.send(Date.now())
     }
 
-    ws.onclose = function close() {
+    wsProvider.onclose = function close() {
       console.log('disconnected')
     }
 
-    ws.onmessage = function incoming(data: any) {
+    wsProvider.onmessage = function incoming(data: any) {
       console.log(`Roundtrip time: ${Date.now() - data} ms`)
       done()
     }
 
-    ws.on('rawData', (msg: string) => {
+    wsProvider.on('rawData', (msg: string) => {
       console.log('RAW: ' + msg)
     })
   })

@@ -24,7 +24,7 @@ export interface IDAOState {
 export class DAO implements IStateful<IDAOState> {
   public state: Observable<IDAOState> = of()
 
-  constructor(private address: string) {}
+  constructor(public address: string) {}
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
     throw new Error('not implemented')
@@ -51,7 +51,7 @@ export class DAO implements IStateful<IDAOState> {
   }
 }
 
-export interface IDaoQueryOptions extends ICommonQueryOptions {
+export interface IDAOQueryOptions extends ICommonQueryOptions {
   address?: Address
   name?: string
 }

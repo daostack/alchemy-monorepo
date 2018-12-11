@@ -30,12 +30,12 @@ export class Arc {
     })
   }
 
-  public daos() {
+  public daos(): Observable<DAO[]> {
     return this._getObjectListObservable(
       'avatarContract',
       ['id', 'address'],
       (r: any) => new DAO(r.address)
-    )
+    ) as Observable<DAO[]>
   }
 
   /**

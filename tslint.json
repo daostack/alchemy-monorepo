@@ -6,6 +6,7 @@
       "no-console": false,
       "no-var-requires": false,
       "semicolon": [true, "never"],
-      "quotemark": [true, "single"]
+      "quotemark": [true, "single"],
+      "trailing-comma": [true, {"multiline": "never", "singleline": "never"}]
   }
 }
