@@ -63,6 +63,10 @@ export class Arc {
         }
       }
     `
+    return this._getObservable(query, itemMap)
+  }
+
+  public _getObservable(query: any, itemMap: (o: object) => object) {
     const subscriptionQuery = gql`
       subscription ${query}
     `
@@ -85,6 +89,17 @@ export class Arc {
     )
 
     return queryObservable
+  }
+
+  public _getObjectObservable(entity: string, fields: string[], itemMap: (o: object) => object) {
+    const query = gql`
+      {
+        ${entity}s {
+          ${fields.concat('\n')}
+        }
+      }
+    `
+    return this._getObservable(query, itemMap)
   }
   /**
    * [dao description]

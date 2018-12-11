@@ -3,6 +3,7 @@
     "tslint:recommended"
   ],
   "rules": {
+      "indent": [true, "spaces", 2],
       "no-console": false,
       "no-var-requires": false,
       "semicolon": [true, "never"],
