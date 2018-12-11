@@ -1,0 +1,44 @@
+# A composition of services that are needed to run the tests of the client
+# This is for DEVELOPMENT, not production
+
+version: "3"
+services:
+  graph-node:
+    image: graphprotocol/graph-node:v0.4.1
+    ports:
+      - 8000:8000
+      - 8001:8001
+      - 8020:8020
+    links:
+      - ipfs
+      - postgres4graphnode
+      - ganache
+    environment:
+      postgres_host: postgres4graphnode:5432
+      postgres_user: postgres
+      postgres_pass: 'letmein'
+      postgres_db: postgres
+      ipfs: ipfs:5001
+      ethereum: development:http://ganache:8545
+      GRAPH_LOG: "graph.log"
+
+  ipfs:
+    image: ipfs/go-ipfs
+    ports:
+      - 5001:5001
+
+  postgres4graphnode:
+    image: postgres
+    ports:
+      - 9432:5432
+    environment:
+      POSTGRES_PASSWORD: 'letmein'
+
+  ganache:
+    image: trufflesuite/ganache-cli:v6.2.1
+    ports:
+      - 8545:8545
+    command: >
+      --deterministic
+      --gasLimit 8000000
+      --networkId ganache
