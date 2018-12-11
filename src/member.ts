@@ -40,18 +40,21 @@ export class Member implements IStateful<IMemberState> {
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
-    const dao = new DAO(this.dao)
-    return dao.proposals(options)
+    throw new Error('not implemented')
+    // const dao = new DAO(this.dao)
+    // return dao.proposals(options)
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
-    const dao = new DAO(this.dao)
-    return dao.stakes(options)
+    throw new Error('not implemented')
+    // const dao = new DAO(this.dao)
+    // return dao.stakes(options)
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
-    const dao = new DAO(this.dao)
-    return dao.votes(options)
+    throw new Error('not implemented')
+    // const dao = new DAO(this.dao)
+    // return dao.votes(options)
   }
 }
 

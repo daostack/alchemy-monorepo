@@ -64,7 +64,7 @@ export class Arc {
       }
     `
     return this._getObservable(query).pipe(
-      map(r => r.data[`${entity}s`]),
+      map((r) => r.data[`${entity}s`]),
       map((rs: object[]) => rs.map(itemMap))
     )
   }
@@ -78,7 +78,7 @@ export class Arc {
       }
     `
     return this._getObservable(query).pipe(
-      map(r => r.data[`${entity}`]),
+      map((r) => r.data[`${entity}`]),
       map(itemMap)
     )
   }

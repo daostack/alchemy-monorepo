@@ -30,10 +30,10 @@ describe('DAO', () => {
     // const balance = await reputation.balanceOf(address).toPromise()
   })
 
-  it('get the list of daos', async done => {
+  it('get the list of daos', async (done) => {
     const daos = arc.daos()
     daos.subscribe({
-      next: daoList => {
+      next: (daoList) => {
         // we should get a first result immediately
         expect(typeof daoList).toBe('object')
         expect(daoList.length).toBe(1)
@@ -43,8 +43,15 @@ describe('DAO', () => {
     })
   })
 
-  it('get the dao from Arc', async () => {
+  it('get the dao from Arc', async (done) => {
     const dao = arc.dao(addresses.Avatar)
     expect(dao).toBeInstanceOf(DAO)
+    dao.state.subscribe({
+      next: (state) => {
+        const expected = {data: {dao: null}, loading: false, networkStatus: 7, stale: false}
+        expect(state).toEqual(expected)
+        done()
+      }
+    })
   })
 })

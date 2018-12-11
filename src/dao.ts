@@ -31,12 +31,7 @@ export class DAO implements IStateful<IDAOState> {
   constructor(address: Address, context: Arc) {
     this.context = context
     this.address = address
-    // this.state = of({
-    //   address,
-    //   members: 2,
-    //   name: '',
-    //   token: new Token(address)
-    // } as IDAOState)
+
     const query = gql`{
           dao(id: "${address}") {
             id
