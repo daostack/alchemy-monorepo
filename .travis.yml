@@ -16,7 +16,7 @@ before_install:
   - sudo apt-get install libsecret-1-dev
 script:
   # start the subgraph docker containers
-  - docker-compose up node-graph -d
+  - docker-compose up graph-node -d
   - npm run setup-env
   - npm run lint
   - npm run test
