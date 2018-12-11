@@ -2,19 +2,47 @@
 
 A frontend client library for the [DAOstack subgraph](https://github.com/daostack/subgraph)
 
-[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![Build Status](https://travis-ci.com/daostack/client.svg?token=aXt9zApRNkfx8zDMypWx&branch=master)](https://travis-ci.com/daostack/client)
 
 (Project started using [TypeScript Library Starter](https://github.com/alexjoverm/typescript-library-starter))
 
-### Usage
+## Usage
 
 1. `npm install --save @daostack/client`
 2. `import Arc from '@daostack/client'`
 
+
+## Developing
+
+Get all services running:
+
+```sh
+docker-compose up graphnode
+```
+
+This command will build and start a graph instance, ganache, IPFS and postgresql.
+
+Before being able to use these services, you need to deploy the DAOStack contracts and configure the graph node to listen to changes:
+```sh
+npm run setup-env
+```
+
+To run the tests, run:
+```sh
+npm run test
+```
+
+After you are done, run:
+```
+docker-compose down -v
+```
+If you update the subgraph dependency in `package.json`, you must re-configure the graph node:
+```
+npm run setup-env
+```
+
 ### Commands
 
-See [testing](./documentation/testing.md) for how to run the tests.
 
  - `npm run test:prod`: Run linting and generate coverage
  - `npm run build`: Generate bundles and typings, create docs
