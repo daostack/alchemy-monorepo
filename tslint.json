@@ -5,6 +5,7 @@
   "rules": {
       "no-console": false,
       "no-var-requires": false,
-      "semicolon": [true, "never"]
+      "semicolon": [true, "never"],
+      "quotemark": [true, "single"]
   }
 }

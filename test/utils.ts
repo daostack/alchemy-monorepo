@@ -61,6 +61,6 @@ export async function mintSomeReputation() {
   const opts = await getOptions(web3)
   const accounts = web3.eth.accounts.wallet
   const Reputation = require('@daostack/arc/build/contracts/Reputation.json')
-  const reputation = new web3.eth.Contract(Reputation.abi, addresses.NativeReputation, opts)
+  const reputation = new web3.eth.Contract(Reputation.abi, addresses.Reputation, opts)
   await reputation.methods.mint(accounts[1].address, '99').send()
 }
