@@ -1,4 +1,6 @@
+import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
+import { Arc } from './arc'
 import { IMemberQueryOptions, Member } from './member'
 import {
   IProposalQueryOptions,
@@ -15,16 +17,50 @@ import { Address, ICommonQueryOptions, IStateful } from './types'
 
 export interface IDAOState {
   address: Address // address of the avatar
-  name: string
-  token: Token
-  reputation: Reputation
   members: number
+  name: string
+  reputation: Reputation
+  token: Token
 }
 
 export class DAO implements IStateful<IDAOState> {
   public state: Observable<IDAOState> = of()
+  public address: Address
+  private context: Arc
 
-  constructor(public address: string) {}
+  constructor(address: Address, context: Arc) {
+    this.context = context
+    this.address = address
+    // this.state = of({
+    //   address,
+    //   members: 2,
+    //   name: '',
+    //   token: new Token(address)
+    // } as IDAOState)
+    const query = gql`{
+          dao(id: "${address}") {
+            id
+            name
+            nativeToken {
+              id
+              dao {
+                id
+              }
+              name
+              symbol
+              totalSupply
+            }
+            nativeReputation {
+              id
+              dao {
+                id
+              }
+              totalSupply
+            }
+          }
+        }`
+    this.state = this.context._getObservable(query) as Observable<IDAOState>
+  }
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
     throw new Error('not implemented')

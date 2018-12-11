@@ -1,3 +1,4 @@
+import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { getArc, getContractAddresses } from './utils'
 
@@ -6,14 +7,16 @@ import { getArc, getContractAddresses } from './utils'
  */
 describe('DAO', () => {
   let addresses: { [key: string]: string }
+  let arc: Arc
 
   beforeAll(() => {
     addresses = getContractAddresses()
+    arc = getArc()
   })
 
   it('DAO is instantiable', () => {
     const address = '0xa2A064b3B22fC892dfB71923a6D844b953AA247C'
-    const dao = new DAO(address)
+    const dao = new DAO(address, arc)
     expect(dao).toBeInstanceOf(DAO)
   })
 
@@ -28,7 +31,6 @@ describe('DAO', () => {
   })
 
   it('get the list of daos', async done => {
-    const arc = getArc()
     const daos = arc.daos()
     daos.subscribe({
       next: daoList => {
@@ -42,7 +44,6 @@ describe('DAO', () => {
   })
 
   it('get the dao from Arc', async () => {
-    const arc = getArc()
     const dao = arc.dao(addresses.Avatar)
     expect(dao).toBeInstanceOf(DAO)
   })

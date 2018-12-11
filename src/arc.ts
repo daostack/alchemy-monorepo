@@ -34,7 +34,7 @@ export class Arc {
     return this._getObjectListObservable(
       'avatarContract',
       ['id', 'address'],
-      (r: any) => new DAO(r.address)
+      (r: any) => new DAO(r.address, this)
     ) as Observable<DAO[]>
   }
 
@@ -63,10 +63,27 @@ export class Arc {
         }
       }
     `
-    return this._getObservable(query, itemMap)
+    return this._getObservable(query).pipe(
+      map(r => r.data[`${entity}s`]),
+      map((rs: object[]) => rs.map(itemMap))
+    )
   }
 
-  public _getObservable(query: any, itemMap: (o: object) => object) {
+  public _getObjectObservable(entity: string, fields: string[], itemMap: (o: object) => object) {
+    const query = gql`
+      {
+        ${entity}s {
+          ${fields.concat('\n')}
+        }
+      }
+    `
+    return this._getObservable(query).pipe(
+      map(r => r.data[`${entity}`]),
+      map(itemMap)
+    )
+  }
+
+  public _getObservable(query: any) {
     const subscriptionQuery = gql`
       subscription ${query}
     `
@@ -78,35 +95,23 @@ export class Arc {
     })
 
     const queryPromise: Promise<
-      ApolloQueryResult<{ avatarContracts: object[] }>
+      ApolloQueryResult<{ [key: string]: object[] }>
     > = this.apolloClient.query({ query })
 
     const queryObservable = from(queryPromise).pipe(
       // map to result set
-      concat(subscriptionObservable),
-      map(r => r.data.avatarContracts),
-      map((rs: object[]) => rs.map(itemMap))
+      concat(subscriptionObservable)
     )
 
-    return queryObservable
+    return queryObservable as Observable<any>
   }
 
-  public _getObjectObservable(entity: string, fields: string[], itemMap: (o: object) => object) {
-    const query = gql`
-      {
-        ${entity}s {
-          ${fields.concat('\n')}
-        }
-      }
-    `
-    return this._getObservable(query, itemMap)
-  }
   /**
    * [dao description]
    * @param  address address of the dao Avatar
    * @return an instance of a DAO
    */
   public dao(address: Address): DAO {
-    return new DAO(address)
+    return new DAO(address, this)
   }
 }
