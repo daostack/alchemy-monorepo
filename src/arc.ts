@@ -1,12 +1,10 @@
-import Avatar from '@daostack/arc/build/contracts/Avatar.json'
 import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { Observable as ZenObservable } from 'apollo-link'
 import gql from 'graphql-tag'
 import { from, Observable, Observer, of } from 'rxjs'
 import { concat, map } from 'rxjs/operators'
-import { DAO, IDaoQueryOptions } from './dao'
+import { DAO } from './dao'
 import { Operation } from './operation'
-import { Proposal } from './proposal'
 import { Address } from './types'
 import * as utils from './utils'
 
@@ -47,8 +45,9 @@ export class Arc {
    * example:
    *    _getObjectListObservable('avatarContract', ['id', 'address'], (r:any) => new DAO(r.address))
    *
-   * @param  entity              name of the graphql entity to be queried. Use the singular, i.e avatarContract rather then avatarContracts
-   * @param  fields              fhe fields of the entity
+   * @param  entity  name of the graphql entity to be queried.
+   *  Use the singular, i.e avatarContract rather then avatarContracts
+   * @param  fields  fhe fields of the entity
    * @param  itemMap a function that takes elements of the list and creates new objects
    * @return
    */

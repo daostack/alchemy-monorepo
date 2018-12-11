@@ -1,6 +1,6 @@
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ApolloClient } from 'apollo-client'
-import { ApolloLink, execute, split } from 'apollo-link'
+import { split } from 'apollo-link'
 import { HttpLink } from 'apollo-link-http'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
@@ -53,4 +53,27 @@ export function createApolloClient(options: {
     link: wsOrHttpLink
   })
   return client
+}
+
+export function checkWebsocket(options: { url: string }) {
+  const ws = new WebSocket(options.url, {
+    // origin: 'https://websocket.org'
+  })
+
+  ws.onopen = function open() {
+    console.log('connected')
+    ws.send(Date.now())
+  }
+
+  ws.onclose = function close() {
+    console.log('disconnected')
+  }
+
+  ws.onmessage = function incoming(data: any) {
+    console.log(`Roundtrip time: ${Date.now() - data} ms`)
+
+    setTimeout(function timeout() {
+      ws.send(Date.now())
+    }, 500)
+  }
 }
