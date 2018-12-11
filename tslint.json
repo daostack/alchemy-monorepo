@@ -1,6 +1,11 @@
 {
   "extends": [
-    "tslint:recommended",
-    "tslint-config-prettier"
-  ]
+    "tslint:recommended"
+  ],
+  "rules": {
+      "no-console": false,
+      "no-var-requires": false,
+      "semicolon": [true, "never"],
+      "no-unused-variable": [true]
+  }
 }
