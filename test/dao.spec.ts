@@ -27,7 +27,7 @@ describe('DAO', () => {
     daos.subscribe({
       next: daoList => {
         // we should get a first result immediately
-        expect(daoList).toEqual([])
+        expect(typeof daoList).toBe('object')
         done()
       }
     })
