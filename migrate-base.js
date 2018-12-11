@@ -45,6 +45,11 @@ async function migrateBase({ web3, spinner, confirm, opts, logTx, previousMigrat
 		return c.options.address;
 	}
 
+	const Reputation = await deploy(
+		require('@daostack/arc/build/contracts/Reputation.json'),
+		[]
+	);
+
 	const DAOToken = await deploy(
 		require('@daostack/arc/build/contracts/DAOToken.json'),
 		[],
@@ -52,6 +57,7 @@ async function migrateBase({ web3, spinner, confirm, opts, logTx, previousMigrat
 		'GEN',
 		web3.utils.toWei('100000000')
 	);
+
 	const ControllerCreator = await deploy(require('@daostack/arc/build/contracts/ControllerCreator.json'));
 
 	const DaoCreator = await deploy(
