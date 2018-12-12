@@ -17,7 +17,7 @@ A frontend client library for the [DAOstack subgraph](https://github.com/daostac
 Get all services running:
 
 ```sh
-docker-compose up graphnode
+docker-compose up graph-node
 ```
 
 This command will build and start a graph instance, ganache, IPFS and postgresql.
@@ -36,15 +36,16 @@ After you are done, run:
 ```
 docker-compose down -v
 ```
-If you update the subgraph dependency in `package.json`, you must re-configure the graph node:
+
+If you update the subgraph dependency in `package.json`, you must rebuild the containers and re-configure the graph node:
 ```
+docker-compose build
 npm run setup-env
 ```
 
 ### Commands
 
 
- - `npm run test:prod`: Run linting and generate coverage
  - `npm run build`: Generate bundles and typings, create docs
  - `npm run lint`: Lints code
  - `npm run commit`: Commit using conventional commit style ([husky](https://github.com/typicode/husky) will tell you to use it if you haven't :wink:)
