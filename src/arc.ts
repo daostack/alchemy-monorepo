@@ -30,10 +30,27 @@ export class Arc {
     })
   }
 
+  /**
+   * [dao description]
+   * @param  address address of the dao Avatar
+   * @return an instance of a DAO
+   */
+  public dao(address: Address): DAO {
+    return new DAO(address, this)
+  }
+
   public daos(): Observable<DAO[]> {
+    const query = gql`
+      {
+        avatarContracts {
+          id
+          address
+        }
+      }
+    `
     return this._getObjectListObservable(
-      'avatarContract',
-      ['id', 'address'],
+      query,
+      'avatarContracts',
       (r: any) => new DAO(r.address, this)
     ) as Observable<DAO[]>
   }
@@ -43,42 +60,44 @@ export class Arc {
    * - sends a query over http and returns the current list of results
    * - subscribes over a websocket to changes, and returns the updated list
    * example:
-   *    _getObjectListObservable('avatarContract', ['id', 'address'], (r:any) => new DAO(r.address))
+   *    const query = gql`
+   *    {
+   *      dao {
+   *        id
+   *        address
+   *      }
+   *    }`
+   *    _getObjectListObservable(query, 'dao', (r:any) => new DAO(r.address))
    *
+   * @param query The query to be run
    * @param  entity  name of the graphql entity to be queried.
    *  Use the singular, i.e avatarContract rather then avatarContracts
-   * @param  fields  fhe fields of the entity
-   * @param  itemMap a function that takes elements of the list and creates new objects
+   * @param  itemMap (optional) a function that takes elements of the list and creates new objects
    * @return
    */
   public _getObjectListObservable(
+    query: any,
     entity: string,
-    fields: string[],
-    itemMap: (o: object) => object
+    itemMap: (o: object) => object = (o) => o
   ) {
-    const query = gql`
-      {
-        ${entity}s {
-          ${fields.concat('\n')}
-        }
-      }
-    `
     return this._getObservable(query).pipe(
-      map((r) => r.data[`${entity}s`]),
+      map((r) => r.data[entity]),
       map((rs: object[]) => rs.map(itemMap))
     )
   }
 
-  public _getObjectObservable(query: any, entity: string, itemMap: (o: object) => object = (o) => o) {
+  public _getObjectObservable(
+    query: any,
+    entity: string,
+    itemMap: (o: object) => object = (o) => o
+  ) {
     return this._getObservable(query).pipe(
       map((r) => r.data[entity]),
-      // map((r) => r.data),
       map(itemMap)
     )
   }
 
   public _getObservable(query: any) {
-
     const subscriptionQuery = gql`
       subscription ${query}
     `
@@ -94,19 +113,10 @@ export class Arc {
     > = this.apolloClient.query({ query })
 
     const queryObservable = from(queryPromise).pipe(
-      // map to result set
       concat(subscriptionObservable)
     )
 
     return queryObservable as Observable<any>
   }
 
-  /**
-   * [dao description]
-   * @param  address address of the dao Avatar
-   * @return an instance of a DAO
-   */
-  public dao(address: Address): DAO {
-    return new DAO(address, this)
-  }
 }
