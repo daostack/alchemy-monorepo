@@ -82,7 +82,7 @@
     "@commitlint/config-conventional": "^7.1.2",
     "@daostack/arc": "0.0.0-alpha.56",
     "@daostack/migration": "0.0.0-alpha.58-v3",
-    "@daostack/subgraph": "git+https://github.com/daostack/subgraph.git#master",
+    "@daostack/subgraph": "git+https://github.com/daostack/subgraph.git#8c686e53ba711292f7c2538c765f6e8950b7ca4b",
     "@types/jest": "^23.3.2",
     "@types/node": "^10.11.0",
     "babel-eslint": "^10.0.1",
