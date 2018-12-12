@@ -5,4 +5,4 @@ async function main () {
   console.log(await require(`${subgraphRepo}/ops/setup-env`)());
 }
 
-main();
+main().catch((err) => { console.log(err); process.exit(1); })
