@@ -30,31 +30,16 @@ export class DAO implements IStateful<IDAOState> {
 
   constructor(address: Address, context: Arc) {
     this.context = context
-    this.address = address
+    this.address = address.toLowerCase()
 
     const query = gql`{
           dao(id: "${address}") {
             id
             name
-            nativeToken {
-              id
-              dao {
-                id
-              }
-              name
-              symbol
-              totalSupply
-            }
-            nativeReputation {
-              id
-              dao {
-                id
-              }
-              totalSupply
-            }
           }
         }`
-    this.state = this.context._getObservable(query) as Observable<IDAOState>
+
+    this.state = this.context._getObjectObservable(query, 'dao') as Observable<IDAOState>
   }
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {

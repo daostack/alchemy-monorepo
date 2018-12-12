@@ -69,21 +69,16 @@ export class Arc {
     )
   }
 
-  public _getObjectObservable(entity: string, fields: string[], itemMap: (o: object) => object) {
-    const query = gql`
-      {
-        ${entity}s {
-          ${fields.concat('\n')}
-        }
-      }
-    `
+  public _getObjectObservable(query: any, entity: string, itemMap: (o: object) => object = (o) => o) {
     return this._getObservable(query).pipe(
-      map((r) => r.data[`${entity}`]),
+      map((r) => r.data[entity]),
+      // map((r) => r.data),
       map(itemMap)
     )
   }
 
   public _getObservable(query: any) {
+
     const subscriptionQuery = gql`
       subscription ${query}
     `

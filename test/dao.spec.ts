@@ -36,19 +36,25 @@ describe('DAO', () => {
       next: (daoList) => {
         // we should get a first result immediately
         expect(typeof daoList).toBe('object')
-        expect(daoList.length).toBe(1)
-        expect(daoList[0].address).toBe(addresses.Avatar.toLowerCase())
+        expect(daoList.length).toBeGreaterThan(0)
+        // expect(daoList).toEqual(addresses.Avatar.toLowerCase())
+        expect(daoList[daoList.length - 1].address).toBe(addresses.Avatar.toLowerCase())
         done()
       }
     })
   })
 
   it('get the dao from Arc', async (done) => {
-    const dao = arc.dao(addresses.Avatar)
+    const dao = arc.dao(addresses.Avatar.toLowerCase())
     expect(dao).toBeInstanceOf(DAO)
+    expect(addresses.Avatar.toLowerCase()).toEqual('0xca926c75bf068f4e7177794a79fdf570926c35d4')
     dao.state.subscribe({
-      next: (state) => {
-        const expected = {data: {dao: null}, loading: false, networkStatus: 7, stale: false}
+      next: (state: any) => {
+        const expected = {
+           __typename: 'DAO',
+           id: '0xca926c75bf068f4e7177794a79fdf570926c35d4',
+           name: 'Genesis Test'
+         }
         expect(state).toEqual(expected)
         done()
       }
