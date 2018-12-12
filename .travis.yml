@@ -18,8 +18,10 @@ script:
   # start the subgraph docker containers
   - docker-compose up -d graph-node
   - ./scripts/wait-for-it.sh 127.0.0.1:8545
+  - ./scripts/wait-for-it.sh localhost:8545
   - ./scripts/wait-for-it.sh 127.0.0.1:8000
   - ./scripts/wait-for-it.sh 127.0.0.1:8020
+  - wget http://localhost:8545 | cat
   - npm run setup-env
   - npm run lint
   - npm run test
