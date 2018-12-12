@@ -17,6 +17,9 @@ before_install:
 script:
   # start the subgraph docker containers
   - docker-compose up -d graph-node
+  - pwd
+  - ls -l /home/travis/build/daostack/client/node_modules/@daostack
+  - ls -l /home/travis/build/daostack/client/node_modules/@daostack/subgraph/ops
   - npm run setup-env
   - npm run lint
   - npm run test
