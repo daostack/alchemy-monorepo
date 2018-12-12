@@ -199,7 +199,7 @@ function cli() {
 		.help().argv;
 }
 
-if (require.main == module) {
+if (require.main === module) {
 	cli();
 } else {
 	module.exports = {

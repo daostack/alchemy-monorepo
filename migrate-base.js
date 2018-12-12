@@ -11,10 +11,10 @@ async function migrateBase({ web3, spinner, confirm, opts, logTx, previousMigrat
 		const code = existing[contractName] && (await web3.eth.getCode(existing[contractName]));
 		const sameCode = existing[contractName] && deployedBytecode === code;
 		if (
-			contractName == 'DAOToken' &&
+			contractName === 'DAOToken' &&
 			existing[contractName] &&
-			code != '0x' &&
-			!(await confirm(`Found exsiting GEN (DAOToken) contract, Deploy new instance?`, false))
+			code !== '0x' &&
+			!(await confirm(`Found existing GEN (DAOToken) contract, Deploy new instance?`, false))
 		) {
 			addresses[contractName] = existing[contractName];
 			return existing[contractName];
@@ -22,9 +22,9 @@ async function migrateBase({ web3, spinner, confirm, opts, logTx, previousMigrat
 			sameCode &&
 			sameDeps &&
 			!(await confirm(
-				`Found exsiting '${contractName}' instance with same bytecode and ${
+				`Found existing '${contractName}' instance with same bytecode and ${
 					!deps.length ? 'no ' : ''
-				}dependecies on other contracts at '${existing[contractName]}'. Deploy new instance?`,
+				}dependencies on other contracts at '${existing[contractName]}'. Deploy new instance?`,
 				false
 			))
 		) {
@@ -33,23 +33,17 @@ async function migrateBase({ web3, spinner, confirm, opts, logTx, previousMigrat
 		}
 
 		spinner.start(`Migrating ${contractName}...`);
-		const C = new web3.eth.Contract(abi, undefined, opts);
-		const deploy = C.deploy({
+		const contract = new web3.eth.Contract(abi, undefined, opts);
+		const deployContract = contract.deploy({
 			data: bytecode,
 			arguments: args,
 		}).send();
-		const tx = await new Promise(res => deploy.on('receipt', res));
-		const c = await deploy;
+		const tx = await new Promise(res => deployContract.on('receipt', res));
+		const c = await deployContract;
 		await logTx(tx, `${c.options.address} => ${contractName}`);
 		addresses[contractName] = c.options.address;
 		return c.options.address;
 	}
-
-	const Reputation = await deploy(
-		require('@daostack/arc/build/contracts/Reputation.json'),
-		[]
-	);
-
 	const DAOToken = await deploy(
 		require('@daostack/arc/build/contracts/DAOToken.json'),
 		[],
@@ -89,6 +83,12 @@ async function migrateBase({ web3, spinner, confirm, opts, logTx, previousMigrat
 		['ContributionReward', 'GenesisProtocol'],
 		ContributionReward,
 		GenesisProtocol
+	);
+
+	// deploy Reputation
+	await deploy(
+		require('@daostack/arc/build/contracts/Reputation.json'),
+		[]
 	);
 
 	return {

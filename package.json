@@ -1,6 +1,6 @@
 {
   "name": "@daostack/migration",
-  "version": "0.0.0-alpha.58-v3",
+  "version": "0.0.0-alpha.58-v5",
   "description": "A repo for handling DAOstack contract migrations",
   "main": "index.js",
   "bin": {
@@ -12,6 +12,7 @@
   "scripts": {
     "cleandb": "rm -rf db",
     "ganache": "mkdir -p db && ganache-cli --db=./db --deterministic --hostname=0.0.0.0",
+    "lint": "eslint",
     "migrate": "./migrate.js",
     "docker:build": "docker build . -t daostack/migration:$(cat package.json | jq -r '.version')",
     "docker:push": "docker push daostack/migration:$(cat package.json | jq -r '.version')",
@@ -31,6 +32,8 @@
   "homepage": "https://github.com/daostack/ganache#readme",
   "dependencies": {
     "@daostack/arc": "0.0.0-alpha.58",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.10.0",
     "ethereumjs-wallet": "^0.6.2",
     "ganache-cli": "^6.2.3",
     "hdwallet-accounts": "0.0.1",
