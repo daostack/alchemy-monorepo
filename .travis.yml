@@ -21,7 +21,9 @@ script:
   - ./scripts/wait-for-it.sh localhost:8545
   - ./scripts/wait-for-it.sh 127.0.0.1:8000
   - ./scripts/wait-for-it.sh 127.0.0.1:8020
-  - wget http://localhost:8545 | cat
+  - wget http://localhost:8545 -q -O -
+  - wget http://localhost:8000/by-name/daostack -q -O -
+  http://127.0.0.1:8000/by-name/daostack/graphql
   - npm run setup-env
   - npm run lint
   - npm run test
