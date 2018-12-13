@@ -31,7 +31,7 @@
     "semantic-release": "semantic-release",
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
     "setup-env": "npm run subgraph:deploy",
-    "subgraph:deploy": "npm explore @daostack/subgraph -- npm run deploy",
+    "subgraph:deploy": "npm explore @daostack/subgraph -- npm i && npm explore @daostack/subgraph -- npm run deploy",
     "subgraph:test": "npm explore @daostack/subgraph -- npm run migrate:development && npm explore @daostack/subgraph -- npm run deploy && npm run test Subscription",
     "test": "jest --forceExit",
     "test:watch": "jest --watch",
