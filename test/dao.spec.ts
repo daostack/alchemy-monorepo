@@ -47,12 +47,11 @@ describe('DAO', () => {
   it('get the dao from Arc', async (done) => {
     const dao = arc.dao(addresses.Avatar.toLowerCase())
     expect(dao).toBeInstanceOf(DAO)
-    expect(addresses.Avatar.toLowerCase()).toEqual('0xca926c75bf068f4e7177794a79fdf570926c35d4')
     dao.state.subscribe({
       next: (state: any) => {
         const expected = {
            __typename: 'DAO',
-           id: '0xca926c75bf068f4e7177794a79fdf570926c35d4',
+           id: addresses.Avatar.toLowerCase(),
            name: 'Genesis Test'
          }
         expect(state).toEqual(expected)

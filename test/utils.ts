@@ -1,13 +1,13 @@
 import Arc from '../src/index'
-export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/by-name/daostack/graphql'
-export const graphqlWsProvider: string = 'http://127.0.0.1:8001/by-name/daostack'
+export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack/graphql'
+export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/daostack'
 export const web3Provider: string = 'http://127.0.0.1:8545'
 const Web3 = require('web3')
 
 process.env = {
   ethereum: 'http://127.0.0.1:8545',
-  node_http: 'http://127.0.0.1:8000/by-name/daostack/graphql',
-  node_ws: 'http://127.0.0.1:8001/by-name/daostack',
+  node_http: 'http://127.0.0.1:8000/subgraphs/name/daostack/graphql',
+  node_ws: 'http://127.0.0.1:8001/subgraphs/name/daostack',
   // test_mnemonic: "myth like bonus scare over problem client lizard pioneer submit female collect",
   ...process.env
 }

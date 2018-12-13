@@ -2,7 +2,7 @@
 
 ## Is graphql up and running?
 
-visit `http://127.0.0.1:8000/by-name/daostack`
+visit `http://127.0.0.1:8000/subgraphs/name/daostack/`
 
 This should give you a graphiql interface.
 
@@ -16,10 +16,10 @@ curl --include \
      --header "Connection: Upgrade" \
      --header "Upgrade: websocket" \
      --header "Host: 127.0.0.1:8001" \
-     --header "Origin: http://127.0.0.1:8001/by-name/daostack" \
+     --header "Origin: http://127.0.0.1:8001/subgraphs/name/daostack/" \
      --header "Sec-WebSocket-Key: SGVsbG8sIHdvcmxkIQ==" \
      --header "Sec-WebSocket-Version: 13" \
-     http://127.0.0.1:8001/by-name/daostack
+     http://127.0.0.1:8001/subgraphs/name/daostack/
 ```
 Your resonse should look like:
 ```
