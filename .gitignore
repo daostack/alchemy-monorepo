@@ -10,3 +10,6 @@ compiled
 .awcache
 .rpt2_cache
 docs
+abis/
+schema.graphql
+subgraph.yaml

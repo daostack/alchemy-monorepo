@@ -99,19 +99,21 @@ export class Proposal implements IStateful<IProposalState> {
   constructor(private id: string) {}
 
   public dao(): Observable<DAO> {
-    return this.state.pipe(
-      map(state => {
-        return new DAO(state.dao)
-      })
-    )
+    throw new Error('not implemented')
+    // return this.state.pipe(
+    //   map((state) => {
+    //     return new DAO(state.dao)
+    //   })
+    // )
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
-    return this.dao().pipe(
-      switchMap(dao => {
-        return dao.votes({ ...options, proposalId: this.id })
-      })
-    )
+    throw new Error('not implemented')
+    // return this.dao().pipe(
+    //   switchMap((dao) => {
+    //     return dao.votes({ ...options, proposalId: this.id })
+    //   })
+    // )
   }
 
   public vote(outcome: Outcome): Operation<void> {
@@ -119,11 +121,12 @@ export class Proposal implements IStateful<IProposalState> {
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
-    return this.dao().pipe(
-      switchMap(dao => {
-        return dao.stakes({ ...options, proposalId: this.id })
-      })
-    )
+    throw new Error('not implemented')
+    // return this.dao().pipe(
+    //   switchMap((dao) => {
+    //     return dao.stakes({ ...options, proposalId: this.id })
+    //   })
+    // )
   }
 
   public stake(outcome: Outcome, amount: number): Operation<void> {
@@ -131,11 +134,12 @@ export class Proposal implements IStateful<IProposalState> {
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
-    return this.dao().pipe(
-      switchMap(dao => {
-        return dao.rewards({ ...options, proposalId: this.id })
-      })
-    )
+    throw new Error('not implemented')
+    // return this.dao().pipe(
+    //   switchMap((dao) => {
+    //     return dao.rewards({ ...options, proposalId: this.id })
+    //   })
+    // )
   }
 }
 
