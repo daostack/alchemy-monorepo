@@ -62,7 +62,7 @@ describe('apolloClient', () => {
     expect(typeof result.data).toEqual(typeof [])
   })
 
-  it.skip('handles subscriptions', async () => {
+  it('handles subscriptions', async () => {
     client = getClient()
     const query = gql`
       subscription {

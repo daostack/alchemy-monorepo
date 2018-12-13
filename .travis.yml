@@ -21,6 +21,7 @@ script:
   - ./scripts/wait-for-it.sh localhost:8545
   - ./scripts/wait-for-it.sh 127.0.0.1:8000
   - ./scripts/wait-for-it.sh 127.0.0.1:8020
+  - sleep 15
   - npm run setup-env
   - npm run lint
   - npm run test
