@@ -3,7 +3,7 @@
 Get all services running:
 
 ```sh
-docker-compose up graphnode
+docker-compose up graph-node
 ```
 
 This command will build and start a graph instance, ganache, IPFS and postgresql.
