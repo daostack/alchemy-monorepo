@@ -39,7 +39,7 @@ describe('DAO', () => {
     expect(daoList[daoList.length - 1].address).toBe(addresses.Avatar.toLowerCase())
   })
 
-  it('get the dao from Arc', async () => {
+  it('get the dao state', async () => {
     const dao = arc.dao(addresses.Avatar.toLowerCase())
     expect(dao).toBeInstanceOf(DAO)
     const state = await dao.state.pipe(first()).toPromise()
@@ -50,5 +50,13 @@ describe('DAO', () => {
     }
     expect(state).toMatchObject(expected)
     expect(Object.keys(state)).toEqual(['address', 'members', 'name', 'reputation', 'token'])
+  })
+
+  it('throws a reasonable error if the contract does not exist', async () => {
+    expect.assertions(1)
+    const reputation = new DAO('0xfake', arc)
+    await expect(reputation.state.toPromise()).rejects.toThrow(
+      'Could not find a DAO with address 0xfake'
+    )
   })
 })

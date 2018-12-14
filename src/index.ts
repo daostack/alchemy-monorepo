@@ -1,5 +1,7 @@
 import { Arc } from './arc'
-import { DAO } from './dao'
-
+export { Arc }
 export default Arc
-export { Arc, DAO}
+export { DAO, IDAOState } from './dao'
+export { Reputation } from './reputation'
+export { Token } from './token'
+export { Address } from './types'

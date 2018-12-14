@@ -24,33 +24,36 @@ export interface IDAOState {
 }
 
 export class DAO implements IStateful<IDAOState> {
-  public state: Observable<IDAOState>
-  public address: Address
-  private context: Arc
 
-  constructor(address: Address, context: Arc) {
-    this.context = context
+  public state: Observable<IDAOState>
+
+  constructor(public address: Address, public context: Arc) {
     this.address = address.toLowerCase()
 
     const query = gql`{
-          dao(id: "${address}") {
-            id
-            members { id },
-            name,
-            nativeReputation { id },
-            nativeToken { id },
-          }
-        }`
+      dao(id: "${address}") {
+        id
+        members { id },
+        name,
+        nativeReputation { id },
+        nativeToken { id },
+      }
+    }`
 
-    const itemMap = (item: any): IDAOState => { return {
-      address: item.id,
-      // TODO: getting all members is not really scaleable - we need a way ot get the member count
-      // from the subgraph
-      members: item.members.length,
-      name: item.name,
-      reputation: new Reputation(item.nativeReputation.id),
-      token: new Token(item.nativeToken.id)
-    }}
+    const itemMap = (item: any): IDAOState => {
+      if (item === null) {
+        throw Error(`Could not find a DAO with address ${address}`)
+      }
+      return {
+        address: item.id,
+        // TODO: getting all members is not really scaleable - we need a way ot get the member count
+        // from the subgraph
+        members: item.members.length,
+        name: item.name,
+        reputation: new Reputation(item.nativeReputation.id, context),
+        token: new Token(item.nativeToken.id, context)
+      }
+    }
     this.state = this.context._getObjectObservable(query, 'dao', itemMap) as Observable<IDAOState>
   }
 
