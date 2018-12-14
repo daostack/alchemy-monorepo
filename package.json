@@ -4,7 +4,7 @@
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
-  "typings": "dist/types/arc.d.ts",
+  "typings": "dist/types/index.d.ts",
   "files": [
     "dist",
     "src"
