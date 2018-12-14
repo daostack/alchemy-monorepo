@@ -1,3 +1,4 @@
+import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { getArc, getContractAddresses } from './utils'
@@ -30,33 +31,24 @@ describe('DAO', () => {
     // const balance = await reputation.balanceOf(address).toPromise()
   })
 
-  it('get the list of daos', async (done) => {
+  it('get the list of daos', async () => {
     const daos = arc.daos()
-    daos.subscribe({
-      next: (daoList) => {
-        // we should get a first result immediately
-        expect(typeof daoList).toBe('object')
-        expect(daoList.length).toBeGreaterThan(0)
-        // expect(daoList).toEqual(addresses.Avatar.toLowerCase())
-        expect(daoList[daoList.length - 1].address).toBe(addresses.Avatar.toLowerCase())
-        done()
-      }
-    })
+    const daoList = await daos.pipe(first()).toPromise()
+    expect(typeof daoList).toBe('object')
+    expect(daoList.length).toBeGreaterThan(0)
+    expect(daoList[daoList.length - 1].address).toBe(addresses.Avatar.toLowerCase())
   })
 
-  it('get the dao from Arc', async (done) => {
+  it('get the dao from Arc', async () => {
     const dao = arc.dao(addresses.Avatar.toLowerCase())
     expect(dao).toBeInstanceOf(DAO)
-    dao.state.subscribe({
-      next: (state: any) => {
-        const expected = {
-           __typename: 'DAO',
-           id: addresses.Avatar.toLowerCase(),
-           name: 'Genesis Test'
-         }
-        expect(state).toEqual(expected)
-        done()
-      }
-    })
+    const state = await dao.state.pipe(first()).toPromise()
+    const expected = {
+       address: addresses.Avatar.toLowerCase(),
+       members: 0,
+       name: 'Genesis Test'
+    }
+    expect(state).toMatchObject(expected)
+    expect(Object.keys(state)).toEqual(['address', 'members', 'name', 'reputation', 'token'])
   })
 })

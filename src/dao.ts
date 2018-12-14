@@ -24,7 +24,7 @@ export interface IDAOState {
 }
 
 export class DAO implements IStateful<IDAOState> {
-  public state: Observable<IDAOState> = of()
+  public state: Observable<IDAOState>
   public address: Address
   private context: Arc
 
@@ -35,11 +35,23 @@ export class DAO implements IStateful<IDAOState> {
     const query = gql`{
           dao(id: "${address}") {
             id
-            name
+            members { id },
+            name,
+            nativeReputation { id },
+            nativeToken { id },
           }
         }`
 
-    this.state = this.context._getObjectObservable(query, 'dao') as Observable<IDAOState>
+    const itemMap = (item: any): IDAOState => { return {
+      address: item.id,
+      // TODO: getting all members is not really scaleable - we need a way ot get the member count
+      // from the subgraph
+      members: item.members.length,
+      name: item.name,
+      reputation: new Reputation(item.nativeReputation.id),
+      token: new Token(item.nativeToken.id)
+    }}
+    this.state = this.context._getObjectObservable(query, 'dao', itemMap) as Observable<IDAOState>
   }
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
