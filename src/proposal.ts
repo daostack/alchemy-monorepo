@@ -2,11 +2,11 @@ import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
 import { map, switchMap } from 'rxjs/operators'
 
+import { Arc } from '../src/arc'
 import { DAO } from './dao'
 import { Operation } from './operation'
 import { IRewardQueryOptions, Reward } from './reward'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import { Arc } from '../src/arc'
 import * as utils from './utils'
 
 export enum Outcome {
@@ -93,7 +93,6 @@ export class Proposal implements IStateful<IProposalState> {
 
   constructor(public id: string, context: Arc) {
     this.id = id
-    
     const query = gql`
       {
         genesisProtocolProposal(proposalId: "${id}") {
@@ -117,35 +116,25 @@ export class Proposal implements IStateful<IProposalState> {
       }
 
       return {
-        id: item.id, 
-        dao: item.daoAvatarAddress,
-        // address of the proposer
-        proposer: item.proposer,
-
-        // title, description and url still to be implemented
-        ipfsHash: "", // TODO: Pending Subgraph implementation
-        title: "", // TODO: Pending Subgraph implementation
-        description: "", // TODO: Pending Subgraph implementation
-        url: "", // TODO: Pending Subgraph implementation
-
-        createdAt: item.submittedTime,
         boostedAt: 0, // TODO: Pending Subgraph implementation
-        overtimedAt: 0, // TODO: Pending Subgraph implementation
-        // date when the proposal is executed, null if not executed yet
-        executedAt: item.executionTime,
-        // Date on which the proposal is resolved, or expected to be resolved
-        resolvesAt: 0, // TODO: Pending Subgraph implementation
-        // stage is calculated on the basis of the previous values
-        stage: this.getProposalStage(item.state, item.executionState, item.decision),
-
-        votesFor: 0, // TODO: Pending Subgraph implementation
-        votesAgainst: 0, // TODO: Pending Subgraph implementation
-
-        winningOutcome: item.decision,
-
-        stakesFor: 0, // TODO: Pending Subgraph implementation
-        stakesAgainst: 0, // TODO: Pending Subgraph implementation
         boostingThreshold: 0 // TODO: Pending Subgraph implementation
+        createdAt: item.submittedTime,
+        dao: item.daoAvatarAddress,
+        description: '', // TODO: Pending Subgraph implementation
+        executedAt: item.executionTime,
+        id: item.id,
+        ipfsHash: '', // TODO: Pending Subgraph implementation
+        overtimedAt: 0, // TODO: Pending Subgraph implementation
+        proposer: item.proposer,
+        resolvesAt: 0, // TODO: Pending Subgraph implementation
+        stage: this.getProposalStage(item.state, item.executionState, item.decision),
+        stakesAgainst: 0, // TODO: Pending Subgraph implementation
+        stakesFor: 0, // TODO: Pending Subgraph implementation
+        title: '', // TODO: Pending Subgraph implementation
+        url: '', // TODO: Pending Subgraph implementation
+        votesAgainst: 0, // TODO: Pending Subgraph implementation
+        votesFor: 0, // TODO: Pending Subgraph implementation
+        winningOutcome: item.decision
       }
     }
 
@@ -197,20 +186,21 @@ export class Proposal implements IStateful<IProposalState> {
   }
 
   private getProposalStage(state: number, executionState: number, decision: number): ProposalStage {
-    if (state == 3 && executionState == 0)
+    if (state === 3 && executionState === 0) {
       return ProposalStage.preboosted
-    else if (state == 4 && executionState == 0)
+    } else if (state === 4 && executionState === 0) {
       return ProposalStage.boosted
-    else if (state == 5 && executionState == 0)
+    } else if (state === 5 && executionState === 0) {
       return ProposalStage.overtimed
-    else if (state == 2 && executionState == 2)
+    } else if (state === 2 && executionState === 2) {
       return ProposalStage.passed
-    else if (state == 2 && (executionState == 3 || executionState == 4) && decision == 1)
+    } else if (state === 2 && (executionState === 3 || executionState === 4) && decision === 1) {
       return ProposalStage.passedBoosted
-    else if ((state == 1 || state == 2) && (executionState == 1 || executionState == 2) && decision == 2)
+    } else if ((state === 1 || state === 2) && (executionState === 1 || executionState === 2) && decision === 2) {
       return ProposalStage.failed
-    else if ((state == 1 || state == 2) && (executionState == 3 || executionState == 4) && decision == 2)
+    } else if ((state === 1 || state === 2) && (executionState === 3 || executionState === 4) && decision === 2) {
       return ProposalStage.failedBoosted
+    }
 
     return ProposalStage.preboosted
   }

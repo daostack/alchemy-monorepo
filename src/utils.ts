@@ -6,9 +6,6 @@ import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 import fetch from 'isomorphic-fetch'
 import * as WebSocket from 'isomorphic-ws'
-import gql from 'graphql-tag'
-import { from, Observable, Observer } from 'rxjs'
-import { concat, map } from 'rxjs/operators'
 
 export function createApolloClient(options: {
   graphqlHttpProvider: string

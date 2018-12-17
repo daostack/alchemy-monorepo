@@ -2,8 +2,6 @@ import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
 import { Arc } from './arc'
 import { Address, IStateful } from './types'
-import * as utils from './utils'
-
 
 export interface IReputationState {
   address: Address
