@@ -49,7 +49,8 @@ describe('DAO', () => {
        name: 'Genesis Test'
     }
     expect(state).toMatchObject(expected)
-    expect(Object.keys(state)).toEqual(['address', 'members', 'name', 'reputation', 'token'])
+    expect(Object.keys(state)).toEqual(['address', 'members', 'name', 'reputation', 'reputationTotalSupply',
+      'token', 'tokenName', 'tokenSymbol', 'tokenTotalSupply'])
   })
 
   it('throws a reasonable error if the contract does not exist', async () => {

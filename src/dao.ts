@@ -20,14 +20,18 @@ export interface IDAOState {
   members: number
   name: string
   reputation: Reputation
-  token: Token
+  reputationTotalSupply: number,
+  token: Token,
+  tokenName: string,
+  tokenSymbol: string,
+  tokenTotalSupply: number
 }
 
 export class DAO implements IStateful<IDAOState> {
-
   public state: Observable<IDAOState>
 
   constructor(public address: Address, public context: Arc) {
+
     this.address = address.toLowerCase()
 
     const query = gql`{
@@ -35,8 +39,8 @@ export class DAO implements IStateful<IDAOState> {
         id
         members { id },
         name,
-        nativeReputation { id },
-        nativeToken { id },
+        nativeReputation { id, totalSupply },
+        nativeToken { id, name, symbol, totalSupply },
       }
     }`
 
@@ -51,7 +55,11 @@ export class DAO implements IStateful<IDAOState> {
         members: item.members.length,
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, context),
-        token: new Token(item.nativeToken.id, context)
+        reputationTotalSupply: item.nativeReputation.totalSupply,
+        token: new Token(item.nativeToken.id, context),
+        tokenName: item.nativeToken.name,
+        tokenSymbol: item.nativeToken.symbol,
+        tokenTotalSupply: item.nativeToken.totalSupply
       }
     }
     this.state = this.context._getObjectObservable(query, 'dao', itemMap) as Observable<IDAOState>
