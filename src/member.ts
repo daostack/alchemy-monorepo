@@ -11,7 +11,7 @@ import {
 import { Reward } from './reward'
 import { Address, ICommonQueryOptions, IStateful } from './types'
 
-interface IMemberState {
+export interface IMemberState {
   address: Address
   dao: string
   eth: number

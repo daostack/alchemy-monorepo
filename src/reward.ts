@@ -9,7 +9,7 @@ export enum RewardType {
   Bounty
 }
 
-interface IRewardState {
+export interface IRewardState {
   id: string
   createdAt: number
   dao: string

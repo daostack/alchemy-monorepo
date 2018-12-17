@@ -1,12 +1,48 @@
+import gql from 'graphql-tag'
+import { first} from 'rxjs/operators'
+import { Arc } from '../src/arc'
+import { DAO } from '../src/dao'
 import { Reputation } from '../src/reputation'
-
+import { Address } from '../src/types'
+import { getArc, getContractAddresses } from './utils'
 /**
  * Reputation test
  */
 describe('Reputation', () => {
+
+  let addresses: { [key: string]: string }
+  let arc: Arc
+  let address: Address
+
+  beforeAll(() => {
+    addresses = getContractAddresses()
+    address = addresses.NativeReputation
+    arc = getArc()
+  })
+
   it('Reputation is instantiable', () => {
-    const address = '0xa2A064b3B22fC892dfB71923a6D844b953AA247C'
-    const reputation = new Reputation(address)
+    const reputation = new Reputation(address, arc)
     expect(reputation).toBeInstanceOf(Reputation)
+    expect(reputation.address).toBe(address)
+  })
+
+  it('get the reputation state', async () => {
+    const reputation = new Reputation(address, arc)
+    expect(reputation).toBeInstanceOf(Reputation)
+    const state = await reputation.state.pipe(first()).toPromise()
+    expect(Object.keys(state)).toEqual(['address', 'name', 'symbol', 'totalSupply'])
+    const expected = {
+       address: address.toLowerCase(),
+       symbol: 'REP'
+    }
+    expect(state).toMatchObject(expected)
+  })
+
+  it('throws a reasonable error if the contract does not exist', async () => {
+    expect.assertions(1)
+    const reputation = new Reputation('0xFake', arc)
+    await expect(reputation.state.toPromise()).rejects.toThrow(
+      'Could not find a reputation contract with address 0xfake'
+    )
   })
 })
