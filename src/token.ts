@@ -38,7 +38,7 @@ export class Token implements IStateful<ITokenState> {
         totalSupply: item.totalSupply
       }
     }
-    this.state = utils._getObjectObservable(context.apolloClient, query, 'tokenContract', itemMap) as Observable<ITokenState>
+    this.state = context._getObjectObservable(query, 'tokenContract', itemMap) as Observable<ITokenState>
   }
 
   public balanceOf(address: string): Observable<number> {

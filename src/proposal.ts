@@ -149,7 +149,7 @@ export class Proposal implements IStateful<IProposalState> {
       }
     }
 
-    this.state = utils._getObjectObservable(context.apolloClient, query, 'genesisProtocolProposal', itemMap) as Observable<IProposalState>
+    this.state = context._getObjectObservable(query, 'genesisProtocolProposal', itemMap) as Observable<IProposalState>
   }
 
   public dao(): Observable<DAO> {

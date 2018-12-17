@@ -63,7 +63,7 @@ export class DAO implements IStateful<IDAOState> {
         tokenTotalSupply: item.nativeToken.totalSupply
       }
     }
-    this.state = utils._getObjectObservable(this.context.apolloClient, query, 'dao', itemMap) as Observable<IDAOState>
+    this.state = this.context._getObjectObservable(query, 'dao', itemMap) as Observable<IDAOState>
   }
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
@@ -78,8 +78,7 @@ export class DAO implements IStateful<IDAOState> {
         }
       }
     `
-    return utils._getObjectListObservable(
-      this.context.apolloClient,
+    return this.context._getObjectListObservable(
       query,
       'genesisProtocolProposals',
       (r: any) => new Proposal(r.id, this.context)

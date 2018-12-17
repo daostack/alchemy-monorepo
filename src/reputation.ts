@@ -36,7 +36,7 @@ export class Reputation implements IStateful<IReputationState> {
         totalSupply: item.totalSupply
       }
     }
-    this.state = utils._getObjectObservable(context.apolloClient, query, 'reputationContract', itemMap) as Observable<IReputationState>
+    this.state = context._getObjectObservable(query, 'reputationContract', itemMap) as Observable<IReputationState>
   }
 
   public reputationOf(address: Address): Observable<number> {
