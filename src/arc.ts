@@ -48,75 +48,11 @@ export class Arc {
         }
       }
     `
-    return this._getObjectListObservable(
+    return utils._getObjectListObservable(
+      this.apolloClient,
       query,
       'avatarContracts',
       (r: any) => new DAO(r.address, this)
     ) as Observable<DAO[]>
   }
-
-  /**
-   * Returns an observable that:
-   * - sends a query over http and returns the current list of results
-   * - subscribes over a websocket to changes, and returns the updated list
-   * example:
-   *    const query = gql`
-   *    {
-   *      dao {
-   *        id
-   *        address
-   *      }
-   *    }`
-   *    _getObjectListObservable(query, 'dao', (r:any) => new DAO(r.address))
-   *
-   * @param query The query to be run
-   * @param  entity  name of the graphql entity to be queried.
-   *  Use the singular, i.e avatarContract rather then avatarContracts
-   * @param  itemMap (optional) a function that takes elements of the list and creates new objects
-   * @return
-   */
-  public _getObjectListObservable(
-    query: any,
-    entity: string,
-    itemMap: (o: object) => object = (o) => o
-  ) {
-    return this._getObservable(query).pipe(
-      map((r) => r.data[entity]),
-      map((rs: object[]) => rs.map(itemMap))
-    )
-  }
-
-  public _getObjectObservable(
-    query: any,
-    entity: string,
-    itemMap: (o: object) => object = (o) => o
-  ) {
-    return this._getObservable(query).pipe(
-      map((r) => r.data[entity]),
-      map(itemMap)
-    )
-  }
-
-  public _getObservable(query: any) {
-    const subscriptionQuery = gql`
-      subscription ${query}
-    `
-
-    const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({ query })
-    const subscriptionObservable = Observable.create((observer: Observer<object[]>) => {
-      const subscription = zenObservable.subscribe(observer)
-      return () => subscription.unsubscribe()
-    })
-
-    const queryPromise: Promise<
-      ApolloQueryResult<{ [key: string]: object[] }>
-    > = this.apolloClient.query({ query })
-
-    const queryObservable = from(queryPromise).pipe(
-      concat(subscriptionObservable)
-    )
-
-    return queryObservable as Observable<any>
-  }
-
 }

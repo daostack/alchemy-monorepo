@@ -2,6 +2,8 @@ import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
 import { Arc } from './arc'
 import { Address, IStateful } from './types'
+import * as utils from './utils'
+
 
 export interface IReputationState {
   address: Address
@@ -34,7 +36,7 @@ export class Reputation implements IStateful<IReputationState> {
         totalSupply: item.totalSupply
       }
     }
-    this.state = this.context._getObjectObservable(query, 'reputationContract', itemMap) as Observable<IReputationState>
+    this.state = utils._getObjectObservable(context.apolloClient, query, 'reputationContract', itemMap) as Observable<IReputationState>
   }
 
   public reputationOf(address: Address): Observable<number> {

@@ -14,6 +14,7 @@ import { Reputation } from './reputation'
 import { IRewardQueryOptions, Reward } from './reward'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
+import * as utils from './utils'
 
 export interface IDAOState {
   address: Address // address of the avatar
@@ -62,7 +63,7 @@ export class DAO implements IStateful<IDAOState> {
         tokenTotalSupply: item.nativeToken.totalSupply
       }
     }
-    this.state = this.context._getObjectObservable(query, 'dao', itemMap) as Observable<IDAOState>
+    this.state = utils._getObjectObservable(this.context.apolloClient, query, 'dao', itemMap) as Observable<IDAOState>
   }
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
@@ -70,11 +71,23 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
-    throw new Error('not implemented')
+    const query = gql`
+      {
+        genesisProtocolProposals(daoAvatarAddress: "${this.address}") {
+          proposalId
+        }
+      }
+    `
+    return utils._getObjectListObservable(
+      this.context.apolloClient,
+      query,
+      'genesisProtocolProposals',
+      (r: any) => new Proposal(r.id, this.context)
+    ) as Observable<Proposal[]>
   }
 
   public proposal(id: string): Proposal {
-    return new Proposal(id)
+    return new Proposal(id, this.context)
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {

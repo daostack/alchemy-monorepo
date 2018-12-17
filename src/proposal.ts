@@ -1,3 +1,4 @@
+import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
 import { map, switchMap } from 'rxjs/operators'
 
@@ -5,8 +6,11 @@ import { DAO } from './dao'
 import { Operation } from './operation'
 import { IRewardQueryOptions, Reward } from './reward'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
+import { Arc } from '../src/arc'
+import * as utils from './utils'
 
 export enum Outcome {
+  None,
   Pass,
   Fail
 }
@@ -14,25 +18,25 @@ export enum Outcome {
 export enum ProposalStage {
   // pre boosted
   // | { open: true }
-  preboosted,
+  preboosted, // ProposalState: 3, ExecutionState: 0
   // boosted
   // | { boosted: true; boostedAt: number }
-  boosted,
+  boosted, // ProposalState: 4, ExecutionState: 0
   // quiet ending
   // | { overtimed: true; boostedAt: number; overtimedAt: number }
-  overtimed,
+  overtimed, // ProposalState: 5, ExecutionState: 0
   // passed in pre boosted phase (via absolute IVote)
   // | { passed: true; executedAt: number }
-  passed,
+  passed, // ProposalState: 2, ExecutionState: 2
   // passed in boosted phase
   // | { passed: true; executedAt: number; boosted: true; boostedAt: number; overtimedAt?: number }
-  'passed-boosted',
+  passedBoosted, // ProposalState: 2, ExecutionState: 4
   // failed in pre boosted phase
   // | { failed: true }
-  failed,
+  failed, // ProposalState: 1 or 2, ExecutionState: 1 or 2, decision: 0
   // failed in boosted phase
   // | { failed: true; boosted: true; boostedAt: number }
-  'failed-boosted'
+  failedBoosted // 1 or 2, ExecutionState: 3 or 4, decision: 0
 }
 
 export interface IProposalState {
@@ -65,15 +69,6 @@ export interface IProposalState {
   stakesFor: number
   stakesAgainst: number
   boostingThreshold: number
-
-  beneficiary: string
-  reputationReward: number
-  tokensReward: number
-  ethReward: number
-  externalTokenReward: number
-  externalToken: string
-  periods: number
-  periodLength: number
 }
 
 export interface IVote {
@@ -96,7 +91,66 @@ export class Proposal implements IStateful<IProposalState> {
    */
   public state: Observable<IProposalState> = of()
 
-  constructor(private id: string) {}
+  constructor(public id: string, context: Arc) {
+    this.id = id
+    
+    const query = gql`
+      {
+        genesisProtocolProposal(proposalId: "${id}") {
+          proposalId
+          submittedTime
+          proposer
+          daoAvatarAddress
+          numOfChoices
+          decision
+          executionTime
+          totalReputation
+          executionState
+          state
+        }
+      }
+    `
+
+    const itemMap = (item: any): IProposalState => {
+      if (item === null) {
+        throw Error(`Could not find a Proposal with id ${id}`)
+      }
+
+      return {
+        id: item.id, 
+        dao: item.daoAvatarAddress,
+        // address of the proposer
+        proposer: item.proposer,
+
+        // title, description and url still to be implemented
+        ipfsHash: "", // TODO: Pending Subgraph implementation
+        title: "", // TODO: Pending Subgraph implementation
+        description: "", // TODO: Pending Subgraph implementation
+        url: "", // TODO: Pending Subgraph implementation
+
+        createdAt: item.submittedTime,
+        boostedAt: 0, // TODO: Pending Subgraph implementation
+        overtimedAt: 0, // TODO: Pending Subgraph implementation
+        // date when the proposal is executed, null if not executed yet
+        executedAt: item.executionTime,
+        // Date on which the proposal is resolved, or expected to be resolved
+        resolvesAt: 0, // TODO: Pending Subgraph implementation
+        // stage is calculated on the basis of the previous values
+        stage: this.getProposalStage(item.state, item.executionState, item.decision),
+
+        votesFor: 0, // TODO: Pending Subgraph implementation
+        votesAgainst: 0, // TODO: Pending Subgraph implementation
+
+        winningOutcome: item.decision,
+
+        stakesFor: 0, // TODO: Pending Subgraph implementation
+        stakesAgainst: 0, // TODO: Pending Subgraph implementation
+        boostingThreshold: 0 // TODO: Pending Subgraph implementation
+      }
+    }
+
+    this.state = utils._getObjectObservable(context.apolloClient, query, 'genesisProtocolProposal', itemMap) as Observable<IProposalState>
+  }
 
   public dao(): Observable<DAO> {
     throw new Error('not implemented')
@@ -140,6 +194,25 @@ export class Proposal implements IStateful<IProposalState> {
     //     return dao.rewards({ ...options, proposalId: this.id })
     //   })
     // )
+  }
+
+  private getProposalStage(state: number, executionState: number, decision: number): ProposalStage {
+    if (state == 3 && executionState == 0)
+      return ProposalStage.preboosted
+    else if (state == 4 && executionState == 0)
+      return ProposalStage.boosted
+    else if (state == 5 && executionState == 0)
+      return ProposalStage.overtimed
+    else if (state == 2 && executionState == 2)
+      return ProposalStage.passed
+    else if (state == 2 && (executionState == 3 || executionState == 4) && decision == 1)
+      return ProposalStage.passedBoosted
+    else if ((state == 1 || state == 2) && (executionState == 1 || executionState == 2) && decision == 2)
+      return ProposalStage.failed
+    else if ((state == 1 || state == 2) && (executionState == 3 || executionState == 4) && decision == 2)
+      return ProposalStage.failedBoosted
+
+    return ProposalStage.preboosted
   }
 }
 

@@ -2,6 +2,7 @@ import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
 import { Arc } from './arc'
 import { Address, IStateful } from './types'
+import * as utils from './utils'
 
 export interface ITokenState {
   address: Address
@@ -37,7 +38,7 @@ export class Token implements IStateful<ITokenState> {
         totalSupply: item.totalSupply
       }
     }
-    this.state = this.context._getObjectObservable(query, 'tokenContract', itemMap) as Observable<ITokenState>
+    this.state = utils._getObjectObservable(context.apolloClient, query, 'tokenContract', itemMap) as Observable<ITokenState>
   }
 
   public balanceOf(address: string): Observable<number> {
