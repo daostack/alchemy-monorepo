@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs'
 import { Arc } from './arc'
 import { Address, IStateful } from './types'
 
-interface ITokenState {
+export interface ITokenState {
   address: Address
   name: string
   owner: Address

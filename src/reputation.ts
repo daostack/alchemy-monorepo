@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs'
 import { Arc } from './arc'
 import { Address, IStateful } from './types'
 
-interface IReputationState {
+export interface IReputationState {
   address: Address
   name: string
   symbol: string
