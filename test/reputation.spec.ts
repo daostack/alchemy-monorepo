@@ -45,4 +45,12 @@ describe('Reputation', () => {
       'Could not find a reputation contract with address 0xfake'
     )
   })
+
+  it('get someones reputation', async () => {
+    const reputation = new Reputation(address, arc)
+    const reputationOf = await reputation.reputationOf('0xb0c908140fe6fd6fbd4990a5c2e35ca6dc12bfb2')
+      .pipe(first()).toPromise()
+    expect(reputationOf).toEqual(1000)
+  })
+
 })
