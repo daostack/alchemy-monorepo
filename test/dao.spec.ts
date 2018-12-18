@@ -45,12 +45,16 @@ describe('DAO', () => {
     const state = await dao.state.pipe(first()).toPromise()
     const expected = {
        address: addresses.Avatar.toLowerCase(),
-       members: 0,
+       memberCount: 0,
        name: 'Genesis Test'
     }
     expect(state).toMatchObject(expected)
-    expect(Object.keys(state)).toEqual(['address', 'members', 'name', 'reputation', 'reputationTotalSupply',
-      'token', 'tokenName', 'tokenSymbol', 'tokenTotalSupply'])
+    expect(Object.keys(state)).toEqual([
+      'address',
+      'externalTokenAddress', 'externalTokenSymbol',
+      'memberCount', 'name', 'reputation', 'reputationTotalSupply',
+      'token', 'tokenName', 'tokenSymbol', 'tokenTotalSupply'
+    ])
   })
 
   it('throws a reasonable error if the contract does not exist', async () => {
