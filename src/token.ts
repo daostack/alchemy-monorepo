@@ -17,9 +17,10 @@ export class Token implements IStateful<ITokenState> {
 
   constructor(public address: Address, public context: Arc) {
     const query = gql`{
-      tokenContract (id: "${address.toLowerCase()}") {
+      token(id: "${address.toLowerCase()}") {
         id,
-        address,
+        name,
+        symbol,
         totalSupply
       }
     }`
@@ -29,15 +30,14 @@ export class Token implements IStateful<ITokenState> {
         throw Error(`Could not find a token contract with address ${address.toLowerCase()}`)
       }
       return {
-        address: item.address,
-        // TODO: need to get the symbol and name: once https://github.com/daostack/subgraph/issues/36 is resolved
-        name: 'To Be Done',
+        address: item.id,
+        name: item.name,
         owner: item.owner,
-        symbol: 'TBD',
+        symbol: item.symbol,
         totalSupply: item.totalSupply
       }
     }
-    this.state = this.context._getObjectObservable(query, 'tokenContract', itemMap) as Observable<ITokenState>
+    this.state = this.context._getObjectObservable(query, 'token', itemMap) as Observable<ITokenState>
   }
 
   public balanceOf(address: string): Observable<number> {
