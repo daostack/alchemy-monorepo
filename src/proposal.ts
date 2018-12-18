@@ -117,7 +117,7 @@ export class Proposal implements IStateful<IProposalState> {
 
       return {
         boostedAt: 0, // TODO: Pending Subgraph implementation
-        boostingThreshold: 0 // TODO: Pending Subgraph implementation
+        boostingThreshold: 0, // TODO: Pending Subgraph implementation
         createdAt: item.submittedTime,
         dao: item.daoAvatarAddress,
         description: '', // TODO: Pending Subgraph implementation
