@@ -70,11 +70,17 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
-    throw new Error('not implemented')
+    const query = gql`{
+      proposals {
+        id
+      }
+    }`
+    const itemMap = (item: any): Proposal => new Proposal(item.id)
+    return this.context._getObjectListObservable(query, 'proposals', itemMap) as Observable<Proposal[]>
   }
 
   public proposal(id: string): Proposal {
-    return new Proposal(id)
+        return new Proposal(id)
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {

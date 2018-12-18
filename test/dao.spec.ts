@@ -60,4 +60,11 @@ describe('DAO', () => {
       'Could not find a DAO with address 0xfake'
     )
   })
+
+  it('dao.proposals() should work', async () => {
+    // TODO: because we have not setup with proposals, we are only testing if the current state returns the emty list
+    const dao = arc.dao(addresses.Avatar.toLowerCase())
+    const proposals = await dao.proposals().pipe(first()).toPromise()
+    expect(proposals).toEqual([])
+  })
 })

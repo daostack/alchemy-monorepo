@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import { first} from 'rxjs/operators'
+import { concat, first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { Reputation } from '../src/reputation'
