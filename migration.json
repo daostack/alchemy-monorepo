@@ -18,7 +18,8 @@
       "VoteInOrganizationScheme": "0x26b4AFb60d6C903165150C6F0AA14F8016bE4aec",
       "OrganizationRegister": "0x630589690929E9cdEFDeF0734717a9eF3Ec7Fcfe",
       "Redeemer": "0x0E696947A06550DEf604e82C26fd9E493e576337",
-      "Reputation": "0xDb56f2e9369E0D7bD191099125a3f6C370F8ed15"
+      "Reputation": "0xDb56f2e9369E0D7bD191099125a3f6C370F8ed15",
+      "GenericScheme": "0xA94B7f0465E98609391C623d0560C5720a3f2D33"
     },
     "dao": {
       "name": "Genesis Test",
@@ -46,13 +47,14 @@
       "VoteInOrganizationScheme": "0x4fC336ACb9b3DD827a49C9BD513a39A993f70666",
       "OrganizationRegister": "0x8625EabCE5F7015Aa423Cc9fc31d3a98216A04EC",
       "Redeemer": "0x70273622E4a1d7B62dC457cbFaB4313805cBfE5a",
-      "Reputation": "0xB8C93D2A53d13Df07CCc403901D9798c4dA9C53B"
+      "Reputation": "0xB8C93D2A53d13Df07CCc403901D9798c4dA9C53B",
+      "GenericScheme": "0xE6fdF5Fc939Cbf462683A63D2dCff662Bc6BC603"
     },
     "dao": {
       "name": "Genesis Test",
-      "Avatar": "0xd717fD6da6e49B63c70D3a9B307A1B4F7Cf9CC92",
-      "NativeToken": "0x8f5030e0a2EaABf456bdA6b27324485b69fbcfFb",
-      "NativeReputation": "0x4195F4E0AAAa1ec3A7816445435b7f334987Ef4f"
+      "Avatar": "0x48171F9dBb98AdB0E79A0FBE5F0ba7E59DFB1F02",
+      "NativeToken": "0xc0c0139Abad1552674378f20436664227cb02C6F",
+      "NativeReputation": "0x90cA9E2fC0580818d258231F81D8609bccC0Aa06"
     }
   },
   "rinkeby": {
@@ -74,13 +76,14 @@
       "VoteInOrganizationScheme": "0x44fB03f918741f1874db7fF2A7a2808F9509A80b",
       "OrganizationRegister": "0x3a935199179191Ae0c8EEa1428583f6204c71487",
       "Redeemer": "0xCf1b33896451A65298B9768a4c66198EcCaFCB9d",
-      "Reputation": "0x928da53A04E7B3bdc54Fe5641Eff3CbC46D19E4d"
+      "Reputation": "0x928da53A04E7B3bdc54Fe5641Eff3CbC46D19E4d",
+      "GenericScheme": "0x369C0692Cfb9B39187F250257D10c7D177f05284"
     },
     "dao": {
       "name": "Genesis Test",
-      "Avatar": "0x7027Fd1c297b057D98eDf5836403FB461Ee6cbb7",
-      "NativeToken": "0x4E99466bc09eC5516B4CfdDbe82eFCa103759E3e",
-      "NativeReputation": "0x0053B32D9Cc8571E7EecfAf865409c8bB8c91574"
+      "Avatar": "0xeF87Fe393b409FD231b5B21ccD33C2AC7C0E8D3b",
+      "NativeToken": "0x73957918a1C03d41c4FF8e25A61660D74E00dA5F",
+      "NativeReputation": "0xBbF1eE256BC68b76f37E019AE5A7fC9E04Bde997"
     }
   }
 }
