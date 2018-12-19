@@ -57,12 +57,16 @@ describe('DAO', () => {
     const state = await dao.state.pipe(first()).toPromise()
     const expected = {
        address: addresses.Avatar.toLowerCase(),
-       members: 0,
+       memberCount: 0,
        name: 'Genesis Test'
     }
     expect(state).toMatchObject(expected)
-    expect(Object.keys(state)).toEqual(['address', 'members', 'name', 'reputation', 'reputationTotalSupply',
-      'token', 'tokenName', 'tokenSymbol', 'tokenTotalSupply'])
+    expect(Object.keys(state)).toEqual([
+      'address',
+      'externalTokenAddress', 'externalTokenSymbol',
+      'memberCount', 'name', 'reputation', 'reputationTotalSupply',
+      'token', 'tokenName', 'tokenSymbol', 'tokenTotalSupply'
+    ])
   })
 
   it('throws a reasonable error if the contract does not exist', async () => {
@@ -71,15 +75,6 @@ describe('DAO', () => {
     await expect(reputation.state.toPromise()).rejects.toThrow(
       'Could not find a DAO with address 0xfake'
     )
-  })
-
-  it('proposals() works', async () => {
-    const dao = arc.dao(addresses.Avatar.toLowerCase())
-    const proposals = dao.proposals()
-    const proposalsList = await proposals.pipe(first()).toPromise()
-    expect(typeof proposalsList).toEqual(typeof [])
-    // const proposal = proposalsList[0]
-    // const state = await proposal.state.pipe(first()).toPromise()
   })
 
   it.skip('get list of proposals', async () => {
@@ -162,4 +157,19 @@ describe('DAO', () => {
 
   })
 
+  it('dao.proposals() should work', async () => {
+    // TODO: because we have not setup with proposals, we are only testing if the current state returns the emty list
+    const dao = arc.dao(addresses.Avatar.toLowerCase())
+    const proposals = await dao.proposals().pipe(first()).toPromise()
+    expect(typeof proposals).toEqual(typeof [])
+  })
+
+  it('dao.members() should work', async () => {
+    // TODO: because we have not setup with proposals, we are only testing if the current state returns the emty list
+    const dao = arc.dao(addresses.Avatar.toLowerCase())
+    const members = await dao.members().pipe(first()).toPromise()
+    expect(typeof members).toEqual(typeof [])
+    expect(members.length).toBeGreaterThan(0)
+    const member = members[0]
+  })
 })

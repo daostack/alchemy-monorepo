@@ -33,7 +33,7 @@ export class Member implements IStateful<IMemberState> {
    * @param address address of the user
    * @param dao     address of the DAO
    */
-  constructor(private address: string, private dao: string) {}
+  constructor(public address: Address, public dao: Address) {}
 
   public rewards(): Observable<Reward[]> {
     throw new Error('not implemented')

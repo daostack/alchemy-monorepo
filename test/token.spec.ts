@@ -40,4 +40,11 @@ describe('Token', () => {
       'Could not find a token contract with address 0xfake'
     )
   })
+
+  it('get someones balance', async () => {
+    const token = new Token(address, arc)
+    const balanceOf = await token.balanceOf('0xb0c908140fe6fd6fbd4990a5c2e35ca6dc12bfb2')
+      .pipe(first()).toPromise()
+    expect(balanceOf).toEqual(1000)
+  })
 })

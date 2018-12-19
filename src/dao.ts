@@ -18,14 +18,18 @@ import * as utils from './utils'
 
 export interface IDAOState {
   address: Address // address of the avatar
-  members: number
+  memberCount: number
   name: string
   reputation: Reputation
   reputationTotalSupply: number,
   token: Token,
   tokenName: string,
   tokenSymbol: string,
-  tokenTotalSupply: number
+  tokenTotalSupply: number,
+  // TODO: the following fields are placeholders for legacy stuff that alchemy expects
+  // these properties should be removed
+  externalTokenSymbol: string,
+  externalTokenAddress: Address
 }
 
 export class DAO implements IStateful<IDAOState> {
@@ -51,9 +55,11 @@ export class DAO implements IStateful<IDAOState> {
       }
       return {
         address: item.id,
+        externalTokenAddress: '',
+        externalTokenSymbol: '',
         // TODO: getting all members is not really scaleable - we need a way ot get the member count
         // from the subgraph
-        members: item.members.length,
+        memberCount: item.members.length,
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, context),
         reputationTotalSupply: item.nativeReputation.totalSupply,
@@ -67,10 +73,18 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
-    throw new Error('not implemented')
+    // TODO: show only members from this DAO
+    const query = gql`{
+      reputationHolders {
+        id
+      }
+    }`
+    const itemMap = (item: any): Member => new Member(item.id, this.address)
+    return this.context._getObjectListObservable(query, 'reputationHolders', itemMap) as Observable<Member[]>
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
+    // TODO: show only proposals from this DAO
     const query = gql`
       {
         proposals(daoAvatarAddress: "${this.address}") {
