@@ -54,31 +54,31 @@ async function migrateBase({ web3, spinner, confirm, opts, logTx, previousMigrat
 
   const ControllerCreator = await deploy(require('@daostack/arc/build/contracts/ControllerCreator.json'));
 
-  const DaoCreator = await deploy(
+  await deploy(
     require('@daostack/arc/build/contracts/DaoCreator.json'),
     ['ControllerCreator'],
     ControllerCreator
   );
-  const UController = await deploy(require('@daostack/arc/build/contracts/UController.json'));
+  await deploy(require('@daostack/arc/build/contracts/UController.json'));
   const GenesisProtocol = await deploy(
     require('@daostack/arc/build/contracts/GenesisProtocol.json'),
     ['DAOToken'],
     DAOToken
   );
-  const SchemeRegistrar = await deploy(require('@daostack/arc/build/contracts/SchemeRegistrar.json'));
-  const UpgradeScheme = await deploy(require('@daostack/arc/build/contracts/UpgradeScheme.json'));
-  const GlobalConstraintRegistrar = await deploy(
+  await deploy(require('@daostack/arc/build/contracts/SchemeRegistrar.json'));
+  await deploy(require('@daostack/arc/build/contracts/UpgradeScheme.json'));
+  await deploy(
     require('@daostack/arc/build/contracts/GlobalConstraintRegistrar.json')
   );
   const ContributionReward = await deploy(require('@daostack/arc/build/contracts/ContributionReward.json'));
-  const AbsoluteVote = await deploy(require('@daostack/arc/build/contracts/AbsoluteVote.json'));
-  const QuorumVote = await deploy(require('@daostack/arc/build/contracts/QuorumVote.json'));
-  const SimpleICO = await deploy(require('@daostack/arc/build/contracts/SimpleICO.json'));
-  const TokenCapGC = await deploy(require('@daostack/arc/build/contracts/TokenCapGC.json'));
-  const VestingScheme = await deploy(require('@daostack/arc/build/contracts/VestingScheme.json'));
-  const VoteInOrganizationScheme = await deploy(require('@daostack/arc/build/contracts/VoteInOrganizationScheme.json'));
-  const OrganizationRegister = await deploy(require('@daostack/arc/build/contracts/OrganizationRegister.json'));
-  const Redeemer = await deploy(
+  await deploy(require('@daostack/arc/build/contracts/AbsoluteVote.json'));
+  await deploy(require('@daostack/arc/build/contracts/QuorumVote.json'));
+  await deploy(require('@daostack/arc/build/contracts/SimpleICO.json'));
+  await deploy(require('@daostack/arc/build/contracts/TokenCapGC.json'));
+  await deploy(require('@daostack/arc/build/contracts/VestingScheme.json'));
+  await deploy(require('@daostack/arc/build/contracts/VoteInOrganizationScheme.json'));
+  await deploy(require('@daostack/arc/build/contracts/OrganizationRegister.json'));
+  await deploy(
     require('@daostack/arc/build/contracts/Redeemer.json'),
     ['ContributionReward', 'GenesisProtocol'],
     ContributionReward,
@@ -91,7 +91,7 @@ async function migrateBase({ web3, spinner, confirm, opts, logTx, previousMigrat
     []
   );
 
-  const GenericScheme = await deploy(require('@daostack/arc/build/contracts/GenericScheme.json'));
+  await deploy(require('@daostack/arc/build/contracts/GenericScheme.json'));
 
   return {
     base: addresses,
