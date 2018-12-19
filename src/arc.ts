@@ -57,7 +57,7 @@ export class Arc {
   }
 
   public proposal(id: string): Proposal {
-    return new Proposal(address, this)
+    return new Proposal(id, this)
   }
 
   /**
