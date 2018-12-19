@@ -72,16 +72,25 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
-    throw new Error('not implemented')
-  }
-
-  public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
+    // TODO: show only members from this DAO
     const query = gql`{
-      proposals {
+      reputationHolders {
         id
       }
     }`
-    const itemMap = (item: any): Proposal => new Proposal(item.id)
+    const itemMap = (item: any): Member => new Member(item.id, this.address)
+    return this.context._getObjectListObservable(query, 'reputationHolders', itemMap) as Observable<Member[]>
+  }
+
+  public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
+    // TODO: show only proposals from this DAO
+    const query = gql`{
+      proposals {
+        id,
+        address
+      }
+    }`
+    const itemMap = (item: any): Proposal => new Proposal(item.address)
     return this.context._getObjectListObservable(query, 'proposals', itemMap) as Observable<Proposal[]>
   }
 

@@ -71,4 +71,10 @@ describe('DAO', () => {
     const proposals = await dao.proposals().pipe(first()).toPromise()
     expect(proposals).toEqual([])
   })
+  it('dao.members() should work', async () => {
+    // TODO: because we have not setup with proposals, we are only testing if the current state returns the emty list
+    const dao = arc.dao(addresses.Avatar.toLowerCase())
+    const members = await dao.members().pipe(first()).toPromise()
+    expect(members).toEqual([])
+  })
 })
