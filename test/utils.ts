@@ -4,11 +4,11 @@ export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/d
 export const web3Provider: string = 'http://127.0.0.1:8545'
 const Web3 = require('web3')
 
-export const nullAddress: string  = '0x' + padZeros('', 40);
+export const nullAddress: string  = '0x' + padZeros('', 40)
 
 export function padZeros(str: string, max = 36): string {
-  str = str.toString();
-  return str.length < max ? padZeros('0' + str, max) : str;
+  str = str.toString()
+  return str.length < max ? padZeros('0' + str, max) : str
 }
 
 process.env = {
