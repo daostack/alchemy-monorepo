@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
 import { map, switchMap } from 'rxjs/operators'
 
-import { Arc } from '../src/arc'
+import { Arc } from './arc'
 import { DAO } from './dao'
 import { Operation } from './operation'
 import { IRewardQueryOptions, Reward } from './reward'
