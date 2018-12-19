@@ -1,5 +1,6 @@
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
+import { map } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Address, IStateful } from './types'
 
@@ -38,6 +39,21 @@ export class Reputation implements IStateful<IReputationState> {
   }
 
   public reputationOf(address: Address): Observable<number> {
-    throw new Error('not implemented')
+    const query = gql`{
+      reputationHolders (
+        where: { address:"0xb0c908140fe6fd6fbd4990a5c2e35ca6dc12bfb2",
+        contract: "${this.address}"}
+      )
+      {
+        id, address, balance,contract
+      }
+    }`
+    return this.context._getObservable(query).pipe(
+      map((r) => r.data.reputationHolders),
+      map((items: any[]) => {
+        const item = items.length > 0 && items[0]
+        return Number(item.balance)
+      })
+    )
   }
 }
