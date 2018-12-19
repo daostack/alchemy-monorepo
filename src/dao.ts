@@ -86,11 +86,10 @@ export class DAO implements IStateful<IDAOState> {
     // TODO: show only proposals from this DAO
     const query = gql`{
       proposals {
-        id,
-        address
+        id
       }
     }`
-    const itemMap = (item: any): Proposal => new Proposal(item.address)
+    const itemMap = (item: any): Proposal => new Proposal(item.id)
     return this.context._getObjectListObservable(query, 'proposals', itemMap) as Observable<Proposal[]>
   }
 
