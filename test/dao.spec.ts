@@ -162,6 +162,10 @@ describe('DAO', () => {
     const dao = arc.dao(addresses.Avatar.toLowerCase())
     const proposals = await dao.proposals().pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
+    // const proposal = proposals[0]
+    // const proposalState = await proposal.state.pipe(first()).toPromise()
+    // expect(proposalState).toEqual('something')
+
   })
 
   it('dao.members() should work', async () => {

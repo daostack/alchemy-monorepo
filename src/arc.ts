@@ -41,6 +41,7 @@ export class Arc {
   }
 
   public daos(): Observable<DAO[]> {
+    // TODO: use 'dao' object here
     const query = gql`
       {
         avatarContracts {
@@ -90,17 +91,28 @@ export class Arc {
       map((rs: object[]) => rs.map(itemMap))
     )
   }
-   public _getObjectObservable(
+
+  public _getObjectObservable(
     query: any,
     entity: string,
     itemMap: (o: object) => object = (o) => o
   ) {
     return this._getObservable(query).pipe(
-      map((r) => r.data[entity]),
+      map((r) => {
+        if (!r.data) {
+          console.log(query)
+          console.log(query.loc.source.body)
+          console.log(r)
+          return null
+          // throw Error('WTF?')
+        }
+        return r.data[entity]
+      }),
       map(itemMap)
     )
   }
-   public _getObservable(query: any) {
+
+  public _getObservable(query: any) {
     const subscriptionQuery = gql`
       subscription ${query}
     `

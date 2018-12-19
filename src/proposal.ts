@@ -53,11 +53,9 @@ export interface IProposalState {
 
   createdAt: Date
   boostedAt: Date
-  overtimedAt: Date
+  quietEndingPeriodBeganAt: Date
   // date when the proposal is executed, null if not executed yet
   executedAt: Date
-  // Date on which the proposal is resolved, or expected to be resolved
-  resolvesAt: Date
   // stage is calculated on the basis of the previous values
   stage: ProposalStage
 
@@ -93,47 +91,91 @@ export class Proposal implements IStateful<IProposalState> {
 
   constructor(public id: string, context: Arc) {
     this.id = id
+    // TODO: commented out the fields that are (or seem) broken in graphql
     const query = gql`
       {
         proposal (id: "${id}") {
-          id
-          submittedTime
-          proposer
-          daoAvatarAddress
-          numOfChoices
-          decision
-          executionTime
-          totalReputation
-          executionState
-          state
-        }
+            id,
+            dao {
+              id
+            },
+            # proposer {
+            #  id
+            # },
+            stage,
+            # createdAt,
+            boostedAt,
+            quietEndingPeriodBeganAt,
+            executedAt,
+            # ipfsHash,
+            title,
+            description,
+            url,
+            rewards {
+              id
+            },
+            votes {
+              id
+            },
+            votesFor,
+            votesAgainst,
+            winningOutcome,
+            stakes {
+              id
+            },
+            stakesFor,
+            stakesAgainst,
+            # preBoostedVoteRequiredPercentage,
+            # preBoostedVotePeriodLimit,
+            # boostedVotePeriodLimit,
+            # thresholdConstA,
+            # thresholdConstB,
+            # minimumStakingFee,
+            # quietEndingPeriod,
+            # proposingRepRewardConstA,
+            # proposingRepRewardConstB,
+            # stakerFeeRatioForVoters,
+            # votersReputationLossRatio,
+            # votersGainRepRatioFromLostRep,
+            # voteOnBehalf,
+            # beneficiary,
+            # reputationReward,
+            # tokensReward,
+            # ethReward,
+            # externalTokenReward,
+            # externalToken,
+            # periods,
+            # periodLength
+          }
       }
     `
+
     const itemMap = (item: any): IProposalState => {
       if (item === null) {
-        throw Error(`Could not find a Proposal with id ${id}`)
+        throw Error(`Could not find a Proposal with id '${id}'`)
       }
 
       return {
-        boostedAt: 0, // TODO: Pending Subgraph implementation
+        boostedAt: item.boostedAt,
         boostingThreshold: 0, // TODO: Pending Subgraph implementation
-        createdAt: item.submittedTime,
-        dao: item.daoAvatarAddress,
-        description: '', // TODO: Pending Subgraph implementation
-        executedAt: item.executionTime,
+        // createdAt: item.createdAt,
+        createdAt: item.createdAt, // TODO: Pending Subgraph implementation
+        dao: item.dao.id,
+        description: item.description, // TODO: Pending Subgraph implementation
+        executedAt: item.executedAt,
         id: item.id,
-        ipfsHash: '', // TODO: Pending Subgraph implementation
-        overtimedAt: 0, // TODO: Pending Subgraph implementation
-        proposer: item.proposer,
-        resolvesAt: 0, // TODO: Pending Subgraph implementation
-        stage: this.getProposalStage(item.state, item.executionState, item.decision),
-        stakesAgainst: 0, // TODO: Pending Subgraph implementation
-        stakesFor: 0, // TODO: Pending Subgraph implementation
-        title: '', // TODO: Pending Subgraph implementation
-        url: '', // TODO: Pending Subgraph implementation
-        votesAgainst: 0, // TODO: Pending Subgraph implementation
-        votesFor: 0, // TODO: Pending Subgraph implementation
-        winningOutcome: item.decision
+        ipfsHash: item.ipfsHash, // TODO: Pending Subgraph implementation
+        proposer: item.proposer && item.proposer.id, // TODO: pending subgraph implementation
+        quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
+        // resolvesAt: 0, // TODO: Pending Subgraph implementation
+        stage: item.stage,
+        stakesAgainst: item.stakesAgainst,
+        stakesFor: item.stakesFor,
+        title: item.title, // TODO: Pending Subgraph implementation
+        url: item.url, // TODO: Pending Subgraph implementation
+        votesAgainst: item.votesFor,
+        votesFor: item.votesAgainst,
+        winningOutcome: item.winningOutcome
       }
     }
 
