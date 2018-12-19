@@ -1,5 +1,5 @@
-import { Proposal } from '../src/proposal'
 import { Arc } from '../src/arc'
+import { Proposal } from '../src/proposal'
 import { getArc, getContractAddresses } from './utils'
 
 /**
@@ -13,7 +13,7 @@ describe('Proposal', () => {
     addresses = getContractAddresses()
     arc = getArc()
   })
-  
+
   it('Proposal is instantiable', () => {
     const id = 'some-id'
     const proposal = new Proposal(id, arc)
