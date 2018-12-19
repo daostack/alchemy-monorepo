@@ -1,5 +1,5 @@
-async function migrateDAO({ web3, spinner, confirm, opts, migrationParams, logTx, previousMigration: { base } }) {
-	if (!(await confirm('About to migrate new DAO. Continue?'))) {
+async function migrateDemoTest({ web3, spinner, confirm, opts, migrationParams, logTx, previousMigration: { base } }) {
+	if (!(await confirm('About to migrate new Demo Test. Continue?'))) {
 		return;
 	}
 
@@ -9,57 +9,49 @@ async function migrateDAO({ web3, spinner, confirm, opts, migrationParams, logTx
 		throw new Error(msg);
 	}
 
-	spinner.start('Migrating DAO...');
-	let tx;
-
 	const {
 		UController,
 		DaoCreator,
-		SchemeRegistrar,
-		GlobalConstraintRegistrar,
-		UpgradeScheme,
 		ContributionReward,
-		GenesisProtocol,
-		AbsoluteVote,
+		GenesisProtocol
 	} = base;
 
-	const daoCreator = new web3.eth.Contract(
-		require('@daostack/arc/build/contracts/DaoCreator.json').abi,
-		DaoCreator,
-		opts
-	);
-	const schemeRegistrar = new web3.eth.Contract(
-		require('@daostack/arc/build/contracts/SchemeRegistrar.json').abi,
-		SchemeRegistrar,
-		opts
-	);
-	const globalConstraintRegistrar = new web3.eth.Contract(
-		require('@daostack/arc/build/contracts/GlobalConstraintRegistrar.json').abi,
-		GlobalConstraintRegistrar,
-		opts
-	);
-	const upgradeScheme = new web3.eth.Contract(
-		require('@daostack/arc/build/contracts/UpgradeScheme.json').abi,
-		UpgradeScheme,
-		opts
-	);
-	const contributionReward = new web3.eth.Contract(
-		require('@daostack/arc/build/contracts/ContributionReward.json').abi,
-		ContributionReward,
-		opts
-	);
-	const genesisProtocol = new web3.eth.Contract(
-		require('@daostack/arc/build/contracts/GenesisProtocol.json').abi,
-		GenesisProtocol,
-		opts
-	);
-	const absoluteVote = new web3.eth.Contract(
-		require('@daostack/arc/build/contracts/AbsoluteVote.json').abi,
-		AbsoluteVote,
-		opts
-	);
+	spinner.start('Migrating Demo Test...');
 
-	const [orgName, tokenName, tokenSymbol, founderAddresses, tokenDist, repDist, uController, cap] = [
+	let accounts = web3.eth.accounts.wallet;
+
+	if (accounts[1] == undefined) {
+		web3.eth.accounts.wallet.add(web3.eth.accounts.privateKeyToAccount(
+			"0x6cbed15c793ce57650b9877cf6fa156fbef513c4e6134f022a85b1ffdd59b2a1"
+		));
+		web3.eth.accounts.wallet.add(web3.eth.accounts.privateKeyToAccount(
+			"0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c"
+		));
+		accounts = web3.eth.accounts.wallet;
+	}
+	let tx;
+
+    const externalToken = await new web3.eth.Contract(
+		require('@daostack/arc/build/contracts/DAOToken.json').abi,
+      undefined,
+      opts,
+    )
+      .deploy({
+        data: require('@daostack/arc/build/contracts/DAOToken.json').bytecode,
+        arguments: ['External', 'EXT', 0],
+      })
+	  .send();
+	//tx = externalToken
+	//await logTx(tx, 'Created new External Token.');
+	
+
+    const daoCreator = new web3.eth.Contract(
+		require('@daostack/arc/build/contracts/DaoCreator.json').abi,
+      DaoCreator,
+      opts,
+    )
+
+	const [orgName, tokenName, tokenSymbol, founders, tokenDist, repDist, uController, cap] = [
 		'Genesis Test',
 		'Genesis Test',
 		'GDT',
@@ -69,121 +61,179 @@ async function migrateDAO({ web3, spinner, confirm, opts, migrationParams, logTx
 		UController,
 		'0',
 	];
-
-	spinner.start('Creating a new organization...');
-	const forgeOrg = daoCreator.methods.forgeOrg(
+	
+    spinner.start('Creating a new organization...');
+	const forge = daoCreator.methods.forgeOrg(
 		orgName,
 		tokenName,
 		tokenSymbol,
-		founderAddresses,
+		founders,
 		tokenDist,
 		repDist,
 		uController,
 		cap
 	);
-	const Avatar = await forgeOrg.call();
-	tx = await forgeOrg.send();
+    const avatarAddress = await forge.call();
+	tx = await forge.send();
 	await logTx(tx, 'Created new organization.');
 
-	spinner.start('Setting AbsoluteVote parameters...');
-	const absoluteVoteSetParams = absoluteVote.methods.setParameters(
-		migrationParams.AbsoluteVote.votePerc,
-		migrationParams.AbsoluteVote.ownerVote
+    const contributionReward = new web3.eth.Contract(
+		require('@daostack/arc/build/contracts/ContributionReward.json').abi,
+      ContributionReward,
+      opts,
 	);
-	const absoluteVoteParams = await absoluteVoteSetParams.call();
-	tx = await absoluteVoteSetParams.send();
-	await logTx(tx, 'AbsoluteVote parameters set.');
+	
+    const genesisProtocol = new web3.eth.Contract(
+		require('@daostack/arc/build/contracts/GenesisProtocol.json').abi,
+      GenesisProtocol,
+      opts,
+    );
 
-	spinner.start('Setting SchemeRegistrar parameters...');
-	const schemeRegistrarSetParams = schemeRegistrar.methods.setParameters(
-		absoluteVoteParams,
-		absoluteVoteParams,
-		AbsoluteVote
-	);
-	const schemeRegistrarParams = await schemeRegistrarSetParams.call();
-	tx = await schemeRegistrarSetParams.send();
-	await logTx(tx, 'SchemeRegistrar parameters set.');
+    const gpParams = {
+      boostedVotePeriodLimit: 259200,
+      daoBountyConst: 75,
+      daoBountyLimitGWei: 100,
+      minimumStakingFeeGWei: 0,
+      preBoostedVotePeriodLimit: 1814400,
+      preBoostedVoteRequiredPercentage: 50,
+      proposingRepRewardConstA: 5,
+      proposingRepRewardConstB: 5,
+      quietEndingPeriod: 86400,
+      stakerFeeRatioForVoters: 50,
+      thresholdConstAGWei: 7,
+      thresholdConstB: 3,
+      voteOnBehalf: '0x0000000000000000000000000000000000000000',
+      votersGainRepRatioFromLostRep: 80,
+      votersReputationLossRatio: 1,
+	};
+	
+    const gpSetParams = genesisProtocol.methods.setParameters(
+      [
+        gpParams.preBoostedVoteRequiredPercentage,
+        gpParams.preBoostedVotePeriodLimit,
+        gpParams.boostedVotePeriodLimit,
+        web3.utils.toWei(gpParams.thresholdConstAGWei.toString(), 'gwei'),
+        gpParams.thresholdConstB,
+        web3.utils.toWei(gpParams.minimumStakingFeeGWei.toString(), 'gwei'),
+        gpParams.quietEndingPeriod,
+        gpParams.proposingRepRewardConstA,
+        gpParams.proposingRepRewardConstB,
+        gpParams.stakerFeeRatioForVoters,
+        gpParams.votersReputationLossRatio,
+        gpParams.votersGainRepRatioFromLostRep,
+        gpParams.daoBountyConst,
+        web3.utils.toWei(gpParams.daoBountyLimitGWei.toString(), 'gwei'),
+      ],
+      gpParams.voteOnBehalf,
+    );
+    const gpParamsHash = await gpSetParams.call();
+    tx = await gpSetParams.send();
+	await logTx(tx, 'Genesis Protocol Set Parameters.');
 
-	spinner.start('Setting GlobalConstraintRegistrar parameters...');
-	const globalConstraintRegistrarSetParams = globalConstraintRegistrar.methods.setParameters(
-		absoluteVoteParams,
-		AbsoluteVote
-	);
-	const globalConstraintRegistrarParams = await globalConstraintRegistrarSetParams.call();
-	tx = await globalConstraintRegistrarSetParams.send();
-	await logTx(tx, 'GlobalConstraintRegistrar parameters set.');
+    const crParams = {
+      orgNativeTokenFeeGWei: 0,
+    };
+    const crSetParams = contributionReward.methods.setParameters(
+      web3.utils.toWei(crParams.orgNativeTokenFeeGWei.toString(), 'gwei'),
+      gpParamsHash,
+      GenesisProtocol,
+    );
+    const crParamsHash = await crSetParams.call();
+	tx = await crSetParams.send();
+	await logTx(tx, 'Contribution Reward Set Parameters.');
 
-	spinner.start('Setting UpgradeScheme parameters...');
-	const upgradeSchemeSetParams = upgradeScheme.methods.setParameters(absoluteVoteParams, AbsoluteVote);
-	const upgradeSchemeParams = await upgradeSchemeSetParams.call();
-	tx = await upgradeSchemeSetParams.send();
-	await logTx(tx, 'UpgradeScheme parameters set.');
-
-	spinner.start('Setting GenesisProtocol parameters...');
-	const genesisProtocolSetParams = genesisProtocol.methods.setParameters(
-		[
-			migrationParams.GenesisProtocol.preBoostedVoteRequiredPercentage,
-			migrationParams.GenesisProtocol.preBoostedVotePeriodLimit,
-			migrationParams.GenesisProtocol.boostedVotePeriodLimit,
-			web3.utils.toWei(migrationParams.GenesisProtocol.thresholdConstAGWei.toString(), 'gwei'),
-			migrationParams.GenesisProtocol.thresholdConstB,
-			web3.utils.toWei(migrationParams.GenesisProtocol.minimumStakingFeeGWei.toString(), 'gwei'),
-			migrationParams.GenesisProtocol.quietEndingPeriod,
-			migrationParams.GenesisProtocol.proposingRepRewardConstA,
-			migrationParams.GenesisProtocol.proposingRepRewardConstB,
-			migrationParams.GenesisProtocol.stakerFeeRatioForVoters,
-			migrationParams.GenesisProtocol.votersReputationLossRatio,
-			migrationParams.GenesisProtocol.votersGainRepRatioFromLostRep,
-			migrationParams.GenesisProtocol.daoBountyConst,
-			web3.utils.toWei(migrationParams.GenesisProtocol.daoBountyLimitGWei.toString(), 'gwei'),
-		],
-		migrationParams.GenesisProtocol.voteOnBehalf
-	);
-	const genesisProtocolParams = await genesisProtocolSetParams.call();
-	tx = await genesisProtocolSetParams.send();
-	await logTx(tx, 'GenesisProtocol parameters set.');
-
-	spinner.start("Setting 'ContributionReward' parameters...");
-	const contributionRewardSetParams = contributionReward.methods.setParameters(
-		web3.utils.toWei(migrationParams.ContributionReward.orgNativeTokenFeeGWei.toString(), 'gwei'),
-		genesisProtocolParams,
-		GenesisProtocol
-	);
-	const contributionRewardParams = await contributionRewardSetParams.call();
-	tx = await contributionRewardSetParams.send();
-	await logTx(tx, 'ContributionReward parameters set.');
-
-	const schemes = [SchemeRegistrar, GlobalConstraintRegistrar, UpgradeScheme, ContributionReward];
-	const params = [
-		schemeRegistrarParams,
-		globalConstraintRegistrarParams,
-		upgradeSchemeParams,
-		contributionRewardParams,
+    const schemes = [
+      {
+        address: ContributionReward,
+        params: crParamsHash,
+        permissions: '0x00000000', /* no special params */
+      },
 	];
-	const permissions = [
-		'0x0000001F' /* all permissions */,
-		'0x00000004' /* manage global constraints */,
-		'0x0000000A' /* manage schemes + upgrade controller */,
-		'0x00000000' /* no permissions */,
-	];
+	
+    tx = await daoCreator.methods
+      .setSchemes(
+        avatarAddress,
+        schemes.map(({ address }) => address),
+        schemes.map(({ params }) => params),
+        schemes.map(({ permissions }) => permissions),
+      )
+	  .send();
+	  
+	await logTx(tx, 'Dao Creator Set Schemes.');
 
-	spinner.start('Setting DAO schemes...');
-	tx = await daoCreator.methods.setSchemes(Avatar, schemes, params, permissions).send();
-	await logTx(tx, 'DAO schemes set.');
+    // END setup
+    const descHash =
+      '0x000000000000000000000000000000000000000000000000000000000000abcd';
+    async function propose({
+      rep,
+      tokens,
+      eth,
+      external,
+      periodLength,
+      periods,
+      beneficiary,
+    }) {
+      const prop = contributionReward.methods.proposeContributionReward(
+        avatarAddress,
+        descHash,
+        rep,
+        [tokens, eth, external, periodLength, periods],
+        externalToken.options.address,
+        beneficiary,
+      );
+      const proposalId = await prop.call();
+      const tx = await prop.send();
+	  await logTx(tx, 'Submit new Proposal.');
 
-	const avatar = new web3.eth.Contract(require('@daostack/arc/build/contracts/Avatar.json').abi, Avatar, opts);
+      return proposalId;
+    }
 
+    const [PASS, FAIL] = [1, 2];
+    async function vote({ proposalId, outcome, voter }) {
+      	tx = await genesisProtocol.methods
+        	.vote(proposalId, outcome, voter)
+			.send({ from: voter });
+		
+		await logTx(tx, 'Vote on Proposal.');
+    }
+
+    const proposalId = await propose({
+      rep: 10,
+      tokens: 10,
+      eth: 10,
+      external: 10,
+      periodLength: 0,
+      periods: 1,
+      beneficiary: accounts[1].address,
+	});
+	
+    await vote({
+      proposalId: proposalId,
+      outcome: FAIL,
+      voter: accounts[2].address,
+	});
+	
+    await vote({
+      proposalId: proposalId,
+      outcome: PASS,
+      voter: accounts[1].address,
+	});
+	
+	const avatar = new web3.eth.Contract(require('@daostack/arc/build/contracts/Avatar.json').abi, avatarAddress, opts);
+	const Avatar = avatarAddress
 	const NativeToken = await avatar.methods.nativeToken().call();
 	const NativeReputation = await avatar.methods.nativeReputation().call();
 
 	return {
-		dao: {
+		test: {
 			name: orgName,
 			Avatar,
 			NativeToken,
 			NativeReputation,
+			proposalId,
+
 		},
 	};
 }
 
-module.exports = migrateDAO;
+module.exports = migrateDemoTest;
