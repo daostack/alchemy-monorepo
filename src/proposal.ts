@@ -9,76 +9,80 @@ import { IRewardQueryOptions, Reward } from './reward'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
 import * as utils from './utils'
 
-export enum Outcome {
+export enum ProposalOutcome {
   None,
   Pass,
   Fail
 }
-
+//
+// export enum ProposalStage {
+//   // pre boosted
+//   // | { open: true }
+//   preboosted, // ProposalState: 3, ExecutionState: 0
+//   // boosted
+//   // | { boosted: true; boostedAt: number }
+//   boosted, // ProposalState: 4, ExecutionState: 0
+//   // quiet ending
+//   // | { overtimed: true; boostedAt: number; overtimedAt: number }
+//   overtimed, // ProposalState: 5, ExecutionState: 0
+//   // passed in pre boosted phase (via absolute IVote)
+//   // | { passed: true; executedAt: number }
+//   passed, // ProposalState: 2, ExecutionState: 2
+//   // passed in boosted phase
+//   // | { passed: true; executedAt: number; boosted: true; boostedAt: number; overtimedAt?: number }
+//   passedBoosted, // ProposalState: 2, ExecutionState: 4
+//   // failed in pre boosted phase
+//   // | { failed: true }
+//   failed, // ProposalState: 1 or 2, ExecutionState: 1 or 2, decision: 0
+//   // failed in boosted phase
+//   // | { failed: true; boosted: true; boostedAt: number }
+//   failedBoosted // 1 or 2, ExecutionState: 3 or 4, decision: 0
+// }
+//
 export enum ProposalStage {
-  // pre boosted
-  // | { open: true }
-  preboosted, // ProposalState: 3, ExecutionState: 0
-  // boosted
-  // | { boosted: true; boostedAt: number }
-  boosted, // ProposalState: 4, ExecutionState: 0
-  // quiet ending
-  // | { overtimed: true; boostedAt: number; overtimedAt: number }
-  overtimed, // ProposalState: 5, ExecutionState: 0
-  // passed in pre boosted phase (via absolute IVote)
-  // | { passed: true; executedAt: number }
-  passed, // ProposalState: 2, ExecutionState: 2
-  // passed in boosted phase
-  // | { passed: true; executedAt: number; boosted: true; boostedAt: number; overtimedAt?: number }
-  passedBoosted, // ProposalState: 2, ExecutionState: 4
-  // failed in pre boosted phase
-  // | { failed: true }
-  failed, // ProposalState: 1 or 2, ExecutionState: 1 or 2, decision: 0
-  // failed in boosted phase
-  // | { failed: true; boosted: true; boostedAt: number }
-  failedBoosted // 1 or 2, ExecutionState: 3 or 4, decision: 0
+  Open,
+  Boosted,
+  QuietEndingPeriod,
+  Resolved
 }
 
 export interface IProposalState {
+  beneficiary: Address
   id: string
-  dao: string
-  // address of the proposer
-  proposer: string
-
-  // title, description and url still to be implemented
+  boostedAt: Date
+  boostingThreshold: number
+  dao: DAO
+  proposer: Address
   ipfsHash: string
   title?: string
   description?: string
   url?: string
-
   createdAt: Date
-  boostedAt: Date
-  quietEndingPeriodBeganAt: Date
-  // date when the proposal is executed, null if not executed yet
+  ethReward: number,
   executedAt: Date
-  // stage is calculated on the basis of the previous values
+  externalTokenReward: number,
+  quietEndingPeriodBeganAt: Date
+  reputationReward: number,
+  resolvedAt: Date,
   stage: ProposalStage
-
+  tokensReward: number,
   votesFor: number
   votesAgainst: number
-
-  winningOutcome: Outcome
-
+  winningOutcome: ProposalOutcome
   stakesFor: number
   stakesAgainst: number
-  boostingThreshold: number
 }
 
 export interface IVote {
   address: Address
-  outcome: Outcome
+  outcome: ProposalOutcome
   amount: number // amount of reputation that was voted with
   proposalId: string
 }
 
 export interface IStake {
   address: Address
-  outcome: Outcome
+  outcome: ProposalOutcome
   amount: number // amount staked
   proposalId: string
 }
@@ -88,9 +92,11 @@ export class Proposal implements IStateful<IProposalState> {
    * `state` is an observable of the proposal state
    */
   public state: Observable<IProposalState> = of()
+  public context: Arc
 
   constructor(public id: string, context: Arc) {
     this.id = id
+    this.context = context
     // TODO: commented out the fields that are (or seem) broken in graphql
     const query = gql`
       {
@@ -155,23 +161,29 @@ export class Proposal implements IStateful<IProposalState> {
         throw Error(`Could not find a Proposal with id '${id}'`)
       }
 
+      // TODO: "pending subgraph implementation" refers to https://github.com/daostack/subgraph/issues/380
       return {
+        beneficiary: item.beneficiary, // TODO: pending Subgraph iplementatino
         boostedAt: item.boostedAt,
         boostingThreshold: 0, // TODO: Pending Subgraph implementation
         // createdAt: item.createdAt,
         createdAt: item.createdAt, // TODO: Pending Subgraph implementation
-        dao: item.dao.id,
+        dao: new DAO(item.dao.id, this.context),
         description: item.description, // TODO: Pending Subgraph implementation
+        ethReward: item.ethReward, // TODO: pending..
         executedAt: item.executedAt,
+        externalTokenReward: item.externalTokenReward,
         id: item.id,
         ipfsHash: item.ipfsHash, // TODO: Pending Subgraph implementation
         proposer: item.proposer && item.proposer.id, // TODO: pending subgraph implementation
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
-        // resolvesAt: 0, // TODO: Pending Subgraph implementation
+        reputationReward: item.reputationReward, // TODO: pending subgraph
+        resolvedAt: item.resolvedAt, // TODO: Pending Subgraph implementation
         stage: item.stage,
         stakesAgainst: item.stakesAgainst,
         stakesFor: item.stakesFor,
         title: item.title, // TODO: Pending Subgraph implementation
+        tokensReward: item.tokensReward, // TODO: pending..
         url: item.url, // TODO: Pending Subgraph implementation
         votesAgainst: item.votesFor,
         votesFor: item.votesAgainst,
@@ -201,7 +213,7 @@ export class Proposal implements IStateful<IProposalState> {
     // )
   }
 
-  public vote(outcome: Outcome): Operation<void> {
+  public vote(outcome: ProposalOutcome): Operation<void> {
     throw new Error('not implemented')
   }
 
@@ -214,7 +226,7 @@ export class Proposal implements IStateful<IProposalState> {
     // )
   }
 
-  public stake(outcome: Outcome, amount: number): Operation<void> {
+  public stake(outcome: ProposalOutcome, amount: number): Operation<void> {
     throw new Error('not implemented')
   }
 
@@ -227,25 +239,25 @@ export class Proposal implements IStateful<IProposalState> {
     // )
   }
 
-  private getProposalStage(state: number, executionState: number, decision: number): ProposalStage {
-    if (state === 3 && executionState === 0) {
-      return ProposalStage.preboosted
-    } else if (state === 4 && executionState === 0) {
-      return ProposalStage.boosted
-    } else if (state === 5 && executionState === 0) {
-      return ProposalStage.overtimed
-    } else if (state === 2 && executionState === 2) {
-      return ProposalStage.passed
-    } else if (state === 2 && (executionState === 3 || executionState === 4) && decision === 1) {
-      return ProposalStage.passedBoosted
-    } else if ((state === 1 || state === 2) && (executionState === 1 || executionState === 2) && decision === 2) {
-      return ProposalStage.failed
-    } else if ((state === 1 || state === 2) && (executionState === 3 || executionState === 4) && decision === 2) {
-      return ProposalStage.failedBoosted
-    }
-
-    return ProposalStage.preboosted
-  }
+  // private getProposalStage(state: number, executionState: number, decision: number): ProposalStage {
+  //   if (state === 3 && executionState === 0) {
+  //     return ProposalStage.preboosted
+  //   } else if (state === 4 && executionState === 0) {
+  //     return ProposalStage.boosted
+  //   } else if (state === 5 && executionState === 0) {
+  //     return ProposalStage.overtimed
+  //   } else if (state === 2 && executionState === 2) {
+  //     return ProposalStage.passed
+  //   } else if (state === 2 && (executionState === 3 || executionState === 4) && decision === 1) {
+  //     return ProposalStage.passedBoosted
+  //   } else if ((state === 1 || state === 2) && (executionState === 1 || executionState === 2) && decision === 2) {
+  //     return ProposalStage.failed
+  //   } else if ((state === 1 || state === 2) && (executionState === 3 || executionState === 4) && decision === 2) {
+  //     return ProposalStage.failedBoosted
+  //   }
+  //
+  //   return ProposalStage.preboosted
+  // }
 }
 
 enum ProposalQuerySortOptions {
