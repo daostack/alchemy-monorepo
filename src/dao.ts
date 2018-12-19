@@ -73,14 +73,14 @@ export class DAO implements IStateful<IDAOState> {
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
     const query = gql`
       {
-        genesisProtocolProposals(daoAvatarAddress: "${this.address}") {
-          proposalId
+        proposals(daoAvatarAddress: "${this.address}") {
+          id
         }
       }
     `
     return this.context._getObjectListObservable(
       query,
-      'genesisProtocolProposals',
+      'proposals',
       (r: any) => new Proposal(r.id, this.context)
     ) as Observable<Proposal[]>
   }

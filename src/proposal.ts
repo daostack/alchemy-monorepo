@@ -95,8 +95,8 @@ export class Proposal implements IStateful<IProposalState> {
     this.id = id
     const query = gql`
       {
-        genesisProtocolProposal(proposalId: "${id}") {
-          proposalId
+        proposal (id: "${id}") {
+          id
           submittedTime
           proposer
           daoAvatarAddress
@@ -109,7 +109,6 @@ export class Proposal implements IStateful<IProposalState> {
         }
       }
     `
-
     const itemMap = (item: any): IProposalState => {
       if (item === null) {
         throw Error(`Could not find a Proposal with id ${id}`)
@@ -138,7 +137,7 @@ export class Proposal implements IStateful<IProposalState> {
       }
     }
 
-    this.state = context._getObjectObservable(query, 'genesisProtocolProposal', itemMap) as Observable<IProposalState>
+    this.state = context._getObjectObservable(query, 'proposal', itemMap) as Observable<IProposalState>
   }
 
   public dao(): Observable<DAO> {
