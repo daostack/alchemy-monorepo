@@ -5,6 +5,7 @@ import { from, Observable, Observer, of } from 'rxjs'
 import { concat, map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { Operation } from './operation'
+import { Proposal } from './proposal'
 import { Address } from './types'
 import * as utils from './utils'
 
@@ -40,6 +41,7 @@ export class Arc {
   }
 
   public daos(): Observable<DAO[]> {
+    // TODO: use 'dao' object here
     const query = gql`
       {
         avatarContracts {
@@ -53,6 +55,10 @@ export class Arc {
       'avatarContracts',
       (r: any) => new DAO(r.address, this)
     ) as Observable<DAO[]>
+  }
+
+  public proposal(id: string): Proposal {
+    return new Proposal(id, this)
   }
 
   /**
@@ -92,7 +98,16 @@ export class Arc {
     itemMap: (o: object) => object = (o) => o
   ) {
     return this._getObservable(query).pipe(
-      map((r) => r.data[entity]),
+      map((r) => {
+        if (!r.data) {
+          console.log(query)
+          console.log(query.loc.source.body)
+          console.log(r)
+          return null
+          // throw Error('WTF?')
+        }
+        return r.data[entity]
+      }),
       map(itemMap)
     )
   }
@@ -108,16 +123,12 @@ export class Arc {
       const subscription = zenObservable.subscribe(observer)
       return () => subscription.unsubscribe()
     })
-
     const queryPromise: Promise<
       ApolloQueryResult<{ [key: string]: object[] }>
     > = this.apolloClient.query({ query })
-
     const queryObservable = from(queryPromise).pipe(
       concat(subscriptionObservable)
     )
-
     return queryObservable as Observable<any>
   }
-
 }

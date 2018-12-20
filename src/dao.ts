@@ -14,6 +14,7 @@ import { Reputation } from './reputation'
 import { IRewardQueryOptions, Reward } from './reward'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
+import * as utils from './utils'
 
 export interface IDAOState {
   address: Address // address of the avatar
@@ -84,17 +85,22 @@ export class DAO implements IStateful<IDAOState> {
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
     // TODO: show only proposals from this DAO
-    const query = gql`{
-      proposals {
-        id
+    const query = gql`
+      {
+        proposals(daoAvatarAddress: "${this.address}") {
+          id
+        }
       }
-    }`
-    const itemMap = (item: any): Proposal => new Proposal(item.id)
-    return this.context._getObjectListObservable(query, 'proposals', itemMap) as Observable<Proposal[]>
+    `
+    return this.context._getObjectListObservable(
+      query,
+      'proposals',
+      (r: any) => new Proposal(r.id, this.context)
+    ) as Observable<Proposal[]>
   }
 
   public proposal(id: string): Proposal {
-        return new Proposal(id)
+    return new Proposal(id, this.context)
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {

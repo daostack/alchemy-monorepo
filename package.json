@@ -1,6 +1,6 @@
 {
   "name": "@daostack/client",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -9,7 +9,7 @@
     "dist",
     "src"
   ],
-  "author": "Matan Tsuberi <tsuberim@gmail.com>",
+  "author": "Matan Tsuberi <tsuberim@gmail.com>, Jelle Gerbrandy <jelle@daostack.io>",
   "repository": {
     "type": "git",
     "url": ""
