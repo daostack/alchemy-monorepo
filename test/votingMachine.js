@@ -11,20 +11,17 @@ const GenesisProtocolCallbacks = artifacts.require("./GenesisProtocolCallbacksMo
 
 
 const setupGenesisProtocol = async function (accounts,_voteOnBehalf = helpers.NULL_ADDRESS,
-                                      _preBoostedVoteRequiredPercentage=50,
-                                      _preBoostedVotePeriodLimit=60,
-                                      _boostedVotePeriodLimit=60,
-                                      _thresholdConstA=1,
-                                      _thresholdConstB=1,
-                                      _minimumStakingFee=0,
-                                      _quietEndingPeriod=0,
-                                      _proposingRepRewardConstA=60000,
-                                      _proposingRepRewardConstB=1000,
-                                      _stakerFeeRatioForVoters=10,
-                                      _votersReputationLossRatio=10,
-                                      _votersGainRepRatioFromLostRep=80,
-                                      _daoBountyConst = 15,
-                                      _daoBountyLimt =10 ) {
+                                              _queuedVoteRequiredPercentage=50,
+                                              _queuedVotePeriodLimit=60,
+                                              _boostedVotePeriodLimit=60,
+                                              _preBoostedVotePeriodLimit =0,
+                                              _thresholdConst=1500,
+                                              _quietEndingPeriod=0,
+                                              _proposingRepReward=60,
+                                              _votersReputationLossRatio=10,
+                                              _minimumDaoBounty=15,
+                                              _daoBountyConst=10,
+                                              _activationTime=0) {
    var testSetup = new helpers.TestSetup();
    testSetup.stakingToken = await ERC827TokenMock.new(accounts[0],3000);
    testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.stakingToken.address,{gas:constants.GAS_LIMIT});
@@ -44,20 +41,17 @@ const setupGenesisProtocol = async function (accounts,_voteOnBehalf = helpers.NU
 
    testSetup.genesisProtocolParams= await setupGenesisProtocolParams(testSetup,
                                          _voteOnBehalf,
-                                         _preBoostedVoteRequiredPercentage,
-                                         _preBoostedVotePeriodLimit,
+                                         _queuedVoteRequiredPercentage,
+                                         _queuedVotePeriodLimit,
                                          _boostedVotePeriodLimit,
-                                         _thresholdConstA,
-                                         _thresholdConstB,
-                                         _minimumStakingFee,
+                                         _preBoostedVotePeriodLimit,
+                                         _thresholdConst,
                                          _quietEndingPeriod,
-                                         _proposingRepRewardConstA,
-                                         _proposingRepRewardConstB,
-                                         _stakerFeeRatioForVoters,
+                                         _proposingRepReward,
                                          _votersReputationLossRatio,
-                                         _votersGainRepRatioFromLostRep,
+                                         _minimumDaoBounty,
                                          _daoBountyConst,
-                                         _daoBountyLimt);
+                                         _activationTime);
 
 
    return testSetup;
@@ -72,50 +66,41 @@ export class GenesisProtocolParams {
 const setupGenesisProtocolParams = async function(
                                             testSetup,
                                             voteOnBehalf = 0,
-                                            _preBoostedVoteRequiredPercentage=50,
-                                            _preBoostedVotePeriodLimit=60,
+                                            _queuedVoteRequiredPercentage=50,
+                                            _queuedVotePeriodLimit=60,
                                             _boostedVotePeriodLimit=60,
-                                            _thresholdConstA=1,
-                                            _thresholdConstB=1,
-                                            _minimumStakingFee=0,
+                                            _preBoostedVotePeriodLimit =0,
+                                            _thresholdConst=1500,
                                             _quietEndingPeriod=0,
-                                            _proposingRepRewardConstA=60,
-                                            _proposingRepRewardConstB=1,
-                                            _stakerFeeRatioForVoters=10,
+                                            _proposingRepReward=60,
                                             _votersReputationLossRatio=10,
-                                            _votersGainRepRatioFromLostRep=80,
-                                            _daoBountyConst=15,
-                                            _daoBountyLimt=10
+                                            _minimumDaoBounty=15,
+                                            _daoBountyConst=10,
+                                            _activationTime=0
                                             ) {
   var genesisProtocolParams = new GenesisProtocolParams();
-  await testSetup.genesisProtocolCallbacks.setParameters([_preBoostedVoteRequiredPercentage,
-                                                 _preBoostedVotePeriodLimit,
-                                                 _boostedVotePeriodLimit,
-                                                 _thresholdConstA,
-                                                 _thresholdConstB,
-                                                 _minimumStakingFee,
-                                                 _quietEndingPeriod,
-                                                 _proposingRepRewardConstA,
-                                                 _proposingRepRewardConstB,
-                                                 _stakerFeeRatioForVoters,
-                                                 _votersReputationLossRatio,
-                                                 _votersGainRepRatioFromLostRep,
-                                                 _daoBountyConst,
-                                                 _daoBountyLimt],voteOnBehalf);
-  genesisProtocolParams.paramsHash = await testSetup.genesisProtocol.getParametersHash([_preBoostedVoteRequiredPercentage,
-                                                 _preBoostedVotePeriodLimit,
-                                                 _boostedVotePeriodLimit,
-                                                 _thresholdConstA,
-                                                 _thresholdConstB,
-                                                 _minimumStakingFee,
-                                                 _quietEndingPeriod,
-                                                 _proposingRepRewardConstA,
-                                                 _proposingRepRewardConstB,
-                                                 _stakerFeeRatioForVoters,
-                                                 _votersReputationLossRatio,
-                                                 _votersGainRepRatioFromLostRep,
-                                                 _daoBountyConst,
-                                                 _daoBountyLimt],voteOnBehalf);
+  await testSetup.genesisProtocolCallbacks.setParameters([_queuedVoteRequiredPercentage,
+                                                          _queuedVotePeriodLimit,
+                                                          _boostedVotePeriodLimit,
+                                                          _preBoostedVotePeriodLimit,
+                                                          _thresholdConst,
+                                                          _quietEndingPeriod,
+                                                          _proposingRepReward,
+                                                          _votersReputationLossRatio,
+                                                          _minimumDaoBounty,
+                                                          _daoBountyConst,
+                                                         _activationTime],voteOnBehalf);
+  genesisProtocolParams.paramsHash = await testSetup.genesisProtocol.getParametersHash([_queuedVoteRequiredPercentage,
+                                                          _queuedVotePeriodLimit,
+                                                          _boostedVotePeriodLimit,
+                                                          _preBoostedVotePeriodLimit,
+                                                          _thresholdConst,
+                                                          _quietEndingPeriod,
+                                                          _proposingRepReward,
+                                                          _votersReputationLossRatio,
+                                                          _minimumDaoBounty,
+                                                          _daoBountyConst,
+                                                          _activationTime],voteOnBehalf);
   return genesisProtocolParams;
 };
 

@@ -15,7 +15,6 @@ contract GenesisProtocolCallbacksMock is Debug,VotingMachineCallbacksInterface,P
     GenesisProtocol genesisProtocol;
     mapping (bytes32=>uint) proposalsBlockNumbers;
 
-
     event NewProposal(
       bytes32 indexed _proposalId,
       address indexed _organization,
@@ -75,7 +74,7 @@ contract GenesisProtocolCallbacksMock is Debug,VotingMachineCallbacksInterface,P
         return _stakingToken.balanceOf(this);
     }
 
-    function setParameters(uint[14] _params,address _voteOnBehalf) external returns(bytes32) {
+    function setParameters(uint[11] _params,address _voteOnBehalf) external returns(bytes32) {
         return genesisProtocol.setParameters(_params,_voteOnBehalf);
     }
 
