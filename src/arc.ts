@@ -67,7 +67,7 @@ export class Arc {
    * @return         [description]
    */
   public getBalance(address: Address) {
-
+    // web3 = new Web3(this.web3 )
   }
   /**
    * Returns an observable that:
