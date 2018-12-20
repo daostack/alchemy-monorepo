@@ -52,12 +52,6 @@ describe('apolloClient', () => {
     `
 
     const result = await client.query({ query })
-    // const expected = {
-    //   data: { avatarContracts: [] },
-    //   loading: false,
-    //   networkStatus: 7,
-    //   stale: false,
-    // }
     expect(result.networkStatus).toEqual(7)
     expect(typeof result.data).toEqual(typeof [])
   })
@@ -81,10 +75,13 @@ describe('apolloClient', () => {
     )
 
     let returnedData: object[] = []
+    let cntr = 0
 
     const consumer = await observable.subscribe(
       (eventData: any) => {
         // Do something on receipt of the event
+        cntr += 1
+        console.log(`${cntr}: ${eventData}`)
         returnedData = eventData.data.reputationMints
       },
       (err: any) => {
@@ -97,16 +94,17 @@ describe('apolloClient', () => {
       returnedData = x.data.reputationMints
     })
 
+    await mintSomeReputation()
     mintSomeReputation()
 
-    await new Promise(res => setTimeout(res, 2000))
+    await new Promise((res) => setTimeout(res, 2000))
 
     expect(returnedData.length).toBeGreaterThan(0)
   })
 })
 
 describe('utils', () => {
-  it.skip('checkWebsocket works', done => {
+  it.skip('checkWebsocket works', (done) => {
     // checkWebsocket({ url: graphqlWsProvider})
 
     const wsProvider = new WebSocket(graphqlWsProvider, {

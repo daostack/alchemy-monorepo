@@ -62,6 +62,14 @@ export class Arc {
   }
 
   /**
+   * getBalance returns an observer with a stream of ETH balances
+   * @param  address [description]
+   * @return         [description]
+   */
+  public getBalance(address: Address) {
+
+  }
+  /**
    * Returns an observable that:
    * - sends a query over http and returns the current list of results
    * - subscribes over a websocket to changes, and returns the updated list

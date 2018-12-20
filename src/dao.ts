@@ -8,7 +8,8 @@ import {
   IStakeQueryOptions,
   IVote,
   IVoteQueryOptions,
-  Proposal
+  Proposal,
+  ProposalStage
 } from './proposal'
 import { Reputation } from './reputation'
 import { IRewardQueryOptions, Reward } from './reward'
@@ -84,14 +85,27 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
-    // TODO: show only proposals from this DAO
+
+    // TODO: there must be  better way to construct a where clause from a dictionary
+    let where = ''
+    for (const key of Object.keys(options)) {
+      if (key === 'stage' && options[key] !== undefined) {
+        where += `,\n ${key}: ${ProposalStage[options[key] as ProposalStage]}`
+      } else {
+        where += `,\n ${key}: "${options[key] as string}"`
+      }
+    }
+
     const query = gql`
       {
-        proposals(daoAvatarAddress: "${this.address}") {
+        proposals(where: {
+          id: "${this.address}" ${where}
+        }) {
           id
         }
       }
     `
+
     return this.context._getObjectListObservable(
       query,
       'proposals',
