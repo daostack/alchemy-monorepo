@@ -191,7 +191,7 @@ export class Proposal implements IStateful<IProposalState> {
       }
     }
 
-    this.state = context._getObjectObservable(query, 'proposal', itemMap) as Observable<IProposalState>
+    this.state = context._getObservableObject(query, 'proposal', itemMap) as Observable<IProposalState>
   }
 
   // TODO: probably does not need to be an observable, as it never changes

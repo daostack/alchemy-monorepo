@@ -70,7 +70,7 @@ export class DAO implements IStateful<IDAOState> {
         tokenTotalSupply: item.nativeToken.totalSupply
       }
     }
-    this.state = this.context._getObjectObservable(query, 'dao', itemMap) as Observable<IDAOState>
+    this.state = this.context._getObservableObject(query, 'dao', itemMap) as Observable<IDAOState>
   }
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
@@ -81,7 +81,7 @@ export class DAO implements IStateful<IDAOState> {
       }
     }`
     const itemMap = (item: any): Member => new Member(item.id, this.address)
-    return this.context._getObjectListObservable(query, 'reputationHolders', itemMap) as Observable<Member[]>
+    return this.context._getObservableList(query, 'reputationHolders', itemMap) as Observable<Member[]>
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
@@ -90,23 +90,25 @@ export class DAO implements IStateful<IDAOState> {
     let where = ''
     for (const key of Object.keys(options)) {
       if (key === 'stage' && options[key] !== undefined) {
-        where += `,\n ${key}: ${ProposalStage[options[key] as ProposalStage]}`
+        where += `${key}: ${ProposalStage[options[key] as ProposalStage]},\n`
       } else {
-        where += `,\n ${key}: "${options[key] as string}"`
+        where += `${key}: "${options[key] as string},\n"`
       }
     }
 
+    // TODO: we need a way to get proposals only for this DAO, https://github.com/daostack/subgraph/issues/40
     const query = gql`
       {
         proposals(where: {
-          id: "${this.address}" ${where}
+          # dao.id: "${this.address}"
+          ${where}
         }) {
           id
         }
       }
     `
 
-    return this.context._getObjectListObservable(
+    return this.context._getObservableList(
       query,
       'proposals',
       (r: any) => new Proposal(r.id, this.context)

@@ -35,7 +35,7 @@ export class Reputation implements IStateful<IReputationState> {
         totalSupply: item.totalSupply
       }
     }
-    this.state = context._getObjectObservable(query, 'reputationContract', itemMap) as Observable<IReputationState>
+    this.state = context._getObservableObject(query, 'reputationContract', itemMap) as Observable<IReputationState>
   }
 
   public reputationOf(address: Address): Observable<number> {

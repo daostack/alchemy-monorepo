@@ -50,7 +50,7 @@ export class Arc {
         }
       }
     `
-    return this._getObjectListObservable(
+    return this._getObservableList(
       query,
       'avatarContracts',
       (r: any) => new DAO(r.address, this)
@@ -81,7 +81,7 @@ export class Arc {
    *        address
    *      }
    *    }`
-   *    _getObjectListObservable(query, 'dao', (r:any) => new DAO(r.address))
+   *    _getObservableList(query, 'dao', (r:any) => new DAO(r.address))
    *
    * @param query The query to be run
    * @param  entity  name of the graphql entity to be queried.
@@ -89,7 +89,7 @@ export class Arc {
    * @param  itemMap (optional) a function that takes elements of the list and creates new objects
    * @return
    */
-  public _getObjectListObservable(
+  public _getObservableList(
     query: any,
     entity: string,
     itemMap: (o: object) => object = (o) => o
@@ -100,7 +100,7 @@ export class Arc {
     )
   }
 
-  public _getObjectObservable(
+  public _getObservableObject(
     query: any,
     entity: string,
     itemMap: (o: object) => object = (o) => o

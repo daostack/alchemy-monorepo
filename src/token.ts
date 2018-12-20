@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc } from './arc'
-import { Address, IStateful } from './types'
+import { Address, Hash, IStateful } from './types'
 import * as utils from './utils'
 
 export interface ITokenState {
@@ -11,6 +11,15 @@ export interface ITokenState {
   owner: Address
   symbol: string
   totalSupply: number
+}
+
+export interface IApproval {
+  id: Hash
+  txHash: Hash
+  contract: Address
+  owner: Address
+  spender: Address
+  value: number
 }
 
 export class Token implements IStateful<ITokenState> {
@@ -39,14 +48,16 @@ export class Token implements IStateful<ITokenState> {
         totalSupply: item.totalSupply
       }
     }
-    this.state = this.context._getObjectObservable(query, 'token', itemMap) as Observable<ITokenState>
+    this.state = this.context._getObservableObject(query, 'token', itemMap) as Observable<ITokenState>
   }
 
   public balanceOf(address: string): Observable<number> {
     const query = gql`{
       tokenHolders (
-        where: { address:"0xb0c908140fe6fd6fbd4990a5c2e35ca6dc12bfb2",
-        contract: "${this.address}"}
+        where: {
+          address:"${address}",
+          contract: "${this.address}"
+        }
       )
       {
         id, address, balance,contract
@@ -59,5 +70,23 @@ export class Token implements IStateful<ITokenState> {
         return Number(item.balance)
       })
     )
+  }
+
+  public approvals(address: string): Observable<IApproval[]> {
+    const query = gql`{
+      tokenApprovals (
+        where: {
+          address:"${address}",
+          contract: "${this.address}"
+        }
+      )
+      {
+        id, contract, owner, spender, txHash, value
+      }
+    }`
+    // function itemMap(item) {
+    //  return {...item} as IApproval
+    // }
+    return this.context._getObservableList(query, 'tokenApprovals') as Observable<IApproval[]>
   }
 }
