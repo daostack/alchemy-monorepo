@@ -41,19 +41,17 @@ export class Arc {
   }
 
   public daos(): Observable<DAO[]> {
-    // TODO: use 'dao' object here
     const query = gql`
       {
-        avatarContracts {
+        daos {
           id
-          address
         }
       }
     `
     return this._getObservableList(
       query,
-      'avatarContracts',
-      (r: any) => new DAO(r.address, this)
+      'daos',
+      (r: any) => new DAO(r.id, this)
     ) as Observable<DAO[]>
   }
 
@@ -76,16 +74,15 @@ export class Arc {
    * example:
    *    const query = gql`
    *    {
-   *      dao {
+   *      daos {
    *        id
    *        address
    *      }
    *    }`
-   *    _getObservableList(query, 'dao', (r:any) => new DAO(r.address))
+   *    _getObservableList(query, 'daos', (r:any) => new DAO(r.address))
    *
    * @param query The query to be run
    * @param  entity  name of the graphql entity to be queried.
-   *  Use the singular, i.e avatarContract rather then avatarContracts
    * @param  itemMap (optional) a function that takes elements of the list and creates new objects
    * @return
    */
@@ -95,8 +92,10 @@ export class Arc {
     itemMap: (o: object) => object = (o) => o
   ) {
     return this._getObservable(query).pipe(
+      map((r) => { console.log(r); return r}),
       map((r) => r.data[entity]),
-      map((rs: object[]) => rs.map(itemMap))
+      map((rs: object[]) => rs.map(itemMap)),
+      map((rs: object[]) => {console.log(rs); return rs})
     )
   }
 
