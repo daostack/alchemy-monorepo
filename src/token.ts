@@ -63,7 +63,7 @@ export class Token implements IStateful<ITokenState> {
         id, address, balance,contract
       }
     }`
-    return this.context._getObservable(query).pipe(
+    return this.context.getObservable(query).pipe(
       map((r) => r.data.tokenHolders),
       map((items: any[]) => {
         const item = items.length > 0 && items[0]
@@ -73,21 +73,10 @@ export class Token implements IStateful<ITokenState> {
   }
 
   public approvals(address: string): Observable<any[]> {
-    console.log(`{
-      tokenApprovals (
-        where: {
-          owner: "${address}",
-          contract: "${this.address}"
-        }
-      )
-      {
-        id, contract, owner, spender, txHash, value
-      }
-    }`)
     const query = gql`{
       tokenApprovals (
         where: {
-          address:"${address}",
+          owner: "${address}",
           contract: "${this.address}"
         }
       )

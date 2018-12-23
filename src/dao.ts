@@ -120,14 +120,34 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
+    // TODO: we need a way to get rewards only for this DAO, https://github.com/daostack/subgraph/issues/40
+    let where = ''
+    for (const key of Object.keys(options)) {
+      where += `${key}: "${options[key] as string},\n"`
+    }
+
+    const query = gql`
+      {
+        rewards (where: {
+          ${where}
+        }) {
+          id
+        }
+      }
+    `
+
+    return this.context._getObservableList(
+      query,
+      'proposals',
+      (r: any) => new Reward(r.id, this.context)
+    ) as Observable<Reward[]>
+  }
+
+  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
     throw new Error('not implemented')
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
-    throw new Error('not implemented')
-  }
-
-  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
+  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
     throw new Error('not implemented')
   }
 }

@@ -64,19 +64,14 @@ describe('DAO', () => {
     ])
   })
 
-  it('throws an reasonable error if the contract does not exist', async () => {
+  it('throws a reasonable error if the contract does not exist', async () => {
     expect.assertions(1)
     const reputation = new DAO('0xfake', arc)
     await expect(reputation.state.toPromise()).rejects.toThrow(
       'Could not find a DAO with address 0xfake'
     )
   })
-  it('throws an error if no address is passed ', async () => {
-    expect.assertions(1)
-    await expect(() => new DAO(undefined, arc)).toThrow(
-      'No address supplied'
-    )
-  })
+
   it('dao.members() should work', async () => {
     // TODO: because we have not setup with proposals, we are only testing if the current state returns the emty list
     const dao = arc.dao(addresses.Avatar.toLowerCase())

@@ -91,11 +91,9 @@ export class Arc {
     entity: string,
     itemMap: (o: object) => object = (o) => o
   ) {
-    return this._getObservable(query).pipe(
-      map((r) => { console.log(r); return r}),
+    return this.getObservable(query).pipe(
       map((r) => r.data[entity]),
-      map((rs: object[]) => rs.map(itemMap)),
-      map((rs: object[]) => {console.log(rs); return rs})
+      map((rs: object[]) => rs.map(itemMap))
     )
   }
 
@@ -104,14 +102,11 @@ export class Arc {
     entity: string,
     itemMap: (o: object) => object = (o) => o
   ) {
-    return this._getObservable(query).pipe(
+    return this.getObservable(query).pipe(
       map((r) => {
         if (!r.data) {
-          console.log(query)
-          console.log(query.loc.source.body)
-          console.log(r)
+          // console.log(query.loc.source.body)
           return null
-          // throw Error('WTF?')
         }
         return r.data[entity]
       }),
@@ -119,7 +114,7 @@ export class Arc {
     )
   }
 
-  public _getObservable(query: any) {
+  public getObservable(query: any) {
     const subscriptionQuery = gql`
       subscription ${query}
     `

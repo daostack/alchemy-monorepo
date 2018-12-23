@@ -48,7 +48,7 @@ export class Reputation implements IStateful<IReputationState> {
         id, address, balance,contract
       }
     }`
-    return this.context._getObservable(query).pipe(
+    return this.context.getObservable(query).pipe(
       map((r) => r.data.reputationHolders),
       map((items: any[]) => {
         const item = items.length > 0 && items[0]
