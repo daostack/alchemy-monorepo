@@ -18,7 +18,8 @@
       "VoteInOrganizationScheme": "0x26b4AFb60d6C903165150C6F0AA14F8016bE4aec",
       "OrganizationRegister": "0x630589690929E9cdEFDeF0734717a9eF3Ec7Fcfe",
       "Redeemer": "0x0E696947A06550DEf604e82C26fd9E493e576337",
-      "Reputation": "0xDb56f2e9369E0D7bD191099125a3f6C370F8ed15"
+      "Reputation": "0xDb56f2e9369E0D7bD191099125a3f6C370F8ed15",
+      "GenericScheme": "0xA94B7f0465E98609391C623d0560C5720a3f2D33"
     },
     "dao": {
       "name": "Genesis Test",
