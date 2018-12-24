@@ -35,7 +35,7 @@ export class Reputation implements IStateful<IReputationState> {
         totalSupply: item.totalSupply
       }
     }
-    this.state = context._getObjectObservable(query, 'reputationContract', itemMap) as Observable<IReputationState>
+    this.state = context._getObservableObject(query, 'reputationContract', itemMap) as Observable<IReputationState>
   }
 
   public reputationOf(address: Address): Observable<number> {
@@ -48,7 +48,7 @@ export class Reputation implements IStateful<IReputationState> {
         id, address, balance,contract
       }
     }`
-    return this.context._getObservable(query).pipe(
+    return this.context.getObservable(query).pipe(
       map((r) => r.data.reputationHolders),
       map((items: any[]) => {
         const item = items.length > 0 && items[0]

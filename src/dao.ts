@@ -8,7 +8,8 @@ import {
   IStakeQueryOptions,
   IVote,
   IVoteQueryOptions,
-  Proposal
+  Proposal,
+  ProposalStage
 } from './proposal'
 import { Reputation } from './reputation'
 import { IRewardQueryOptions, Reward } from './reward'
@@ -69,7 +70,7 @@ export class DAO implements IStateful<IDAOState> {
         tokenTotalSupply: item.nativeToken.totalSupply
       }
     }
-    this.state = this.context._getObjectObservable(query, 'dao', itemMap) as Observable<IDAOState>
+    this.state = this.context._getObservableObject(query, 'dao', itemMap) as Observable<IDAOState>
   }
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
@@ -80,19 +81,34 @@ export class DAO implements IStateful<IDAOState> {
       }
     }`
     const itemMap = (item: any): Member => new Member(item.id, this.address)
-    return this.context._getObjectListObservable(query, 'reputationHolders', itemMap) as Observable<Member[]>
+    return this.context._getObservableList(query, 'reputationHolders', itemMap) as Observable<Member[]>
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
-    // TODO: show only proposals from this DAO
+
+    // TODO: there must be  better way to construct a where clause from a dictionary
+    let where = ''
+    for (const key of Object.keys(options)) {
+      if (key === 'stage' && options[key] !== undefined) {
+        where += `${key}: ${ProposalStage[options[key] as ProposalStage]},\n`
+      } else {
+        where += `${key}: "${options[key] as string},\n"`
+      }
+    }
+
+    // TODO: we need a way to get proposals only for this DAO, https://github.com/daostack/subgraph/issues/40
     const query = gql`
       {
-        proposals(daoAvatarAddress: "${this.address}") {
+        proposals(where: {
+          # dao.id: "${this.address}"
+          ${where}
+        }) {
           id
         }
       }
     `
-    return this.context._getObjectListObservable(
+
+    return this.context._getObservableList(
       query,
       'proposals',
       (r: any) => new Proposal(r.id, this.context)
@@ -104,14 +120,34 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
+    // TODO: we need a way to get rewards only for this DAO, https://github.com/daostack/subgraph/issues/40
+    let where = ''
+    for (const key of Object.keys(options)) {
+      where += `${key}: "${options[key] as string},\n"`
+    }
+
+    const query = gql`
+      {
+        rewards (where: {
+          ${where}
+        }) {
+          id
+        }
+      }
+    `
+
+    return this.context._getObservableList(
+      query,
+      'proposals',
+      (r: any) => new Reward(r.id, this.context)
+    ) as Observable<Reward[]>
+  }
+
+  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
     throw new Error('not implemented')
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
-    throw new Error('not implemented')
-  }
-
-  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
+  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
     throw new Error('not implemented')
   }
 }

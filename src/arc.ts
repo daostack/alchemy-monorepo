@@ -41,19 +41,17 @@ export class Arc {
   }
 
   public daos(): Observable<DAO[]> {
-    // TODO: use 'dao' object here
     const query = gql`
       {
-        avatarContracts {
+        daos {
           id
-          address
         }
       }
     `
-    return this._getObjectListObservable(
+    return this._getObservableList(
       query,
-      'avatarContracts',
-      (r: any) => new DAO(r.address, this)
+      'daos',
+      (r: any) => new DAO(r.id, this)
     ) as Observable<DAO[]>
   }
 
@@ -62,49 +60,53 @@ export class Arc {
   }
 
   /**
+   * getBalance returns an observer with a stream of ETH balances
+   * @param  address [description]
+   * @return         [description]
+   */
+  public getBalance(address: Address) {
+    // web3 = new Web3(this.web3 )
+  }
+  /**
    * Returns an observable that:
    * - sends a query over http and returns the current list of results
    * - subscribes over a websocket to changes, and returns the updated list
    * example:
    *    const query = gql`
    *    {
-   *      dao {
+   *      daos {
    *        id
    *        address
    *      }
    *    }`
-   *    _getObjectListObservable(query, 'dao', (r:any) => new DAO(r.address))
+   *    _getObservableList(query, 'daos', (r:any) => new DAO(r.address))
    *
    * @param query The query to be run
    * @param  entity  name of the graphql entity to be queried.
-   *  Use the singular, i.e avatarContract rather then avatarContracts
    * @param  itemMap (optional) a function that takes elements of the list and creates new objects
    * @return
    */
-  public _getObjectListObservable(
+  public _getObservableList(
     query: any,
     entity: string,
     itemMap: (o: object) => object = (o) => o
   ) {
-    return this._getObservable(query).pipe(
+    return this.getObservable(query).pipe(
       map((r) => r.data[entity]),
       map((rs: object[]) => rs.map(itemMap))
     )
   }
 
-  public _getObjectObservable(
+  public _getObservableObject(
     query: any,
     entity: string,
     itemMap: (o: object) => object = (o) => o
   ) {
-    return this._getObservable(query).pipe(
+    return this.getObservable(query).pipe(
       map((r) => {
         if (!r.data) {
-          console.log(query)
-          console.log(query.loc.source.body)
-          console.log(r)
+          // console.log(query.loc.source.body)
           return null
-          // throw Error('WTF?')
         }
         return r.data[entity]
       }),
@@ -112,7 +114,7 @@ export class Arc {
     )
   }
 
-  public _getObservable(query: any) {
+  public getObservable(query: any) {
     const subscriptionQuery = gql`
       subscription ${query}
     `

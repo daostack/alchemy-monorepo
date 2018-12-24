@@ -1,13 +1,11 @@
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
-import { map, switchMap } from 'rxjs/operators'
 
 import { Arc } from './arc'
 import { DAO } from './dao'
 import { Operation } from './operation'
 import { IRewardQueryOptions, Reward } from './reward'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import * as utils from './utils'
 
 export enum ProposalOutcome {
   None,
@@ -191,7 +189,7 @@ export class Proposal implements IStateful<IProposalState> {
       }
     }
 
-    this.state = context._getObjectObservable(query, 'proposal', itemMap) as Observable<IProposalState>
+    this.state = context._getObservableObject(query, 'proposal', itemMap) as Observable<IProposalState>
   }
 
   // TODO: probably does not need to be an observable, as it never changes
@@ -275,6 +273,7 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
   // the options above should be ok for the current alchemy; will add more options as needed
   executedAfter?: Date
   executedBefore?: Date
+  [key: string]: any
 }
 
 export interface IVoteQueryOptions extends ICommonQueryOptions {
