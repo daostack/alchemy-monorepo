@@ -48,7 +48,7 @@ describe('Reputation', () => {
 
   it('get someones reputation', async () => {
     const reputation = new Reputation(address, arc)
-    const reputationOf = await reputation.reputationOf('0xb0c908140fe6fd6fbd4990a5c2e35ca6dc12bfb2')
+    const reputationOf = await reputation.reputationOf('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1')
       .pipe(first()).toPromise()
     expect(reputationOf).toEqual(1000)
   })

@@ -43,14 +43,14 @@ describe('Token', () => {
 
   it('get someones balance', async () => {
     const token = new Token(address, arc)
-    const balanceOf = await token.balanceOf('0xb0c908140fe6fd6fbd4990a5c2e35ca6dc12bfb2')
+    const balanceOf = await token.balanceOf('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1')
       .pipe(first()).toPromise()
     expect(balanceOf).toEqual(1000)
   })
 
   it('see approvals', async () => {
     const token = new Token(address, arc)
-    const approvals = await token.approvals('0xb0c908140fe6fd6fbd4990a5c2e35ca6dc12bfb2')
+    const approvals = await token.approvals('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1')
       .pipe(first()).toPromise()
     expect(approvals).toEqual([])
     // todo: this needs a test with some approvals

@@ -43,7 +43,7 @@ describe('DAO', () => {
     const daoList = await daos.pipe(first()).toPromise()
     expect(typeof daoList).toBe('object')
     expect(daoList.length).toBeGreaterThan(0)
-    expect(daoList[daoList.length - 1].address).toBe(addresses.Avatar.toLowerCase())
+    expect(daoList[daoList.length - 2].address).toBe(addresses.Avatar.toLowerCase())
   })
 
   it('get the dao state', async () => {
