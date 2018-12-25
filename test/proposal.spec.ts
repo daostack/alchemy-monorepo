@@ -3,11 +3,6 @@ import { Arc } from '../src/arc'
 import { Proposal, ProposalStage } from '../src/proposal'
 import { getArc, getContractAddresses, getOptions, getWeb3, nullAddress } from './utils'
 
-const DAOToken = require('@daostack/arc/build/contracts/DAOToken.json')
-const GenesisProtocol = require('@daostack/arc/build/contracts/GenesisProtocol.json')
-const GenesisProtocolCallbacks = require('@daostack/arc/build/contracts/GenesisProtocolCallbacksMock.json')
-const Reputation = require('@daostack/arc/build/contracts/Reputation.json')
-
 const DAOstackMigration = require('@daostack/migration');
 
 /**
@@ -17,7 +12,6 @@ describe('Proposal', () => {
   let addresses: { [key: string]: string }
   let arc: Arc
   let web3: any
-  let opts: any
   let accounts: any
 
   beforeAll(async () => {
@@ -26,7 +20,6 @@ describe('Proposal', () => {
     web3 = await getWeb3()
     accounts = web3.eth.accounts.wallet
     web3.eth.defaultAccount = accounts[0].address
-    opts = await getOptions(web3)
   })
 
   it('Proposal is instantiable', () => {
@@ -53,5 +46,15 @@ describe('Proposal', () => {
     expect(typeof proposals).toEqual(typeof [])
     expect(proposals.length).toBeGreaterThan(0)
     expect(proposals[proposals.length - 1].id).toBe(proposalId)
+  })
+
+  it('get proposal dao', async () => {
+    const { Avatar, proposalId } = DAOstackMigration.migration('private').test
+
+    const dao = arc.dao(Avatar.toLowerCase()).address
+    const proposal = new Proposal(proposalId, arc)
+    const proposalDao = await proposal.dao().pipe(first()).toPromise()
+    expect(proposal).toBeInstanceOf(Proposal)
+    expect(proposalDao.address).toBe(dao)
   })
 })

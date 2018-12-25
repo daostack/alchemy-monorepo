@@ -6,37 +6,15 @@ import { DAO } from './dao'
 import { Operation } from './operation'
 import { IRewardQueryOptions, Reward } from './reward'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
+import { map } from 'rxjs/operators'
+
 
 export enum ProposalOutcome {
   None,
   Pass,
   Fail
 }
-//
-// export enum ProposalStage {
-//   // pre boosted
-//   // | { open: true }
-//   preboosted, // ProposalState: 3, ExecutionState: 0
-//   // boosted
-//   // | { boosted: true; boostedAt: number }
-//   boosted, // ProposalState: 4, ExecutionState: 0
-//   // quiet ending
-//   // | { overtimed: true; boostedAt: number; overtimedAt: number }
-//   overtimed, // ProposalState: 5, ExecutionState: 0
-//   // passed in pre boosted phase (via absolute IVote)
-//   // | { passed: true; executedAt: number }
-//   passed, // ProposalState: 2, ExecutionState: 2
-//   // passed in boosted phase
-//   // | { passed: true; executedAt: number; boosted: true; boostedAt: number; overtimedAt?: number }
-//   passedBoosted, // ProposalState: 2, ExecutionState: 4
-//   // failed in pre boosted phase
-//   // | { failed: true }
-//   failed, // ProposalState: 1 or 2, ExecutionState: 1 or 2, decision: 0
-//   // failed in boosted phase
-//   // | { failed: true; boosted: true; boostedAt: number }
-//   failedBoosted // 1 or 2, ExecutionState: 3 or 4, decision: 0
-// }
-//
+
 export enum ProposalStage {
   Open,
   Boosted,
@@ -103,15 +81,15 @@ export class Proposal implements IStateful<IProposalState> {
             dao {
               id
             },
-            # proposer {
-            #  id
-            # },
+            proposer {
+              id
+            },
             stage,
-            # createdAt,
+            createdAt,
             boostedAt,
             quietEndingPeriodBeganAt,
             executedAt,
-            # ipfsHash,
+            ipfsHash,
             title,
             description,
             url,
@@ -129,27 +107,27 @@ export class Proposal implements IStateful<IProposalState> {
             },
             stakesFor,
             stakesAgainst,
-            # preBoostedVoteRequiredPercentage,
-            # preBoostedVotePeriodLimit,
-            # boostedVotePeriodLimit,
-            # thresholdConstA,
-            # thresholdConstB,
-            # minimumStakingFee,
-            # quietEndingPeriod,
-            # proposingRepRewardConstA,
-            # proposingRepRewardConstB,
-            # stakerFeeRatioForVoters,
-            # votersReputationLossRatio,
-            # votersGainRepRatioFromLostRep,
-            # voteOnBehalf,
-            # beneficiary,
-            # reputationReward,
-            # tokensReward,
-            # ethReward,
-            # externalTokenReward,
-            # externalToken,
-            # periods,
-            # periodLength
+            preBoostedVoteRequiredPercentage,
+            preBoostedVotePeriodLimit,
+            boostedVotePeriodLimit,
+            thresholdConstA,
+            thresholdConstB,
+            minimumStakingFee,
+            quietEndingPeriod,
+            proposingRepRewardConstA,
+            proposingRepRewardConstB,
+            stakerFeeRatioForVoters,
+            votersReputationLossRatio,
+            votersGainRepRatioFromLostRep,
+            voteOnBehalf,
+            beneficiary,
+            reputationReward,
+            tokensReward,
+            ethReward,
+            externalTokenReward,
+            externalToken,
+            periods,
+            periodLength
           }
       }
     `
@@ -161,28 +139,27 @@ export class Proposal implements IStateful<IProposalState> {
 
       // TODO: "pending subgraph implementation" refers to https://github.com/daostack/subgraph/issues/380
       return {
-        beneficiary: item.beneficiary, // TODO: pending Subgraph iplementatino
+        beneficiary: item.beneficiary,
         boostedAt: item.boostedAt,
         boostingThreshold: 0, // TODO: Pending Subgraph implementation
-        // createdAt: item.createdAt,
-        createdAt: item.createdAt, // TODO: Pending Subgraph implementation
+        createdAt: item.createdAt,
         dao: new DAO(item.dao.id, this.context),
-        description: item.description, // TODO: Pending Subgraph implementation
-        ethReward: item.ethReward, // TODO: pending..
+        description: item.description,
+        ethReward: item.ethReward, 
         executedAt: item.executedAt,
         externalTokenReward: item.externalTokenReward,
         id: item.id,
-        ipfsHash: item.ipfsHash, // TODO: Pending Subgraph implementation
-        proposer: item.proposer && item.proposer.id, // TODO: pending subgraph implementation
+        ipfsHash: item.ipfsHash, 
+        proposer: item.proposer && item.proposer.id, 
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
-        reputationReward: item.reputationReward, // TODO: pending subgraph
-        resolvedAt: item.resolvedAt, // TODO: Pending Subgraph implementation
+        reputationReward: item.reputationReward,
+        resolvedAt: item.resolvedAt,
         stage: item.stage,
         stakesAgainst: item.stakesAgainst,
         stakesFor: item.stakesFor,
-        title: item.title, // TODO: Pending Subgraph implementation
-        tokensReward: item.tokensReward, // TODO: pending..
-        url: item.url, // TODO: Pending Subgraph implementation
+        title: item.title,
+        tokensReward: item.tokensReward, 
+        url: item.url, 
         votesAgainst: item.votesFor,
         votesFor: item.votesAgainst,
         winningOutcome: item.winningOutcome
@@ -194,12 +171,11 @@ export class Proposal implements IStateful<IProposalState> {
 
   // TODO: probably does not need to be an observable, as it never changes
   public dao(): Observable<DAO> {
-    throw new Error('not implemented')
-    // return this.state.pipe(
-    //   map((state) => {
-    //     return new DAO(state.dao)
-    //   })
-    // )
+    return this.state.pipe(
+      map((state) => {
+        return state.dao
+      })
+    )
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
