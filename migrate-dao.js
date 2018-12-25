@@ -188,4 +188,4 @@ async function migrateDAO({ web3, spinner, confirm, opts, migrationParams, logTx
 	};
 }
 
-module.exports = migrateDAO;
+module.exports = migrateDAO
