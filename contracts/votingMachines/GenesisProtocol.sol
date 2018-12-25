@@ -1,6 +1,6 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
-import "openzeppelin-solidity/contracts/ECRecovery.sol";
+import "openzeppelin-solidity/contracts/cryptography/ECDSA.sol";
 import "./GenesisProtocolLogic.sol";
 
 
@@ -8,13 +8,12 @@ import "./GenesisProtocolLogic.sol";
  * @title GenesisProtocol implementation -an organization's voting machine scheme.
  */
 contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
-    using ECRecovery for bytes32;
-    using AddressUtils for address;
+    using ECDSA for bytes32;
 
     // Digest describing the data the user signs according EIP 712.
     // Needs to match what is passed to Metamask.
     bytes32 public constant DELEGATION_HASH_EIP712 =
-    keccak256(abi.encodePacked("address GenesisProtocolAddress","bytes32 ProposalId", "uint Vote","uint AmountToStake","uint Nonce"));
+    keccak256(abi.encodePacked("address GenesisProtocolAddress","bytes32 ProposalId", "uint256 Vote","uint256 AmountToStake","uint256 Nonce"));
     // web3.eth.sign prefix
     string public constant ETH_SIGN_PREFIX= "\x19Ethereum Signed Message:\n32";
     mapping(bytes=>bool) stakeSignatures; //stake signatures
@@ -22,7 +21,7 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
     /**
      * @dev Constructor
      */
-    constructor(StandardToken _stakingToken)
+    constructor(ERC20 _stakingToken)
     public
     GenesisProtocolLogic(_stakingToken)
     {
@@ -36,7 +35,7 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
      * @return bool true - the proposal has been executed
      *              false - otherwise.
      */
-    function stake(bytes32 _proposalId, uint _vote, uint _amount) external returns(bool) {
+    function stake(bytes32 _proposalId, uint256 _vote, uint256 _amount) external returns(bool) {
         return _stake(_proposalId,_vote,_amount,msg.sender);
     }
 
@@ -54,13 +53,14 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
      * @return bool true - the proposal has been executed
      *              false - otherwise.
      */
+    /* solium-disable-next-line */  
     function stakeWithSignature(
         bytes32 _proposalId,
-        uint _vote,
-        uint _amount,
-        uint _nonce,
-        uint _signatureType,
-        bytes _signature
+        uint256 _vote,
+        uint256 _amount,
+        uint256 _nonce,
+        uint256 _signatureType,
+        bytes calldata _signature
         )
         external
         returns(bool)
@@ -102,10 +102,12 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
      * @dev voting function
      * @param _proposalId id of the proposal
      * @param _vote NO(2) or YES(1).
+     * @param _amount the reputation amount to vote with . if _amount == 0 it will use all voter reputation.
+     * @param _voter voter address
      * @return bool true - the proposal has been executed
      *              false - otherwise.
      */
-    function vote(bytes32 _proposalId, uint _vote,address _voter) external votable(_proposalId) returns(bool) {
+    function vote(bytes32 _proposalId,uint256 _vote,uint256 _amount,address _voter) external votable(_proposalId) returns(bool) {
         Proposal storage proposal = proposals[_proposalId];
         Parameters memory params = parameters[proposal.paramsHash];
         address voter;
@@ -115,40 +117,7 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
         } else {
             voter = msg.sender;
         }
-        return internalVote(_proposalId, voter, _vote, 0);
-    }
-
-    /**
-     * @dev Cancel a proposal
-     * cancel proposal on genesis protocol is not allowed.
-     * It is here to satisfied IntVoteInterface
-     */
-    function cancelProposal(bytes32 ) external returns(bool) {
-        //This is not allowed.
-        return false;
-    }
-
-  /**
-   * @dev voting function with owner functionality (can vote on behalf of someone else)
-   * @return bool true - the proposal has been executed
-   *              false - otherwise.
-   */
-    function ownerVote(bytes32 , uint , address ) external returns(bool) {
-      //This is not allowed.
-        return false;
-    }
-
-    function voteWithSpecifiedAmounts(bytes32 _proposalId,uint _vote,uint _rep,uint,address _voter) external votable(_proposalId) returns(bool) {
-        Proposal storage proposal = proposals[_proposalId];
-        Parameters memory params = parameters[proposal.paramsHash];
-        address voter;
-        if (params.voteOnBehalf != address(0)) {
-            require(msg.sender == params.voteOnBehalf);
-            voter = _voter;
-        } else {
-            voter = msg.sender;
-        }
-        return internalVote(_proposalId,voter,_vote,_rep);
+        return internalVote(_proposalId,voter,_vote,_amount);
     }
 
   /**
@@ -163,9 +132,9 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
 
   /**
     * @dev getNumberOfChoices returns the number of choices possible in this proposal
-    * @return uint that contains number of choices
+    * @return uint256 that contains number of choices
     */
-    function getNumberOfChoices(bytes32) external view returns(uint) {
+    function getNumberOfChoices(bytes32) external view returns(uint256) {
         return NUM_OF_CHOICES;
     }
 
@@ -174,7 +143,7 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
       * @param _proposalId id of the proposal
       * @return proposals times array
       */
-    function getProposalTimes(bytes32 _proposalId) external view returns(uint[3] times) {
+    function getProposalTimes(bytes32 _proposalId) external view returns(uint[3] memory times) {
         return proposals[_proposalId].times;
     }
 
@@ -182,8 +151,8 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
      * @dev voteInfo returns the vote and the amount of reputation of the user committed to this proposal
      * @param _proposalId the ID of the proposal
      * @param _voter the address of the voter
-     * @return uint vote - the voters vote
-     *        uint reputation - amount of reputation committed by _voter to _proposalId
+     * @return uint256 vote - the voters vote
+     *        uint256 reputation - amount of reputation committed by _voter to _proposalId
      */
     function voteInfo(bytes32 _proposalId, address _voter) external view returns(uint, uint) {
         Voter memory voter = proposals[_proposalId].voters[_voter];
@@ -196,7 +165,7 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
     * @param _choice the index in the
     * @return voted reputation for the given choice
     */
-    function voteStatus(bytes32 _proposalId,uint _choice) external view returns(uint) {
+    function voteStatus(bytes32 _proposalId,uint256 _choice) external view returns(uint256) {
         return proposals[_proposalId].votes[_choice];
     }
 
@@ -212,12 +181,12 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
     /**
     * @dev proposalStatus return the total votes and stakes for a given proposal
     * @param _proposalId the ID of the proposal
-    * @return uint preBoostedVotes YES
-    * @return uint preBoostedVotes NO
-    * @return uint total stakes YES
-    * @return uint total stakes NO
+    * @return uint256 preBoostedVotes YES
+    * @return uint256 preBoostedVotes NO
+    * @return uint256 total stakes YES
+    * @return uint256 total stakes NO
     */
-    function proposalStatus(bytes32 _proposalId) external view returns(uint, uint, uint ,uint) {
+    function proposalStatus(bytes32 _proposalId) external view returns(uint, uint, uint256 ,uint) {
         return (
                 proposals[_proposalId].preBoostedVotes[YES],
                 proposals[_proposalId].preBoostedVotes[NO],
@@ -239,8 +208,8 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
       * @dev getStaker return the vote and stake amount for a given proposal and staker
       * @param _proposalId the ID of the proposal
       * @param _staker staker address
-      * @return uint vote
-      * @return uint amount
+      * @return uint256 vote
+      * @return uint256 amount
     */
     function getStaker(bytes32 _proposalId,address _staker) external view returns(uint,uint) {
         return (proposals[_proposalId].stakers[_staker].vote,proposals[_proposalId].stakers[_staker].amount);
@@ -250,18 +219,18 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
       * @dev voteStake return the amount stakes for a given proposal and vote
       * @param _proposalId the ID of the proposal
       * @param _vote vote number
-      * @return uint stake amount
+      * @return uint256 stake amount
     */
-    function voteStake(bytes32 _proposalId,uint _vote) external view returns(uint) {
+    function voteStake(bytes32 _proposalId,uint256 _vote) external view returns(uint256) {
         return proposals[_proposalId].stakes[_vote];
     }
 
   /**
     * @dev voteStake return the winningVote for a given proposal
     * @param _proposalId the ID of the proposal
-    * @return uint winningVote
+    * @return uint256 winningVote
     */
-    function winningVote(bytes32 _proposalId) external view returns(uint) {
+    function winningVote(bytes32 _proposalId) external view returns(uint256) {
         return proposals[_proposalId].winningVote;
     }
 
@@ -287,7 +256,7 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
      * @return min - minimum number of choices
                max - maximum number of choices
      */
-    function getAllowedRangeOfChoices() external pure returns(uint min,uint max) {
+    function getAllowedRangeOfChoices() external pure returns(uint256 min,uint256 max) {
         return (NUM_OF_CHOICES,NUM_OF_CHOICES);
     }
 
@@ -304,10 +273,9 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
     /**
      * @dev score return the proposal score
      * @param _proposalId the ID of the proposal
-     * @return uint proposal score.
+     * @return uint256 proposal score.
      */
-    function score(bytes32 _proposalId) public view returns(uint) {
+    function score(bytes32 _proposalId) public view returns(uint256) {
         return  _score(_proposalId);
     }
-
 }

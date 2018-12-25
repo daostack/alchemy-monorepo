@@ -4,10 +4,10 @@ const QuorumVote = artifacts.require("./QuorumVote.sol");
 const Reputation = artifacts.require("./Reputation.sol");
 const AbsoluteVoteExecuteMock = artifacts.require("./AbsoluteVoteExecuteMock.sol");
 
-let reputation, quorumVote, reputationArray,absoluteVoteExecuteMock;
+let reputation, quorumVote, reputationArray, absoluteVoteExecuteMock;
 
 
-const setupQuorumVote = async function (accounts,isOwnedVote=true, precReq=50) {
+const setupQuorumVote = async function (accounts,voteOnBehalf=helpers.NULL_ADDRESS, precReq=50) {
   quorumVote = await QuorumVote.new();
 
   // set up a reputation system
@@ -18,9 +18,8 @@ const setupQuorumVote = async function (accounts,isOwnedVote=true, precReq=50) {
   await reputation.mint(accounts[2], reputationArray[2]);
 
   // register some parameters
-  await quorumVote.setParameters(precReq, isOwnedVote);
+  await quorumVote.setParameters(precReq, voteOnBehalf);
   absoluteVoteExecuteMock = await AbsoluteVoteExecuteMock.new(reputation.address,quorumVote.address);
-
 
   return quorumVote;
 };
@@ -29,19 +28,17 @@ const checkProposalInfo = async function(proposalId, _proposalInfo) {
   let proposalInfo;
   proposalInfo = await quorumVote.proposals(proposalId);
   // proposalInfo has the following structure
-  // address owner;
-  assert.equal(proposalInfo[0], _proposalInfo[0]);
   // address organization;
-  assert.equal(proposalInfo[1], _proposalInfo[1]);
+  assert.equal(proposalInfo[0], _proposalInfo[0]);
   // uint numOfChoices;
-  assert.equal(proposalInfo[2], _proposalInfo[2]);
+  assert.equal(proposalInfo[1], _proposalInfo[1]);
   // ExecutableInterface executable;
-  assert.equal(proposalInfo[3], _proposalInfo[3]);
+  assert.equal(proposalInfo[2], _proposalInfo[2]);
   // bytes32 paramsHash;
-  assert.equal(proposalInfo[4], _proposalInfo[4]);
+  assert.equal(proposalInfo[3], _proposalInfo[3]);
   // uint totalVotes;
+  assert.equal(proposalInfo[4], _proposalInfo[4]);
   assert.equal(proposalInfo[5], _proposalInfo[5]);
-  assert.equal(proposalInfo[6], _proposalInfo[6]);
   // - the mapping is simply not returned at all in the array
   // bool opened; // voting opened flag;
 };
@@ -63,36 +60,36 @@ const checkVoteInfo = async function(proposalId, voterAddress, _voteInfo) {
 contract('QuorumVote', accounts => {
 
   it("Sanity checks", async function () {
-    quorumVote = await setupQuorumVote(accounts,true, 50);
+    quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 50);
 
     // propose a vote
-    const paramsHash = await quorumVote.getParametersHash( 50, true );
+    const paramsHash = await quorumVote.getParametersHash( 50, helpers.NULL_ADDRESS );
     let tx = await absoluteVoteExecuteMock.propose(5, paramsHash, absoluteVoteExecuteMock.address, accounts[0],helpers.NULL_ADDRESS);
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
     const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 5, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 5, paramsHash, 0, true]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // now lets vote Option 1 with a minority reputation
-    await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
+    await quorumVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
-    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 5, paramsHash, reputationArray[0], true]);
+    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 5, paramsHash, reputationArray[0], true]);
     await checkVotesStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // another minority reputation (Option 0):
-    await quorumVote.vote(proposalId, 0,helpers.NULL_ADDRESS, { from: accounts[1] });
+    await quorumVote.vote(proposalId, 0,0,helpers.NULL_ADDRESS, { from: accounts[1] });
     await checkVoteInfo(proposalId, accounts[1], [0, reputationArray[1]]);
-    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 5, paramsHash, (reputationArray[0] + reputationArray[1]), true]);
+    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 5, paramsHash, (reputationArray[0] + reputationArray[1]), true]);
     await checkVotesStatus(proposalId, [reputationArray[1], reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // the decisive vote is cast now and the proposal will be executed with option 5
-    tx = await absoluteVoteExecuteMock.ownerVote(proposalId, 5, accounts[2]);
+    tx = await quorumVote.vote(proposalId, 5,0, accounts[2],{from:accounts[2]});
     await checkVoteInfo(proposalId, accounts[2], [5, reputationArray[2]]);
     // Proposal should be empty (being deleted after execution)
-    await checkProposalInfo(proposalId, [helpers.NULL_ADDRESS, helpers.NULL_HASH,helpers.NULL_ADDRESS, 0,helpers.NULL_HASH, 0, false]);
+    await checkProposalInfo(proposalId, [ helpers.NULL_HASH,helpers.NULL_ADDRESS, 0,helpers.NULL_HASH, 0, false]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
   });
@@ -100,34 +97,34 @@ contract('QuorumVote', accounts => {
   it("Quorum proposals should be executed when reaching the percentage required", async function () {
 
     // 25% precReq proposal
-    quorumVote = await setupQuorumVote(accounts,true, 25);
-    const paramsHash = await quorumVote.getParametersHash( 25, true);
+    quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 25);
+    const paramsHash = await quorumVote.getParametersHash( 25, helpers.NULL_ADDRESS);
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
     const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // now lets vote 'Option 0' with 20% of the reputation - should not be executed yet (didn't reach 25%).
-    await quorumVote.vote(proposalId, 0,helpers.NULL_ADDRESS);
+    await quorumVote.vote(proposalId, 0,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [0, reputationArray[0]]);
-    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId, absoluteVoteExecuteMock.address,6, paramsHash, reputationArray[0], true]);
+    await checkProposalInfo(proposalId, [ organizationId, absoluteVoteExecuteMock.address,6, paramsHash, reputationArray[0], true]);
     await checkVotesStatus(proposalId, [reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // now lets vote 'Option 1' with 10% of the reputation - should be executed with 'Option 0'! (reached 30% and the 'Option 1' is the majority).
-    await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS, { from: accounts[1] });
+    await quorumVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS, { from: accounts[1] });
     await checkVoteInfo(proposalId, accounts[1], [1, reputationArray[1]]);
-    await checkProposalInfo(proposalId, [helpers.NULL_ADDRESS, helpers.NULL_HASH,helpers.NULL_ADDRESS, 0,helpers.NULL_HASH, 0, false]);
+    await checkProposalInfo(proposalId, [helpers.NULL_HASH,helpers.NULL_ADDRESS, 0,helpers.NULL_HASH, 0, false]);
   });
 
   it("Invalid inputs shouldn't work (precReq, vote)", async function () {
 
     // Lets try to create a proposal with precReq=-1
     try {
-      quorumVote = await setupQuorumVote(accounts,true, -1);
+      quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, -1);
       throw 'an error'; // make sure that an error is thrown
     } catch (error) {
       helpers.assertVMException(error);
@@ -135,7 +132,7 @@ contract('QuorumVote', accounts => {
 
     // Lets try to create a proposal with precReq=200
     try {
-      quorumVote = await setupQuorumVote(accounts,true, 200);
+      quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 200);
       throw 'an error'; // make sure that an error is thrown
     } catch (error) {
       helpers.assertVMException(error);
@@ -143,8 +140,8 @@ contract('QuorumVote', accounts => {
 
     // Lets try to create a proposal with numOfChoices=99
     try {
-      let quorumVote = await setupQuorumVote(accounts,true, 22);
-      const paramsHash = await quorumVote.getParametersHash( 22, true);
+      let quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 22);
+      const paramsHash = await quorumVote.getParametersHash( 22, helpers.NULL_ADDRESS);
       await absoluteVoteExecuteMock.propose(99, paramsHash, accounts[1],accounts[0],helpers.NULL_ADDRESS);
       throw 'an error'; // make sure that an error is thrown
     } catch (error) {
@@ -153,8 +150,8 @@ contract('QuorumVote', accounts => {
 
     // Lets try to create a proposal with numOfChoices=-1
     try {
-      let quorumVote = await setupQuorumVote(accounts,true, 22);
-      const paramsHash = await quorumVote.getParametersHash( 22, true);
+      let quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 22);
+      const paramsHash = await quorumVote.getParametersHash( 22, helpers.NULL_ADDRESS);
       await absoluteVoteExecuteMock.propose(-1, paramsHash, accounts[1],accounts[0],helpers.NULL_ADDRESS);
       throw 'an error'; // make sure that an error is thrown
     } catch (error) {
@@ -162,15 +159,15 @@ contract('QuorumVote', accounts => {
     }
 
     // propose a proposal
-    quorumVote = await setupQuorumVote(accounts,true, 3);
-    const paramsHash = await quorumVote.getParametersHash( 3, true);
+    quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 3);
+    const paramsHash = await quorumVote.getParametersHash( 3, helpers.NULL_ADDRESS);
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
 
     // Lets try to vote with the uint 99 (invalid vote)
     try {
-      await quorumVote.vote(proposalId, 99,helpers.NULL_ADDRESS);
+      await quorumVote.vote(proposalId, 99,0,helpers.NULL_ADDRESS);
       throw 'an error'; // make sure that an error is thrown
     } catch (error) {
       helpers.assertVMException(error);
@@ -178,7 +175,7 @@ contract('QuorumVote', accounts => {
 
     // Lets try to vote with the -1 (invalid vote)
     try {
-      await quorumVote.vote(proposalId, -1,helpers.NULL_ADDRESS);
+      await quorumVote.vote(proposalId, -1,0,helpers.NULL_ADDRESS);
       throw 'an error'; // make sure that an error is thrown
     } catch (error) {
       helpers.assertVMException(error);
@@ -186,182 +183,140 @@ contract('QuorumVote', accounts => {
   });
 
   it("All options can be voted (0-9)", async function() {
-    let quorumVote = await setupQuorumVote(accounts,true, 50);
+    let quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 50);
 
     // propose a vote
-    const paramsHash = await quorumVote.getParametersHash( 50, true );
+    const paramsHash = await quorumVote.getParametersHash( 50, helpers.NULL_ADDRESS );
     let tx = await absoluteVoteExecuteMock.propose(10, paramsHash, accounts[1],accounts[0],helpers.NULL_ADDRESS);
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
 
     // Option 1
-    await quorumVote.vote(proposalId, 0,helpers.NULL_ADDRESS);
+    await quorumVote.vote(proposalId, 0,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [0, reputationArray[0]]);
     await checkVotesStatus(proposalId, [reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // Option 2
-    await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
+    await quorumVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // Option 3
-    await quorumVote.vote(proposalId, 2,helpers.NULL_ADDRESS);
+    await quorumVote.vote(proposalId, 2,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [2, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0]);
 
     // Option 4
-    await quorumVote.vote(proposalId, 3,helpers.NULL_ADDRESS);
+    await quorumVote.vote(proposalId, 3,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [3, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0]);
 
     // Option 5
-    await quorumVote.vote(proposalId, 4,helpers.NULL_ADDRESS);
+    await quorumVote.vote(proposalId, 4,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [4, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0, 0]);
 
     // Option 6
-    await quorumVote.vote(proposalId, 5,helpers.NULL_ADDRESS);
+    await quorumVote.vote(proposalId, 5,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [5, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0, 0]);
 
     // Option 7
-    await quorumVote.vote(proposalId, 6,helpers.NULL_ADDRESS);
+    await quorumVote.vote(proposalId, 6,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [6, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0, 0]);
 
     // Option 8
-    await quorumVote.vote(proposalId, 7,helpers.NULL_ADDRESS);
+    await quorumVote.vote(proposalId, 7,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [7, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0, 0]);
 
     // Option 9
-    await quorumVote.vote(proposalId, 8,helpers.NULL_ADDRESS);
+    await quorumVote.vote(proposalId, 8,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [8, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0, 0]);
 
     // Option 10
-    await quorumVote.vote(proposalId, 9,helpers.NULL_ADDRESS);
+    await quorumVote.vote(proposalId, 9,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [9, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, reputationArray[0], 0]);
   });
 
   it("Double vote shouldn't double proposal's 'Option 2' count", async function() {
-    let quorumVote = await setupQuorumVote(accounts,true, 50);
+    let quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 50);
 
     // propose a vote
-    const paramsHash = await quorumVote.getParametersHash( 50, true );
+    const paramsHash = await quorumVote.getParametersHash( 50, helpers.NULL_ADDRESS );
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
     const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
     // Lets try to vote twice from the same address
-    await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
+    await quorumVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
-    await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
+    await quorumVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
 
     // Total 'Option 2' should be equal to the voter's reputation exactly, even though we voted twice
-    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, reputationArray[0], true]);
+    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, reputationArray[0], true]);
     await checkVotesStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   });
 
   it("Vote cancellation should revert proposal's counters", async function() {
-    let quorumVote = await setupQuorumVote(accounts,true, 50);
+    let quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 50);
 
     // propose a vote
-    const paramsHash = await quorumVote.getParametersHash( 50, true );
+    const paramsHash = await quorumVote.getParametersHash( 50, helpers.NULL_ADDRESS );
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
     const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
     // Lets try to vote and then cancel our vote
-    await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
+    await quorumVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
     await quorumVote.cancelVote(proposalId);
     await checkVoteInfo(proposalId, accounts[0], [0, 0]);
 
     // Proposal's votes supposed to be zero again.
-    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   });
 
-  it("As allowOwner is set to true, Vote on the behalf of someone else should work", async function() {
-    let quorumVote = await setupQuorumVote(accounts,true, 50);
+  it("if the voter is not set as voteOnBehalf, he shouldn't be able to vote on the behalf of someone else", async function () {
+    quorumVote = await setupQuorumVote(accounts,accounts[5], 50);
 
     // propose a vote
-    const paramsHash = await quorumVote.getParametersHash( 50, true );
+    const paramsHash = await quorumVote.getParametersHash( 50,accounts[5]);
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
-    const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
+    const proposalId =  await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
     const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
-
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
-
-    // Lets try to vote on the behalf of someone else
-    await absoluteVoteExecuteMock.ownerVote(proposalId, 1, accounts[1]);
-    await checkVoteInfo(proposalId, accounts[1], [1, reputationArray[1]]);
-
-    // Proposal's 'yes' count should be equal to accounts[1] reputation
-    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, reputationArray[1], true]);
-    await checkVotesStatus(proposalId, [0, reputationArray[1], 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-  });
-
-  it("As allowOwner is set to false, Vote on the behalf of someone else should NOT work", async function() {
-    let quorumVote = await setupQuorumVote(accounts,false, 50);
-
-    // propose a vote
-    const paramsHash = await quorumVote.getParametersHash( 50, false);
-    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
-    const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
-    assert.isOk(proposalId);
-    const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
-
-    // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
-
-    // Lets try to vote on the behalf of someone else
-    await absoluteVoteExecuteMock.ownerVote(proposalId, 1, accounts[1]);
-
-    // The vote should not be counted
-    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
-  });
-
-  it("if the voter is not the proposal's owner, he shouldn't be able to vote on the behalf of someone else", async function () {
-    let quorumVote = await setupQuorumVote(accounts,true, 50);
-
-    // propose a proposal
-    const paramsHash = await quorumVote.getParametersHash( 50, true );
-    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
-    const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
-    assert.isOk(proposalId);
-    const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
-
-    // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
     // Lets try to vote on the behalf of someone else
     try {
-      await quorumVote.ownerVote(proposalId, 1, accounts[0], {from: accounts[1]});
+      await quorumVote.vote(proposalId, 1,0, accounts[0], {from: accounts[1]});
       assert(false, "ownerVote was supposed to throw but didn't.");
     } catch(error) {
       helpers.assertVMException(error);
     }
 
     // The vote should not be counted
-    await checkProposalInfo(proposalId, [absoluteVoteExecuteMock.address, organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await quorumVote.vote(proposalId, 1,0, accounts[0], {from: accounts[5]});
   });
     // [TODO] Check why this test doesn't work
     // it("Non-existent parameters hash shouldn't work", async function() {
-    //   let quorumVote = await setupQuorumVote(accounts,true, 50);
+    //   let quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 50);
     //   let paramsHash;
     //
     //   // propose a proposal
@@ -388,23 +343,15 @@ contract('QuorumVote', accounts => {
   it("Should not able to vote / cancel vote / proposal after proposal has been executed", async function () {
 
     // propose a vote with precRequired=19%
-    let quorumVote = await setupQuorumVote(accounts,true, 19);
+    let quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 19);
 
     // propose a proposal
-    const paramsHash = await quorumVote.getParametersHash( 19, true);
+    const paramsHash = await quorumVote.getParametersHash( 19, helpers.NULL_ADDRESS);
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
     // After that voting the proposal should be executed
-    await quorumVote.vote(proposalId, 0,helpers.NULL_ADDRESS);
-
-    // Should not be able to cancel the proposal because it's already been executed
-    try {
-      await absoluteVoteExecuteMock.cancelProposal(proposalId);
-      assert(false, "Can't cancel proposal because it's already been executed.");
-    } catch (error) {
-      helpers.assertVMException(error);
-    }
+    await quorumVote.vote(proposalId, 0,0,helpers.NULL_ADDRESS);
 
     // Should not be able to cancel the vote because the proposal has been executed
     try {
@@ -416,7 +363,7 @@ contract('QuorumVote', accounts => {
 
     // Should not be able to vote because the proposal has been executed
     try {
-        await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS, { from: accounts[1] });
+        await quorumVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS, { from: accounts[1] });
         assert(false, "Can't vote because proposal already been executed.");
     } catch (error) {
         helpers.assertVMException(error);
@@ -424,34 +371,11 @@ contract('QuorumVote', accounts => {
 
   });
 
-  it("Only the owner of the proposal can cancel it", async function () {
-
-    // propose a vote with precRequired=19%
-    let quorumVote = await setupQuorumVote(accounts,true, 19);
-
-    // propose a proposal
-    const paramsHash = await quorumVote.getParametersHash( 19, true);
-    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
-    const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
-    assert.isOk(proposalId);
-
-    // Account 1 is not the owner of the proposal, he can't cancel it
-    try {
-        await quorumVote.cancelProposal(proposalId, { from: accounts[1] });
-        throw 'an error'; // make sure that an error is thrown
-    } catch (error) {
-        helpers.assertVMException(error);
-    }
-
-    // Shouldn't throw an exception because account 0 is the owner of the proposal
-    await absoluteVoteExecuteMock.cancelProposal(proposalId);
-  });
-
   it("log the NewProposal event on proposing new proposal", async function() {
-    let quorumVote = await setupQuorumVote(accounts,true, 50);
+    let quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 50);
 
     // propose a vote
-    const paramsHash = await quorumVote.getParametersHash( 50, true );
+    const paramsHash = await quorumVote.getParametersHash( 50, helpers.NULL_ADDRESS );
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
@@ -460,35 +384,16 @@ contract('QuorumVote', accounts => {
 
   });
 
-  it("Should log the CancelProposal event on canceling a proposal", async () => {
-    quorumVote = await setupQuorumVote(accounts);
-
-    // propose a vote
-    const paramsHash = await quorumVote.getParametersHash( 50, true );
-    let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
-    const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
-    assert.isOk(proposalId);
-
-    let newtx = await absoluteVoteExecuteMock.cancelProposal(proposalId);
-    await quorumVote.getPastEvents('CancelProposal', {
-            fromBlock: newtx.blockNumber,
-            toBlock: 'latest'
-        })
-        .then(function(events){
-            assert.equal(events[0].args._proposalId,proposalId);
-        });
-  });
-
   it("Should log the VoteProposal and CancelVoting events on voting and canceling the vote", async () => {
     quorumVote = await setupQuorumVote(accounts,);
 
     // propose a vote
-    const paramsHash = await quorumVote.getParametersHash( 50, true );
+    const paramsHash = await quorumVote.getParametersHash( 50, helpers.NULL_ADDRESS );
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
 
-    let voteTX = await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS);
+    let voteTX = await quorumVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
 
     assert.equal(voteTX.logs.length, 2);
     assert.equal(voteTX.logs[0].event, "VoteProposal");
@@ -507,14 +412,14 @@ contract('QuorumVote', accounts => {
   it("Should log the ExecuteProposal event on executing quorum proposal with 'no' decision", async () => {
 
     // propose a proposal with precRequired=19%
-    quorumVote = await setupQuorumVote(accounts,true, 19);
+    quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 19);
 
-    const paramsHash = await quorumVote.getParametersHash( 19, true);
+    const paramsHash = await quorumVote.getParametersHash( 19, helpers.NULL_ADDRESS);
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
 
-    let voteTX = await quorumVote.vote(proposalId, 0,helpers.NULL_ADDRESS);
+    let voteTX = await quorumVote.vote(proposalId, 0,0,helpers.NULL_ADDRESS);
 
     assert.equal(voteTX.logs.length, 3);
     assert.equal(voteTX.logs[2].event, "ExecuteProposal");
@@ -523,20 +428,16 @@ contract('QuorumVote', accounts => {
   });
 
   it('cannot vote for another user', async function () {
-    let quorumVote = await setupQuorumVote(accounts,true, 50);
+    quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 50);
 
     // propose a new proposal
-    const paramsHash = await quorumVote.getParametersHash( 50, true );
+    const paramsHash = await quorumVote.getParametersHash( 50,helpers.NULL_ADDRESS);
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
-    const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
+    const proposalId =  await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
-
-    try {
-      await quorumVote.ownerVote(proposalId, 1, accounts[1], { from: accounts[2] });
-      assert(false, 'accounts[2] voted for accounts[1] but accounts[2] is not owner');
-    } catch (ex) {
-      helpers.assertVMException(ex);
-    }
+    await quorumVote.vote(proposalId, 1,0, accounts[1], { from: accounts[2] });
+    await checkVoteInfo(proposalId, accounts[2], [1, reputationArray[2]]);
+    await checkVoteInfo(proposalId, accounts[0], [0, 0]);
   });
   // [TODO] Check why this test doesn't work
   // it("Should behave sensibly when voting with an empty reputation system", async function () {
@@ -561,16 +462,16 @@ contract('QuorumVote', accounts => {
 
 
   it('Test voteWithSpecifiedAmounts - More reputation than I own, negative reputation, etc..', async function () {
-    let quorumVote = await setupQuorumVote(accounts,true, 50);
+    let quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 50);
 
     // propose a new proposal
-    const paramsHash = await quorumVote.getParametersHash( 50, true );
+    const paramsHash = await quorumVote.getParametersHash( 50, helpers.NULL_ADDRESS );
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
 
     // Vote with the reputation the I own - should work
-    tx = await quorumVote.voteWithSpecifiedAmounts(proposalId, 1, reputationArray[0] / 10, 0,helpers.NULL_ADDRESS);
+    tx = await quorumVote.vote(proposalId, 1, reputationArray[0] / 10,helpers.NULL_ADDRESS);
 
     var repVoted = await helpers.getValueFromLogs(tx, "_reputation");
 
@@ -578,7 +479,7 @@ contract('QuorumVote', accounts => {
 
     // Vote with negative reputation - exception should be raised
     try {
-      await quorumVote.voteWithSpecifiedAmounts(proposalId, 1, -100, 0,helpers.NULL_ADDRESS);
+      await quorumVote.vote(proposalId, 1, -100,helpers.NULL_ADDRESS);
       assert(false, 'Vote with -100 reputation voting shouldn\'t work');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -586,7 +487,7 @@ contract('QuorumVote', accounts => {
 
     // Vote with more reputation that i own - exception should be raised
     try {
-      await quorumVote.voteWithSpecifiedAmounts(proposalId, 1, (reputationArray[0] + 1), 0,helpers.NULL_ADDRESS);
+      await quorumVote.vote(proposalId, 1, (reputationArray[0] + 1),helpers.NULL_ADDRESS);
       assert(false, 'Not enough reputation - voting shouldn\'t work');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -596,7 +497,7 @@ contract('QuorumVote', accounts => {
     let BigNumber = require('bignumber.js');
     let bigNum = ((new BigNumber(2)).toPower(254)).toString(10);
     try {
-      await quorumVote.voteWithSpecifiedAmounts(proposalId, 1, bigNum, 0,helpers.NULL_ADDRESS);
+      await quorumVote.vote(proposalId, 1, bigNum,helpers.NULL_ADDRESS);
       assert(false, 'Voting shouldn\'t work');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -605,10 +506,10 @@ contract('QuorumVote', accounts => {
 
   it("Internal functions can not be called externally", async () => {
 
-    let quorumVote = await setupQuorumVote(accounts,true, 50);
+    let quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 50);
 
     // propose a new proposal
-    const paramsHash = await quorumVote.getParametersHash( 50, true );
+    const paramsHash = await quorumVote.getParametersHash( 50, helpers.NULL_ADDRESS );
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
@@ -621,7 +522,7 @@ contract('QuorumVote', accounts => {
       helpers.assertInternalFunctionException(ex);
     }
 
-    await quorumVote.vote(proposalId, 1,helpers.NULL_ADDRESS, {from: accounts[0]});
+    await quorumVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS, {from: accounts[0]});
 
     // Lets try to call cancelVoteInternal function
     try {
@@ -634,17 +535,17 @@ contract('QuorumVote', accounts => {
 
   it("Try to send wrong proposal id to the voting/cancel functions", async () => {
 
-    quorumVote = await setupQuorumVote(accounts,true, 50);
+    quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 50);
 
     // propose a new proposal
-    const paramsHash = await quorumVote.getParametersHash( 50, true );
+    const paramsHash = await quorumVote.getParametersHash( 50, helpers.NULL_ADDRESS );
     let tx = await absoluteVoteExecuteMock.propose(6, paramsHash, absoluteVoteExecuteMock.address,accounts[0],helpers.NULL_ADDRESS);
     const proposalId = await helpers.getProposalId(tx,quorumVote,"NewProposal");
     assert.isOk(proposalId);
 
     // Lets try to call vote with invalid proposal id
     try {
-      await quorumVote.vote(helpers.NULL_HASH, 1,helpers.NULL_ADDRESS, {from: accounts[0]});
+      await quorumVote.vote(helpers.NULL_HASH, 1,0,helpers.NULL_ADDRESS, {from: accounts[0]});
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -652,7 +553,7 @@ contract('QuorumVote', accounts => {
 
     // Lets try to call voteWithSpecifiedAmounts with invalid proposal id
     try {
-      await quorumVote.voteWithSpecifiedAmounts(helpers.NULL_HASH, 1, 1, 1,helpers.NULL_ADDRESS);
+      await quorumVote.vote(helpers.NULL_HASH, 1, 1,helpers.NULL_ADDRESS);
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -661,14 +562,6 @@ contract('QuorumVote', accounts => {
     // Lets try to call execute with invalid proposal id
     try {
       await quorumVote.execute(helpers.NULL_HASH);
-      assert(false, 'Invalid proposal ID has been delivered');
-    } catch (ex) {
-      helpers.assertVMException(ex);
-    }
-
-    // Lets try to call ownerVote with invalid proposal id
-    try {
-      await absoluteVoteExecuteMock.ownerVote(helpers.NULL_HASH, 1, accounts[0]);
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);

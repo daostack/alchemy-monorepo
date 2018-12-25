@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
@@ -32,9 +32,6 @@ contract Reputation is Ownable {
         uint128 value;
     }
 
-      // `creationBlock` is the block number that the Clone Token was created
-    uint public creationBlock;
-
       // `balances` is the map that tracks the balance of each address, in this
       //  contract when the balance changes the block number that the change
       //  occurred is also included in the map
@@ -43,16 +40,15 @@ contract Reputation is Ownable {
       // Tracks the history of the `totalSupply` of the reputation
     Checkpoint[] totalSupplyHistory;
 
-    /// @notice Constructor to create a MiniMeToken
+    /// @notice Constructor to create a Reputation
     constructor(
     ) public
     {
-        creationBlock = block.number;
     }
 
     /// @dev This function makes it easy to get the total number of reputation
     /// @return The total number of reputation
-    function totalSupply() public view returns (uint) {
+    function totalSupply() public view returns (uint256) {
         return totalSupplyAt(block.number);
     }
 
@@ -71,8 +67,8 @@ contract Reputation is Ownable {
       /// @param _owner The address from which the balance will be retrieved
       /// @param _blockNumber The block number when the balance is queried
       /// @return The balance at `_blockNumber`
-    function balanceOfAt(address _owner, uint _blockNumber)
-    public view returns (uint)
+    function balanceOfAt(address _owner, uint256 _blockNumber)
+    public view returns (uint256)
     {
         if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock > _blockNumber)) {
             return 0;
@@ -85,7 +81,7 @@ contract Reputation is Ownable {
       /// @notice Total amount of reputation at a specific `_blockNumber`.
       /// @param _blockNumber The block number when the totalSupply is queried
       /// @return The total amount of reputation at `_blockNumber`
-    function totalSupplyAt(uint _blockNumber) public view returns(uint) {
+    function totalSupplyAt(uint256 _blockNumber) public view returns(uint256) {
         if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
             return 0;
           // This will return the expected totalSupply during normal situations
@@ -95,38 +91,34 @@ contract Reputation is Ownable {
     }
 
       /// @notice Generates `_amount` reputation that are assigned to `_owner`
-      /// @param _owner The address that will be assigned the new reputation
+      /// @param _user The address that will be assigned the new reputation
       /// @param _amount The quantity of reputation generated
       /// @return True if the reputation are generated correctly
-    function mint(address _owner, uint _amount) public onlyOwner returns (bool) {
-        uint curTotalSupply = totalSupply();
+    function mint(address _user, uint256 _amount) public onlyOwner returns (bool) {
+        uint256 curTotalSupply = totalSupply();
         require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
-        uint previousBalanceTo = balanceOf(_owner);
+        uint256 previousBalanceTo = balanceOf(_user);
         require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
-        updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
-        emit Mint(_owner, _amount);
+        updateValueAtNow(balances[_user], previousBalanceTo + _amount);
+        emit Mint(_user, _amount);
         return true;
     }
 
       /// @notice Burns `_amount` reputation from `_owner`
-      /// @param _owner The address that will lose the reputation
+      /// @param _user The address that will lose the reputation
       /// @param _amount The quantity of reputation to burn
       /// @return True if the reputation are burned correctly
-    function burn(address _owner, uint _amount) public onlyOwner returns (bool) {
-        uint curTotalSupply = totalSupply();
-        uint amountBurned = _amount;
-        if (curTotalSupply < amountBurned) {
-            amountBurned = curTotalSupply;
-        }
-        uint previousBalanceFrom = balanceOf(_owner);
+    function burn(address _user, uint256 _amount) public onlyOwner returns (bool) {
+        uint256 curTotalSupply = totalSupply();
+        uint256 amountBurned = _amount;
+        uint256 previousBalanceFrom = balanceOf(_user);
         if (previousBalanceFrom < amountBurned) {
             amountBurned = previousBalanceFrom;
         }
-          //require(previousBalanceFrom >= _amount);
         updateValueAtNow(totalSupplyHistory, curTotalSupply - amountBurned);
-        updateValueAtNow(balances[_owner], previousBalanceFrom - amountBurned);
-        emit Burn(_owner, amountBurned);
+        updateValueAtNow(balances[_user], previousBalanceFrom - amountBurned);
+        emit Burn(_user, amountBurned);
         return true;
     }
 
@@ -138,7 +130,7 @@ contract Reputation is Ownable {
       /// @param checkpoints The history of values being queried
       /// @param _block The block number to retrieve the value at
       /// @return The number of reputation being queried
-    function getValueAt(Checkpoint[] storage checkpoints, uint _block) internal view returns (uint) {
+    function getValueAt(Checkpoint[] storage checkpoints, uint256 _block) internal view returns (uint256) {
         if (checkpoints.length == 0) {
             return 0;
         }
@@ -152,10 +144,10 @@ contract Reputation is Ownable {
         }
 
           // Binary search of the value in the array
-        uint min = 0;
-        uint max = checkpoints.length-1;
+        uint256 min = 0;
+        uint256 max = checkpoints.length-1;
         while (max > min) {
-            uint mid = (max + min + 1) / 2;
+            uint256 mid = (max + min + 1) / 2;
             if (checkpoints[mid].fromBlock<=_block) {
                 min = mid;
             } else {
@@ -169,7 +161,7 @@ contract Reputation is Ownable {
       ///  `totalSupplyHistory`
       /// @param checkpoints The history of data being updated
       /// @param _value The new number of reputation
-    function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value) internal {
+    function updateValueAtNow(Checkpoint[] storage checkpoints, uint256 _value) internal {
         require(uint128(_value) == _value); //check value is in the 128 bits bounderies
         if ((checkpoints.length == 0) || (checkpoints[checkpoints.length - 1].fromBlock < block.number)) {
             Checkpoint storage newCheckPoint = checkpoints[checkpoints.length++];

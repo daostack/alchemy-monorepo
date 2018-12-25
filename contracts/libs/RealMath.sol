@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 /**
  * RealMath: fixed-point math library, based on fractional and integer parts.
@@ -289,7 +289,7 @@ library RealMath {
         }
 
         // Find the high bit
-        int216 highBit = findbit(hibit(uint256(realArg)));
+        int216 highBit = findbit(hibit(uint256 (realArg)));
 
         // We'll shift so the high bit is the lowest non-fractional bit.
         shift = highBit - int216(REAL_FBITS);

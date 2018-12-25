@@ -6,6 +6,7 @@ const ERC827TokenMock = artifacts.require('./test/ERC827TokenMock.sol');
 const GenesisProtocolCallbacks = artifacts.require("./GenesisProtocolCallbacksMock.sol");
 var ethereumjs = require('ethereumjs-abi');
 const Reputation = artifacts.require("./Reputation.sol");
+const BigNumber = require('bignumber.js');
 
 export class GenesisProtocolParams {
   constructor() {
@@ -54,7 +55,6 @@ const setupGenesisProtocolParams = async function(
                                                  voteOnBehalf);
   return genesisProtocolParams;
 };
-
 var YES,NO;
 const setup = async function (accounts,
                               _voteOnBehalf = helpers.NULL_ADDRESS,
@@ -70,7 +70,7 @@ const setup = async function (accounts,
                               _daoBountyConst=10,
                               _activationTime=0) {
    var testSetup = new helpers.TestSetup();
-   testSetup.stakingToken = await ERC827TokenMock.new(accounts[0],web3.utils.toWei("100000000"));
+   testSetup.stakingToken = await ERC827TokenMock.new(accounts[0],web3.utils.toWei(((new BigNumber(2)).pow(200)).toString(10)));
    testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.stakingToken.address,{gas:constants.GAS_LIMIT});
    testSetup.reputationArray = [20, 10, 70 ];
    testSetup.org = {};
@@ -311,7 +311,7 @@ contract('GenesisProtocol', accounts => {
 
       // now lets vote Option 2 with a minority reputation
 
-      await testSetup.genesisProtocol.vote(proposalId, 1,helpers.NULL_ADDRESS);
+      await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
 
       winningVote = 1;
       var proposalStatus = await testSetup.genesisProtocol.proposalStatus(proposalId);
@@ -337,7 +337,7 @@ contract('GenesisProtocol', accounts => {
       await checkVotesStatus(proposalId, [0, testSetup.reputationArray[0],0],testSetup.genesisProtocol);
       await checkIsVotable(proposalId, true,testSetup.genesisProtocol);
       // another minority reputation (Option 0):
-      await testSetup.genesisProtocol.vote(proposalId, 2,helpers.NULL_ADDRESS,{ from: accounts[1] });
+      await testSetup.genesisProtocol.vote(proposalId, 2,0,helpers.NULL_ADDRESS,{ from: accounts[1] });
       await checkVoteInfo(proposalId, accounts[1], [2, testSetup.reputationArray[1]],testSetup.genesisProtocol);
       proposalStatus = await testSetup.genesisProtocol.proposalStatus(proposalId);
       assert.equal(testSetup.reputationArray[0],proposalStatus[0]);
@@ -496,7 +496,7 @@ contract('GenesisProtocol', accounts => {
 
     const proposalId = await propose(testSetup);
 
-    let voteTX = await testSetup.genesisProtocol.vote(proposalId, 1,helpers.NULL_ADDRESS);
+    let voteTX = await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
 
     assert.equal(voteTX.logs.length, 1);
     assert.equal(voteTX.logs[0].event, "VoteProposal");
@@ -514,7 +514,7 @@ contract('GenesisProtocol', accounts => {
 
 
     // now lets vote with a minority reputation
-    await testSetup.genesisProtocol.vote(proposalId, 1,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
 
     //test that reputation change does not effect the snapshot
     var account2Rep =await testSetup.org.reputation.balanceOf(accounts[2]);
@@ -525,7 +525,7 @@ contract('GenesisProtocol', accounts => {
     assert.equal(account2Rep,0);
 
     // // the decisive vote is cast now and the proposal will be executed
-    var tx = await testSetup.genesisProtocol.vote(proposalId, 2,helpers.NULL_ADDRESS, { from: accounts[2] });
+    var tx = await testSetup.genesisProtocol.vote(proposalId, 2,0,helpers.NULL_ADDRESS, { from: accounts[2] });
     assert.equal(tx.logs.length, 3);
     assert.equal(tx.logs[1].event, "ExecuteProposal");
     assert.equal(tx.logs[1].args._proposalId, proposalId);
@@ -541,10 +541,10 @@ contract('GenesisProtocol', accounts => {
 
 
     // now lets vote with a minority reputation
-    await testSetup.genesisProtocol.vote(proposalId, 1,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
     await helpers.increaseTime(3);
     // the decisive vote is cast now and the proposal will be executed
-    var tx = await testSetup.genesisProtocol.vote(proposalId, 1,helpers.NULL_ADDRESS, { from: accounts[2] });
+    var tx = await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS, { from: accounts[2] });
     assert.equal(tx.logs.length, 2);
     assert.equal(tx.logs[0].event, "ExecuteProposal");
     assert.equal(tx.logs[0].args._proposalId, proposalId);
@@ -566,7 +566,7 @@ contract('GenesisProtocol', accounts => {
     var proposalId = await propose(testSetup);
 
     // Option 1
-    await testSetup.genesisProtocol.vote(proposalId, 1,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, testSetup.reputationArray[0]],testSetup.genesisProtocol);
     await checkVotesStatus(proposalId, [0,testSetup.reputationArray[0], 0],testSetup.genesisProtocol);
     await checkIsVotable(proposalId,true,testSetup.genesisProtocol);
@@ -577,7 +577,7 @@ contract('GenesisProtocol', accounts => {
     proposalId = await getValueFromLogs(tx, '_proposalId');
 
     // Option 2
-    await testSetup.genesisProtocol.vote(proposalId, 2,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId, 2,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [2, testSetup.reputationArray[0]],testSetup.genesisProtocol);
     await checkVotesStatus(proposalId, [0,0, testSetup.reputationArray[0]],testSetup.genesisProtocol);
     await checkIsVotable(proposalId,true,testSetup.genesisProtocol);
@@ -588,12 +588,12 @@ contract('GenesisProtocol', accounts => {
 
     var proposalId = await propose(testSetup);
 
-    await testSetup.genesisProtocol.vote(proposalId, 2,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId, 2,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [2, testSetup.reputationArray[0]],testSetup.genesisProtocol);
     await checkVotesStatus(proposalId, [0,0,testSetup.reputationArray[0]],testSetup.genesisProtocol);
     await checkIsVotable(proposalId,true,testSetup.genesisProtocol);
 
-    await testSetup.genesisProtocol.vote(proposalId, 1,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [2, testSetup.reputationArray[0]],testSetup.genesisProtocol);
     await checkVotesStatus(proposalId, [0,0,testSetup.reputationArray[0]],testSetup.genesisProtocol);
     await checkIsVotable(proposalId,true,testSetup.genesisProtocol);
@@ -637,11 +637,11 @@ contract('GenesisProtocol', accounts => {
 
 
     // After this voting the proposal should be executed
-    await testSetup.genesisProtocol.vote(proposalId, 2,helpers.NULL_ADDRESS, {from: accounts[2]});
+    await testSetup.genesisProtocol.vote(proposalId, 2,0,helpers.NULL_ADDRESS, {from: accounts[2]});
 
     // Should not be able to vote because the proposal has been executed
     try {
-        await testSetup.genesisProtocol.vote(proposalId, 1,helpers.NULL_ADDRESS, { from: accounts[1] });
+        await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS, { from: accounts[1] });
         assert(false, "vote was supposed to throw but didn't.");
     } catch (error) {
         helpers.assertVMException(error);
@@ -679,7 +679,7 @@ contract('GenesisProtocol', accounts => {
                                           testSetup.genesisProtocol);
     // lets try to vote by the owner on the behalf of non-existent voters(they do exist but they aren't registered to the reputation system).
     for (var i = 3; i < accounts.length; i++) {
-        await testSetup.genesisProtocol.vote(proposalId, 1,helpers.NULL_ADDRESS ,{ from: accounts[i] });
+        await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS ,{ from: accounts[i] });
     }
     // everything should be 0
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],testSetup.genesisProtocol);
@@ -721,7 +721,7 @@ contract('GenesisProtocol', accounts => {
 
 
     // Vote with the reputation the I own - should work
-    let tx = await testSetup.genesisProtocol.voteWithSpecifiedAmounts(proposalId, 1, testSetup.reputationArray[0] / 10, 0,helpers.NULL_ADDRESS);
+    let tx = await testSetup.genesisProtocol.vote(proposalId, 1, testSetup.reputationArray[0] / 10, helpers.NULL_ADDRESS);
 
     var repVoted = await helpers.getValueFromLogs(tx, "_reputation");
 
@@ -729,17 +729,17 @@ contract('GenesisProtocol', accounts => {
 
     // Vote with more reputation that i own - exception should be raised
     try {
-      await testSetup.genesisProtocol.voteWithSpecifiedAmounts(proposalId, 1, (testSetup.reputationArray[1] + 1), 0,helpers.NULL_ADDRESS,{from:accounts[1]});
+      await testSetup.genesisProtocol.vote(proposalId, 1, (testSetup.reputationArray[1] + 1), helpers.NULL_ADDRESS,{from:accounts[1]});
       assert(false, 'Not enough reputation - voting shouldn\'t work');
     } catch (ex) {
       helpers.assertVMException(ex);
     }
 
     // Vote with a very big number - exception should be raised
-    let BigNumber = require('bignumber.js');
+
     let bigNum = ((new BigNumber(2)).toPower(254)).toString(10);
     try {
-      await testSetup.genesisProtocol.voteWithSpecifiedAmounts(proposalId, 1, bigNum, 0,helpers.NULL_ADDRESS);
+      await testSetup.genesisProtocol.vote(proposalId, 1, bigNum, helpers.NULL_ADDRESS);
       assert(false, 'Voting shouldn\'t work');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -771,7 +771,7 @@ contract('GenesisProtocol', accounts => {
 
     // Lets try to call vote with invalid proposal id
     try {
-      await testSetup.genesisProtocol.vote(helpers.NULL_HASH, 1,helpers.NULL_ADDRESS, {from: accounts[0]});
+      await testSetup.genesisProtocol.vote(helpers.NULL_HASH, 1,0,helpers.NULL_ADDRESS, {from: accounts[0]});
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -779,7 +779,7 @@ contract('GenesisProtocol', accounts => {
 
     // Lets try to call voteWithSpecifiedAmounts with invalid proposal id
     try {
-      await testSetup.genesisProtocol.voteWithSpecifiedAmounts(helpers.NULL_HASH, 1, 1, 1,helpers.NULL_ADDRESS);
+      await testSetup.genesisProtocol.vote(helpers.NULL_HASH, 1, 1,helpers.NULL_ADDRESS);
       assert(false, 'Invalid proposal ID has been delivered');
     } catch (ex) {
       helpers.assertVMException(ex);
@@ -800,11 +800,36 @@ contract('GenesisProtocol', accounts => {
 
     var proposalId = await propose(testSetup);
     var tx = await stake(testSetup,proposalId,1,10,accounts[0]);
+
     assert.equal(tx.length, 1);
     assert.equal(tx[0].event, "Stake");
     assert.equal(tx[0].args._staker, accounts[0]);
     assert.equal(tx[0].args._vote, 1);
     assert.equal(tx[0].args._amount, 10);
+  });
+
+
+  it("stake more than allowed.", async () => {
+
+    var testSetup = await setup(accounts);
+
+    var proposalId = await propose(testSetup);
+    let maxStakePlusOne = ((new BigNumber(2)).toPower(192).sub(1).div(2).add(1).floor()).toString(10);
+    let maxStake = ((new BigNumber(2)).toPower(192).sub(1).div(2).floor()).toString(10);
+
+    try {
+        await stake(testSetup,proposalId,1,maxStakePlusOne,accounts[0]);
+        assert(false, 'stake more than allowed should revert');
+      } catch (ex) {
+        helpers.assertVMException(ex);
+      }
+
+    var tx = await stake(testSetup,proposalId,1,maxStake,accounts[0]);
+    assert.equal(tx.length, 1);
+    assert.equal(tx[0].event, "Stake");
+    assert.equal(tx[0].args._staker, accounts[0]);
+    assert.equal(tx[0].args._vote, 1);
+    assert.equal(tx[0].args._amount, maxStake);
   });
 
   it("stake log", async () => {
@@ -964,7 +989,7 @@ contract('GenesisProtocol', accounts => {
     //shift proposal to boosted phase
     var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
     assert.equal(proposalInfo[proposalStateIndex],3);
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
 
     assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
     await stake(testSetup,proposalId,YES,100,accounts[0]);
@@ -990,7 +1015,7 @@ contract('GenesisProtocol', accounts => {
     //shift proposal to boosted phase
     var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
     assert.equal(proposalInfo[proposalStateIndex],3);
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
 
     assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
     await stake(testSetup,proposalId,YES,100,accounts[0]);
@@ -1012,7 +1037,7 @@ contract('GenesisProtocol', accounts => {
     var testSetup = await setup(accounts);
     var proposalId = await propose(testSetup);
     var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
     assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
     assert.equal(await testSetup.genesisProtocol.score(proposalId),0);
     await stake(testSetup,proposalId,YES,100,accounts[0]);
@@ -1032,7 +1057,7 @@ contract('GenesisProtocol', accounts => {
 
     var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
 
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
 
     assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
     //assert.equal(await testSetup.genesisProtocol.score(proposalId),0);
@@ -1047,7 +1072,7 @@ contract('GenesisProtocol', accounts => {
 
     //BOOST another proposal
     proposalId = await propose(testSetup);
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
 
     var proposalStatus = await testSetup.genesisProtocol.proposalStatus(proposalId);
     assert.equal(proposalStatus[3],150);//downstake
@@ -1056,7 +1081,7 @@ contract('GenesisProtocol', accounts => {
     assert.equal(proposalInfo[proposalStateIndex],boostedState);   //state boosted
     assert.equal(await testSetup.genesisProtocol.averagesDownstakesOfBoosted(organizationId),Math.floor((15+150)/2));
     //expiere proposal by getting absolute majority
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS,{from:accounts[2]});
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS,{from:accounts[2]});
     assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(organizationId),1);
     assert.equal(await testSetup.genesisProtocol.averagesDownstakesOfBoosted(organizationId),Math.floor((82*2-150)/1));
 
@@ -1070,7 +1095,7 @@ contract('GenesisProtocol', accounts => {
 
     var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
 
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
 
     assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
     assert.equal(await testSetup.genesisProtocol.score(proposalId),0);
@@ -1084,7 +1109,7 @@ contract('GenesisProtocol', accounts => {
     assert.equal(await testSetup.genesisProtocol.averagesDownstakesOfBoosted(organizationId),15);
 
     //expiere proposal by getting absolute majority
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS,{from:accounts[2]});
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS,{from:accounts[2]});
     assert.equal(await testSetup.genesisProtocol.averagesDownstakesOfBoosted(organizationId),0);
   });
 
@@ -1097,7 +1122,7 @@ contract('GenesisProtocol', accounts => {
 
     await testSetup.stakingToken.approve(testSetup.genesisProtocol.address,10);
     //vote with majority. state is executed
-    await testSetup.genesisProtocol.vote(proposalId, 1,helpers.NULL_ADDRESS, { from: accounts[2] });
+    await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS, { from: accounts[2] });
 
     try {
       await stake(testSetup,proposalId,1,0,accounts[0]);
@@ -1118,14 +1143,14 @@ contract('GenesisProtocol', accounts => {
     assert.equal(await threshold(testSetup),1);
 
     var proposalId = await propose(testSetup);
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
     await stake(testSetup,proposalId,YES,100,accounts[0]);
 
     assert.equal(await threshold(testSetup),Math.floor(1700/1000));
 
     //now boost another proposal
     proposalId = await propose(testSetup);
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
     await stake(testSetup,proposalId,YES,350,accounts[0]);
 
     var alpha = thresholdConst/1000;
@@ -1139,7 +1164,7 @@ contract('GenesisProtocol', accounts => {
     var proposalId = await propose(testSetup);
 
 
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
     assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
     var accounts0Balance = await testSetup.stakingToken.balanceOf(accounts[0]);
     await stake(testSetup,proposalId,YES,100,accounts[0]);
@@ -1170,7 +1195,7 @@ contract('GenesisProtocol', accounts => {
     var proposalId = await propose(testSetup);
 
 
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
     assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
     await stake(testSetup,proposalId,YES,100,accounts[0]);
     await testSetup.genesisProtocol.execute(proposalId);
@@ -1195,7 +1220,7 @@ contract('GenesisProtocol', accounts => {
 
       assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(organizationId),0);
 
-      await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+      await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
       await stake(testSetup,proposalId,YES,100,accounts[0]);
       assert.equal(await testSetup.genesisProtocol.state(proposalId),boostedState);
       assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(organizationId),1);
@@ -1204,7 +1229,7 @@ contract('GenesisProtocol', accounts => {
       //set up another proposal
       proposalId = await propose(testSetup);
       //boost it
-      await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+      await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
       await stake(testSetup,proposalId,YES,web3.utils.toWei("1600"),accounts[0]);
       assert.equal(await testSetup.genesisProtocol.state(proposalId),boostedState);
 
@@ -1230,8 +1255,8 @@ contract('GenesisProtocol', accounts => {
 
       var proposalId = await propose(testSetup,proposer);
 
-      await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS,{from:voterY});
-      await testSetup.genesisProtocol.vote(proposalId,NO,helpers.NULL_ADDRESS,{from:voterN});
+      await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS,{from:voterY});
+      await testSetup.genesisProtocol.vote(proposalId,NO,0,helpers.NULL_ADDRESS,{from:voterN});
       assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
       await testSetup.stakingToken.transfer(staker,500,{from:accounts[0]});
       var balanceOfVoterY = await testSetup.stakingToken.balanceOf(voterY);
@@ -1263,7 +1288,7 @@ contract('GenesisProtocol', accounts => {
 
       var proposalId = await propose(testSetup);
 
-      await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+      await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
       assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
       var balanceOfAccounts0 = await testSetup.stakingToken.balanceOf(accounts[0]);
       await helpers.increaseTime(61);
@@ -1290,7 +1315,7 @@ contract('GenesisProtocol', accounts => {
       var proposalId = await propose(testSetup);
 
 
-      await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS,{from:accounts[1]});
+      await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS,{from:accounts[1]});
       assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
       await stake(testSetup,proposalId,YES,100,accounts[0]);
       var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
@@ -1299,7 +1324,7 @@ contract('GenesisProtocol', accounts => {
       await helpers.increaseTime(50); //get into the quite period
       assert.equal(await threshold(testSetup),2);
 
-      await testSetup.genesisProtocol.vote(proposalId,NO,helpers.NULL_ADDRESS,{from:accounts[0]}); //change winning vote
+      await testSetup.genesisProtocol.vote(proposalId,NO,0,helpers.NULL_ADDRESS,{from:accounts[0]}); //change winning vote
       assert.equal(await threshold(testSetup),2);
 
       proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
@@ -1331,11 +1356,11 @@ contract('GenesisProtocol', accounts => {
       var testSetup = await setup(accounts,helpers.NULL_ADDRESS,50,60,60,0,2000,quietEndingPeriod,60,10,15,10);
 
       var proposalId = await propose(testSetup);
-      await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS,{from:accounts[1]});
+      await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS,{from:accounts[1]});
       await stake(testSetup,proposalId,YES,100,accounts[0]);
       await helpers.increaseTime(50); //get into the quite period
       var yesVotes = await testSetup.genesisProtocol.voteStatus(proposalId,YES);
-      await testSetup.genesisProtocol.voteWithSpecifiedAmounts(proposalId,NO,yesVotes,0,helpers.NULL_ADDRESS,{from:accounts[2]}); //change winning vote by create a tie.
+      await testSetup.genesisProtocol.vote(proposalId,NO,yesVotes,helpers.NULL_ADDRESS,{from:accounts[2]}); //change winning vote by create a tie.
       await helpers.increaseTime(15); //increase time
       await testSetup.genesisProtocol.execute(proposalId);
       var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
@@ -1369,7 +1394,7 @@ contract('GenesisProtocol', accounts => {
       var testSetup = await setup(accounts);
 
       var proposalId = await propose(testSetup);
-      await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+      await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
       assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
       await stake(testSetup,proposalId,YES,100,accounts[0]);
       await helpers.increaseTime(61);
@@ -1405,7 +1430,7 @@ contract('GenesisProtocol', accounts => {
 
       var proposalId = await propose(testSetup);
       await stake(testSetup,proposalId,NO,100,accounts[0]);
-      await testSetup.genesisProtocol.vote(proposalId,NO,helpers.NULL_ADDRESS,{from:accounts[2]});
+      await testSetup.genesisProtocol.vote(proposalId,NO,0,helpers.NULL_ADDRESS,{from:accounts[2]});
       var redeemRewards = await testSetup.genesisProtocol.redeemDaoBounty.call(proposalId,accounts[0]);
       var stakerRedeemAmountBaunty = redeemRewards[0];
       assert.equal(stakerRedeemAmountBaunty,0);
@@ -1423,13 +1448,13 @@ contract('GenesisProtocol', accounts => {
       var testSetup = await setup(accounts,voteOnBehalf);
       const proposalId = await propose(testSetup);
       try {
-        await testSetup.genesisProtocol.vote(proposalId, 1,accounts[2],{from:accounts[0]});
+        await testSetup.genesisProtocol.vote(proposalId, 1,0,accounts[2],{from:accounts[0]});
         assert(false, 'can vote only from voteOnBehalf address');
       } catch (ex) {
         helpers.assertVMException(ex);
       }
 
-      let voteTX = await testSetup.genesisProtocol.vote(proposalId, 1,accounts[2],{from:voteOnBehalf});
+      let voteTX = await testSetup.genesisProtocol.vote(proposalId, 1,0,accounts[2],{from:voteOnBehalf});
 
       assert.equal(voteTX.logs.length, 3);
       assert.equal(voteTX.logs[0].event, "VoteProposal");
@@ -1452,13 +1477,13 @@ contract('GenesisProtocol', accounts => {
     var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
     assert.equal(proposalInfo[proposalStateIndex],boostedState);//boosted
     //vote YES to get in quite window period
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS,{from:accounts[0]}); //change winning vote
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS,{from:accounts[0]}); //change winning vote
     proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
     assert.equal(proposalInfo[proposalStateIndex],6);//quiteEndperiod
     await helpers.increaseTime(10); //increase time
     assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(organizationId),1);
     //vote NO to toggle direction again and extend the quite end period
-    await testSetup.genesisProtocol.vote(proposalId,NO,helpers.NULL_ADDRESS,{from:accounts[2]}); //change winning vote and execute
+    await testSetup.genesisProtocol.vote(proposalId,NO,0,helpers.NULL_ADDRESS,{from:accounts[2]}); //change winning vote and execute
     assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(organizationId),0);
     //increase time after the proposal expiration
     await helpers.increaseTime(61); //increase time
@@ -1492,7 +1517,7 @@ contract('GenesisProtocol', accounts => {
       var proposalId = await propose(testSetup);
 
 
-      await testSetup.genesisProtocol.vote(proposalId,NO,helpers.NULL_ADDRESS);
+      await testSetup.genesisProtocol.vote(proposalId,NO,0,helpers.NULL_ADDRESS);
       assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
 
       await stake(testSetup,proposalId,YES,100,accounts[1]);
@@ -1524,7 +1549,7 @@ contract('GenesisProtocol', accounts => {
 
     var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
 
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
 
     await stake(testSetup,proposalId,YES,100,accounts[0]);
 
@@ -1549,7 +1574,7 @@ contract('GenesisProtocol', accounts => {
 
     var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
 
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
 
     await stake(testSetup,proposalId,YES,100,accounts[0]);
 
@@ -1572,7 +1597,7 @@ contract('GenesisProtocol', accounts => {
     var testSetup = await setup(accounts,helpers.NULL_ADDRESS,50,600,60,preBoostedVotePeriodLimit,3000);
     var proposalId = await propose(testSetup);
     var proposalId2 = await propose(testSetup);//boost a proposal
-    await testSetup.genesisProtocol.vote(proposalId2,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId2,YES,0,helpers.NULL_ADDRESS);
     await stake(testSetup,proposalId2,YES,web3.utils.toWei("1500"),accounts[0]);
     await helpers.increaseTime(preBoostedVotePeriodLimit+1);
     await testSetup.genesisProtocol.execute(proposalId2);
@@ -1580,7 +1605,7 @@ contract('GenesisProtocol', accounts => {
     assert.equal(await testSetup.genesisProtocol.orgBoostedProposalsCnt(organizationId),1);
     assert.equal(await threshold(testSetup),3);
 
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
     await stake(testSetup,proposalId,YES,100,accounts[0]);
 
     var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
@@ -1592,7 +1617,7 @@ contract('GenesisProtocol', accounts => {
     assert.equal(await testSetup.genesisProtocol.score(proposalId),6);
     assert.equal(await threshold(testSetup),3);
     //now decrease threshold
-    await testSetup.genesisProtocol.vote(proposalId2,YES,helpers.NULL_ADDRESS,{from:accounts[2]});
+    await testSetup.genesisProtocol.vote(proposalId2,YES,0,helpers.NULL_ADDRESS,{from:accounts[2]});
     assert.equal(await threshold(testSetup),1);
     await stake(testSetup,proposalId,NO,35,accounts[1]); //downstake 35 to make score =2.
     assert.equal(await testSetup.genesisProtocol.score(proposalId),2);
@@ -1611,7 +1636,7 @@ contract('GenesisProtocol', accounts => {
 
     var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
 
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
     await stake(testSetup,proposalId,YES,30,accounts[0]);
     proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
     assert.equal(proposalInfo[proposalTotalStakesIndex],30+15); //totalStakes
@@ -1619,7 +1644,7 @@ contract('GenesisProtocol', accounts => {
 
     //boost another proposal
     var proposalId2 = await propose(testSetup);
-    await testSetup.genesisProtocol.vote(proposalId2,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId2,YES,0,helpers.NULL_ADDRESS);
     await stake(testSetup,proposalId2,YES,web3.utils.toWei("1500"),accounts[0]);
     proposalInfo = await testSetup.genesisProtocol.proposals(proposalId2);
     assert.equal(proposalInfo[proposalStateIndex],preBoostedState);   //state pre boosted
@@ -1653,7 +1678,7 @@ contract('GenesisProtocol', accounts => {
     var testSetup = await setup(accounts);
 
     var proposalId = await propose(testSetup);
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
     await stake(testSetup,proposalId,YES,100,accounts[0]);
     try {
          await testSetup.genesisProtocol.executeBoosted(proposalId);
@@ -1689,7 +1714,7 @@ contract('GenesisProtocol', accounts => {
 
     var testSetup = await setup(accounts);
     var proposalId = await propose(testSetup);
-    await testSetup.genesisProtocol.vote(proposalId,YES,helpers.NULL_ADDRESS);
+    await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
     await stake(testSetup,proposalId,YES,100,accounts[0]);
     var addTime =15*100 ;
     await helpers.increaseTime(60+addTime);
@@ -1722,6 +1747,4 @@ contract('GenesisProtocol', accounts => {
       await propose(testSetup);
 
   });
-
-
 });

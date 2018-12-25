@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "../votingMachines/ProposalExecuteInterface.sol";
 import "../votingMachines/VotingMachineCallbacksInterface.sol";
@@ -15,7 +15,7 @@ contract AbsoluteVoteExecuteMock is Debug,VotingMachineCallbacksInterface,Propos
     mapping (bytes32=>uint) proposalsBlockNumbers;
 
 
-    event NewProposal(bytes32 indexed _proposalId, address indexed _organization, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
+    event NewProposal(bytes32 indexed _proposalId, address indexed _organization, uint256 _numOfChoices, address _proposer, bytes32 _paramsHash);
 
     /**
      * @dev Constructor
@@ -31,7 +31,7 @@ contract AbsoluteVoteExecuteMock is Debug,VotingMachineCallbacksInterface,Propos
         return reputation.totalSupplyAt(proposalsBlockNumbers[_proposalId]);
     }
 
-    function mintReputation(uint _amount,address _beneficiary,bytes32)
+    function mintReputation(uint256 _amount,address _beneficiary,bytes32)
     external
     onlyOwner
     returns(bool)
@@ -39,7 +39,7 @@ contract AbsoluteVoteExecuteMock is Debug,VotingMachineCallbacksInterface,Propos
         return reputation.mint(_beneficiary,_amount);
     }
 
-    function burnReputation(uint _amount,address _beneficiary,bytes32)
+    function burnReputation(uint256 _amount,address _beneficiary,bytes32)
     external
     onlyOwner
     returns(bool)
@@ -47,11 +47,11 @@ contract AbsoluteVoteExecuteMock is Debug,VotingMachineCallbacksInterface,Propos
         return reputation.burn(_beneficiary,_amount);
     }
 
-    function reputationOf(address _owner,bytes32 _proposalId) external view returns(uint) {
+    function reputationOf(address _owner,bytes32 _proposalId) external view returns(uint256) {
         return reputation.balanceOfAt(_owner,proposalsBlockNumbers[_proposalId]);
     }
 
-    function stakingTokenTransfer(StandardToken _stakingToken,address _beneficiary,uint _amount,bytes32)
+    function stakingTokenTransfer(ERC20 _stakingToken,address _beneficiary,uint256 _amount,bytes32)
     external
     onlyOwner
     returns(bool)
@@ -59,12 +59,12 @@ contract AbsoluteVoteExecuteMock is Debug,VotingMachineCallbacksInterface,Propos
         return _stakingToken.transfer(_beneficiary,_amount);
     }
 
-    function balanceOfStakingToken(StandardToken _stakingToken,bytes32)
+    function balanceOfStakingToken(ERC20 _stakingToken,bytes32)
     external
     view
-    returns(uint)
+    returns(uint256)
     {
-        return _stakingToken.balanceOf(this);
+        return _stakingToken.balanceOf(address(this));
     }
 
     function executeProposal(bytes32 _proposalId,int _decision) external returns(bool) {
@@ -73,15 +73,7 @@ contract AbsoluteVoteExecuteMock is Debug,VotingMachineCallbacksInterface,Propos
         return true;
     }
 
-    function ownerVote(bytes32 _proposalId,uint _vote, address _voter) external returns(bool) {
-        return absoluteVote.ownerVote(_proposalId,_vote,_voter);
-    }
-
-    function cancelProposal(bytes32 _proposalId) external returns(bool) {
-        return absoluteVote.cancelProposal(_proposalId);
-    }
-
-    function propose(uint _numOfChoices, bytes32 _paramsHash, address ,address _proposer,address _organization)
+    function propose(uint256 _numOfChoices, bytes32 _paramsHash, address ,address _proposer,address _organization)
     external
     returns
     (bytes32)
@@ -93,7 +85,7 @@ contract AbsoluteVoteExecuteMock is Debug,VotingMachineCallbacksInterface,Propos
     }
 
     //this function is used only for testing purpose on this mock contract
-    function burnReputationTest(uint _amount,address _beneficiary,bytes32)
+    function burnReputationTest(uint256 _amount,address _beneficiary,bytes32)
     external
     returns(bool)
     {

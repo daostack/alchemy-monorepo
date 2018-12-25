@@ -110,11 +110,11 @@ contract('VotingMachine', (accounts)=>{
     const absolute = await AbsoluteVote.new();
     const quorum = await QuorumVote.new();
 
-    const absoluteParams = await absolute.setParameters.call(50,true);
-    await absolute.setParameters(50,true);
+    const absoluteParams = await absolute.setParameters.call(50,helpers.NULL_ADDRESS);
+    await absolute.setParameters(50,helpers.NULL_ADDRESS);
     var testSetup = await setupGenesisProtocol(accounts);
-    const quoromParams = await quorum.setParameters.call(50,true);
-    await quorum.setParameters(50,true);
+    const quoromParams = await quorum.setParameters.call(50,helpers.NULL_ADDRESS);
+    await quorum.setParameters(50,helpers.NULL_ADDRESS);
     const absoluteProposalId = await absolute.propose(5, absoluteParams,accounts[0],helpers.NULL_ADDRESS);
 
     const genesisProposalId = await testSetup.genesisProtocol.propose(2, testSetup.genesisProtocolParams.paramsHash,accounts[0],helpers.NULL_ADDRESS);

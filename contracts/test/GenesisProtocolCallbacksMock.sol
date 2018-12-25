@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "../votingMachines/VotingMachineCallbacksInterface.sol";
 import "../votingMachines/ProposalExecuteInterface.sol";
@@ -11,14 +11,14 @@ import "./Debug.sol";
 contract GenesisProtocolCallbacksMock is Debug,VotingMachineCallbacksInterface,ProposalExecuteInterface,Ownable {
 
     Reputation public reputation;
-    StandardToken public stakingToken;
+    ERC20 public stakingToken;
     GenesisProtocol genesisProtocol;
     mapping (bytes32=>uint) proposalsBlockNumbers;
 
     event NewProposal(
       bytes32 indexed _proposalId,
       address indexed _organization,
-      uint _numOfChoices,
+      uint256 _numOfChoices,
       address _proposer,
       bytes32 _paramsHash
     );
@@ -26,19 +26,19 @@ contract GenesisProtocolCallbacksMock is Debug,VotingMachineCallbacksInterface,P
     /**
      * @dev Constructor
      */
-    constructor(Reputation _reputation,StandardToken _stakingToken,GenesisProtocol _genesisProtocol) public
+    constructor(Reputation _reputation,ERC20 _stakingToken,GenesisProtocol _genesisProtocol) public
     {
         reputation = _reputation;
         stakingToken = _stakingToken;
         genesisProtocol = _genesisProtocol;
-        transferOwnership(genesisProtocol);
+        transferOwnership(address(genesisProtocol));
     }
 
     function getTotalReputationSupply(bytes32 _proposalId) external view returns(uint256) {
         return reputation.totalSupplyAt(proposalsBlockNumbers[_proposalId]);
     }
 
-    function mintReputation(uint _amount,address _beneficiary,bytes32)
+    function mintReputation(uint256 _amount,address _beneficiary,bytes32)
     external
     onlyOwner
     returns(bool)
@@ -46,7 +46,7 @@ contract GenesisProtocolCallbacksMock is Debug,VotingMachineCallbacksInterface,P
         return reputation.mint(_beneficiary,_amount);
     }
 
-    function burnReputation(uint _amount,address _beneficiary,bytes32)
+    function burnReputation(uint256 _amount,address _beneficiary,bytes32)
     external
     onlyOwner
     returns(bool)
@@ -54,11 +54,11 @@ contract GenesisProtocolCallbacksMock is Debug,VotingMachineCallbacksInterface,P
         return reputation.burn(_beneficiary,_amount);
     }
 
-    function reputationOf(address _owner,bytes32 _proposalId) external view returns(uint) {
+    function reputationOf(address _owner,bytes32 _proposalId) external view returns(uint256) {
         return reputation.balanceOfAt(_owner,proposalsBlockNumbers[_proposalId]);
     }
 
-    function stakingTokenTransfer(StandardToken _stakingToken,address _beneficiary,uint _amount,bytes32)
+    function stakingTokenTransfer(ERC20 _stakingToken,address _beneficiary,uint256 _amount,bytes32)
     external
     onlyOwner
     returns(bool)
@@ -66,15 +66,15 @@ contract GenesisProtocolCallbacksMock is Debug,VotingMachineCallbacksInterface,P
         return _stakingToken.transfer(_beneficiary,_amount);
     }
 
-    function balanceOfStakingToken(StandardToken _stakingToken,bytes32)
+    function balanceOfStakingToken(ERC20 _stakingToken,bytes32)
     external
     view
-    returns(uint)
+    returns(uint256)
     {
-        return _stakingToken.balanceOf(this);
+        return _stakingToken.balanceOf(address(this));
     }
 
-    function setParameters(uint[11] _params,address _voteOnBehalf) external returns(bytes32) {
+    function setParameters(uint[11] calldata _params,address _voteOnBehalf) external returns(bytes32) {
         return genesisProtocol.setParameters(_params,_voteOnBehalf);
     }
 
@@ -84,20 +84,20 @@ contract GenesisProtocolCallbacksMock is Debug,VotingMachineCallbacksInterface,P
         return true;
     }
 
-    function propose(uint _numOfChoices, bytes32 _paramsHash, address ,address _proposer,address _organization)
+    function propose(uint256 _numOfChoices, bytes32 _paramsHash, address ,address _proposer,address _organization)
     external
     returns
     (bytes32)
     {
         bytes32 proposalId = genesisProtocol.propose(_numOfChoices,_paramsHash,_proposer,_organization);
-        emit NewProposal(proposalId, this, _numOfChoices, _proposer, _paramsHash);
+        emit NewProposal(proposalId, address(this), _numOfChoices, _proposer, _paramsHash);
         proposalsBlockNumbers[proposalId] = block.number;
 
         return proposalId;
     }
 
     //this function is used only for testing purpose on this mock contract
-    function burnReputationTest(uint _amount,address _beneficiary,bytes32)
+    function burnReputationTest(uint256 _amount,address _beneficiary,bytes32)
     external
     returns(bool)
     {

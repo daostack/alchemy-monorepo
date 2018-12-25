@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 import "./AbsoluteVote.sol";
 import "./ProposalExecuteInterface.sol";
@@ -19,14 +19,14 @@ contract QuorumVote is AbsoluteVote {
     */
     function _execute(bytes32 _proposalId) internal votable(_proposalId) returns(bool) {
         Proposal storage proposal = proposals[_proposalId];
-        uint totalReputation = VotingMachineCallbacksInterface(proposal.callbacks).getTotalReputationSupply(_proposalId);
-        uint precReq = parameters[proposal.paramsHash].precReq;
+        uint256 totalReputation = VotingMachineCallbacksInterface(proposal.callbacks).getTotalReputationSupply(_proposalId);
+        uint256 precReq = parameters[proposal.paramsHash].precReq;
 
         // this is the actual voting rule:
         if (proposal.totalVotes > totalReputation*precReq/100) {
-            uint max;
-            uint maxInd;
-            for (uint cnt = 1; cnt<=proposal.numOfChoices; cnt++) {
+            uint256 max;
+            uint256 maxInd;
+            for (uint256 cnt = 0; cnt<=proposal.numOfChoices; cnt++) {
                 if (proposal.votes[cnt] > max) {
                     max = proposal.votes[cnt];
                     maxInd = cnt;

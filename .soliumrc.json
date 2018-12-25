@@ -13,7 +13,7 @@
       4
     ],
     "arg-overflow": [
-      "warning",
+      "error",
       5
     ],
     "error-reason": [

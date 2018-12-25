@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.2;
 
 interface IntVoteInterface {
     //When implementing this interface please do not only override function and modifier,
@@ -6,9 +6,9 @@ interface IntVoteInterface {
     modifier onlyProposalOwner(bytes32 _proposalId) {revert(); _;}
     modifier votable(bytes32 _proposalId) {revert(); _;}
 
-    event NewProposal(bytes32 indexed _proposalId, address indexed _organization, uint _numOfChoices, address _proposer, bytes32 _paramsHash);
-    event ExecuteProposal(bytes32 indexed _proposalId, address indexed _organization, uint _decision, uint _totalReputation);
-    event VoteProposal(bytes32 indexed _proposalId, address indexed _organization, address indexed _voter, uint _vote, uint _reputation);
+    event NewProposal(bytes32 indexed _proposalId, address indexed _organization, uint256 _numOfChoices, address _proposer, bytes32 _paramsHash);
+    event ExecuteProposal(bytes32 indexed _proposalId, address indexed _organization, uint256 _decision, uint256 _totalReputation);
+    event VoteProposal(bytes32 indexed _proposalId, address indexed _organization, address indexed _voter, uint256 _vote, uint256 _reputation);
     event CancelProposal(bytes32 indexed _proposalId, address indexed _organization );
     event CancelVoting(bytes32 indexed _proposalId, address indexed _organization, address indexed _voter);
 
@@ -22,25 +22,17 @@ interface IntVoteInterface {
      * @return proposal's id.
      */
     function propose(
-        uint _numOfChoices,
+        uint256 _numOfChoices,
         bytes32 _proposalParameters,
         address _proposer,
         address _organization
         ) external returns(bytes32);
 
-    // Only owned proposals and only the owner:
-    function cancelProposal(bytes32 _proposalId) external returns(bool);
 
-    // Only owned proposals and only the owner:
-    function ownerVote(bytes32 _proposalId, uint _vote, address _voter) external returns(bool);
-
-    function vote(bytes32 _proposalId, uint _vote,address _voter) external returns(bool);
-
-    function voteWithSpecifiedAmounts(
+    function vote(
         bytes32 _proposalId,
-        uint _vote,
-        uint _rep,
-        uint _token,
+        uint256 _vote,
+        uint256 _rep,
         address _voter
     )
     external
@@ -48,7 +40,7 @@ interface IntVoteInterface {
 
     function cancelVote(bytes32 _proposalId) external;
 
-    function getNumberOfChoices(bytes32 _proposalId) external view returns(uint);
+    function getNumberOfChoices(bytes32 _proposalId) external view returns(uint256);
 
     function isVotable(bytes32 _proposalId) external view returns(bool);
 
@@ -58,7 +50,7 @@ interface IntVoteInterface {
      * @param _choice the index in the
      * @return voted reputation for the given choice
      */
-    function voteStatus(bytes32 _proposalId,uint _choice) external view returns(uint);
+    function voteStatus(bytes32 _proposalId,uint256 _choice) external view returns(uint256);
 
     /**
      * @dev isAbstainAllow returns if the voting machine allow abstain (0)
@@ -71,5 +63,5 @@ interface IntVoteInterface {
      * @return min - minimum number of choices
                max - maximum number of choices
      */
-    function getAllowedRangeOfChoices() external pure returns(uint min,uint max);
+    function getAllowedRangeOfChoices() external pure returns(uint256 min,uint256 max);
 }
