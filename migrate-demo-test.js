@@ -1,10 +1,4 @@
-let web3
-let spinner
-let opts
-let logTx
-let base
-
-async function assignGlobalVariables(web3, spinner, opts, logTx, base) {
+async function assignGlobalVariables (web3, spinner, opts, logTx, base) {
   this.web3 = web3
   this.spinner = spinner
   this.opts = opts
@@ -12,57 +6,57 @@ async function assignGlobalVariables(web3, spinner, opts, logTx, base) {
   this.base = base
 }
 
-async function migrateDemoTest({ web3, spinner, confirm, opts, migrationParams, logTx, previousMigration: { base } }) {
-	if (!(await confirm('About to migrate new Demo Test. Continue?'))) {
-		return
+async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams, logTx, previousMigration: { base } }) {
+  if (!(await confirm('About to migrate new Demo Test. Continue?'))) {
+    return
   }
 
   assignGlobalVariables(web3, spinner, opts, logTx, base)
 
-	if (!base) {
-		const msg = `Couldn't find existing base migration ('migration.json' > 'base').`
-		this.spinner.fail(msg)
-		throw new Error(msg)
+  if (!base) {
+    const msg = `Couldn't find existing base migration ('migration.json' > 'base').`
+    this.spinner.fail(msg)
+    throw new Error(msg)
   }
 
-	this.spinner.start('Migrating Demo Test...')
+  this.spinner.start('Migrating Demo Test...')
 
-	let accounts = this.web3.eth.accounts.wallet
+  let accounts = this.web3.eth.accounts.wallet
 
-	if (accounts[1] == undefined) {
-		this.web3.eth.accounts.wallet.add(this.web3.eth.accounts.privateKeyToAccount(
-			"0x6cbed15c793ce57650b9877cf6fa156fbef513c4e6134f022a85b1ffdd59b2a1"
-		))
-		this.web3.eth.accounts.wallet.add(this.web3.eth.accounts.privateKeyToAccount(
-			"0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c"
-		))
-		accounts = this.web3.eth.accounts.wallet
-	}
+  if (accounts[1] === undefined) {
+    this.web3.eth.accounts.wallet.add(this.web3.eth.accounts.privateKeyToAccount(
+      '0x6cbed15c793ce57650b9877cf6fa156fbef513c4e6134f022a85b1ffdd59b2a1'
+    ))
+    this.web3.eth.accounts.wallet.add(this.web3.eth.accounts.privateKeyToAccount(
+      '0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c'
+    ))
+    accounts = this.web3.eth.accounts.wallet
+  }
 
-  const externalTokenAddress = await migrateExternalToken() 
+  const externalTokenAddress = await migrateExternalToken()
 
   const [orgName, tokenName, tokenSymbol, founders, tokenDist, repDist, cap] = [
-		'Genesis Test',
-		'Genesis Test',
-		'GDT',
-		migrationParams.founders.map(({ address }) => address),
-		migrationParams.founders.map(({ tokens }) => tokens),
-		migrationParams.founders.map(({ reputation }) => reputation),
-		'0'
+    'Genesis Test',
+    'Genesis Test',
+    'GDT',
+    migrationParams.founders.map(({ address }) => address),
+    migrationParams.founders.map(({ tokens }) => tokens),
+    migrationParams.founders.map(({ reputation }) => reputation),
+    '0'
   ]
-  
+
   const avatarAddress = await migrateDemoDao(orgName, tokenName, tokenSymbol, founders, tokenDist, repDist, cap)
 
   const gpParamsHash = await setGenesisProtocolParams()
 
   const crParamsHash = await setContributionRewardParams(gpParamsHash) // FIXME
-  
+
   const schemes = [
     {
       address: this.base.ContributionReward,
       params: crParamsHash,
-      permissions: '0x00000000', /* no special params */
-    },
+      permissions: '0x00000000' /* no special params */
+    }
   ]
 
   await setSchemes(schemes, avatarAddress)
@@ -80,96 +74,96 @@ async function migrateDemoTest({ web3, spinner, confirm, opts, migrationParams, 
     periods: 1,
     beneficiary: accounts[1].address,
     externalTokenAddress: externalTokenAddress
-	})
-	
+  })
+
   await voteOnProposal({
     proposalId: proposalId,
     outcome: FAIL,
     voter: accounts[2].address
-	})
-	
+  })
+
   await voteOnProposal({
     proposalId: proposalId,
     outcome: PASS,
     voter: accounts[1].address
-	})
-	
-	const avatar = new this.web3.eth.Contract(
+  })
+
+  const avatar = new this.web3.eth.Contract(
     require('@daostack/arc/build/contracts/Avatar.json').abi,
     avatarAddress,
     this.opts
   )
 
-	const Avatar = avatarAddress
-	const NativeToken = await avatar.methods.nativeToken().call()
-	const NativeReputation = await avatar.methods.nativeReputation().call()
+  const Avatar = avatarAddress
+  const NativeToken = await avatar.methods.nativeToken().call()
+  const NativeReputation = await avatar.methods.nativeReputation().call()
 
-	return {
-		test: {
-			name: orgName,
-			Avatar,
-			NativeToken,
-			NativeReputation,
-			proposalId
-		}
-	}
+  return {
+    test: {
+      name: orgName,
+      Avatar,
+      NativeToken,
+      NativeReputation,
+      proposalId
+    }
+  }
 }
 
-async function migrateExternalToken() {
+async function migrateExternalToken () {
   this.spinner.start('Migrating External Token...')
 
   const externalToken = await new this.web3.eth.Contract(
-  require('@daostack/arc/build/contracts/DAOToken.json').abi,
+    require('@daostack/arc/build/contracts/DAOToken.json').abi,
     undefined,
     this.opts
   ).deploy({
     data: require('@daostack/arc/build/contracts/DAOToken.json').bytecode,
     arguments: ['External', 'EXT', 0]
   }).send()
-  
+
   return externalToken.options.address
 }
 
-async function migrateDemoDao(orgName, tokenName, tokenSymbol, founders, tokenDist, repDist, cap) {
+async function migrateDemoDao (orgName, tokenName, tokenSymbol, founders, tokenDist, repDist, cap) {
   this.spinner.start('Creating a new organization...')
-  
-  const {
-		UController,
-		DaoCreator
-	} = this.base
 
-	let tx
+  const {
+    UController,
+    DaoCreator
+  } = this.base
+
+  let tx
 
   const daoCreator = new this.web3.eth.Contract(
-  require('@daostack/arc/build/contracts/DaoCreator.json').abi,
+    require('@daostack/arc/build/contracts/DaoCreator.json').abi,
     DaoCreator,
-    this.opts,
+    this.opts
   )
-  
+
   const forge = daoCreator.methods.forgeOrg(
-		orgName,
-		tokenName,
-		tokenSymbol,
-		founders,
-		tokenDist,
-		repDist,
-		UController,
-		cap
-	)
-  
+    orgName,
+    tokenName,
+    tokenSymbol,
+    founders,
+    tokenDist,
+    repDist,
+    UController,
+    cap
+  )
+
   const avatarAddress = await forge.call()
-	tx = await forge.send()
+  tx = await forge.send()
   await this.logTx(tx, 'Created new organization.')
-  
+
   return avatarAddress
 }
 
-async function setContributionRewardParams(gpParamsHash) {
+async function setContributionRewardParams (gpParamsHash) {
   this.spinner.start('Setting Contribution Reward Parameters...')
 
   const {
-		ContributionReward,
-		GenesisProtocol
+    ContributionReward,
+    GenesisProtocol
   } = this.base
 
   let tx
@@ -178,12 +172,12 @@ async function setContributionRewardParams(gpParamsHash) {
     require('@daostack/arc/build/contracts/ContributionReward.json').abi,
     ContributionReward,
     this.opts
-	)
-  
+  )
+
   const crParams = {
-    orgNativeTokenFeeGWei: 0,
+    orgNativeTokenFeeGWei: 0
   }
-  
+
   const crSetParams = contributionReward.methods.setParameters(
     this.web3.utils.toWei(crParams.orgNativeTokenFeeGWei.toString(), 'gwei'),
     gpParamsHash,
@@ -191,27 +185,27 @@ async function setContributionRewardParams(gpParamsHash) {
   )
 
   const crParamsHash = await crSetParams.call()
-	tx = await crSetParams.send()
+  tx = await crSetParams.send()
   await this.logTx(tx, 'Contribution Reward Set Parameters.')
-  
+
   return crParamsHash
 }
 
-async function setGenesisProtocolParams() {
+async function setGenesisProtocolParams () {
   this.spinner.start('Setting Genesis Protocol Parameters...')
 
   const {
-		GenesisProtocol
+    GenesisProtocol
   } = this.base
 
   let tx
 
   const genesisProtocol = new this.web3.eth.Contract(
-		require('@daostack/arc/build/contracts/GenesisProtocol.json').abi,
+    require('@daostack/arc/build/contracts/GenesisProtocol.json').abi,
     GenesisProtocol,
     this.opts
   )
-  
+
   const gpParams = {
     boostedVotePeriodLimit: 259200,
     daoBountyConst: 75,
@@ -228,8 +222,8 @@ async function setGenesisProtocolParams() {
     voteOnBehalf: '0x0000000000000000000000000000000000000000',
     votersGainRepRatioFromLostRep: 80,
     votersReputationLossRatio: 1
-	}
-	
+  }
+
   const gpSetParams = genesisProtocol.methods.setParameters(
     [
       gpParams.preBoostedVoteRequiredPercentage,
@@ -249,41 +243,41 @@ async function setGenesisProtocolParams() {
     ],
     gpParams.voteOnBehalf
   )
-  
+
   const gpParamsHash = await gpSetParams.call()
-  
+
   tx = await gpSetParams.send()
   await this.logTx(tx, 'Genesis Protocol Set Parameters.')
-  
+
   return gpParamsHash
 }
 
-async function setSchemes(schemes, avatarAddress) {
+async function setSchemes (schemes, avatarAddress) {
   this.spinner.start('Registering Schemes to DAO...')
-  
-  const {
-		DaoCreator
-	} = this.base
 
-	let tx
+  const {
+    DaoCreator
+  } = this.base
+
+  let tx
 
   const daoCreator = new this.web3.eth.Contract(
-  require('@daostack/arc/build/contracts/DaoCreator.json').abi,
+    require('@daostack/arc/build/contracts/DaoCreator.json').abi,
     DaoCreator,
-    this.opts,
+    this.opts
   )
 
   tx = await daoCreator.methods.setSchemes(
     avatarAddress,
     schemes.map(({ address }) => address),
     schemes.map(({ params }) => params),
-    schemes.map(({ permissions }) => permissions),
+    schemes.map(({ permissions }) => permissions)
   ).send()
-  
+
   await this.logTx(tx, 'Dao Creator Set Schemes.')
 }
 
-async function submitProposal({
+async function submitProposal ({
   avatarAddress,
   descHash,
   rep,
@@ -296,28 +290,28 @@ async function submitProposal({
   externalTokenAddress
 }) {
   this.spinner.start('Submitting a new Proposal...')
-  
+
   const {
-		ContributionReward
+    ContributionReward
   } = this.base
 
   let tx
-  
+
   const contributionReward = new this.web3.eth.Contract(
-		require('@daostack/arc/build/contracts/ContributionReward.json').abi,
-      ContributionReward,
-      this.opts,
-	)
-  
+    require('@daostack/arc/build/contracts/ContributionReward.json').abi,
+    ContributionReward,
+    this.opts
+  )
+
   const prop = contributionReward.methods.proposeContributionReward(
     avatarAddress,
     descHash,
     rep,
     [tokens, eth, external, periodLength, periods],
     externalTokenAddress,
-    beneficiary,
+    beneficiary
   )
-  
+
   const proposalId = await prop.call()
   tx = await prop.send()
   await this.logTx(tx, 'Submit new Proposal.')
@@ -325,24 +319,24 @@ async function submitProposal({
   return proposalId
 }
 
-async function voteOnProposal({ proposalId, outcome, voter }) {
+async function voteOnProposal ({ proposalId, outcome, voter }) {
   this.spinner.start('Voting on proposal...')
 
   const {
-		GenesisProtocol
+    GenesisProtocol
   } = this.base
 
   let tx
 
   const genesisProtocol = new this.web3.eth.Contract(
-	  require('@daostack/arc/build/contracts/GenesisProtocol.json').abi,
+    require('@daostack/arc/build/contracts/GenesisProtocol.json').abi,
     GenesisProtocol,
-    this.opts,
+    this.opts
   )
 
   tx = await genesisProtocol.methods
-  .vote(proposalId, outcome, voter)
-  .send({ from: voter })
+    .vote(proposalId, outcome, voter)
+    .send({ from: voter })
 
   await this.logTx(tx, 'Voted on Proposal.')
 }
