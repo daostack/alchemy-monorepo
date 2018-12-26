@@ -11,7 +11,7 @@ const setupAbsoluteVote = async function (accounts,voteOnBehalf=helpers.NULL_ADD
   absoluteVote = await AbsoluteVote.new();
   // set up a reputation system
   reputation = await Reputation.new();
-  reputationArray = [20, 10, 70 ];
+  reputationArray = [200, 100, 700 ];
   await reputation.mint(accounts[0], reputationArray[0]);
   await reputation.mint(accounts[1], reputationArray[1]);
   await reputation.mint(accounts[2], reputationArray[2]);
@@ -460,9 +460,11 @@ contract('AbsoluteVote', accounts => {
     // no one has voted yet at this point
     await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
-    // lets try to vote by the owner on the behalf of non-existent voters(they do exist but they aren't registered to the reputation system).
-    for (var i = 3; i < accounts.length; i++) {
-        await absoluteVote.vote(proposalId, 3,0, helpers.NULL_ADDRESS, { from: accounts[i] });
+    try {
+      await absoluteVote.vote(proposalId, 3,0, helpers.NULL_ADDRESS, { from: accounts[3] });
+      assert(false, 'Tried to create an absolute vote with 12 options - max is 10');
+    } catch (ex) {
+      helpers.assertVMException(ex);
     }
 
     // everything should be 0

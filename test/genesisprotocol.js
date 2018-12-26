@@ -72,7 +72,7 @@ const setup = async function (accounts,
    var testSetup = new helpers.TestSetup();
    testSetup.stakingToken = await ERC827TokenMock.new(accounts[0],web3.utils.toWei(((new BigNumber(2)).pow(200)).toString(10)));
    testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.stakingToken.address,{gas:constants.GAS_LIMIT});
-   testSetup.reputationArray = [20, 10, 70 ];
+   testSetup.reputationArray = [200, 100, 700 ];
    testSetup.org = {};
    //let reputationMinimeTokenFactory = await ReputationMinimeTokenFactory.new();
    testSetup.org.reputation  = await Reputation.new();
@@ -518,7 +518,7 @@ contract('GenesisProtocol', accounts => {
 
     //test that reputation change does not effect the snapshot
     var account2Rep =await testSetup.org.reputation.balanceOf(accounts[2]);
-    assert.equal(account2Rep,70);
+    assert.equal(account2Rep,testSetup.reputationArray[2]);
     await testSetup.genesisProtocolCallbacks.burnReputationTest(account2Rep,accounts[2],helpers.NULL_HASH);
 
     account2Rep =await testSetup.org.reputation.balanceOf(accounts[2]);
@@ -649,7 +649,7 @@ contract('GenesisProtocol', accounts => {
 
   });
 
-  it("the vote function should behave as expected", async function () {
+  it("cannot vote without reputation", async function () {
     var testSetup = await setup(accounts);
 
     var proposalId = await propose(testSetup);
@@ -678,8 +678,11 @@ contract('GenesisProtocol', accounts => {
                                           [submittedTime,0,0],
                                           testSetup.genesisProtocol);
     // lets try to vote by the owner on the behalf of non-existent voters(they do exist but they aren't registered to the reputation system).
-    for (var i = 3; i < accounts.length; i++) {
-        await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS ,{ from: accounts[i] });
+    try {
+      await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS ,{ from: accounts[3] });
+      assert(false, 'cannot vote without reputation');
+    } catch (ex) {
+      helpers.assertVMException(ex);
     }
     // everything should be 0
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],testSetup.genesisProtocol);
@@ -814,22 +817,24 @@ contract('GenesisProtocol', accounts => {
     var testSetup = await setup(accounts);
 
     var proposalId = await propose(testSetup);
-    let maxStakePlusOne = ((new BigNumber(2)).toPower(192).sub(1).div(2).add(1).floor()).toString(10);
-    let maxStake = ((new BigNumber(2)).toPower(192).sub(1).div(2).floor()).toString(10);
+
+    var proposalStatus  = await testSetup.genesisProtocol.proposalStatus(proposalId);
+    let maxTotalStakeAllowed = ((new BigNumber(2)).toPower(128));
+    let maxTotalStakesRemain = maxTotalStakeAllowed.sub(proposalStatus[3]);
 
     try {
-        await stake(testSetup,proposalId,1,maxStakePlusOne,accounts[0]);
+        await stake(testSetup,proposalId,1,maxTotalStakesRemain.add(1).toString(10),accounts[0]);
         assert(false, 'stake more than allowed should revert');
       } catch (ex) {
         helpers.assertVMException(ex);
       }
 
-    var tx = await stake(testSetup,proposalId,1,maxStake,accounts[0]);
+    var tx = await stake(testSetup,proposalId,1,maxTotalStakesRemain.toString(10),accounts[0]);
     assert.equal(tx.length, 1);
     assert.equal(tx[0].event, "Stake");
     assert.equal(tx[0].args._staker, accounts[0]);
     assert.equal(tx[0].args._vote, 1);
-    assert.equal(tx[0].args._amount, maxStake);
+    assert.equal(tx[0].args._amount, maxTotalStakesRemain.toString(10));
   });
 
   it("stake log", async () => {
@@ -1060,7 +1065,6 @@ contract('GenesisProtocol', accounts => {
     await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
 
     assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
-    //assert.equal(await testSetup.genesisProtocol.score(proposalId),0);
 
     await stake(testSetup,proposalId,YES,100,accounts[0]);
 
@@ -1073,7 +1077,6 @@ contract('GenesisProtocol', accounts => {
     //BOOST another proposal
     proposalId = await propose(testSetup);
     await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
-
     var proposalStatus = await testSetup.genesisProtocol.proposalStatus(proposalId);
     assert.equal(proposalStatus[3],150);//downstake
     await stake(testSetup,proposalId,YES,web3.utils.toWei("3000"),accounts[0]);

@@ -12,7 +12,7 @@ const setupQuorumVote = async function (accounts,voteOnBehalf=helpers.NULL_ADDRE
 
   // set up a reputation system
   reputation = await Reputation.new();
-  reputationArray = [20, 10, 70 ];
+  reputationArray = [200, 100, 700 ];
   await reputation.mint(accounts[0], reputationArray[0]);
   await reputation.mint(accounts[1], reputationArray[1]);
   await reputation.mint(accounts[2], reputationArray[2]);

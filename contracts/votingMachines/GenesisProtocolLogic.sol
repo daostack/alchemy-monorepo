@@ -62,8 +62,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
         bytes32 paramsHash;
         uint256 daoBountyRemain; //use for checking sum zero bounty claims.it is set at the proposing time.
         uint256 daoBounty;
-        uint256 totalStakes;// totalStakes[0] - (amount staked minus fee) - Total number of tokens staked which can be redeemable by stakers.
-                           // totalStakes[1] - (amount staked) - Total number of redeemable tokens.
+        uint256 totalStakes;// Total number of tokens staked which can be redeemable by stakers.
         uint256 confidenceThreshold;
         uint256 expirationCallBountyPercentage;//The percentage from upper stakes which the caller for the expiration was given.
         uint[3] times; //times[0] - submittedTime
@@ -226,7 +225,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
         } else {
             lostReputation = proposal.preBoostedVotes[YES];
         }
-        lostReputation = (lostReputation * params.votersReputationLossRatio)/100;
+        lostReputation = (lostReputation.mul(params.votersReputationLossRatio))/100;
         //as staker
         Staker storage staker = proposal.stakers[_beneficiary];
         if (staker.amount > 0) {
@@ -237,16 +236,15 @@ contract GenesisProtocolLogic is IntVoteInterface {
                     uint256 totalWinningStakes = proposal.stakes[proposal.winningVote];
                     uint256 totalStakes = proposal.stakes[YES]+proposal.stakes[NO];
                     if (staker.vote == YES) {
-                        uint256 _totalStakes = ((totalStakes*(100 - proposal.expirationCallBountyPercentage))/100) - proposal.daoBounty;
-                        rewards[0] = (staker.amount*_totalStakes)/totalWinningStakes;
+                        uint256 _totalStakes = ((totalStakes.mul(100 - proposal.expirationCallBountyPercentage))/100) - proposal.daoBounty;
+                        rewards[0] = (staker.amount.mul(_totalStakes))/totalWinningStakes;
                     } else {
-                        rewards[0] = (staker.amount*totalStakes)/totalWinningStakes;
+                        rewards[0] = (staker.amount.mul(totalStakes))/totalWinningStakes;
                         if (organizations[proposal.organizationId] == _beneficiary) {
                           //dao redeem it reward
                             rewards[0] = rewards[0].sub(proposal.daoBounty);
                         }
                     }
-
           }
             staker.amount = 0;
         }
@@ -256,9 +254,9 @@ contract GenesisProtocolLogic is IntVoteInterface {
             uint256 preBoostedVotes = proposal.preBoostedVotes[YES] + proposal.preBoostedVotes[NO];
             if (proposal.state == ProposalState.ExpiredInQueue) {
               //give back reputation for the voter
-                rewards[1] = ((voter.reputation * params.votersReputationLossRatio)/100);
+                rewards[1] = ((voter.reputation.mul(params.votersReputationLossRatio))/100);
             } else if (proposal.winningVote == voter.vote ) {
-                rewards[1] = (((voter.reputation * params.votersReputationLossRatio)/100) +
+                rewards[1] = (((voter.reputation.mul(params.votersReputationLossRatio))/100) +
                 ((voter.reputation * lostReputation)/preBoostedVotes));
             }
             voter.reputation = 0;
@@ -448,7 +446,8 @@ contract GenesisProtocolLogic is IntVoteInterface {
         Parameters memory params = parameters[proposal.paramsHash];
         Proposal memory tmpProposal = proposal;
         uint256 totalReputation = VotingMachineCallbacksInterface(proposal.callbacks).getTotalReputationSupply(_proposalId);
-        uint256 executionBar = totalReputation * params.queuedVoteRequiredPercentage/100;
+        //first divide by 100 to prevent overflow
+        uint256 executionBar = (totalReputation/100) * params.queuedVoteRequiredPercentage;
         ExecutionState executionState = ExecutionState.None;
         uint256 averageDownstakesOfBoosted;
         uint256 confidenceThreshold;
@@ -550,15 +549,9 @@ contract GenesisProtocolLogic is IntVoteInterface {
      */
     function _stake(bytes32 _proposalId, uint256 _vote, uint256 _amount,address _staker) internal returns(bool) {
         // 0 is not a valid vote.
-        require(_vote <= NUM_OF_CHOICES && _vote > 0);
-        require(_amount > 0);
-        //This is to prevent average downstakes calculation overflow
-        //Note that any how GEN cap is 100000000 ether.
-        //_mount * MAX_BOOSTED_PROPOSALS should not overflow as int216
-        require (_amount <= 0x7fffffffffffffffffffffffffffffffffffffffffffffff,"staking amount is too high");
+        require(_vote <= NUM_OF_CHOICES && _vote > 0,"wrong vote value");
+        require(_amount > 0,"staking amount should be >0");
 
-
-        require(_amount > 0);
         if (_execute(_proposalId)) {
             return true;
         }
@@ -579,9 +572,14 @@ contract GenesisProtocolLogic is IntVoteInterface {
         uint256 amount = _amount;
         require(stakingToken.transferFrom(_staker, address(this), amount),"fail transfer from staker");
         proposal.totalStakes = proposal.totalStakes.add(amount); //update totalRedeemableStakes
-        staker.amount += amount;
+        staker.amount = staker.amount.add(amount);
+        //This is to prevent average downstakes calculation overflow
+        //Note that any how GEN cap is 100000000 ether.
+        require(staker.amount <= 0x100000000000000000000000000000000,"staking amount is too high");
+        require(proposal.totalStakes <= 0x100000000000000000000000000000000,"total stakes is too high");
+                                          
         if (_vote == YES) {
-            staker.amount4Bounty += amount;
+            staker.amount4Bounty = staker.amount4Bounty.add(amount);
         }
         staker.vote = _vote;
 
@@ -613,6 +611,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
 
         // Check voter has enough reputation:
         uint256 reputation = VotingMachineCallbacksInterface(proposal.callbacks).reputationOf(_voter,_proposalId);
+        require(reputation > 0,"_voter must have reputation");
         require(reputation >= _rep,"reputation >= _rep");
         uint256 rep = _rep;
         if (rep == 0) {
@@ -650,7 +649,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
         });
         if ((proposal.state == ProposalState.PreBoosted) || (proposal.state == ProposalState.Queued)) {
             proposal.preBoostedVotes[_vote] = rep.add(proposal.preBoostedVotes[_vote]);
-            uint256 reputationDeposit = (params.votersReputationLossRatio * rep)/100;
+            uint256 reputationDeposit = (params.votersReputationLossRatio.mul(rep))/100;
             VotingMachineCallbacksInterface(proposal.callbacks).burnReputation(reputationDeposit,_voter,_proposalId);
         }
         // Event:

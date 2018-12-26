@@ -52,8 +52,6 @@
     "pug": "^2.0.0-rc.4",
     "rimraf": "^2.6.2",
     "run-with-ganache": "^0.1.1",
-    "solc": "^0.4.25",
-    "solc-cli": "^0.3.0",
     "solium": "^1.1.8",
     "truffle": "5.0.0",
     "uint32": "^0.2.1",

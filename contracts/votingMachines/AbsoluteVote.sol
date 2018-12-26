@@ -245,7 +245,7 @@ contract AbsoluteVote is IntVoteInterface {
         uint256 precReq = parameters[proposal.paramsHash].precReq;
         // Check if someone crossed the bar:
         for (uint256 cnt = 0; cnt <= proposal.numOfChoices; cnt++) {
-            if (proposal.votes[cnt] > totalReputation*precReq/100) {
+            if (proposal.votes[cnt] > (totalReputation/100)*precReq) {
                 Proposal memory tmpProposal = proposal;
                 deleteProposal(_proposalId);
                 emit ExecuteProposal(_proposalId, organizations[tmpProposal.organizationId], cnt, totalReputation);
@@ -270,6 +270,7 @@ contract AbsoluteVote is IntVoteInterface {
         require(_vote <= proposal.numOfChoices);
         // Check voter has enough reputation:
         uint256 reputation = VotingMachineCallbacksInterface(proposal.callbacks).reputationOf(_voter,_proposalId);
+        require(reputation > 0,"_voter must have reputation");
         require(reputation >= _rep);
         uint256 rep = _rep;
         if (rep == 0) {
