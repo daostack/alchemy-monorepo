@@ -7,24 +7,31 @@ import "./GenesisProtocolLogic.sol";
 /**
  * @title GenesisProtocol implementation -an organization's voting machine scheme.
  */
-contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
+contract GenesisProtocol is IntVoteInterface, GenesisProtocolLogic {
     using ECDSA for bytes32;
 
     // Digest describing the data the user signs according EIP 712.
     // Needs to match what is passed to Metamask.
     bytes32 public constant DELEGATION_HASH_EIP712 =
-    keccak256(abi.encodePacked("address GenesisProtocolAddress","bytes32 ProposalId", "uint256 Vote","uint256 AmountToStake","uint256 Nonce"));
+    keccak256(abi.encodePacked(
+    "address GenesisProtocolAddress",
+    "bytes32 ProposalId",
+    "uint256 Vote",
+    "uint256 AmountToStake",
+    "uint256 Nonce"
+    ));
+
     // web3.eth.sign prefix
     string public constant ETH_SIGN_PREFIX= "\x19Ethereum Signed Message:\n32";
-    mapping(bytes=>bool) stakeSignatures; //stake signatures
+    mapping(bytes=>bool) private stakeSignatures; //stake signatures
 
     /**
      * @dev Constructor
      */
     constructor(ERC20 _stakingToken)
     public
-    GenesisProtocolLogic(_stakingToken)
-    {
+    // solhint-disable-next-line no-empty-blocks
+    GenesisProtocolLogic(_stakingToken) {
     }
 
     /**
@@ -36,7 +43,7 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
      *              false - otherwise.
      */
     function stake(bytes32 _proposalId, uint256 _vote, uint256 _amount) external returns(bool) {
-        return _stake(_proposalId,_vote,_amount,msg.sender);
+        return _stake(_proposalId, _vote, _amount, msg.sender);
     }
 
     /**
@@ -53,7 +60,6 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
      * @return bool true - the proposal has been executed
      *              false - otherwise.
      */
-    /* solium-disable-next-line */  
     function stakeWithSignature(
         bytes32 _proposalId,
         uint256 _vote,
@@ -73,29 +79,33 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
                 abi.encodePacked(
                     DELEGATION_HASH_EIP712, keccak256(
                         abi.encodePacked(
-                           address(this),
-                          _proposalId,
-                          _vote,
-                          _amount,
-                          _nonce)))
+                        address(this),
+                        _proposalId,
+                        _vote,
+                        _amount,
+                        _nonce)
+                    )
+                )
             );
         } else {
             delegationDigest = keccak256(
                 abi.encodePacked(
                     ETH_SIGN_PREFIX, keccak256(
                         abi.encodePacked(
-                            address(this),
-                           _proposalId,
-                           _vote,
-                           _amount,
-                           _nonce)))
+                        address(this),
+                        _proposalId,
+                        _vote,
+                        _amount,
+                        _nonce)
+                    )
+                )
             );
         }
         address staker = delegationDigest.recover(_signature);
         //a garbage staker address due to wrong signature will revert due to lack of approval and funds.
-        require(staker!=address(0));
+        require(staker != address(0), "staker address cannot be 0");
         stakeSignatures[_signature] = true;
-        return _stake(_proposalId,_vote,_amount,staker);
+        return _stake(_proposalId, _vote, _amount, staker);
     }
 
     /**
@@ -107,7 +117,10 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
      * @return bool true - the proposal has been executed
      *              false - otherwise.
      */
-    function vote(bytes32 _proposalId,uint256 _vote,uint256 _amount,address _voter) external votable(_proposalId) returns(bool) {
+    function vote(bytes32 _proposalId, uint256 _vote, uint256 _amount, address _voter)
+    external
+    votable(_proposalId)
+    returns(bool) {
         Proposal storage proposal = proposals[_proposalId];
         Parameters memory params = parameters[proposal.paramsHash];
         address voter;
@@ -117,7 +130,7 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
         } else {
             voter = msg.sender;
         }
-        return internalVote(_proposalId,voter,_vote,_amount);
+        return internalVote(_proposalId, voter, _vote, _amount);
     }
 
   /**
@@ -128,6 +141,16 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
     function cancelVote(bytes32 _proposalId) external votable(_proposalId) {
        //this is not allowed
         return;
+    }
+
+    /**
+      * @dev execute check if the proposal has been decided, and if so, execute the proposal
+      * @param _proposalId the id of the proposal
+      * @return bool true - the proposal has been executed
+      *              false - otherwise.
+     */
+    function execute(bytes32 _proposalId) external votable(_proposalId) returns(bool) {
+        return _execute(_proposalId);
     }
 
   /**
@@ -165,7 +188,7 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
     * @param _choice the index in the
     * @return voted reputation for the given choice
     */
-    function voteStatus(bytes32 _proposalId,uint256 _choice) external view returns(uint256) {
+    function voteStatus(bytes32 _proposalId, uint256 _choice) external view returns(uint256) {
         return proposals[_proposalId].votes[_choice];
     }
 
@@ -186,7 +209,7 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
     * @return uint256 total stakes YES
     * @return uint256 total stakes NO
     */
-    function proposalStatus(bytes32 _proposalId) external view returns(uint, uint, uint256 ,uint) {
+    function proposalStatus(bytes32 _proposalId) external view returns(uint256, uint256, uint256, uint256) {
         return (
                 proposals[_proposalId].preBoostedVotes[YES],
                 proposals[_proposalId].preBoostedVotes[NO],
@@ -211,8 +234,8 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
       * @return uint256 vote
       * @return uint256 amount
     */
-    function getStaker(bytes32 _proposalId,address _staker) external view returns(uint,uint) {
-        return (proposals[_proposalId].stakers[_staker].vote,proposals[_proposalId].stakers[_staker].amount);
+    function getStaker(bytes32 _proposalId, address _staker) external view returns(uint256, uint256) {
+        return (proposals[_proposalId].stakers[_staker].vote, proposals[_proposalId].stakers[_staker].amount);
     }
 
     /**
@@ -221,7 +244,7 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
       * @param _vote vote number
       * @return uint256 stake amount
     */
-    function voteStake(bytes32 _proposalId,uint256 _vote) external view returns(uint256) {
+    function voteStake(bytes32 _proposalId, uint256 _vote) external view returns(uint256) {
         return proposals[_proposalId].stakes[_vote];
     }
 
@@ -256,18 +279,8 @@ contract GenesisProtocol is IntVoteInterface,GenesisProtocolLogic {
      * @return min - minimum number of choices
                max - maximum number of choices
      */
-    function getAllowedRangeOfChoices() external pure returns(uint256 min,uint256 max) {
-        return (NUM_OF_CHOICES,NUM_OF_CHOICES);
-    }
-
-    /**
-      * @dev execute check if the proposal has been decided, and if so, execute the proposal
-      * @param _proposalId the id of the proposal
-      * @return bool true - the proposal has been executed
-      *              false - otherwise.
-     */
-    function execute(bytes32 _proposalId) external votable(_proposalId) returns(bool) {
-        return _execute(_proposalId);
+    function getAllowedRangeOfChoices() external pure returns(uint256 min, uint256 max) {
+        return (YES, NO);
     }
 
     /**

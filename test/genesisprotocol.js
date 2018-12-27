@@ -1388,7 +1388,7 @@ contract('GenesisProtocol', accounts => {
       var testSetup = await setup(accounts);
       let allowedRange = await testSetup.genesisProtocol.getAllowedRangeOfChoices();
 
-      assert.equal(allowedRange[0],2);
+      assert.equal(allowedRange[0],1);
       assert.equal(allowedRange[1],2);
     });
 

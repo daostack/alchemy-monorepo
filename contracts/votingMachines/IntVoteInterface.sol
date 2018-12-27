@@ -6,9 +6,28 @@ interface IntVoteInterface {
     modifier onlyProposalOwner(bytes32 _proposalId) {revert(); _;}
     modifier votable(bytes32 _proposalId) {revert(); _;}
 
-    event NewProposal(bytes32 indexed _proposalId, address indexed _organization, uint256 _numOfChoices, address _proposer, bytes32 _paramsHash);
-    event ExecuteProposal(bytes32 indexed _proposalId, address indexed _organization, uint256 _decision, uint256 _totalReputation);
-    event VoteProposal(bytes32 indexed _proposalId, address indexed _organization, address indexed _voter, uint256 _vote, uint256 _reputation);
+    event NewProposal(
+        bytes32 indexed _proposalId,
+        address indexed _organization,
+        uint256 _numOfChoices,
+        address _proposer,
+        bytes32 _paramsHash
+    );
+
+    event ExecuteProposal(bytes32 indexed _proposalId,
+        address indexed _organization,
+        uint256 _decision,
+        uint256 _totalReputation
+    );
+
+    event VoteProposal(
+        bytes32 indexed _proposalId,
+        address indexed _organization,
+        address indexed _voter,
+        uint256 _vote,
+        uint256 _reputation
+    );
+
     event CancelProposal(bytes32 indexed _proposalId, address indexed _organization );
     event CancelVoting(bytes32 indexed _proposalId, address indexed _organization, address indexed _voter);
 
@@ -27,7 +46,6 @@ interface IntVoteInterface {
         address _proposer,
         address _organization
         ) external returns(bytes32);
-
 
     function vote(
         bytes32 _proposalId,
@@ -50,7 +68,7 @@ interface IntVoteInterface {
      * @param _choice the index in the
      * @return voted reputation for the given choice
      */
-    function voteStatus(bytes32 _proposalId,uint256 _choice) external view returns(uint256);
+    function voteStatus(bytes32 _proposalId, uint256 _choice) external view returns(uint256);
 
     /**
      * @dev isAbstainAllow returns if the voting machine allow abstain (0)
@@ -63,5 +81,5 @@ interface IntVoteInterface {
      * @return min - minimum number of choices
                max - maximum number of choices
      */
-    function getAllowedRangeOfChoices() external pure returns(uint256 min,uint256 max);
+    function getAllowedRangeOfChoices() external pure returns(uint256 min, uint256 max);
 }

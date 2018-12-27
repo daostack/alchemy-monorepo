@@ -1,5 +1,3 @@
-/* solium-disable security/no-low-level-calls */
-
 pragma solidity ^0.5.2;
 
 import "./ERC827.sol";
@@ -13,7 +11,7 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
  * methods to transfer value and data and execute calls in transfers and
  * approvals. Uses OpenZeppelin ERC20.
  */
-contract ERC827Token is ERC20,ERC827 {
+contract ERC827Token is ERC20, ERC827 {
 
   /**
    * @dev Addition to ERC20 token methods. It allows to
@@ -42,8 +40,8 @@ contract ERC827Token is ERC20,ERC827 {
 
         super.approve(_spender, _value);
 
-        // solium-disable-next-line security/no-call-value
-        (bool success, ) = _spender.call.value(msg.value)(_data);
+        // solhint-disable-next-line avoid-call-value
+        (bool success,) = _spender.call.value(msg.value)(_data);
         require(success);
 
         return true;
@@ -70,10 +68,9 @@ contract ERC827Token is ERC20,ERC827 {
 
         super.transfer(_to, _value);
 
-        // solium-disable-next-line security/no-call-value
+        // solhint-disable-next-line avoid-call-value
         (bool success,) = _to.call.value(msg.value)(_data);
         require(success);
-
         return true;
     }
 
@@ -98,10 +95,71 @@ contract ERC827Token is ERC20,ERC827 {
 
         super.transferFrom(_from, _to, _value);
 
-        // solium-disable-next-line security/no-call-value
+        // solhint-disable-next-line avoid-call-value
         (bool success,) = _to.call.value(msg.value)(_data);
         require(success);
         return true;
     }
 
+  /**
+   * @dev Addition to ERC20 methods. Increase the amount of tokens that
+   * an owner allowed to a spender and execute a call with the sent data.
+   * approve should be called when allowed[_spender] == 0. To increment
+   * allowed value is better to use this function to avoid 2 calls (and wait until
+   * the first transaction is mined)
+   * From MonolithDAO Token.sol
+   * @param _spender The address which will spend the funds.
+   * @param _addedValue The amount of tokens to increase the allowance by.
+   * @param _data ABI-encoded contract call to call `_spender` address.
+   */
+    function increaseApprovalAndCall(
+        address _spender,
+        uint256 _addedValue,
+        bytes memory _data
+    )
+    public
+    payable
+    returns (bool)
+    {
+        require(_spender != address(this));
+
+        super.increaseAllowance(_spender, _addedValue);
+
+        // solhint-disable-next-line avoid-call-value
+        (bool success,) = _spender.call.value(msg.value)(_data);
+        require(success);
+
+        return true;
+    }
+
+  /**
+   * @dev Addition to ERC20 methods. Decrease the amount of tokens that
+   * an owner allowed to a spender and execute a call with the sent data.
+   * approve should be called when allowed[_spender] == 0. To decrement
+   * allowed value is better to use this function to avoid 2 calls (and wait until
+   * the first transaction is mined)
+   * From MonolithDAO Token.sol
+   * @param _spender The address which will spend the funds.
+   * @param _subtractedValue The amount of tokens to decrease the allowance by.
+   * @param _data ABI-encoded contract call to call `_spender` address.
+   */
+    function decreaseApprovalAndCall(
+        address _spender,
+        uint256 _subtractedValue,
+        bytes memory _data
+    )
+    public
+    payable
+    returns (bool)
+    {
+        require(_spender != address(this));
+
+        super.decreaseAllowance(_spender, _subtractedValue);
+
+        // solhint-disable-next-line avoid-call-value
+        (bool success,) = _spender.call.value(msg.value)(_data);
+        require(success);
+
+        return true;
+    }
 }

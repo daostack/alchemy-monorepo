@@ -1,4 +1,0 @@
-node_modules
-docs
-contracts/votingMachines/GenesisProtocol.sol
-contracts/test/GenesisProtocolCallbacksMock.sol

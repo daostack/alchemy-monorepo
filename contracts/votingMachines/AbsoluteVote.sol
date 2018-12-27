@@ -10,10 +10,10 @@ import "./ProposalExecuteInterface.sol";
 contract AbsoluteVote is IntVoteInterface {
     using SafeMath for uint;
 
-
     struct Parameters {
         uint256 precReq; // how many percentages required for the proposal to be passed
-        address voteOnBehalf; //if this address is set so only this address is allowed to vote of behalf of someone else.
+        address voteOnBehalf; //if this address is set so only this address is allowed
+                              // to vote of behalf of someone else.
     }
 
     struct Voter {
@@ -33,12 +33,16 @@ contract AbsoluteVote is IntVoteInterface {
     }
 
     event AVVoteProposal(bytes32 indexed _proposalId, bool _isOwnerVote);
-    event RefreshReputation(bytes32 indexed _proposalId, bytes32 indexed _organizationId, address indexed _voter,uint256 _reputation);
 
+    event RefreshReputation(bytes32 indexed _proposalId,
+        bytes32 indexed _organizationId,
+        address indexed _voter,
+        uint256 _reputation
+    );
 
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
-    mapping(bytes32        => address     ) organizations;
+    mapping(bytes32        => address     ) public organizations;
 
     uint256 public constant MAX_NUM_OF_CHOICES = 10;
     uint256 public proposalsCnt; // Total amount of proposals
@@ -74,7 +78,7 @@ contract AbsoluteVote is IntVoteInterface {
         proposal.numOfChoices = _numOfChoices;
         proposal.paramsHash = _paramsHash;
         proposal.callbacks = msg.sender;
-        proposal.organizationId = keccak256(abi.encodePacked(msg.sender,_organization));
+        proposal.organizationId = keccak256(abi.encodePacked(msg.sender, _organization));
         proposal.open = true;
         proposals[proposalId] = proposal;
         if (organizations[proposal.organizationId] == address(0)) {
@@ -116,7 +120,7 @@ contract AbsoluteVote is IntVoteInterface {
         } else {
             voter = msg.sender;
         }
-        return internalVote(_proposalId,voter,_vote,_amount);
+        return internalVote(_proposalId, voter, _vote, _amount);
     }
 
   /**
@@ -126,6 +130,16 @@ contract AbsoluteVote is IntVoteInterface {
    */
     function cancelVote(bytes32 _proposalId) external votable(_proposalId) {
         cancelVoteInternal(_proposalId, msg.sender);
+    }
+
+    /**
+      * @dev execute check if the proposal has been decided, and if so, execute the proposal
+      * @param _proposalId the id of the proposal
+      * @return bool true - the proposal has been executed
+      *              false - otherwise.
+     */
+    function execute(bytes32 _proposalId) external votable(_proposalId) returns(bool) {
+        return _execute(_proposalId);
     }
 
   /**
@@ -156,7 +170,7 @@ contract AbsoluteVote is IntVoteInterface {
      * @param _choice the index in the
      * @return voted reputation for the given choice
      */
-    function voteStatus(bytes32 _proposalId,uint256 _choice) external view returns(uint256) {
+    function voteStatus(bytes32 _proposalId, uint256 _choice) external view returns(uint256) {
         return proposals[_proposalId].votes[_choice];
     }
 
@@ -182,18 +196,8 @@ contract AbsoluteVote is IntVoteInterface {
      * @return min - minimum number of choices
                max - maximum number of choices
      */
-    function getAllowedRangeOfChoices() external pure returns(uint256 min,uint256 max) {
-        return (0,MAX_NUM_OF_CHOICES);
-    }
-
-    /**
-      * @dev execute check if the proposal has been decided, and if so, execute the proposal
-      * @param _proposalId the id of the proposal
-      * @return bool true - the proposal has been executed
-      *              false - otherwise.
-     */
-    function execute(bytes32 _proposalId) external votable(_proposalId) returns(bool) {
-        return _execute(_proposalId);
+    function getAllowedRangeOfChoices() external pure returns(uint256 min, uint256 max) {
+        return (0, MAX_NUM_OF_CHOICES);
     }
 
     /**
@@ -241,7 +245,8 @@ contract AbsoluteVote is IntVoteInterface {
      */
     function _execute(bytes32 _proposalId) internal votable(_proposalId) returns(bool) {
         Proposal storage proposal = proposals[_proposalId];
-        uint256 totalReputation = VotingMachineCallbacksInterface(proposal.callbacks).getTotalReputationSupply(_proposalId);
+        uint256 totalReputation =
+        VotingMachineCallbacksInterface(proposal.callbacks).getTotalReputationSupply(_proposalId);
         uint256 precReq = parameters[proposal.paramsHash].precReq;
         // Check if someone crossed the bar:
         for (uint256 cnt = 0; cnt <= proposal.numOfChoices; cnt++) {
@@ -249,7 +254,7 @@ contract AbsoluteVote is IntVoteInterface {
                 Proposal memory tmpProposal = proposal;
                 deleteProposal(_proposalId);
                 emit ExecuteProposal(_proposalId, organizations[tmpProposal.organizationId], cnt, totalReputation);
-                return ProposalExecuteInterface(tmpProposal.callbacks).executeProposal(_proposalId,int(cnt));
+                return ProposalExecuteInterface(tmpProposal.callbacks).executeProposal(_proposalId, int(cnt));
             }
         }
         return false;
@@ -269,8 +274,8 @@ contract AbsoluteVote is IntVoteInterface {
         // Check valid vote:
         require(_vote <= proposal.numOfChoices);
         // Check voter has enough reputation:
-        uint256 reputation = VotingMachineCallbacksInterface(proposal.callbacks).reputationOf(_voter,_proposalId);
-        require(reputation > 0,"_voter must have reputation");
+        uint256 reputation = VotingMachineCallbacksInterface(proposal.callbacks).reputationOf(_voter, _proposalId);
+        require(reputation > 0, "_voter must have reputation");
         require(reputation >= _rep);
         uint256 rep = _rep;
         if (rep == 0) {
