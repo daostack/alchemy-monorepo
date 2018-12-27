@@ -33,13 +33,13 @@
   "dependencies": {
     "@daostack/arc": "0.0.0-alpha.58",
     "ethereumjs-wallet": "^0.6.2",
-    "ganache-cli": "^6.2.3",
+    "ganache-cli": "^6.2.4",
     "hdwallet-accounts": "0.0.1",
     "inquirer": "^6.2.0",
     "moment": "^2.22.2",
     "ora": "^3.0.0",
     "prompt-confirm": "^2.0.4",
-    "web3": "1.0.0-beta.35",
+    "web3": "^1.0.0-beta.37",
     "yargs": "^12.0.2"
   },
   "devDependencies": {

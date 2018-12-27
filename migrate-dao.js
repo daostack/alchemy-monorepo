@@ -81,11 +81,13 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     uController,
     cap
   )
+
   const Avatar = await forgeOrg.call()
   tx = await forgeOrg.send()
   await logTx(tx, 'Created new organization.')
 
   spinner.start('Setting AbsoluteVote parameters...')
+
   const absoluteVoteSetParams = absoluteVote.methods.setParameters(
     migrationParams.AbsoluteVote.votePerc,
     migrationParams.AbsoluteVote.ownerVote

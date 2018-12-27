@@ -72,7 +72,10 @@ migrationBaseResult.base.GenesisProtocol // migrated genesis protocol address
 // migrate an example DAO (requires an existing `output` file with a base migration)
 const migrationDAOResult = await DAOstackMigration.migrateDAO(options);
 migrationDAOResult.dao.Avatar // DAO avatar address
-// migrate both base and an example DAO
+// migrate an demo test scenario (requires an existing `output` file with a base migration)
+const migrationDemoResult = await DAOstackMigration.migrateDemoTest(options);
+migrationDemoResult.test.Avatar // Test DAO avatar address
+// migrate base, example DAO and demo test contracts
 const migrationResult = await DAOstackMigration.migrate(options); // migrate
 
 // run the cli
@@ -146,7 +149,14 @@ Example migration result object:
 		"Avatar": "0x123...",
 		"NativeToken": "0x123...",
 		"NativeReputation": "0x123..."
-	}
+	},
+	"test": {
+      		"name": "0x123...",
+      		"Avatar": "0x123...",
+      		"NativeToken": "0x123...",
+      		"NativeReputation": "0x123...",
+      		"proposalId": "0xabc..."
+    	}
 }
 ```
 
