@@ -81,7 +81,7 @@ describe('apolloClient', () => {
       (eventData: any) => {
         // Do something on receipt of the event
         cntr += 1
-        console.log(`${cntr}: ${eventData}`)
+        // console.log(`${cntr}: ${eventData}`)
         returnedData = eventData.data.reputationMints
       },
       (err: any) => {

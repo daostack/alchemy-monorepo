@@ -12,31 +12,7 @@ export enum ProposalOutcome {
   Pass,
   Fail
 }
-//
-// export enum ProposalStage {
-//   // pre boosted
-//   // | { open: true }
-//   preboosted, // ProposalState: 3, ExecutionState: 0
-//   // boosted
-//   // | { boosted: true; boostedAt: number }
-//   boosted, // ProposalState: 4, ExecutionState: 0
-//   // quiet ending
-//   // | { overtimed: true; boostedAt: number; overtimedAt: number }
-//   overtimed, // ProposalState: 5, ExecutionState: 0
-//   // passed in pre boosted phase (via absolute IVote)
-//   // | { passed: true; executedAt: number }
-//   passed, // ProposalState: 2, ExecutionState: 2
-//   // passed in boosted phase
-//   // | { passed: true; executedAt: number; boosted: true; boostedAt: number; overtimedAt?: number }
-//   passedBoosted, // ProposalState: 2, ExecutionState: 4
-//   // failed in pre boosted phase
-//   // | { failed: true }
-//   failed, // ProposalState: 1 or 2, ExecutionState: 1 or 2, decision: 0
-//   // failed in boosted phase
-//   // | { failed: true; boosted: true; boostedAt: number }
-//   failedBoosted // 1 or 2, ExecutionState: 3 or 4, decision: 0
-// }
-//
+
 export enum ProposalStage {
   Open,
   Boosted,
