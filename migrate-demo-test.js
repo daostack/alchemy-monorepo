@@ -228,9 +228,9 @@ async function setGenesisProtocolParams () {
       gpParams.preBoostedVotePeriodLimit,
       gpParams.thresholdConst,
       gpParams.quietEndingPeriod,
-      web3.utils.toWei(gpParams.proposingRepRewardGwei.toString(), 'gwei'),
+      this.web3.utils.toWei(gpParams.proposingRepRewardGwei.toString(), 'gwei'),
       gpParams.votersReputationLossRatio,
-      web3.utils.toWei(gpParams.minimumDaoBountyGWei.toString(), 'gwei'),
+      this.web3.utils.toWei(gpParams.minimumDaoBountyGWei.toString(), 'gwei'),
       gpParams.daoBountyConst,
       0 // activationTime
     ],
