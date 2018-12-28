@@ -38,7 +38,7 @@ const defaults = {
  */
 const wrapCommand = fn => async options => {
   let { quiet, force, provider, gasPrice, privateKey, mnemonic, output, params } = { ...defaults, ...options }
-  const emptySpinner = new Proxy({}, { get: () => () => {} }) // spinner that does nothing
+  const emptySpinner = new Proxy({}, { get: () => () => { } }) // spinner that does nothing
   const spinner = quiet ? emptySpinner : ora()
 
   process.on('unhandledRejection', (reason, promise) => {
