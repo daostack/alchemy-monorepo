@@ -26,8 +26,6 @@ export interface IDAOState {
   tokenName: string,
   tokenSymbol: string,
   tokenTotalSupply: number,
-  // TODO: the following fields are placeholders for legacy stuff that alchemy expects
-  // these properties should be removed
   externalTokenSymbol: string,
   externalTokenAddress: Address
 }
@@ -79,7 +77,7 @@ export class DAO implements IStateful<IDAOState> {
         id
       }
     }`
-    const itemMap = (item: any): Member => new Member(item.id, this.address)
+    const itemMap = (item: any): Member => new Member(item.id, this.context)
     return this.context._getObservableList(query, 'reputationHolders', itemMap) as Observable<Member[]>
   }
 
@@ -136,7 +134,7 @@ export class DAO implements IStateful<IDAOState> {
 
     return this.context._getObservableList(
       query,
-      'proposals',
+      'rewards',
       (r: any) => new Reward(r.id, this.context)
     ) as Observable<Reward[]>
   }

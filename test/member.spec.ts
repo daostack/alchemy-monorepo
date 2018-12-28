@@ -1,15 +1,33 @@
+import { first} from 'rxjs/operators'
+import { Arc } from '../src/arc'
 import { Member } from '../src/member'
+import { getArc, getWeb3 } from './utils'
 
 /**
  * Member test
  */
 describe('Member', () => {
-  it('Member is instantiable', () => {
-    const id = 'some-id'
-    const address = '0xa2A064b3B22fC892dfB71923a6D844b953AA247C'
-    const daoAddress = '0xa2A064b3B22fC892dfB71923a6D844b953AA247C'
+  const id = 'some-id'
 
-    const member = new Member(address, daoAddress)
+  let arc: Arc
+  let web3: any
+  let accounts: any
+
+  beforeAll(async () => {
+    arc = getArc()
+    web3 = await getWeb3()
+    accounts = web3.eth.accounts.wallet
+    web3.eth.defaultAccount = accounts[0].address
+  })
+
+  it('Member is instantiable', () => {
+    const member = new Member(id, arc)
     expect(member).toBeInstanceOf(Member)
+  })
+
+  it.skip('Member state works', async () => {
+    const member = new Member(id, arc)
+    const memberState = await member.state.pipe(first()).toPromise()
+    expect(memberState.reputation).toEqual(10)
   })
 })

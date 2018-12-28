@@ -73,7 +73,7 @@ export class Proposal implements IStateful<IProposalState> {
   constructor(public id: string, context: Arc) {
     this.id = id
     this.context = context
-    // TODO: commented out the fields that are (or seem) broken in graphql
+
     const query = gql`
       {
         proposal (id: "${id}") {

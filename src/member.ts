@@ -1,5 +1,7 @@
+import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
-import { DAO } from './dao'
+import { Arc } from './arc'
+
 import {
   IProposalQueryOptions,
   IStake,
@@ -33,7 +35,31 @@ export class Member implements IStateful<IMemberState> {
    * @param address address of the user
    * @param dao     address of the DAO
    */
-  constructor(public address: Address, public dao: Address) {}
+  constructor(public id: string, public context: Arc) {
+    const query = gql`
+      {
+        member (id: "${id}") {
+          id,
+          dao {
+            id
+          }
+        }
+      }
+    `
+
+    const itemMap = (item: any) => {
+      if (item === null) {
+        throw Error(`Could not find a Member with id '${id}'`)
+      }
+
+      return {
+        id: item.id
+      }
+    }
+
+    this.state = context._getObservableObject(query, 'member', itemMap) as Observable<IMemberState>
+
+  }
 
   public rewards(): Observable<Reward[]> {
     throw new Error('not implemented')

@@ -92,7 +92,10 @@ export class Arc {
     itemMap: (o: object) => object = (o) => o
   ) {
     return this.getObservable(query).pipe(
-      map((r) => r.data[entity]),
+      map((r) => {
+        if (!r.data[entity]) { throw Error(`Could not find ${entity} in ${r.data}`)}
+        return r.data[entity]
+      }),
       map((rs: object[]) => rs.map(itemMap))
     )
   }
