@@ -67,7 +67,11 @@ export class Token implements IStateful<ITokenState> {
       map((r) => r.data.tokenHolders),
       map((items: any[]) => {
         const item = items.length > 0 && items[0]
-        return Number(item.balance)
+        if (item) {
+          return Number(item.balance)
+        } else {
+          return Number(0)
+        }
       })
     )
   }

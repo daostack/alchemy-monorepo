@@ -38,7 +38,7 @@ export class DAO implements IStateful<IDAOState> {
     this.address = address.toLowerCase()
 
     const query = gql`{
-      dao(id: "${address}") {
+      dao(id: "${this.address}") {
         id
         members { id },
         name,
@@ -49,7 +49,7 @@ export class DAO implements IStateful<IDAOState> {
 
     const itemMap = (item: any): IDAOState => {
       if (item === null) {
-        throw Error(`Could not find a DAO with address ${address}`)
+        throw Error(`Could not find a DAO with address ${this.address}`)
       }
       return {
         address: item.id,
@@ -73,12 +73,12 @@ export class DAO implements IStateful<IDAOState> {
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
     // TODO: show only members from this DAO
     const query = gql`{
-      reputationHolders {
+      members {
         id
       }
     }`
     const itemMap = (item: any): Member => new Member(item.id, this.context)
-    return this.context._getObservableList(query, 'reputationHolders', itemMap) as Observable<Member[]>
+    return this.context._getObservableList(query, 'members', itemMap) as Observable<Member[]>
   }
 
   public proposals(options: IProposalQueryOptions = {dao: this.address}): Observable<Proposal[]> {
