@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import { Observable, of } from 'rxjs'
+import { Observable } from 'rxjs'
 import { Arc } from './arc'
 import { IMemberQueryOptions, Member } from './member'
 import {
@@ -15,7 +15,6 @@ import { Reputation } from './reputation'
 import { IRewardQueryOptions, Reward } from './reward'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
-import * as utils from './utils'
 
 export interface IDAOState {
   address: Address // address of the avatar
@@ -84,7 +83,7 @@ export class DAO implements IStateful<IDAOState> {
     return this.context._getObservableList(query, 'reputationHolders', itemMap) as Observable<Member[]>
   }
 
-  public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
+  public proposals(options: IProposalQueryOptions = {dao: this.address}): Observable<Proposal[]> {
 
     // TODO: there must be  better way to construct a where clause from a dictionary
     let where = ''
@@ -92,7 +91,7 @@ export class DAO implements IStateful<IDAOState> {
       if (key === 'stage' && options[key] !== undefined) {
         where += `${key}: ${ProposalStage[options[key] as ProposalStage]},\n`
       } else {
-        where += `${key}: "${options[key] as string},\n"`
+        where += `${key}: "${options[key] as string}",`
       }
     }
 
@@ -100,7 +99,6 @@ export class DAO implements IStateful<IDAOState> {
     const query = gql`
       {
         proposals(where: {
-          # dao.id: "${this.address}"
           ${where}
         }) {
           id
