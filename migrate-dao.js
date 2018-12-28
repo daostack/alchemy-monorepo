@@ -90,7 +90,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
 
   const absoluteVoteSetParams = absoluteVote.methods.setParameters(
     migrationParams.AbsoluteVote.votePerc,
-    migrationParams.AbsoluteVote.ownerVote
+    migrationParams.AbsoluteVote.voteOnBehalf
   )
   const absoluteVoteParams = await absoluteVoteSetParams.call()
   tx = await absoluteVoteSetParams.send()
@@ -124,20 +124,17 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   spinner.start('Setting GenesisProtocol parameters...')
   const genesisProtocolSetParams = genesisProtocol.methods.setParameters(
     [
-      migrationParams.GenesisProtocol.preBoostedVoteRequiredPercentage,
-      migrationParams.GenesisProtocol.preBoostedVotePeriodLimit,
+      migrationParams.GenesisProtocol.queuedVoteRequiredPercentage,
+      migrationParams.GenesisProtocol.queuedVotePeriodLimit,
       migrationParams.GenesisProtocol.boostedVotePeriodLimit,
-      web3.utils.toWei(migrationParams.GenesisProtocol.thresholdConstAGWei.toString(), 'gwei'),
-      migrationParams.GenesisProtocol.thresholdConstB,
-      web3.utils.toWei(migrationParams.GenesisProtocol.minimumStakingFeeGWei.toString(), 'gwei'),
+      migrationParams.GenesisProtocol.preBoostedVotePeriodLimit,
+      migrationParams.GenesisProtocol.thresholdConst,
       migrationParams.GenesisProtocol.quietEndingPeriod,
-      migrationParams.GenesisProtocol.proposingRepRewardConstA,
-      migrationParams.GenesisProtocol.proposingRepRewardConstB,
-      migrationParams.GenesisProtocol.stakerFeeRatioForVoters,
+      web3.utils.toWei(migrationParams.GenesisProtocol.proposingRepRewardGwei.toString(), 'gwei'),
       migrationParams.GenesisProtocol.votersReputationLossRatio,
-      migrationParams.GenesisProtocol.votersGainRepRatioFromLostRep,
+      web3.utils.toWei(migrationParams.GenesisProtocol.minimumDaoBountyGWei.toString(), 'gwei'),
       migrationParams.GenesisProtocol.daoBountyConst,
-      web3.utils.toWei(migrationParams.GenesisProtocol.daoBountyLimitGWei.toString(), 'gwei')
+      0 // activationTime
     ],
     migrationParams.GenesisProtocol.voteOnBehalf
   )

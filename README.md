@@ -137,7 +137,6 @@ Example migration result object:
 		"ContributionReward": "0x123...",
 		"AbsoluteVote": "0x123...",
 		"QuorumVote": "0x123...",
-		"SimpleICO": "0x123...",
 		"TokenCapGC": "0x123...",
 		"VestingScheme": "0x123...",
 		"VoteInOrganizationScheme": "0x123...",
@@ -170,25 +169,21 @@ Example migration parameters object:
 		"orgNativeTokenFeeGWei": 0
 	},
 	"AbsoluteVote": {
-		"ownerVote": true,
+		"voteOnBehalf": "0x0000000000000000000000000000000000000000",
 		"votePerc": 50
 	},
 	"GenesisProtocol": {
-		"boostedVotePeriodLimit": 259200,
-		"daoBountyConst": 75,
-		"daoBountyLimitGWei": 100,
-		"minimumStakingFeeGWei": 0,
-		"preBoostedVotePeriodLimit": 1814400,
-		"preBoostedVoteRequiredPercentage": 50,
-		"proposingRepRewardConstA": 5,
-		"proposingRepRewardConstB": 5,
-		"quietEndingPeriod": 86400,
-		"stakerFeeRatioForVoters": 50,
-		"thresholdConstAGWei": 7,
-		"thresholdConstB": 3,
-		"voteOnBehalf": "0x0000000000000000000000000000000000000000",
-		"votersGainRepRatioFromLostRep": 80,
-		"votersReputationLossRatio": 1
+      "boostedVotePeriodLimit": 259200,
+      "daoBountyConst": 75,
+      "minimumDaoBountyGWei": 100,
+      "queuedVotePeriodLimit": 1814400,
+      "queuedVoteRequiredPercentage": 50,
+      "preBoostedVotePeriodLimit": 259200,
+      "proposingRepRewardGwei": 5,
+      "quietEndingPeriod": 86400,
+      "thresholdConst": 2000,
+      "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+      "votersReputationLossRatio": 1
 	},
 	"founders": [
 		{
@@ -216,13 +211,13 @@ The migrated DAO is a simple DAO with the following configuration:
 - schemes:
   - `SchemeRegistrar`
     - permissions: all permissions (`0x0000001F`)
-    - voting machine: `AbsoluteVote(votePerc=50,ownerVote=true)`
+    - voting machine: `AbsoluteVote(votePerc=50,voteOnBehalf="0x0000000000000000000000000000000000000000")`
   - `GlobalConstraintRegistrar`
     - permissions: manage global constraints (`0x00000004`)
-    - voting machine: `AbsoluteVote(votePerc=50,ownerVote=true)`
+    - voting machine: `AbsoluteVote(votePerc=50,voteOnBehalf="0x0000000000000000000000000000000000000000")`
   - `UpgradeScheme`
     - permissions: manage schemes + upgrade controller (`0x0000000A`)
-    - voting machine: `AbsoluteVote(votePerc=50,ownerVote=true)`
+    - voting machine: `AbsoluteVote(votePerc=50,voteOnBehalf="0x0000000000000000000000000000000000000000")`
   - `ContributionReward`
     - orgNativeTokenFee: no fee.
     - permissions: no permissions (`0x00000000`)
