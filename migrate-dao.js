@@ -64,8 +64,8 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     'Genesis Test',
     'GDT',
     migrationParams.founders.map(({ address }) => address),
-    migrationParams.founders.map(({ tokens }) => tokens),
-    migrationParams.founders.map(({ reputation }) => reputation),
+    migrationParams.founders.map(({ tokens }) => web3.utils.toWei(tokens.toString())),
+    migrationParams.founders.map(({ reputation }) => web3.utils.toWei(reputation.toString())),
     UController,
     '0'
   ]

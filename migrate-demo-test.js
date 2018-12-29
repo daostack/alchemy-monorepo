@@ -40,8 +40,8 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
     'Genesis Test',
     'GDT',
     migrationParams.founders.map(({ address }) => address),
-    migrationParams.founders.map(({ tokens }) => tokens),
-    migrationParams.founders.map(({ reputation }) => reputation),
+    migrationParams.founders.map(({ tokens }) => web3.utils.toWei(tokens.toString())),
+    migrationParams.founders.map(({ reputation }) => web3.utils.toWei(reputation.toString())),
     '0'
   ]
 
