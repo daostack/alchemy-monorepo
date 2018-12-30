@@ -10,6 +10,7 @@
     "node": ">=10.14.2"
   },
   "scripts": {
+    "generate-abis": "node ./generate-abis.js",
     "lint": "eslint .",
     "cleandb": "rimraf db",
     "ganache": "mkdirp db && ganache-cli --db=./db --networkId 1512051714758 --deterministic --hostname=0.0.0.0",
