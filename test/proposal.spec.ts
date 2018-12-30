@@ -40,7 +40,6 @@ describe('Proposal', () => {
 
   it('dao.proposals() accepts different query arguments', async () => {
     const { Avatar, proposalId } = DAOstackMigration.migration('private').test
-    // TODO: because we have not setup with proposals, we are only testing if the current state returns the emty list
     const dao = arc.dao(Avatar.toLowerCase())
     const proposals = await dao.proposals({ stage: ProposalStage.Open}).pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
@@ -56,5 +55,39 @@ describe('Proposal', () => {
     const proposalDao = await proposal.dao().pipe(first()).toPromise()
     expect(proposal).toBeInstanceOf(Proposal)
     expect(proposalDao.address).toBe(dao)
+  })
+
+  it('Check proposal state is correct', async () => {
+    const { proposalId } = DAOstackMigration.migration('private').test
+
+    const proposal = new Proposal(proposalId, arc)
+    const proposalState = await proposal.state.pipe(first()).toPromise()
+    expect(proposal).toBeInstanceOf(Proposal)
+    delete proposalState.dao
+    expect(proposalState).toEqual({
+        beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+        boostedAt: null,
+        boostingThreshold: 0,
+        createdAt: '1546163925',
+        description: null,
+        ethReward: '10',
+        executedAt: null,
+        externalTokenReward: '10',
+        id: '0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e',
+        ipfsHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
+        proposer: '0x1cea1e112ec409762ab4795daead616b5a3acf72879303434a87cbcd3a1785b9',
+        quietEndingPeriodBeganAt: null,
+        reputationReward: '10',
+        resolvedAt: undefined,
+        stage: 'Open',
+        stakesAgainst: '0',
+        stakesFor: '0',
+        title: null,
+        tokensReward: '10',
+        url: null,
+        votesAgainst: '1000',
+        votesFor: '1000',
+        winningOutcome: 'Fail'
+    })
   })
 })
