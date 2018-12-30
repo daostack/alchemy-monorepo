@@ -1,6 +1,6 @@
 {
   "name": "@daostack/infra",
-  "version": "0.0.1-rc.3",
+  "version": "0.0.1-rc.4",
   "description": "Base layer DAO's components",
   "files": [
     "contracts/",
@@ -81,7 +81,7 @@
   "homepage": "https://daostack.io",
   "dependencies": {
     "ethereumjs-abi": "^0.6.5",
-    "openzeppelin-solidity": "github:OpenZeppelin/openzeppelin-solidity#release-v2.1.0-solc-0.5"
+    "openzeppelin-solidity": "2.1.0-rc.2"
   },
   "peerDependencies": {
     "ganache-cli": "^6.2.5"
