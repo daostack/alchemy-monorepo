@@ -59,9 +59,9 @@
     },
     "dao": {
       "name": "Genesis Test",
-      "Avatar": "0x48171F9dBb98AdB0E79A0FBE5F0ba7E59DFB1F02",
-      "NativeToken": "0xc0c0139Abad1552674378f20436664227cb02C6F",
-      "NativeReputation": "0x90cA9E2fC0580818d258231F81D8609bccC0Aa06"
+      "Avatar": "0x9F2bDb23112e1829dc51026F1745940862Eb6d95",
+      "NativeToken": "0x2525C740e4342d22c1471F45D0A2AA14BDcEbB9F",
+      "NativeReputation": "0x0014Add9fA7e8BFb7D29F145E0B38a17C3a4aFD2"
     }
   },
   "rinkeby": {
@@ -88,9 +88,9 @@
     },
     "dao": {
       "name": "Genesis Test",
-      "Avatar": "0xeF87Fe393b409FD231b5B21ccD33C2AC7C0E8D3b",
-      "NativeToken": "0x73957918a1C03d41c4FF8e25A61660D74E00dA5F",
-      "NativeReputation": "0xBbF1eE256BC68b76f37E019AE5A7fC9E04Bde997"
+      "Avatar": "0x7c4bC5745a3549F8edDA2B49A38978ed75676707",
+      "NativeToken": "0x082eb24Cf50bB2b6A79fb1064478a09ea7174486",
+      "NativeReputation": "0x73092717811e084ed19972e25913c966211bF67f"
     }
   }
 }

@@ -260,6 +260,9 @@ In order to release a version:
 
    1. Make sure you have the required `.env` variables set (`kovan_provider`, `kovan_private_key`, `rinkeby_provider`,
       `rinkeby_private_key`).
-   2. Make sure that you have a Dockerhub ID with permission to push an image to the `daostack` organization.
-   3. Make sure that you have an `npm` account with permission to push an image to the `daostack` organization.
-   4. `npm run release` - This will perform all the nesserary steps to deploy a new release.
+   2. Make sure you are not on the `master` branch. If needed, create a new branch for the relase process.
+   3. `npm run prepare-release` - This will perform all the nesserary steps to update version and prepare for a new release. The changes made here will be committed to the git branch.
+   4. Create a PR and merge the new branch with the changes into `master`.
+   5. Make sure that you have a Dockerhub ID with permission to push an image to the `daostack` organization.
+   6. Make sure that you have an `npm` account with permission to push an image to the `daostack` organization.
+   7. Make sure to be on the `master` branch and run `npm run release` - this will publish the new version to NPM and Dockerhub.
