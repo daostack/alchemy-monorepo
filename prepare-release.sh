@@ -3,6 +3,10 @@
 set -e
 source .env
 
+
+# generate abis
+echo "Generating abis..."
+npm run generate-abis
 # prune arc build
 echo "Pruning Arc build..."
 npm run prune-arc-build -- "$@"
