@@ -81,7 +81,7 @@
   "devDependencies": {
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
-    "@daostack/migration": "git://github.com/daostack/migration.git#test-cases",
+    "@daostack/migration": "0.0.0-alpha.58-v9",
     "@daostack/subgraph": "git://github.com/daostack/subgraph.git",
     "@types/jest": "^23.3.2",
     "@types/node": "^10.11.0",

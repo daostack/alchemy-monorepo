@@ -64,11 +64,11 @@ describe('Proposal', () => {
     const proposalState = await proposal.state.pipe(first()).toPromise()
     expect(proposal).toBeInstanceOf(Proposal)
     delete proposalState.dao
+    delete proposalState.createdAt
     expect(proposalState).toEqual({
         beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
         boostedAt: null,
         boostingThreshold: 0,
-        createdAt: '1546163925',
         description: null,
         ethReward: '10',
         executedAt: null,

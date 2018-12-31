@@ -52,7 +52,7 @@ describe('DAO', () => {
     const state = await dao.state.pipe(first()).toPromise()
     const expected = {
        address: addresses.Avatar.toLowerCase(),
-       memberCount: 0,
+       memberCount: 6,
        name: 'Genesis Test'
     }
     expect(state).toMatchObject(expected)
