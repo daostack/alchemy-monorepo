@@ -3,7 +3,7 @@ import { Arc } from '../src/arc'
 import { Proposal, ProposalStage } from '../src/proposal'
 import { getArc, getContractAddresses, getOptions, getWeb3, nullAddress } from './utils'
 
-const DAOstackMigration = require('@daostack/migration');
+const DAOstackMigration = require('@daostack/migration')
 
 /**
  * Proposal test
@@ -80,7 +80,7 @@ describe('Proposal', () => {
         proposer: '0x1cea1e112ec409762ab4795daead616b5a3acf72879303434a87cbcd3a1785b9',
         quietEndingPeriodBeganAt: null,
         reputationReward: 10,
-        resolvedAt: undefined,
+        resolvedAt: null,
         stage: 'Open',
         stakesAgainst: 0,
         stakesFor: 0,
