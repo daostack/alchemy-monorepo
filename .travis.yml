@@ -8,8 +8,9 @@ node_js:
 before_install:
 
 install:
+  - npm install
+  - nohup npm run ganache &
 
 script:
   - npm run lint
-  - nohup npm run ganache &
   - npm run migrate -- --force
