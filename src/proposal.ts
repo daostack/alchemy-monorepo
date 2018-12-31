@@ -1,13 +1,12 @@
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
+import { map } from 'rxjs/operators'
 
 import { Arc } from './arc'
 import { DAO } from './dao'
 import { Operation } from './operation'
 import { IRewardQueryOptions, Reward } from './reward'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import { map } from 'rxjs/operators'
-
 
 export enum ProposalOutcome {
   None,
