@@ -26,6 +26,7 @@ script:
   - npm run lint
   - npm run test
   - npm run build
+  - docker-compose down -v
 after_success:
   - npm run report-coverage
   - test $TRAVIS_BRANCH = "master" && npm run deploy-docs
