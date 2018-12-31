@@ -156,7 +156,7 @@ export class Proposal implements IStateful<IProposalState> {
         proposer: item.proposer && item.proposer.id,
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
         reputationReward: Number(item.reputationReward),
-        resolvedAt: Number(item.resolvedAt),
+        resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : undefined,
         stage: item.stage,
         stakesAgainst: Number(item.stakesAgainst),
         stakesFor: Number(item.stakesFor),
