@@ -59,9 +59,9 @@
     },
     "dao": {
       "name": "Genesis Test",
-      "Avatar": "0x9F2bDb23112e1829dc51026F1745940862Eb6d95",
-      "NativeToken": "0x2525C740e4342d22c1471F45D0A2AA14BDcEbB9F",
-      "NativeReputation": "0x0014Add9fA7e8BFb7D29F145E0B38a17C3a4aFD2"
+      "Avatar": "0xA46489ac5889ebFb4001B220191A245eFFBfF9eb",
+      "NativeToken": "0x791706339DA65f74Deb4398b1803f16D7b237282",
+      "NativeReputation": "0x1Ae5897fDF722c2a162ab67103608Ef1Dd66A05E"
     }
   },
   "rinkeby": {
