@@ -23,30 +23,32 @@ export enum ProposalStage {
 }
 
 export interface IProposalState {
-  beneficiary: Address
   id: string
+  beneficiary: Address
   boostedAt: Date
   boostingThreshold: number
-  dao: DAO
-  proposer: Address
-  ipfsHash: string
-  title?: string
-  description?: string
-  url?: string
+  boostedVotePeriodLimit: number
   createdAt: Date
+  dao: DAO
+  description?: string
   ethReward: number,
   executedAt: Date
   externalTokenReward: number,
+  ipfsHash: string
+  preBoostedVotePeriodLimit: number,
+  proposer: Address
   quietEndingPeriodBeganAt: Date
   reputationReward: number,
   resolvedAt: Date,
   stage: ProposalStage
+  stakesFor: number
+  stakesAgainst: number
+  title?: string
+  url?: string
   tokensReward: number,
   votesFor: number
   votesAgainst: number
   winningOutcome: ProposalOutcome
-  stakesFor: number
-  stakesAgainst: number
 }
 
 export interface IVote {
@@ -132,36 +134,37 @@ export class Proposal implements IStateful<IProposalState> {
       }
     `
 
-    const itemMap = (item: any): IProposalState => {
+    const itemMap = (item: any) => {
       if (item === null) {
         throw Error(`Could not find a Proposal with id '${id}'`)
       }
 
-      // TODO: "pending subgraph implementation" refers to https://github.com/daostack/subgraph/issues/380
       return {
         beneficiary: item.beneficiary,
-        boostedAt: item.boostedAt,
-        boostingThreshold: 0, // TODO: Pending Subgraph implementation
-        createdAt: item.createdAt,
+        boostedAt: Number(item.boostedAt),
+        boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
+        boostingThreshold: 0, // TODO:
+        createdAt: Number(item.createdAt),
         dao: new DAO(item.dao.id, this.context),
         description: item.description,
-        ethReward: item.ethReward, 
+        ethReward: Number(item.ethReward),
         executedAt: item.executedAt,
-        externalTokenReward: item.externalTokenReward,
+        externalTokenReward: Number(item.externalTokenReward),
         id: item.id,
-        ipfsHash: item.ipfsHash, 
-        proposer: item.proposer && item.proposer.id, 
+        ipfsHash: item.ipfsHash,
+        preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
+        proposer: item.proposer && item.proposer.id,
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
-        reputationReward: item.reputationReward,
-        resolvedAt: item.resolvedAt,
+        reputationReward: Number(item.reputationReward),
+        resolvedAt: Number(item.resolvedAt),
         stage: item.stage,
-        stakesAgainst: item.stakesAgainst,
-        stakesFor: item.stakesFor,
+        stakesAgainst: Number(item.stakesAgainst),
+        stakesFor: Number(item.stakesFor),
         title: item.title,
-        tokensReward: item.tokensReward, 
-        url: item.url, 
-        votesAgainst: item.votesFor,
-        votesFor: item.votesAgainst,
+        tokensReward: Number(item.tokensReward),
+        url: item.url,
+        votesAgainst: Number(item.votesFor),
+        votesFor: Number(item.votesAgainst),
         winningOutcome: item.winningOutcome
       }
     }
@@ -178,7 +181,7 @@ export class Proposal implements IStateful<IProposalState> {
     )
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
+  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
     throw new Error('not implemented')
     // return this.dao().pipe(
     //   switchMap((dao) => {
@@ -187,11 +190,11 @@ export class Proposal implements IStateful<IProposalState> {
     // )
   }
 
-  public vote(outcome: ProposalOutcome): Operation<void> {
+  public vote(outcome: ProposalOutcome): Operation < void > {
     throw new Error('not implemented')
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
+  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
     throw new Error('not implemented')
     // return this.dao().pipe(
     //   switchMap((dao) => {
@@ -200,11 +203,11 @@ export class Proposal implements IStateful<IProposalState> {
     // )
   }
 
-  public stake(outcome: ProposalOutcome, amount: number): Operation<void> {
+  public stake(outcome: ProposalOutcome, amount: number): Operation < void > {
     throw new Error('not implemented')
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
+  public rewards(options: IRewardQueryOptions = {}): Observable < Reward[] > {
     throw new Error('not implemented')
     // return this.dao().pipe(
     //   switchMap((dao) => {

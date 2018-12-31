@@ -33,7 +33,7 @@ function getClient() {
  */
 describe('apolloClient', () => {
   let client
-  jest.setTimeout(10000)
+  jest.setTimeout(5000)
 
   it('can be instantiated', () => {
     client = getClient()
@@ -81,7 +81,7 @@ describe('apolloClient', () => {
       (eventData: any) => {
         // Do something on receipt of the event
         cntr += 1
-        console.log(`${cntr}: ${eventData}`)
+        // console.log(`${cntr}: ${eventData}`)
         returnedData = eventData.data.reputationMints
       },
       (err: any) => {
