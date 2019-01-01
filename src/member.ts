@@ -28,7 +28,7 @@ export interface IMemberState {
  */
 
 export class Member implements IStateful<IMemberState> {
-  public state: Observable<IMemberState> = of()
+  public state: Observable<IMemberState>
 
   /**
    * [constructor description]
@@ -40,9 +40,11 @@ export class Member implements IStateful<IMemberState> {
       {
         member (id: "${id}") {
           id,
+          address,
           dao {
             id
-          }
+          },
+          reputation
         }
       }
     `
@@ -53,7 +55,9 @@ export class Member implements IStateful<IMemberState> {
       }
 
       return {
-        id: item.id
+        address: item.address,
+        id: item.id,
+        reputation: item.reputation
       }
     }
 
