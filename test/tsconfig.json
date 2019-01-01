@@ -5,19 +5,18 @@
     "module":"commonjs",
     "moduleResolution": "node",
     "declaration": true,
-    "declarationDir": "dist/types",
+    "declarationDir": "../dist/types",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "outDir": "dist/lib",
     "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
     "target": "es5",
     "typeRoots": [
-      "node_modules/@types"
+      "../node_modules/@types"
     ]
   },
   "include": [
-    "src"
+    "."
   ]
 }
