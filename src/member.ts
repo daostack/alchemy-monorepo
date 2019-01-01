@@ -1,6 +1,7 @@
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
 import { Arc } from './arc'
+import { DAO } from './dao'
 
 import {
   IProposalQueryOptions,
@@ -15,12 +16,12 @@ import { Address, ICommonQueryOptions, IStateful } from './types'
 
 export interface IMemberState {
   address: Address
-  dao: string
-  eth: number
+  dao: DAO,
+  // TODO: include ETH balance
+  // eth: number
   reputation: number
+  // 'tokens' --> balance of address in dao.nativeToken.balanceOf
   tokens: number
-  gen: number
-  approvedGen: number
 }
 
 /**
@@ -44,7 +45,8 @@ export class Member implements IStateful<IMemberState> {
           dao {
             id
           },
-          reputation
+          reputation,
+          tokens,
         }
       }
     `
@@ -56,8 +58,10 @@ export class Member implements IStateful<IMemberState> {
 
       return {
         address: item.address,
+        dao: new DAO(item.dao.id, this.context),
         id: item.id,
-        reputation: item.reputation
+        reputation: item.reputation,
+        tokens: item.tokens
       }
     }
 
