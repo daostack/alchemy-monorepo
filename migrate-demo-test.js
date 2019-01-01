@@ -40,8 +40,8 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
     'Genesis Test',
     'GDT',
     migrationParams.founders.map(({ address }) => address),
-    migrationParams.founders.map(({ tokens }) => tokens),
-    migrationParams.founders.map(({ reputation }) => reputation),
+    migrationParams.founders.map(({ tokens }) => web3.utils.toWei(tokens.toString())),
+    migrationParams.founders.map(({ reputation }) => web3.utils.toWei(reputation.toString())),
     '0'
   ]
 
@@ -209,37 +209,30 @@ async function setGenesisProtocolParams () {
   const gpParams = {
     boostedVotePeriodLimit: 259200,
     daoBountyConst: 75,
-    daoBountyLimitGWei: 100,
-    minimumStakingFeeGWei: 0,
-    preBoostedVotePeriodLimit: 1814400,
-    preBoostedVoteRequiredPercentage: 50,
-    proposingRepRewardConstA: 5,
-    proposingRepRewardConstB: 5,
+    minimumDaoBountyGWei: 100,
+    queuedVotePeriodLimit: 1814400,
+    queuedVoteRequiredPercentage: 50,
+    preBoostedVotePeriodLimit: 259200,
+    proposingRepRewardGwei: 5,
     quietEndingPeriod: 86400,
-    stakerFeeRatioForVoters: 50,
-    thresholdConstAGWei: 7,
-    thresholdConstB: 3,
+    thresholdConst: 2000,
     voteOnBehalf: '0x0000000000000000000000000000000000000000',
-    votersGainRepRatioFromLostRep: 80,
     votersReputationLossRatio: 1
   }
 
   const gpSetParams = genesisProtocol.methods.setParameters(
     [
-      gpParams.preBoostedVoteRequiredPercentage,
-      gpParams.preBoostedVotePeriodLimit,
+      gpParams.queuedVoteRequiredPercentage,
+      gpParams.queuedVotePeriodLimit,
       gpParams.boostedVotePeriodLimit,
-      this.web3.utils.toWei(gpParams.thresholdConstAGWei.toString(), 'gwei'),
-      gpParams.thresholdConstB,
-      this.web3.utils.toWei(gpParams.minimumStakingFeeGWei.toString(), 'gwei'),
+      gpParams.preBoostedVotePeriodLimit,
+      gpParams.thresholdConst,
       gpParams.quietEndingPeriod,
-      gpParams.proposingRepRewardConstA,
-      gpParams.proposingRepRewardConstB,
-      gpParams.stakerFeeRatioForVoters,
+      this.web3.utils.toWei(gpParams.proposingRepRewardGwei.toString(), 'gwei'),
       gpParams.votersReputationLossRatio,
-      gpParams.votersGainRepRatioFromLostRep,
+      this.web3.utils.toWei(gpParams.minimumDaoBountyGWei.toString(), 'gwei'),
       gpParams.daoBountyConst,
-      this.web3.utils.toWei(gpParams.daoBountyLimitGWei.toString(), 'gwei')
+      0 // activationTime
     ],
     gpParams.voteOnBehalf
   )
@@ -335,7 +328,7 @@ async function voteOnProposal ({ proposalId, outcome, voter }) {
   )
 
   tx = await genesisProtocol.methods
-    .vote(proposalId, outcome, voter)
+    .vote(proposalId, outcome, 0, voter)
     .send({ from: voter })
 
   await this.logTx(tx, 'Voted on Proposal.')
