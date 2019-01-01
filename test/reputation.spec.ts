@@ -4,7 +4,7 @@ import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
-import { getArc, getContractAddresses } from './utils'
+import { getArc, getContractAddresses, getWeb3 } from './utils'
 /**
  * Reputation test
  */
@@ -13,11 +13,15 @@ describe('Reputation', () => {
   let addresses: { [key: string]: string }
   let arc: Arc
   let address: Address
+  let web3: any
+  let accounts: any
 
-  beforeAll(() => {
+  beforeAll(async () => {
     addresses = getContractAddresses()
     address = addresses.NativeReputation
     arc = getArc()
+    web3 = await getWeb3()
+    accounts = web3.eth.accounts.wallet
   })
 
   it('Reputation is instantiable', () => {
@@ -48,7 +52,7 @@ describe('Reputation', () => {
 
   it('get someones reputation', async () => {
     const reputation = new Reputation(address, arc)
-    const reputationOf = await reputation.reputationOf('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1')
+    const reputationOf = await reputation.reputationOf(accounts[0].address)
       .pipe(first()).toPromise()
     expect(reputationOf).toEqual(1000)
   })
