@@ -108,7 +108,6 @@ export class Arc {
     return this.getObservable(query).pipe(
       map((r) => {
         if (!r.data) {
-          // console.log(query.loc.source.body)
           return null
         }
         return r.data[entity]
