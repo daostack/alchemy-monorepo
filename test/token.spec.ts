@@ -2,7 +2,7 @@ import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Token } from '../src/token'
 import { Address } from '../src/types'
-import { getArc, getContractAddresses } from './utils'
+import { getArc, getContractAddresses, getWeb3 } from './utils'
 /**
  * Token test
  */
@@ -10,11 +10,13 @@ describe('Token', () => {
   let addresses: { [key: string]: Address }
   let arc: Arc
   let address: Address
+  let web3: any
 
-  beforeAll(() => {
+  beforeAll(async () => {
     arc = getArc()
     addresses = getContractAddresses()
     address = addresses.NativeToken
+    web3 = await getWeb3()
   })
 
   it('Token is instantiable', () => {
@@ -45,7 +47,7 @@ describe('Token', () => {
     const token = new Token(address, arc)
     const balanceOf = await token.balanceOf('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1')
       .pipe(first()).toPromise()
-    expect(balanceOf).toEqual(1000)
+    expect(balanceOf).toEqual(web3.utils.toWei('1000'))
   })
 
   it('see approvals', async () => {

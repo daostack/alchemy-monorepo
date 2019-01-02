@@ -77,59 +77,60 @@ export class Proposal implements IStateful<IProposalState> {
     // TODO: commented out the fields that are (or seem) broken in graphql
     const query = gql`
       {
-        proposal (id: "${id}") {
-            id,
-            dao {
-              id
-            },
-            proposer {
-              id
-            },
-            stage,
-            createdAt,
-            boostedAt,
-            quietEndingPeriodBeganAt,
-            executedAt,
-            ipfsHash,
-            title,
-            description,
-            url,
-            rewards {
-              id
-            },
-            votes {
-              id
-            },
-            votesFor,
-            votesAgainst,
-            winningOutcome,
-            stakes {
-              id
-            },
-            stakesFor,
-            stakesAgainst,
-            preBoostedVoteRequiredPercentage,
-            preBoostedVotePeriodLimit,
-            boostedVotePeriodLimit,
-            thresholdConstA,
-            thresholdConstB,
-            minimumStakingFee,
-            quietEndingPeriod,
-            proposingRepRewardConstA,
-            proposingRepRewardConstB,
-            stakerFeeRatioForVoters,
-            votersReputationLossRatio,
-            votersGainRepRatioFromLostRep,
-            voteOnBehalf,
-            beneficiary,
-            reputationReward,
-            tokensReward,
-            ethReward,
-            externalTokenReward,
-            externalToken,
-            periods,
-            periodLength
+        proposal(id: "${id}") {
+          id
+          dao {
+            id
           }
+          proposer {
+            id
+          }
+          stage
+          createdAt
+          boostedAt
+          quietEndingPeriodBeganAt
+          executedAt
+          ipfsHash
+          title
+          description
+          url
+          rewards {
+            id
+          }
+          votes {
+            id
+          }
+          votesFor
+          votesAgainst
+          winningOutcome
+          stakes {
+            id
+          }
+          stakesFor
+          stakesAgainst
+          queuedVoteRequiredPercentage
+          queuedVotePeriodLimit
+          boostedVotePeriodLimit
+          preBoostedVotePeriodLimit
+          thresholdConst
+          limitExponentValue
+          quietEndingPeriod
+          proposingRepReward
+          minimumStakingFee
+          # votersReputationLossRatio FIXME
+          minimumDaoBounty
+          daoBountyConst
+          activationTime
+          voteOnBehalf
+          beneficiary
+          reputationReward
+          tokensReward
+          ethReward
+          externalTokenReward
+          externalToken
+          periods
+          periodLength
+        }
       }
     `
 
@@ -162,8 +163,8 @@ export class Proposal implements IStateful<IProposalState> {
         title: item.title,
         tokensReward: Number(item.tokensReward),
         url: item.url,
-        votesAgainst: Number(item.votesFor),
-        votesFor: Number(item.votesAgainst),
+        votesAgainst: item.votesFor,
+        votesFor: item.votesAgainst,
         winningOutcome: item.winningOutcome
       }
     }

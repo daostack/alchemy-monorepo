@@ -52,7 +52,7 @@ export class Reputation implements IStateful<IReputationState> {
       map((r) => r.data.reputationHolders),
       map((items: any[]) => {
         const item = items.length > 0 && items[0]
-        return item.balance !== undefined ? Number(item.balance) : 0
+        return item.balance !== undefined ? item.balance : 0
       })
     )
   }

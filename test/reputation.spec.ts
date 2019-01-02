@@ -54,7 +54,7 @@ describe('Reputation', () => {
     const reputation = new Reputation(address, arc)
     const reputationOf = await reputation.reputationOf(accounts[0].address)
       .pipe(first()).toPromise()
-    expect(reputationOf).toEqual(1000)
+    expect(reputationOf).toEqual(web3.utils.toWei('1000'))
   })
 
 })

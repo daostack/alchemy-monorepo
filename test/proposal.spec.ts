@@ -76,7 +76,7 @@ describe('Proposal', () => {
         externalTokenReward: 10,
         id: '0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e',
         ipfsHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
-        preBoostedVotePeriodLimit: 1814400,
+        preBoostedVotePeriodLimit: 259200,
         proposer: '0x1cea1e112ec409762ab4795daead616b5a3acf72879303434a87cbcd3a1785b9',
         quietEndingPeriodBeganAt: null,
         reputationReward: 10,
@@ -87,8 +87,8 @@ describe('Proposal', () => {
         title: null,
         tokensReward: 10,
         url: null,
-        votesAgainst: 1000,
-        votesFor: 1000,
+        votesAgainst: web3.utils.toWei('1000'),
+        votesFor: web3.utils.toWei('1000'),
         winningOutcome: 'Fail'
     })
   })
