@@ -47,7 +47,7 @@ describe('Token', () => {
     const token = new Token(address, arc)
     const balanceOf = await token.balanceOf('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1')
       .pipe(first()).toPromise()
-    expect(balanceOf).toEqual(web3.utils.toWei('1000'))
+    expect(balanceOf).toEqual(1e21)
   })
 
   it('see approvals', async () => {

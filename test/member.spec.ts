@@ -8,7 +8,7 @@ import { getArc, getWeb3 } from './utils'
  * Member test
  */
 describe('Member', () => {
-  const id = '0x7e3a01c996a0b6e1f2d373a0b02f09eb2be0acf8069177eb26187be6650f2765'
+  const id = '0xed311355e6510582a3b6699ffbb84e214ddb82871c0bdee04975d7a0f345a78c'
 
   let arc: Arc
   let web3: any
@@ -29,8 +29,8 @@ describe('Member', () => {
   it('Member state works', async () => {
     const member = new Member(id, arc)
     const memberState = await member.state.pipe(first()).toPromise()
-    expect(memberState.reputation).toEqual('1000')
-    expect(memberState.tokens).toEqual('1000')
+    expect(memberState.reputation).toEqual(1e21)
+    expect(memberState.tokens).toEqual(1e21)
     expect(memberState.dao).toBeInstanceOf(DAO)
   })
 })

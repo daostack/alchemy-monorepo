@@ -60,8 +60,8 @@ export class Member implements IStateful<IMemberState> {
         address: item.address,
         dao: new DAO(item.dao.id, this.context),
         id: item.id,
-        reputation: item.reputation,
-        tokens: item.tokens
+        reputation: Number(item.reputation),
+        tokens: Number(item.tokens)
       }
     }
 
