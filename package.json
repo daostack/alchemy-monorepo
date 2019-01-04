@@ -81,10 +81,6 @@
   "devDependencies": {
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
-    "@daostack/migration": "0.0.0-alpha.58-v9",
-    "@daostack/subgraph": "git+https://github.com/daostack/subgraph.git",
-    "@types/graphql": "^14.0.3",
-    "@types/isomorphic-fetch": "0.0.34",
     "@types/jest": "^23.3.2",
     "@types/node": "^10.11.0",
     "@types/web3": "^1.0.12",

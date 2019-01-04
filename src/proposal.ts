@@ -1,5 +1,6 @@
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
+import { map } from 'rxjs/operators'
 
 import { Arc } from './arc'
 import { DAO } from './dao'
@@ -76,59 +77,60 @@ export class Proposal implements IStateful<IProposalState> {
 
     const query = gql`
       {
-        proposal (id: "${id}") {
-            id,
-            dao {
-              id
-            },
-            proposer {
-             id
-            },
-            stage,
-            createdAt,
-            boostedAt,
-            quietEndingPeriodBeganAt,
-            executedAt,
-            ipfsHash,
-            title,
-            description,
-            url,
-            rewards {
-              id
-            },
-            votes {
-              id
-            },
-            votesFor,
-            votesAgainst,
-            winningOutcome,
-            stakes {
-              id
-            },
-            stakesFor,
-            stakesAgainst,
-            preBoostedVoteRequiredPercentage,
-            preBoostedVotePeriodLimit,
-            boostedVotePeriodLimit,
-            thresholdConstA,
-            thresholdConstB,
-            minimumStakingFee,
-            quietEndingPeriod,
-            proposingRepRewardConstA,
-            proposingRepRewardConstB,
-            stakerFeeRatioForVoters,
-            votersReputationLossRatio,
-            votersGainRepRatioFromLostRep,
-            voteOnBehalf,
-            beneficiary,
-            reputationReward,
-            tokensReward,
-            ethReward,
-            externalTokenReward,
-            externalToken,
-            periods,
-            periodLength
+        proposal(id: "${id}") {
+          id
+          dao {
+            id
           }
+          proposer {
+            id
+          }
+          stage
+          createdAt
+          boostedAt
+          quietEndingPeriodBeganAt
+          executedAt
+          ipfsHash
+          title
+          description
+          url
+          rewards {
+            id
+          }
+          votes {
+            id
+          }
+          votesFor
+          votesAgainst
+          winningOutcome
+          stakes {
+            id
+          }
+          stakesFor
+          stakesAgainst
+          queuedVoteRequiredPercentage
+          queuedVotePeriodLimit
+          boostedVotePeriodLimit
+          preBoostedVotePeriodLimit
+          thresholdConst
+          limitExponentValue
+          quietEndingPeriod
+          proposingRepReward
+          minimumStakingFee
+          # votersReputationLossRatio FIXME
+          minimumDaoBounty
+          daoBountyConst
+          activationTime
+          voteOnBehalf
+          beneficiary
+          reputationReward
+          tokensReward
+          ethReward
+          externalTokenReward
+          externalToken
+          periods
+          periodLength
+        }
       }
     `
 
@@ -154,15 +156,15 @@ export class Proposal implements IStateful<IProposalState> {
         proposer: item.proposer && item.proposer.id,
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
         reputationReward: Number(item.reputationReward),
-        resolvedAt: Number(item.resolvedAt),
+        resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : null,
         stage: item.stage,
         stakesAgainst: Number(item.stakesAgainst),
         stakesFor: Number(item.stakesFor),
         title: item.title,
         tokensReward: Number(item.tokensReward),
         url: item.url,
-        votesAgainst: Number(item.votesFor),
-        votesFor: Number(item.votesAgainst),
+        votesAgainst: item.votesFor,
+        votesFor: item.votesAgainst,
         winningOutcome: item.winningOutcome
       }
     }
@@ -170,14 +172,12 @@ export class Proposal implements IStateful<IProposalState> {
     this.state = context._getObservableObject(query, 'proposal', itemMap) as Observable<IProposalState>
   }
 
-  // TODO: probably does not need to be an observable, as it never changes
-  public dao(): Observable < DAO > {
-    throw new Error('not implemented')
-    // return this.state.pipe(
-    //   map((state) => {
-    //     return new DAO(state.dao)
-    //   })
-    // )
+  public dao(): Observable<DAO> {
+    return this.state.pipe(
+      map((state) => {
+        return state.dao
+      })
+    )
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {

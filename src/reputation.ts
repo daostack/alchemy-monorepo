@@ -41,7 +41,7 @@ export class Reputation implements IStateful<IReputationState> {
   public reputationOf(address: Address): Observable<number> {
     const query = gql`{
       reputationHolders (
-        where: { address:"0xb0c908140fe6fd6fbd4990a5c2e35ca6dc12bfb2",
+        where: { address:"${address}",
         contract: "${this.address}"}
       )
       {
@@ -52,7 +52,7 @@ export class Reputation implements IStateful<IReputationState> {
       map((r) => r.data.reputationHolders),
       map((items: any[]) => {
         const item = items.length > 0 && items[0]
-        return Number(item.balance)
+        return item.balance !== undefined ? item.balance : 0
       })
     )
   }
