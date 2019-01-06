@@ -73,7 +73,7 @@ export class DAO implements IStateful<IDAOState> {
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
     // TODO: show only members from this DAO
     const query = gql`{
-      members {
+      members (where: { dao: ${this.address}}){
         id
       }
     }`
