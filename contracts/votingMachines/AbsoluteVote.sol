@@ -32,7 +32,7 @@ contract AbsoluteVote is IntVoteInterface {
         bool open; // voting open flag
     }
 
-    event AVVoteProposal(bytes32 indexed _proposalId, bool _isOwnerVote);
+    event AVVoteProposal(bytes32 indexed _proposalId, bool _isProxyVote);
 
     event RefreshReputation(bytes32 indexed _proposalId,
         bytes32 indexed _organizationId,

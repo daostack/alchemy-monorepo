@@ -6,7 +6,7 @@ import "./VotingMachineCallbacksInterface.sol";
 import "./ProposalExecuteInterface.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/math/Math.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/utils/Address.sol";
 
 
@@ -127,21 +127,21 @@ contract GenesisProtocolLogic is IntVoteInterface {
     uint256 constant public NO = 2;
     uint256 constant public YES = 1;
     uint256 public proposalsCnt; // Total number of proposals
-    ERC20 public stakingToken;
+    IERC20 public stakingToken;
     address constant private GEN_TOKEN_ADDRESS = 0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf;
     uint256 constant private MAX_BOOSTED_PROPOSALS = 4096;
 
     /**
      * @dev Constructor
      */
-    constructor(ERC20 _stakingToken) public {
+    constructor(IERC20 _stakingToken) public {
       //The GEN token (staking token) address is hard coded in the contract by GEN_TOKEN_ADDRESS .
       //This will work for a network which already hosted the GEN token on this address (e.g mainnet).
       //If such contract address does not exist in the network (e.g ganache)
       //the contract will use the _stakingToken param as the
       //staking token address.
         if (address(GEN_TOKEN_ADDRESS).isContract()) {
-            stakingToken = ERC20(GEN_TOKEN_ADDRESS);
+            stakingToken = IERC20(GEN_TOKEN_ADDRESS);
         } else {
             stakingToken = _stakingToken;
         }

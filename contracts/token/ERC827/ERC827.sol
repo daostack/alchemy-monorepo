@@ -4,13 +4,13 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 
 /**
- * @title ERC827 interface, an extension of ERC20 token standard
+ * @title ERC827 interface, an extension of IERC20 token standard
  *
- * @dev Interface of a ERC827 token, following the ERC20 standard with extra
+ * @dev Interface of a ERC827 token, following the IERC20 standard with extra
  * methods to transfer value and data and execute calls in transfers and
  * approvals.
  */
-contract ERC827 is ERC20 {
+contract ERC827 is IERC20 {
 
     function approveAndCall(address _spender, uint256 _value, bytes memory _data) public payable returns(bool);
 

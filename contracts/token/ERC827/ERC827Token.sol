@@ -5,16 +5,16 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 
 /**
- * @title ERC827, an extension of ERC20 token standard
+ * @title ERC827, an extension of IERC20 token standard
  *
- * @dev Implementation the ERC827, following the ERC20 standard with extra
+ * @dev Implementation the ERC827, following the IERC20 standard with extra
  * methods to transfer value and data and execute calls in transfers and
- * approvals. Uses OpenZeppelin ERC20.
+ * approvals. Uses OpenZeppelin IERC20.
  */
 contract ERC827Token is ERC20, ERC827 {
 
   /**
-   * @dev Addition to ERC20 token methods. It allows to
+   * @dev Addition to IERC20 token methods. It allows to
    * approve the transfer of value and execute a call with the sent data.
    * Beware that changing an allowance with this method brings the risk that
    * someone may use both the old and the new allowance by unfortunate
@@ -48,7 +48,7 @@ contract ERC827Token is ERC20, ERC827 {
     }
 
   /**
-   * @dev Addition to ERC20 token methods. Transfer tokens to a specified
+   * @dev Addition to IERC20 token methods. Transfer tokens to a specified
    * address and execute a call with the sent data on the same transaction
    * @param _to address The address which you want to transfer to
    * @param _value uint256 the amout of tokens to be transfered
@@ -75,7 +75,7 @@ contract ERC827Token is ERC20, ERC827 {
     }
 
   /**
-   * @dev Addition to ERC20 token methods. Transfer tokens from one address to
+   * @dev Addition to IERC20 token methods. Transfer tokens from one address to
    * another and make a contract call on the same transaction
    * @param _from The address which you want to send tokens from
    * @param _to The address which you want to transfer to
@@ -102,7 +102,7 @@ contract ERC827Token is ERC20, ERC827 {
     }
 
   /**
-   * @dev Addition to ERC20 methods. Increase the amount of tokens that
+   * @dev Addition to IERC20 methods. Increase the amount of tokens that
    * an owner allowed to a spender and execute a call with the sent data.
    * approve should be called when allowed[_spender] == 0. To increment
    * allowed value is better to use this function to avoid 2 calls (and wait until
@@ -133,7 +133,7 @@ contract ERC827Token is ERC20, ERC827 {
     }
 
   /**
-   * @dev Addition to ERC20 methods. Decrease the amount of tokens that
+   * @dev Addition to IERC20 methods. Decrease the amount of tokens that
    * an owner allowed to a spender and execute a call with the sent data.
    * approve should be called when allowed[_spender] == 0. To decrement
    * allowed value is better to use this function to avoid 2 calls (and wait until

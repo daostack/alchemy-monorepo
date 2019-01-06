@@ -47,7 +47,7 @@ contract AbsoluteVoteExecuteMock is Debug, VotingMachineCallbacksInterface, Prop
         return reputation.burn(_beneficiary, _amount);
     }
 
-    function stakingTokenTransfer(ERC20 _stakingToken, address _beneficiary, uint256 _amount, bytes32)
+    function stakingTokenTransfer(IERC20 _stakingToken, address _beneficiary, uint256 _amount, bytes32)
     external
     onlyOwner
     returns(bool)
@@ -92,7 +92,7 @@ contract AbsoluteVoteExecuteMock is Debug, VotingMachineCallbacksInterface, Prop
         return reputation.balanceOfAt(_owner, proposalsBlockNumbers[_proposalId]);
     }
 
-    function balanceOfStakingToken(ERC20 _stakingToken, bytes32)
+    function balanceOfStakingToken(IERC20 _stakingToken, bytes32)
     external
     view
     returns(uint256)

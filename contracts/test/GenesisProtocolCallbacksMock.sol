@@ -11,7 +11,7 @@ import "./Debug.sol";
 contract GenesisProtocolCallbacksMock is Debug, VotingMachineCallbacksInterface, ProposalExecuteInterface, Ownable {
 
     Reputation public reputation;
-    ERC20 public stakingToken;
+    IERC20 public stakingToken;
     GenesisProtocol public genesisProtocol;
     mapping (bytes32=>uint) public proposalsBlockNumbers;
 
@@ -26,7 +26,7 @@ contract GenesisProtocolCallbacksMock is Debug, VotingMachineCallbacksInterface,
     /**
      * @dev Constructor
      */
-    constructor(Reputation _reputation, ERC20 _stakingToken, GenesisProtocol _genesisProtocol) public {
+    constructor(Reputation _reputation, IERC20 _stakingToken, GenesisProtocol _genesisProtocol) public {
         reputation = _reputation;
         stakingToken = _stakingToken;
         genesisProtocol = _genesisProtocol;
@@ -49,7 +49,7 @@ contract GenesisProtocolCallbacksMock is Debug, VotingMachineCallbacksInterface,
         return reputation.burn(_beneficiary, _amount);
     }
 
-    function stakingTokenTransfer(ERC20 _stakingToken, address _beneficiary, uint256 _amount, bytes32)
+    function stakingTokenTransfer(IERC20 _stakingToken, address _beneficiary, uint256 _amount, bytes32)
     external
     onlyOwner
     returns(bool)
@@ -95,7 +95,7 @@ contract GenesisProtocolCallbacksMock is Debug, VotingMachineCallbacksInterface,
         return reputation.totalSupplyAt(proposalsBlockNumbers[_proposalId]);
     }
 
-    function balanceOfStakingToken(ERC20 _stakingToken, bytes32)
+    function balanceOfStakingToken(IERC20 _stakingToken, bytes32)
     external
     view
     returns(uint256)
