@@ -1,12 +1,13 @@
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
-import { map } from 'rxjs/operators'
+import { map, switchMap } from 'rxjs/operators'
 
 import { Arc } from './arc'
 import { DAO } from './dao'
 import { Operation } from './operation'
 import { IRewardQueryOptions, Reward } from './reward'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
+import { IVote } from './vote'
 
 export enum ProposalOutcome {
   None,
@@ -48,13 +49,6 @@ export interface IProposalState {
   votesFor: number
   votesAgainst: number
   winningOutcome: ProposalOutcome
-}
-
-export interface IVote {
-  address: Address
-  outcome: ProposalOutcome
-  amount: number // amount of reputation that was voted with
-  proposalId: string
 }
 
 export interface IStake {
@@ -181,12 +175,11 @@ export class Proposal implements IStateful<IProposalState> {
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
-    throw new Error('not implemented')
-    // return this.dao().pipe(
-    //   switchMap((dao) => {
-    //     return dao.votes({ ...options, proposalId: this.id })
-    //   })
-    // )
+    return this.dao().pipe(
+      switchMap((dao) => {
+        options.proposal = this.id
+        return dao.votes(options)
+    }))
   }
 
   public vote(outcome: ProposalOutcome): Operation < void > {
@@ -215,25 +208,6 @@ export class Proposal implements IStateful<IProposalState> {
     // )
   }
 
-  // private getProposalStage(state: number, executionState: number, decision: number): ProposalStage {
-  //   if (state === 3 && executionState === 0) {
-  //     return ProposalStage.preboosted
-  //   } else if (state === 4 && executionState === 0) {
-  //     return ProposalStage.boosted
-  //   } else if (state === 5 && executionState === 0) {
-  //     return ProposalStage.overtimed
-  //   } else if (state === 2 && executionState === 2) {
-  //     return ProposalStage.passed
-  //   } else if (state === 2 && (executionState === 3 || executionState === 4) && decision === 1) {
-  //     return ProposalStage.passedBoosted
-  //   } else if ((state === 1 || state === 2) && (executionState === 1 || executionState === 2) && decision === 2) {
-  //     return ProposalStage.failed
-  //   } else if ((state === 1 || state === 2) && (executionState === 3 || executionState === 4) && decision === 2) {
-  //     return ProposalStage.failedBoosted
-  //   }
-  //
-  //   return ProposalStage.preboosted
-  // }
 }
 
 enum ProposalQuerySortOptions {
@@ -255,9 +229,12 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
 }
 
 export interface IVoteQueryOptions extends ICommonQueryOptions {
-  proposalId?: string
+  member?: Address
+  proposal?: string
+  [key: string]: any
 }
 
 export interface IStakeQueryOptions extends ICommonQueryOptions {
   proposalId?: string
+  [key: string]: any
 }

@@ -1,12 +1,12 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
+import { filter } from 'rxjs/operators'
 import { Arc } from './arc'
 import { IMemberQueryOptions, Member } from './member'
 import {
   IProposalQueryOptions,
   IStake,
   IStakeQueryOptions,
-  IVote,
   IVoteQueryOptions,
   Proposal,
   ProposalStage
@@ -15,6 +15,7 @@ import { Reputation } from './reputation'
 import { IRewardQueryOptions, Reward } from './reward'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
+import { IVote, Vote } from './vote'
 
 export interface IDAOState {
   address: Address // address of the avatar
@@ -81,7 +82,7 @@ export class DAO implements IStateful<IDAOState> {
     return this.context._getObservableList(query, 'members', itemMap) as Observable<Member[]>
   }
 
-  public proposals(options: IProposalQueryOptions = {dao: this.address}): Observable<Proposal[]> {
+  public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
 
     // TODO: there must be  better way to construct a where clause from a dictionary
     let where = ''
@@ -93,11 +94,11 @@ export class DAO implements IStateful<IDAOState> {
       }
     }
 
-    // TODO: we need a way to get proposals only for this DAO, https://github.com/daostack/subgraph/issues/40
     const query = gql`
       {
         proposals(where: {
           ${where}
+          dao: "${this.address}"
         }) {
           id
         }
@@ -116,16 +117,16 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
-    // TODO: we need a way to get rewards only for this DAO, https://github.com/daostack/subgraph/issues/40
     let where = ''
     for (const key of Object.keys(options)) {
-      where += `${key}: "${options[key] as string},\n"`
+      where += `${key}: "${options[key] as string}",\n`
     }
 
     const query = gql`
       {
         rewards (where: {
           ${where}
+          dao: "${this.address}"
         }) {
           id
         }
@@ -140,7 +141,38 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
-    throw new Error('not implemented')
+    let where = ''
+    for (const key of Object.keys(options)) {
+      where += `${key}: "${options[key] as string}",\n`
+    }
+
+    const query = gql`
+      {
+        proposalVotes(where: {
+          ${where}
+        }) {
+          id
+          createdAt
+          member {
+            id
+            dao {
+              id
+            }
+          }
+          proposal {
+            id
+          }
+          outcome
+          reputation
+        }
+      }
+    `
+    return this.context._getObservableListWithFilter(
+      query,
+      'proposalVotes',
+      (r: any) => new Vote(r.id, r.member.id, r.createdAt, r.outcome, r.reputation, r.proposal.id,  r.member.dao.id),
+      (r: any) => r[0].member.dao.id === this.address
+    ) as Observable<IVote[]>
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {

@@ -92,4 +92,15 @@ describe('Proposal', () => {
         winningOutcome: 'Fail'
     })
   })
+
+  it('get proposal votes', async () => {
+    const { Avatar, proposalId } = DAOstackMigration.migration('private').test
+
+    const proposal = new Proposal(proposalId, arc)
+    const votes = await proposal.votes().pipe(first()).toPromise()
+    expect(votes.length).toBeGreaterThan(0)
+    const vote = votes[0]
+    expect(vote.proposalId).toBe(proposalId)
+    expect(vote.dao).toBe(Avatar.toLowerCase())
+  })
 })
