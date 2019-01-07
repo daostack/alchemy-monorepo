@@ -32,9 +32,8 @@ export class Member implements IStateful<IMemberState> {
   public state: Observable<IMemberState>
 
   /**
-   * [constructor description]
-   * @param address address of the user
-   * @param dao     address of the DAO
+   * @param id Id of the member
+   * @param context an instance of Arc
    */
   constructor(public id: string, public context: Arc) {
     const query = gql`
