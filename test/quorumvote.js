@@ -70,26 +70,26 @@ contract('QuorumVote', accounts => {
     const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 5, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,true, absoluteVoteExecuteMock.address, 5, paramsHash, 0]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // now lets vote Option 1 with a minority reputation
     await quorumVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 5, paramsHash, reputationArray[0], true]);
+    await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 5, paramsHash, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // another minority reputation (Option 0):
     await quorumVote.vote(proposalId, 0,0,helpers.NULL_ADDRESS, { from: accounts[1] });
     await checkVoteInfo(proposalId, accounts[1], [0, reputationArray[1]]);
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 5, paramsHash, (reputationArray[0] + reputationArray[1]), true]);
+    await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 5, paramsHash, (reputationArray[0] + reputationArray[1])]);
     await checkVotesStatus(proposalId, [reputationArray[1], reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // the decisive vote is cast now and the proposal will be executed with option 5
     tx = await quorumVote.vote(proposalId, 5,0, accounts[2],{from:accounts[2]});
     await checkVoteInfo(proposalId, accounts[2], [5, reputationArray[2]]);
     // Proposal should be empty (being deleted after execution)
-    await checkProposalInfo(proposalId, [ helpers.NULL_HASH,helpers.NULL_ADDRESS, 0,helpers.NULL_HASH, 0, false]);
+    await checkProposalInfo(proposalId, [ helpers.NULL_HASH,false,helpers.NULL_ADDRESS, 0,helpers.NULL_HASH, 0]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
   });
@@ -105,19 +105,19 @@ contract('QuorumVote', accounts => {
     const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,true ,absoluteVoteExecuteMock.address, 6, paramsHash, 0]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // now lets vote 'Option 0' with 20% of the reputation - should not be executed yet (didn't reach 25%).
     await quorumVote.vote(proposalId, 0,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [0, reputationArray[0]]);
-    await checkProposalInfo(proposalId, [ organizationId, absoluteVoteExecuteMock.address,6, paramsHash, reputationArray[0], true]);
+    await checkProposalInfo(proposalId, [ organizationId,true, absoluteVoteExecuteMock.address,6, paramsHash, reputationArray[0]]);
     await checkVotesStatus(proposalId, [reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     // now lets vote 'Option 1' with 10% of the reputation - should be executed with 'Option 0'! (reached 30% and the 'Option 1' is the majority).
     await quorumVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS, { from: accounts[1] });
     await checkVoteInfo(proposalId, accounts[1], [1, reputationArray[1]]);
-    await checkProposalInfo(proposalId, [helpers.NULL_HASH,helpers.NULL_ADDRESS, 0,helpers.NULL_HASH, 0, false]);
+    await checkProposalInfo(proposalId, [helpers.NULL_HASH,false,helpers.NULL_ADDRESS, 0,helpers.NULL_HASH, 0]);
   });
 
   it("Invalid inputs shouldn't work (precReq, vote)", async function () {
@@ -253,7 +253,7 @@ contract('QuorumVote', accounts => {
     const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 6, paramsHash, 0]);
 
     // Lets try to vote twice from the same address
     await quorumVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
@@ -262,7 +262,7 @@ contract('QuorumVote', accounts => {
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
 
     // Total 'Option 2' should be equal to the voter's reputation exactly, even though we voted twice
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, reputationArray[0], true]);
+    await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 6, paramsHash, reputationArray[0], true]);
     await checkVotesStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   });
 
@@ -277,7 +277,7 @@ contract('QuorumVote', accounts => {
     const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
 
     // Lets try to vote and then cancel our vote
     await quorumVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
@@ -286,7 +286,7 @@ contract('QuorumVote', accounts => {
     await checkVoteInfo(proposalId, accounts[0], [0, 0]);
 
     // Proposal's votes supposed to be zero again.
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   });
 
@@ -300,7 +300,7 @@ contract('QuorumVote', accounts => {
     assert.isOk(proposalId);
     const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 6, paramsHash, 0]);
 
     // Lets try to vote on the behalf of someone else
     try {
@@ -311,7 +311,7 @@ contract('QuorumVote', accounts => {
     }
 
     // The vote should not be counted
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 6, paramsHash, 0]);
     await quorumVote.vote(proposalId, 1,0, accounts[0], {from: accounts[5]});
   });
     // [TODO] Check why this test doesn't work

@@ -23,13 +23,13 @@ contract AbsoluteVote is IntVoteInterface {
 
     struct Proposal {
         bytes32 organizationId; // the organization Id
+        bool open; // voting open flag
         address callbacks;
         uint256 numOfChoices;
         bytes32 paramsHash; // the hash of the parameters of the proposal
         uint256 totalVotes;
         mapping(uint=>uint) votes;
         mapping(address=>Voter) voters;
-        bool open; // voting open flag
     }
 
     event AVVoteProposal(bytes32 indexed _proposalId, bool _isProxyVote);

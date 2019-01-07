@@ -29,15 +29,16 @@ const checkProposalInfo = async function(proposalId, _proposalInfo) {
   // proposalInfo has the following structure
   // bytes32 organization;
   assert.equal(proposalInfo[0], _proposalInfo[0]);
-  // uint numOfChoices;
-  assert.equal(proposalInfo[1], _proposalInfo[1]);
-    // bytes32 paramsHash;
-  assert.equal(proposalInfo[2], _proposalInfo[2]);
-  // uint totalVotes;
-  assert.equal(proposalInfo[3], _proposalInfo[3]);
-  // - the mapping is simply not returned at all in the array
   // bool opened; // voting opened flag
+  assert.equal(proposalInfo[1], _proposalInfo[1]);
+  // uint numOfChoices;
+  assert.equal(proposalInfo[2], _proposalInfo[2]);
+    // bytes32 paramsHash;
+  assert.equal(proposalInfo[3], _proposalInfo[3]);
+  // uint totalVotes;
   assert.equal(proposalInfo[4], _proposalInfo[4]);
+  // - the mapping is simply not returned at all in the array
+
   assert.equal(proposalInfo[5], _proposalInfo[5]);
   assert.equal(proposalInfo[6], _proposalInfo[6]);
 };
@@ -80,15 +81,16 @@ const checkProposalInfoWithAbsoluteVote = async function(proposalId, _proposalIn
   // proposalInfo has the following structure
   // address organization;
   assert.equal(proposalInfo[0], _proposalInfo[0]);
-  // address numOfChoices;
-  assert.equal(proposalInfo[1], _proposalInfo[1]);
-  // bytes32 paramsHash;
-  assert.equal(proposalInfo[2], _proposalInfo[2]);
-  // uint totalVotes;
-  assert.equal(proposalInfo[3], _proposalInfo[3]);
-  // - the mapping is simply not returned at all in the array
   // bool opened; // voting opened flag
+  assert.equal(proposalInfo[1], _proposalInfo[1]);
+  // address numOfChoices;
+  assert.equal(proposalInfo[2], _proposalInfo[2]);
+  // bytes32 paramsHash;
+  assert.equal(proposalInfo[3], _proposalInfo[3]);
+  // uint totalVotes;
   assert.equal(proposalInfo[4], _proposalInfo[4]);
+  // - the mapping is simply not returned at all in the array
+
 };
 
 contract('AbsoluteVote', accounts => {
@@ -107,11 +109,12 @@ contract('AbsoluteVote', accounts => {
       // no one has voted yet at this point
       await checkProposalInfo(proposalId, [
                                            organizationId,
+                                           true,
                                            absoluteVoteExecuteMock.address,
                                            5,
                                           paramsHash,
-                                          0,
-                                          true]);
+                                          0
+                                          ]);
       await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
       await checkIsVotable(proposalId, true);
 
@@ -121,11 +124,12 @@ contract('AbsoluteVote', accounts => {
       await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
       await checkProposalInfo(proposalId, [
                                            organizationId,
+                                           true,
                                            absoluteVoteExecuteMock.address,
                                            5,
                                            paramsHash,
                                            reputationArray[0],
-                                           true]);
+                                           ]);
       await checkVotesStatus(proposalId, [0, reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0]);
       await checkIsVotable(proposalId, true);
 
@@ -134,11 +138,12 @@ contract('AbsoluteVote', accounts => {
       await checkVoteInfo(proposalId, accounts[1], [0, reputationArray[1]]);
       await checkProposalInfo(proposalId, [
                                            organizationId,
+                                           true,
                                            absoluteVoteExecuteMock.address,
                                            5,
                                           paramsHash,
                                           (reputationArray[0] + reputationArray[1]),
-                                           true]);
+                                           ]);
       await checkVotesStatus(proposalId, [reputationArray[1], reputationArray[0], 0, 0, 0, 0, 0, 0, 0, 0]);
       await checkIsVotable(proposalId, true);
 
@@ -148,7 +153,7 @@ contract('AbsoluteVote', accounts => {
 
       await checkVoteInfo(proposalId, accounts[2], [5, reputationArray[2]]);
       // Proposal should be empty (being deleted after execution)
-      await checkProposalInfo(proposalId, [ helpers.NULL_HASH,helpers.NULL_ADDRESS, 0,helpers.NULL_HASH, 0, false]);
+      await checkProposalInfo(proposalId, [ helpers.NULL_HASH,false,helpers.NULL_ADDRESS, 0,helpers.NULL_HASH, 0]);
       await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
       await checkIsVotable(proposalId, false);
   });
@@ -302,11 +307,12 @@ contract('AbsoluteVote', accounts => {
     // no one has voted yet at this point
     await checkProposalInfo(proposalId, [
                                          organizationId,
+                                         true,
                                          absoluteVoteExecuteMock.address,
                                          6,
                                         paramsHash,
                                         0,
-                                        true]);
+                                        ]);
 
     // Lets try to vote twice from the same address
     await absoluteVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
@@ -314,7 +320,7 @@ contract('AbsoluteVote', accounts => {
     await absoluteVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
     await checkVoteInfo(proposalId, accounts[0], [1, reputationArray[0]]);
     // Total 'Option 2' should be equal to the voter's reputation exactly, even though we voted twice
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, reputationArray[0], true]);
+    await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 6, paramsHash, reputationArray[0]]);
     await checkVotesStatus(proposalId, [0,reputationArray[0],0, 0, 0, 0, 0, 0, 0, 0]);
   });
 
@@ -329,7 +335,7 @@ contract('AbsoluteVote', accounts => {
     const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 6, paramsHash, 0]);
 
     // Lets try to vote and then cancel our vote
     await absoluteVote.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
@@ -338,7 +344,7 @@ contract('AbsoluteVote', accounts => {
     await checkVoteInfo(proposalId, accounts[0], [0, 0]);
 
     // Proposal's votes supposed to be zero again.
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 6, paramsHash, 0]);
     await checkVotesStatus(proposalId, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   });
 
@@ -353,7 +359,7 @@ contract('AbsoluteVote', accounts => {
     assert.isOk(proposalId);
     const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 6, paramsHash, 0]);
 
     // Lets try to vote on the behalf of someone else
     try {
@@ -364,7 +370,7 @@ contract('AbsoluteVote', accounts => {
     }
 
     // The vote should not be counted
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 6, paramsHash, 0]);
     await absoluteVote.vote(proposalId, 1,0, accounts[0], {from: accounts[5]});
   });
 
@@ -458,7 +464,7 @@ contract('AbsoluteVote', accounts => {
     const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
     // no one has voted yet at this point
-    await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+    await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 6, paramsHash, 0]);
 
     try {
       await absoluteVote.vote(proposalId, 3,0, helpers.NULL_ADDRESS, { from: accounts[3] });
@@ -493,7 +499,7 @@ contract('AbsoluteVote', accounts => {
       const organizationId = await web3.utils.soliditySha3(absoluteVoteExecuteMock.address,helpers.NULL_ADDRESS);
 
       // no one has voted yet at this point
-      await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+      await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 6, paramsHash, 0]);
 
       await absoluteVote.vote(proposalId, 0,0,helpers.NULL_ADDRESS, { from: accounts[1] });
 
@@ -516,7 +522,7 @@ contract('AbsoluteVote', accounts => {
 
 
       // no one has voted yet at this point
-      await checkProposalInfo(proposalId, [ organizationId,absoluteVoteExecuteMock.address, 6, paramsHash, 0, true]);
+      await checkProposalInfo(proposalId, [ organizationId,true,absoluteVoteExecuteMock.address, 6, paramsHash, 0]);
 
       await absoluteVote.vote(proposalId, 2,0,helpers.NULL_ADDRESS, { from: accounts[1] });
 
@@ -749,8 +755,8 @@ contract('AbsoluteVote', accounts => {
     assert.isOk(proposalId2);
 
     // Lets check the proposals
-    await checkProposalInfoWithAbsoluteVote(proposalId1, [organizationId,absoluteVoteExecuteMock.address, 6, paramsHash1, 0, true], absoluteVote1);
-    await checkProposalInfoWithAbsoluteVote(proposalId2, [organization2Id,absoluteVoteExecuteMock2.address, 2, paramsHash2, 0, true], absoluteVote2);
+    await checkProposalInfoWithAbsoluteVote(proposalId1, [organizationId,true,absoluteVoteExecuteMock.address, 6, paramsHash1, 0], absoluteVote1);
+    await checkProposalInfoWithAbsoluteVote(proposalId2, [organization2Id,true,absoluteVoteExecuteMock2.address, 2, paramsHash2, 0], absoluteVote2);
     // Account 0 votes in both proposals, and on behalf of Account 1 - should get an exception for that
     await absoluteVote1.vote(proposalId1, 2, 2, helpers.NULL_ADDRESS);
     await absoluteVote2.vote(proposalId2, 0,0,helpers.NULL_ADDRESS);
