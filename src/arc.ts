@@ -2,7 +2,7 @@ import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { Observable as ZenObservable } from 'apollo-link'
 import gql from 'graphql-tag'
 import { from, Observable, Observer, of } from 'rxjs'
-import { concat, map } from 'rxjs/operators'
+import { concat, filter, map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { Operation } from './operation'
 import { Proposal } from './proposal'
@@ -92,7 +92,46 @@ export class Arc {
     itemMap: (o: object) => object = (o) => o
   ) {
     return this.getObservable(query).pipe(
-      map((r) => r.data[entity]),
+      map((r) => {
+        if (!r.data[entity]) { throw Error(`Could not find ${entity} in ${r.data}`)}
+        return r.data[entity]
+      }),
+      map((rs: object[]) => rs.map(itemMap))
+    )
+  }
+
+  /**
+   * Returns an observable that:
+   * - sends a query over http and returns the current list of results
+   * - subscribes over a websocket to changes, and returns the updated list
+   * example:
+   *    const query = gql`
+   *    {
+   *      daos {
+   *        id
+   *        address
+   *      }
+   *    }`
+   *    _getObservableList(query, 'daos', (r:any) => new DAO(r.address), filter((r:any) => r.address === "0x1234..."))
+   *
+   * @param query The query to be run
+   * @param  entity  name of the graphql entity to be queried.
+   * @param  itemMap (optional) a function that takes elements of the list and creates new objects
+   * @param filter filter the results
+   * @return
+   */
+  public _getObservableListWithFilter(
+    query: any,
+    entity: string,
+    itemMap: (o: object) => object = (o) => o,
+    filterFunc: (o: any) => boolean
+  ) {
+    return this.getObservable(query).pipe(
+      map((r) => {
+        if (!r.data[entity]) { throw Error(`Could not find ${entity} in ${r.data}`)}
+        return r.data[entity]
+      }),
+      filter(filterFunc),
       map((rs: object[]) => rs.map(itemMap))
     )
   }
@@ -105,7 +144,6 @@ export class Arc {
     return this.getObservable(query).pipe(
       map((r) => {
         if (!r.data) {
-          // console.log(query.loc.source.body)
           return null
         }
         return r.data[entity]

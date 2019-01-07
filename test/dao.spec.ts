@@ -10,7 +10,6 @@ describe('DAO', () => {
   let addresses: { [key: string]: string }
   let arc: Arc
   let web3: any
-  let opts: any
   let accounts: any
 
   beforeAll(async () => {
@@ -19,18 +18,20 @@ describe('DAO', () => {
     web3 = await getWeb3()
     accounts = web3.eth.accounts.wallet
     web3.eth.defaultAccount = accounts[0].address
-    opts = await getOptions(web3)
 })
 
   it('DAO is instantiable', () => {
-    const address = '0xa2A064b3B22fC892dfB71923a6D844b953AA247C'
+    const address = addresses.Avatar
     const dao = new DAO(address, arc)
     expect(dao).toBeInstanceOf(DAO)
   })
 
-  it('should be possible to get the token balance of the DAO', () => {
-    // const { token } = await dao.state.toPromise()
-    // const balance = await token.balanceOf(address).toPromise()
+  it('should be possible to get the token balance of the DAO', async () => {
+    const address = addresses.Avatar
+    const dao = new DAO(address, arc)
+    const { token } = await dao.state.pipe(first()).toPromise()
+    const balance = await token.balanceOf(dao.address).pipe(first()).toPromise()
+    expect(balance).toEqual(0)
   })
 
   it('should be possible to get the reputation balance of the DAO', () => {
@@ -72,7 +73,7 @@ describe('DAO', () => {
     )
   })
 
-  it('dao.members() should work', async () => {
+  it.skip('dao.members() should work', async () => {
     // TODO: because we have not setup with proposals, we are only testing if the current state returns the emty list
     const dao = arc.dao(addresses.Avatar.toLowerCase())
     const members = await dao.members().pipe(first()).toPromise()

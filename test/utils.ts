@@ -71,3 +71,12 @@ export async function mintSomeReputation() {
   const reputation = new web3.eth.Contract(Reputation.abi, addresses.Reputation, opts)
   await reputation.methods.mint(accounts[1].address, '99').send()
 }
+
+export async function waitUntilTrue(f: () => boolean) {
+  return new Promise((resolve, reject) => {
+    (function waitForIt() {
+        if (f()) { return resolve() }
+        setTimeout(waitForIt, 30)
+    })()
+  })
+}
