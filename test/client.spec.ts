@@ -83,7 +83,7 @@ describe('apolloClient', () => {
     expect(cntr).toEqual(2)
   })
 
-  it('getObservable workds', async () => {
+  it('getObservable works', async () => {
     const arc = new Arc({
       graphqlHttpProvider,
       graphqlWsProvider,
