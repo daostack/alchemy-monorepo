@@ -286,4 +286,5 @@ export interface IProposalCreateOptions {
   externalTokenAddress?: Address
   periodLength?: number
   periods?: any
+  type?: string
   }
