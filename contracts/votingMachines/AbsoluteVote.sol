@@ -34,15 +34,9 @@ contract AbsoluteVote is IntVoteInterface {
 
     event AVVoteProposal(bytes32 indexed _proposalId, bool _isProxyVote);
 
-    event RefreshReputation(bytes32 indexed _proposalId,
-        bytes32 indexed _organizationId,
-        address indexed _voter,
-        uint256 _reputation
-    );
-
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
-    mapping(bytes32        => address     ) public organizations;
+    mapping(bytes32=>address) public organizations;
 
     uint256 public constant MAX_NUM_OF_CHOICES = 10;
     uint256 public proposalsCnt; // Total amount of proposals
