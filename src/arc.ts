@@ -26,7 +26,7 @@ export class Arc {
     graphqlWsProvider: string
     web3Provider: string
     // TODO: this temporary workaround: contractAddresses will in the future be taken from the graphql server
-    contractAddresses: { [key: string]: Address }
+    contractAddresses?: { [key: string]: Address }
   }) {
     this.graphqlHttpProvider = options.graphqlHttpProvider
     this.graphqlWsProvider = options.graphqlWsProvider
@@ -38,7 +38,7 @@ export class Arc {
     })
 
     this.web3 = new Web3(this.web3Provider)
-    this.contractAddresses = options.contractAddresses
+    this.contractAddresses = options.contractAddresses || {}
   }
 
   /**
