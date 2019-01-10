@@ -12,6 +12,8 @@ describe('DAO', () => {
   let web3: any
   let accounts: any
 
+  jest.setTimeout(5000)
+
   beforeAll(async () => {
     addresses = getContractAddresses()
     arc = getArc()
