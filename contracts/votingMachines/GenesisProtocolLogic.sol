@@ -17,8 +17,8 @@ import "openzeppelin-solidity/contracts/utils/Address.sol";
 contract GenesisProtocolLogic is IntVoteInterface {
     using SafeMath for uint;
     using Math for uint;
-    using RealMath for int216;
-    using RealMath for int256;
+    using RealMath for uint216;
+    using RealMath for uint256;
     using Address for address;
 
     enum ProposalState { None, ExpiredInQueue, Executed, Queued, PreBoosted, Boosted, QuietEndingPeriod}
@@ -31,7 +31,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
         uint256 boostedVotePeriodLimit; //the time limit for a proposal to be in boost mode.
         uint256 preBoostedVotePeriodLimit; //the time limit for a proposal
                                           //to be in an preparation state (stable) before boosted.
-        int256 thresholdConst; //constant  for threshold calculation .
+        uint256 thresholdConst; //constant  for threshold calculation .
                                 //threshold =thresholdConst ** (numberOfBoostedProposals)
         uint256 limitExponentValue;// an upper limit for numberOfBoostedProposals
                                    //in the threshold calculation to prevent overflow
@@ -282,7 +282,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
             queuedVotePeriodLimit: _params[1],
             boostedVotePeriodLimit: _params[2],
             preBoostedVotePeriodLimit: _params[3],
-            thresholdConst:int216(_params[4]).fraction(int216(1000)),
+            thresholdConst:uint216(_params[4]).fraction(uint216(1000)),
             limitExponentValue:limitExponent,
             quietEndingPeriod: _params[5],
             proposingRepReward: _params[6],
@@ -433,14 +433,14 @@ contract GenesisProtocolLogic is IntVoteInterface {
      * @return uint256 organization's score threshold.
      */
     function threshold(bytes32 _paramsHash, bytes32 _organizationId) public view returns(uint256) {
-        int256 power = int216(orgBoostedProposalsCnt[_organizationId]).toReal();
+        uint256 power = orgBoostedProposalsCnt[_organizationId];
         Parameters storage params = parameters[_paramsHash];
 
-        if (power.fromReal() > int256(params.limitExponentValue)) {
-            power = int216(params.limitExponentValue).toReal();
+        if (power > params.limitExponentValue) {
+            power = params.limitExponentValue;
         }
 
-        return uint(params.thresholdConst.pow(power).fromReal());
+        return params.thresholdConst.pow(power);
     }
 
   /**
