@@ -1,7 +1,8 @@
 import Arc from '../src/index'
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack/graphql'
 export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/daostack'
-export const web3Provider: string = 'http://127.0.0.1:8545'
+export const web3HttpProvider: string = 'http://127.0.0.1:8545'
+export const web3WsProvider: string = 'ws://127.0.0.1:8545'
 const Web3 = require('web3')
 
 export const nullAddress: string  = '0x' + padZeros('', 40)
@@ -57,7 +58,8 @@ export function getArc() {
   return new Arc({
     graphqlHttpProvider,
     graphqlWsProvider,
-    web3Provider
+    web3HttpProvider,
+    web3WsProvider
   })
 }
 

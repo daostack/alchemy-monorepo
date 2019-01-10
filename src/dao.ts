@@ -178,6 +178,10 @@ export class DAO implements IStateful<IDAOState> {
   public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
     throw new Error('not implemented')
   }
+
+  public ethBalance(): Observable < number > {
+    return this.context.getBalance(this.address)
+  }
 }
 
 export interface IDAOQueryOptions extends ICommonQueryOptions {

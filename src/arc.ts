@@ -9,21 +9,27 @@ import { Proposal } from './proposal'
 import { Address } from './types'
 import * as utils from './utils'
 
+const Web3 = require('web3')
+
 export class Arc {
   public graphqlHttpProvider: string
   public graphqlWsProvider: string
-  public web3Provider: string
+  public web3HttpProvider: string
+  public web3WsProvider: string
+
   public pendingOperations: Observable<Array<Operation<any>>> = of()
   public apolloClient: ApolloClient<object>
 
   constructor(options: {
     graphqlHttpProvider: string
     graphqlWsProvider: string
-    web3Provider: string
+    web3HttpProvider: string
+    web3WsProvider: string
   }) {
     this.graphqlHttpProvider = options.graphqlHttpProvider
     this.graphqlWsProvider = options.graphqlWsProvider
-    this.web3Provider = options.web3Provider
+    this.web3HttpProvider = options.web3HttpProvider
+    this.web3WsProvider = options.web3WsProvider
 
     this.apolloClient = utils.createApolloClient({
       graphqlHttpProvider: this.graphqlHttpProvider,
@@ -64,9 +70,21 @@ export class Arc {
    * @param  address [description]
    * @return         [description]
    */
-  public getBalance(address: Address) {
-    // web3 = new Web3(this.web3 )
+  public getBalance(address: Address): Observable < number > {
+    const web3 = new Web3(this.web3WsProvider)
+    return Observable.create((observer: any) => {
+      web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
+        if (err) {
+          observer.error(err)
+        } else {
+          web3.eth.getBalance(address).then((balance: any) => {
+              observer.next(balance)
+          })
+        }
+      })
+    })
   }
+
   /**
    * Returns an observable that:
    * - sends a query over http and returns the current list of results

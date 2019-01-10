@@ -81,4 +81,22 @@ describe('DAO', () => {
     expect(members.length).toBeGreaterThan(0)
     const member = members[0]
   })
+
+  it('dao.ethBalance() should work', async () => {
+    const dao = arc.dao(addresses.Avatar.toLowerCase())
+    const balanceObservable = dao.ethBalance()
+    let balance = await balanceObservable.pipe(first()).toPromise()
+    expect(balance).toBe(web3.utils.toWei('0'))
+    await web3.eth.sendTransaction({
+      from: web3.eth.defaultAccount,
+      gas: 4000000,
+      gasPrice: 100000000000,
+      to: addresses.Avatar.toLowerCase(),
+      value: web3.utils.toWei('1', 'ether')
+    })
+    balance = await balanceObservable.pipe(first()).toPromise()
+
+    expect(balance).toBe(web3.utils.toWei('1'))
+  })
+
 })
