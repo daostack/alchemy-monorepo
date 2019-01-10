@@ -41,10 +41,10 @@ export class DAO implements IStateful<IDAOState> {
     const query = gql`{
       dao(id: "${this.address}") {
         id
-        members { id },
         name,
         nativeReputation { id, totalSupply },
         nativeToken { id, name, symbol, totalSupply },
+        membersCount
       }
     }`
 
@@ -58,7 +58,7 @@ export class DAO implements IStateful<IDAOState> {
         externalTokenSymbol: '',
         // TODO: getting all members is not really scaleable - we need a way ot get the member count
         // from the subgraph
-        memberCount: item.members.length,
+        memberCount: Number(item.membersCount),
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, context),
         reputationTotalSupply: item.nativeReputation.totalSupply,
