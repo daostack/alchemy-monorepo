@@ -4,6 +4,7 @@ import { filter } from 'rxjs/operators'
 import { Arc } from './arc'
 import { IMemberQueryOptions, Member } from './member'
 import {
+  IProposalCreateOptions,
   IProposalQueryOptions,
   IStake,
   IStakeQueryOptions,
@@ -83,7 +84,6 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
-
     // TODO: there must be  better way to construct a where clause from a dictionary
     let where = ''
     for (const key of Object.keys(options)) {
@@ -114,6 +114,11 @@ export class DAO implements IStateful<IDAOState> {
 
   public proposal(id: string): Proposal {
     return new Proposal(id, this.context)
+  }
+
+  public createProposal(options: IProposalCreateOptions) {
+    options.dao = this.address
+    return Proposal.create(options, this.context)
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {

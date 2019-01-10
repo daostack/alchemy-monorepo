@@ -7,6 +7,7 @@ import { DAO } from './dao'
 import { Operation } from './operation'
 import { IRewardQueryOptions, Reward } from './reward'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
+import { getOptions, nullAddress } from './utils'
 import { IVote } from './vote'
 
 export enum ProposalOutcome {
@@ -59,6 +60,42 @@ export interface IStake {
 }
 
 export class Proposal implements IStateful<IProposalState> {
+
+  // Create a new proposal
+  // TODO: we want to return an observer for the transaction here
+  public static async create(options: IProposalCreateOptions, context: Arc) {
+
+    if (!options.dao) {
+      throw Error(`Proposal.create(options): options must include an address for "dao"`)
+    }
+    const web3 = context.web3
+
+    const opts = await getOptions(web3)
+    const addresses = context.contractAddresses
+    const ContributionReward = require('@daostack/arc/build/contracts/ContributionReward.json')
+    const contributionReward = new web3.eth.Contract(ContributionReward.abi, addresses.ContributionReward, opts)
+
+    const propose = contributionReward.methods.proposeContributionReward(
+        options.dao,
+        // TODO: after upgrading arc, use empty string as default value for ipfsHash
+        options.ipfsHash || '0x0000000000000000000000000000000000000000000000000000000000000000',
+        options.reputationReward || 0,
+        [
+          options.nativeTokenReward || 0,
+          options.ethReward || 0,
+          options.externalTokenReward || 0,
+          // TODO: what are decent default values for periodLength and periods?
+          options.periodLength || 0,
+          options.periods || 0
+        ],
+        options.externalTokenAddress || nullAddress,
+        options.beneficiary
+    )
+    const proposalId = await propose.call()
+    const transaction = await propose.send()
+    return  { transaction, proposalId }
+
+  }
   /**
    * `state` is an observable of the proposal state
    */
@@ -207,7 +244,6 @@ export class Proposal implements IStateful<IProposalState> {
     //   })
     // )
   }
-
 }
 
 enum ProposalQuerySortOptions {
@@ -238,3 +274,16 @@ export interface IStakeQueryOptions extends ICommonQueryOptions {
   proposalId?: string
   [key: string]: any
 }
+
+export interface IProposalCreateOptions {
+  beneficiary: Address
+  dao?: Address
+  ipfsHash?: string
+  nativeTokenReward?: number
+  reputationReward?: number
+  ethReward?: number
+  externalTokenReward?: number
+  externalTokenAddress?: Address
+  periodLength?: number
+  periods?: any
+  }

@@ -54,11 +54,19 @@ export async function getOptions(web3: any) {
 }
 
 export function getArc() {
-  return new Arc({
+  const arc = new Arc({
     graphqlHttpProvider,
     graphqlWsProvider,
-    web3Provider
+    web3Provider,
+    contractAddresses: getContractAddresses()
   })
+  
+  for (const pk of pks) {
+    const account = arc.web3.eth.accounts.privateKeyToAccount(pk)
+    arc.web3.eth.accounts.wallet.add(account)
+  }
+  arc.web3.eth.defaultAccount = arc.web3.eth.accounts.wallet[0].address
+  return arc
 }
 
 // TODO: itnegration this in src.repution.ts
