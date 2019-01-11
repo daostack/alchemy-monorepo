@@ -1,6 +1,6 @@
 {
   "name": "@daostack/client",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -25,6 +25,7 @@
     "commit": "git-cz",
     "deploy-docs": "ts-node tools/gh-pages-publish",
     "lint": "npm run tslint",
+    "prepare": "npm run build",
     "prebuild": "rimraf dist",
     "quality": "npm run test:prod",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",

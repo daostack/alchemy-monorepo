@@ -9,17 +9,24 @@ import { Proposal } from './proposal'
 import { Address } from './types'
 import * as utils from './utils'
 
+const Web3 = require('web3')
+
 export class Arc {
   public graphqlHttpProvider: string
   public graphqlWsProvider: string
   public web3Provider: string
   public pendingOperations: Observable<Array<Operation<any>>> = of()
   public apolloClient: ApolloClient<object>
+  // TODO: are there proper Web3 types available?
+  public web3: any
+  public contractAddresses: { [key: string]: Address } = {}
 
   constructor(options: {
     graphqlHttpProvider: string
     graphqlWsProvider: string
     web3Provider: string
+    // TODO: this temporary workaround: contractAddresses will in the future be taken from the graphql server
+    contractAddresses?: { [key: string]: Address }
   }) {
     this.graphqlHttpProvider = options.graphqlHttpProvider
     this.graphqlWsProvider = options.graphqlWsProvider
@@ -29,6 +36,9 @@ export class Arc {
       graphqlHttpProvider: this.graphqlHttpProvider,
       graphqlWsProvider: this.graphqlWsProvider
     })
+
+    this.web3 = new Web3(this.web3Provider)
+    this.contractAddresses = options.contractAddresses || {}
   }
 
   /**
@@ -158,7 +168,6 @@ export class Arc {
     `
 
     const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({ query: subscriptionQuery })
-
     const subscriptionObservable = Observable.create((observer: Observer<object[]>) => {
       const subscription = zenObservable.subscribe(observer)
       return () => subscription.unsubscribe()
