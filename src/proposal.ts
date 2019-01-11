@@ -32,21 +32,22 @@ export interface IProposalState {
   createdAt: Date
   dao: DAO
   description?: string
-  ethReward: number,
+  ethReward: number
   executedAt: Date
-  externalTokenReward: number,
+  externalTokenReward: number
   ipfsHash: string
-  preBoostedVotePeriodLimit: number,
+  preBoostedVotePeriodLimit: number
   proposer: Address
+  proposingRepReward: number
   quietEndingPeriodBeganAt: Date
-  reputationReward: number,
-  resolvedAt: Date,
+  reputationReward: number
+  resolvedAt: Date
   stage: ProposalStage
   stakesFor: number
   stakesAgainst: number
   title?: string
   url?: string
-  tokensReward: number,
+  tokensReward: number
   votesFor: number
   votesAgainst: number
   winningOutcome: ProposalOutcome
@@ -185,6 +186,7 @@ export class Proposal implements IStateful<IProposalState> {
         ipfsHash: item.ipfsHash,
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposer: item.proposer && item.proposer.id,
+        proposingRepReward: Number(item.proposingRepReward),
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
         reputationReward: Number(item.reputationReward),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : null,
