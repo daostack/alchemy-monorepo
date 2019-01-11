@@ -18,6 +18,7 @@ function getClient() {
  */
 describe('apolloClient', () => {
   let client
+  jest.setTimeout(10000)
 
   it('can be instantiated', () => {
     client = getClient()
@@ -61,7 +62,7 @@ describe('apolloClient', () => {
     const returnedData: object[] = []
     let cntr: number = 0
 
-    await observable.subscribe(
+    const subscription = observable.subscribe(
       (eventData: any) => {
         // Do something on receipt of the event
         cntr += 1
@@ -80,6 +81,7 @@ describe('apolloClient', () => {
 
     expect(returnedData.length).toBeGreaterThan(0)
     expect(cntr).toEqual(2)
+    subscription.unsubscribe()
   })
 
   it('getObservable works', async () => {
@@ -102,7 +104,7 @@ describe('apolloClient', () => {
 
     let returnedData: object[] = []
 
-    observable.subscribe(
+    const subscription = observable.subscribe(
       (eventData: any) => {
         // Do something on receipt of the event
         cntr += 1
@@ -127,6 +129,7 @@ describe('apolloClient', () => {
     await waitUntilTrue(() => cntr === 3 )
     expect(returnedData.length).toBeGreaterThan(0)
     expect(cntr).toEqual(3)
+    subscription.unsubscribe()
   })
 
 })

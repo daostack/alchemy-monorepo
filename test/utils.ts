@@ -80,10 +80,10 @@ export async function mintSomeReputation() {
   await reputation.methods.mint(accounts[1].address, '99').send()
 }
 
-export async function waitUntilTrue(f: () => boolean) {
+export async function waitUntilTrue(test: () => boolean) {
   return new Promise((resolve, reject) => {
     (function waitForIt() {
-        if (f()) { return resolve() }
+        if (test()) { return resolve() }
         setTimeout(waitForIt, 30)
     })()
   })
