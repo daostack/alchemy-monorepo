@@ -224,7 +224,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
         require(_execute(_proposalId), "proposal need to expire");
         uint256 expirationCallBountyPercentage =
         // solhint-disable-next-line not-rely-on-time
-        (1 + now.sub(proposal.currentBoostedVotePeriodLimit + proposal.times[1]).div(15));
+        (uint(1).add(now.sub(proposal.currentBoostedVotePeriodLimit.add(proposal.times[1])).div(15)));
         if (expirationCallBountyPercentage > 100) {
             expirationCallBountyPercentage = 100;
         }
@@ -327,7 +327,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
                 rewards[0] = staker.amount;
             } else if (staker.vote == proposal.winningVote) {
                 uint256 totalWinningStakes = proposal.stakes[proposal.winningVote];
-                uint256 totalStakes = proposal.stakes[YES]+proposal.stakes[NO];
+                uint256 totalStakes = proposal.stakes[YES].add(proposal.stakes[NO]);
                 if (staker.vote == YES) {
                     uint256 _totalStakes =
                     ((totalStakes.mul(100 - proposal.expirationCallBountyPercentage))/100) - proposal.daoBounty;
@@ -345,13 +345,13 @@ contract GenesisProtocolLogic is IntVoteInterface {
         //as voter
         Voter storage voter = proposal.voters[_beneficiary];
         if ((voter.reputation != 0) && (voter.preBoosted)) {
-            uint256 preBoostedVotes = proposal.preBoostedVotes[YES] + proposal.preBoostedVotes[NO];
             if (proposal.state == ProposalState.ExpiredInQueue) {
               //give back reputation for the voter
                 rewards[1] = ((voter.reputation.mul(params.votersReputationLossRatio))/100);
             } else if (proposal.winningVote == voter.vote) {
-                rewards[1] = (((voter.reputation.mul(params.votersReputationLossRatio))/100) +
-                ((voter.reputation * lostReputation)/preBoostedVotes));
+                uint256 preBoostedVotes = proposal.preBoostedVotes[YES].add(proposal.preBoostedVotes[NO]);
+                rewards[1] = ((voter.reputation.mul(params.votersReputationLossRatio))/100)
+                .add((voter.reputation.mul(lostReputation))/preBoostedVotes);
             }
             voter.reputation = 0;
         }
@@ -365,14 +365,14 @@ contract GenesisProtocolLogic is IntVoteInterface {
             require(stakingToken.transfer(_beneficiary, rewards[0]), "transfer to beneficiary failed");
             emit Redeem(_proposalId, organizations[proposal.organizationId], _beneficiary, rewards[0]);
         }
-        if ((rewards[1] + rewards[2]) != 0) {
+        if (rewards[1].add(rewards[2]) != 0) {
             VotingMachineCallbacksInterface(proposal.callbacks)
-            .mintReputation(rewards[1] + rewards[2], _beneficiary, _proposalId);
+            .mintReputation(rewards[1].add(rewards[2]), _beneficiary, _proposalId);
             emit RedeemReputation(
             _proposalId,
             organizations[proposal.organizationId],
             _beneficiary,
-            rewards[1] + rewards[2]
+            rewards[1].add(rewards[2])
             );
         }
     }
