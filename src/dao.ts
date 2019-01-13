@@ -56,8 +56,6 @@ export class DAO implements IStateful<IDAOState> {
         address: item.id,
         externalTokenAddress: '',
         externalTokenSymbol: '',
-        // TODO: getting all members is not really scaleable - we need a way ot get the member count
-        // from the subgraph
         memberCount: Number(item.membersCount),
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, context),
