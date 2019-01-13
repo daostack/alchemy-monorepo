@@ -225,7 +225,7 @@ export class Proposal implements IStateful<IProposalState> {
     throw new Error('not implemented')
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
+  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
     throw new Error('not implemented')
     // return this.dao().pipe(
     //   switchMap((dao) => {
@@ -234,12 +234,13 @@ export class Proposal implements IStateful<IProposalState> {
     // )
   }
 
-  public stake(outcome: ProposalOutcome, amount: number): Operation < void > {
+  public stake(outcome: ProposalOutcome, amount: number): Operation<void> {
     throw new Error('not implemented')
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable < Reward[] > {
-    throw new Error('not implemented')
+  public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
+    return of()
+    // throw new Error('not implemented')
     // return this.dao().pipe(
     //   switchMap((dao) => {
     //     return dao.rewards({ ...options, proposalId: this.id })

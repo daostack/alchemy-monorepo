@@ -25,11 +25,14 @@ export interface IDAOState {
   reputation: Reputation
   reputationTotalSupply: number,
   token: Token,
+  tokenBalance: number,
   tokenName: string,
   tokenSymbol: string,
   tokenTotalSupply: number,
+  externalTokenAddress: Address,
+  externalTokenBalance: number
   externalTokenSymbol: string,
-  externalTokenAddress: Address
+  ethBalance: number
 }
 
 export class DAO implements IStateful<IDAOState> {
@@ -55,7 +58,11 @@ export class DAO implements IStateful<IDAOState> {
       }
       return {
         address: item.id,
+        // TODO: get Eth balance, cf https://github.com/daostack/subgraph/issues/62
+        ethBalance: 314159265359,
         externalTokenAddress: '',
+        // TODO: get external token balance, cf. https://github.com/daostack/subgraph/issues/62
+        externalTokenBalance: 314159265359,
         externalTokenSymbol: '',
         // TODO: getting all members is not really scaleable - we need a way ot get the member count
         // from the subgraph
@@ -64,6 +71,8 @@ export class DAO implements IStateful<IDAOState> {
         reputation: new Reputation(item.nativeReputation.id, context),
         reputationTotalSupply: item.nativeReputation.totalSupply,
         token: new Token(item.nativeToken.id, context),
+        // TODO: get external token balance, cf. https://github.com/daostack/subgraph/issues/62
+        tokenBalance: 314159265359,
         tokenName: item.nativeToken.name,
         tokenSymbol: item.nativeToken.symbol,
         tokenTotalSupply: item.nativeToken.totalSupply

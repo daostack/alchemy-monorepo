@@ -26,62 +26,32 @@ export interface IRewardState {
   proposal: Proposal
   reputationReward: number
   type: RewardType
-  // rewards: {
-  //   reputation: {
-  //     total: number
-  //     redeemed: number
-  //     redeemable: number
-  //   }
-  //   tokens: {
-  //     total: number
-  //     redeemed: number
-  //     redeemable: number
-  //   }
-  //   eth: {
-  //     total: number
-  //     redeemed: number
-  //     redeemable: number
-  //   }
-  //   external: {
-  //     token: string
-  //     total: number
-  //     redeemed: number
-  //     redeemable: number
-  //   }
-  // }
 }
 
 export class Reward implements IStateful<IRewardState> {
   public state: Observable<IRewardState> = of()
 
   constructor(public id: string, public context: Arc) {
-    const query = gql`
-      {
-        reward (id: "${id}") {
-          id,
-          avatar,
-          beneficiary,
-          proposalId,
-          contract,
-          avatar,
-          beneficiary,
-          descriptionHash,
-          externalToken,
-          votingMachine,
-          reputationReward,
-          nativeTokenReward,
-          ethReward,
-          externalTokenReward,
-          periods,
-          periodLength,
-          executedAt,
-          alreadyRedeemedReputationPeriods,
-          alreadyRedeemedNativeTokenPeriods,
-          alreadyRedeemedEthPeriods,
-          alreadyRedeemedExternalTokenPeriods
+    const query = gql`{
+      reward (id: "${id}") {
+        id
+        dao {
+          id
         }
+        type
+        member {
+          id
+        }
+        reason
+        amount
+        proposal {
+          id
+        }
+        redeemed
+        createdAt
+        tokenAddress
       }
-    `
+    } `
 
     const itemMap = (item: any): IRewardState => {
       if (item === null) {
