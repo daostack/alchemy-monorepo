@@ -241,7 +241,7 @@ export class Proposal implements IStateful<IProposalState> {
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
-    // options.proposal = this.id
+    options.proposal = this.id
     return Reward.search(this.context, options)
   }
 }
