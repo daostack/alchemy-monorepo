@@ -1,6 +1,6 @@
 {
   "name": "@daostack/client",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
