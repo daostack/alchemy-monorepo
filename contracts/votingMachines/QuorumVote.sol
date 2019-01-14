@@ -24,7 +24,7 @@ contract QuorumVote is AbsoluteVote {
         uint256 precReq = parameters[proposal.paramsHash].precReq;
 
         // this is the actual voting rule:
-        if (proposal.totalVotes > totalReputation*precReq/100) {
+        if (proposal.totalVotes > (totalReputation/100)*precReq) {
             uint256 max;
             uint256 maxInd;
             for (uint256 cnt = 0; cnt <= proposal.numOfChoices; cnt++) {
