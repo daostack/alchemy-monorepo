@@ -117,4 +117,11 @@ describe('Proposal', () => {
 
     expect(reward.proposal.id).toBe(proposalId)
   })
+
+  it('get proposal stakes', async () => {
+    const { proposalId } = DAOstackMigration.migration('private').test
+    const proposal = new Proposal(proposalId, arc)
+    const stakes = await proposal.stakes().pipe(first()).toPromise()
+    expect(stakes.length).toEqual(0)
+  })
 })

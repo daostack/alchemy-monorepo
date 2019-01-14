@@ -6,7 +6,7 @@ import { Arc } from './arc'
 import { DAO } from './dao'
 import { Operation } from './operation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
-import { IStake, IStakeQueryOptions } from './stake'
+import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
 import { getOptions, nullAddress } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
@@ -52,13 +52,6 @@ export interface IProposalState {
   votesFor: number
   votesAgainst: number
   winningOutcome: ProposalOutcome
-}
-
-export interface IStake {
-  address: Address
-  outcome: ProposalOutcome
-  amount: number // amount staked
-  proposalId: string
 }
 
 export class Proposal implements IStateful<IProposalState> {
@@ -221,17 +214,13 @@ export class Proposal implements IStateful<IProposalState> {
     return Vote.search(this.context, options)
   }
 
-  public vote(outcome: ProposalOutcome): Operation < void > {
+  public vote(outcome: ProposalOutcome): Operation<void> {
     throw new Error('not implemented')
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
-    throw new Error('not implemented')
-    // return this.dao().pipe(
-    //   switchMap((dao) => {
-    //     return dao.stakes({ ...options, proposalId: this.id })
-    //   })
-    // )
+    options.proposal = this.id
+    return Stake.search(this.context, options)
   }
 
   public stake(outcome: ProposalOutcome, amount: number): Operation<void> {

@@ -1,18 +1,16 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
-import { filter } from 'rxjs/operators'
 import { Arc } from './arc'
 import { IMemberQueryOptions, Member } from './member'
 import {
   IProposalCreateOptions,
   IProposalQueryOptions,
-  IStake,
   Proposal,
   ProposalStage
 } from './proposal'
 import { Reputation } from './reputation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
-import { IStakeQueryOptions } from './stake'
+import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
@@ -139,7 +137,8 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
-    throw new Error('not implemented')
+    options.dao = this.address
+    return Stake.search(this.context, options)
   }
 }
 
