@@ -1,14 +1,15 @@
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
-import { map, switchMap } from 'rxjs/operators'
+import { map } from 'rxjs/operators'
 
 import { Arc } from './arc'
 import { DAO } from './dao'
 import { Operation } from './operation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
+import { IStake, IStakeQueryOptions } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
 import { getOptions, nullAddress } from './utils'
-import { IVote } from './vote'
+import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export enum ProposalOutcome {
   None,
@@ -215,12 +216,9 @@ export class Proposal implements IStateful<IProposalState> {
     )
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
-    return this.dao().pipe(
-      switchMap((dao) => {
-        options.proposal = this.id
-        return dao.votes(options)
-    }))
+  public votes(options: IVoteQueryOptions = {}): Observable <IVote[]> {
+    options.proposal = this.id
+    return Vote.search(this.context, options)
   }
 
   public vote(outcome: ProposalOutcome): Operation < void > {
@@ -261,17 +259,6 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
   // the options above should be ok for the current alchemy; will add more options as needed
   executedAfter?: Date
   executedBefore?: Date
-  [key: string]: any
-}
-
-export interface IVoteQueryOptions extends ICommonQueryOptions {
-  member?: Address
-  proposal?: string
-  [key: string]: any
-}
-
-export interface IStakeQueryOptions extends ICommonQueryOptions {
-  proposalId?: string
   [key: string]: any
 }
 

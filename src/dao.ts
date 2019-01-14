@@ -7,16 +7,15 @@ import {
   IProposalCreateOptions,
   IProposalQueryOptions,
   IStake,
-  IStakeQueryOptions,
-  IVoteQueryOptions,
   Proposal,
   ProposalStage
 } from './proposal'
 import { Reputation } from './reputation'
-import { IRewardQueryOptions, Reward } from './reward'
+import { IRewardQueryOptions, IRewardState, Reward } from './reward'
+import { IStakeQueryOptions } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
-import { IVote, Vote } from './vote'
+import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export interface IDAOState {
   address: Address // address of the avatar
@@ -129,61 +128,14 @@ export class DAO implements IStateful<IDAOState> {
     return Proposal.create(options, this.context)
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
-    let where = ''
-    for (const key of Object.keys(options)) {
-      where += `${key}: "${options[key] as string}",\n`
-    }
-
-    const query = gql`
-      {
-        rewards (where: {
-          ${where}
-          dao: "${this.address}"
-        }) {
-          id
-        }
-      }
-    `
-
-    return this.context._getObservableList(
-      query,
-      (r: any) => new Reward(r.id, this.context)
-    ) as Observable<Reward[]>
+  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
+    options.dao = this.address
+    return Reward.search(this.context, options)
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
-    let where = ''
-    for (const key of Object.keys(options)) {
-      where += `${key}: "${options[key] as string}",\n`
-    }
-
-    const query = gql`
-      {
-        proposalVotes(where: {
-          ${where}
-        }) {
-          id
-          createdAt
-          member {
-            id
-            dao {
-              id
-            }
-          }
-          proposal {
-            id
-          }
-          outcome
-          reputation
-        }
-      }
-    `
-    return this.context._getObservableListWithFilter(
-      query,
-      (r: any) => new Vote(r.id, r.member.id, r.createdAt, r.outcome, r.reputation, r.proposal.id,  r.member.dao.id),
-      (r: any) => r[0].member.dao.id === this.address
-    ) as Observable<IVote[]>
+  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
+    options.dao = this.address
+    return Vote.search(this.context, options)
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
