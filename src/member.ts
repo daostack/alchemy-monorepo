@@ -4,16 +4,11 @@ import { map, switchMap } from 'rxjs/operators'
 import { Arc } from './arc'
 import { DAO } from './dao'
 
-import {
-  IProposalQueryOptions,
-  IStake,
-  IStakeQueryOptions,
-  IVoteQueryOptions,
-  Proposal
-} from './proposal'
+import { IProposalQueryOptions, Proposal } from './proposal'
 import { Reward } from './reward'
+import { IStake, IStakeQueryOptions } from './stake'
 import { Address, ICommonQueryOptions, IStateful } from './types'
-import { IVote } from './vote'
+import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export interface IMemberState {
   address: Address
@@ -96,11 +91,8 @@ export class Member implements IStateful<IMemberState> {
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
-    return this.dao().pipe(
-      switchMap((dao) => {
-        options.member = this.id
-        return dao.votes(options)
-    }))
+    options.member = this.id
+    return Vote.search(this.context, options)
   }
 }
 
