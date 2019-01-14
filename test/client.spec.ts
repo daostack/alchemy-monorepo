@@ -41,7 +41,8 @@ describe('apolloClient', () => {
     expect(typeof result.data).toEqual(typeof [])
   })
 
-  it('handles subscriptions', async () => {
+  // TODO: skipping this test until https://github.com/daostack/subgraph/issues/58 is resolved
+  it.skip('handles subscriptions', async () => {
     client = getClient()
     const query = gql`
       subscription {
@@ -84,7 +85,8 @@ describe('apolloClient', () => {
     subscription.unsubscribe()
   })
 
-  it('getObservable works', async () => {
+  // TODO: skipping this test until https://github.com/daostack/subgraph/issues/58 is resolved
+  it.skip('getObservable works', async () => {
     const arc = new Arc({
       graphqlHttpProvider,
       graphqlWsProvider,
