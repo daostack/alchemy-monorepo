@@ -5,7 +5,7 @@ import { map, switchMap } from 'rxjs/operators'
 import { Arc } from './arc'
 import { DAO } from './dao'
 import { Operation } from './operation'
-import { IRewardQueryOptions, Reward } from './reward'
+import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
 import { getOptions, nullAddress } from './utils'
 import { IVote } from './vote'
@@ -205,6 +205,8 @@ export class Proposal implements IStateful<IProposalState> {
     this.state = context._getObservableObject(query, 'proposal', itemMap) as Observable<IProposalState>
   }
 
+  // Note that although this is implemented as an observable, the value is actually static
+  // and will never change.
   public dao(): Observable<DAO> {
     return this.state.pipe(
       map((state) => {
@@ -238,14 +240,9 @@ export class Proposal implements IStateful<IProposalState> {
     throw new Error('not implemented')
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
-    return of()
-    // throw new Error('not implemented')
-    // return this.dao().pipe(
-    //   switchMap((dao) => {
-    //     return dao.rewards({ ...options, proposalId: this.id })
-    //   })
-    // )
+  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
+    // options.proposal = this.id
+    return Reward.search(this.context, options)
   }
 }
 

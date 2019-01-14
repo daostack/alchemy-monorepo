@@ -1,5 +1,6 @@
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
+import { map, switchMap } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Proposal } from './proposal'
 import { Address, ICommonQueryOptions, IStateful } from './types'
@@ -28,12 +29,26 @@ export interface IRewardState {
   type: RewardType
 }
 
-export class Reward implements IStateful<IRewardState> {
-  public state: Observable<IRewardState> = of()
+export interface IRewardQueryOptions extends ICommonQueryOptions {
+  proposal?: string
+  // TODO: beneficiary is not a field on Reward - see issue https://github.com/daostack/subgraph/issues/60
+  // beneficiary?: Address
+  createdAtAfter?: Date
+  createdAtBefore?: Date
+  [id: string]: any
+}
 
-  constructor(public id: string, public context: Arc) {
+export class Reward implements IStateful<IRewardState> {
+
+  public static search(context: Arc, options: IRewardQueryOptions) {
+    let where = ''
+    for (const key of Object.keys(options)) {
+      if (where !== '') { where += ',\n'}
+      where += `${key}: "${options[key] as string}"`
+    }
+
     const query = gql`{
-      reward (id: "${id}") {
+      rewards (where: {${where}}) {
         id
         dao {
           id
@@ -45,8 +60,8 @@ export class Reward implements IStateful<IRewardState> {
         reason
         amount
         proposal {
-          id
-        }
+           id
+         }
         redeemed
         createdAt
         tokenAddress
@@ -54,10 +69,6 @@ export class Reward implements IStateful<IRewardState> {
     } `
 
     const itemMap = (item: any): IRewardState => {
-      if (item === null) {
-        throw Error(`Could not find a Reward with id '${id}'`)
-      }
-
       return {
         beneficiary: item.beneficiary,
         contract: item.contract,
@@ -68,21 +79,30 @@ export class Reward implements IStateful<IRewardState> {
         nativeTokenReward: item.nativeTokenReward,
         periodLength: item.periodLength,
         periods: item.periods,
-        proposal: new Proposal(item.proposalId, this.context),
+        proposal: new Proposal(item.proposalId, context),
         reputationReward: item.reputationReward ,
         type: RewardType.Contribution
       }
     }
 
-    this.state = context._getObservableObject(query, 'proposal', itemMap) as Observable<IRewardState>
-
+    return context._getObservableList(query, itemMap) as Observable<IRewardState[]>
   }
-}
 
-export interface IRewardQueryOptions extends ICommonQueryOptions {
-  proposalId?: string
-  beneficiary?: Address
-  createdAtAfter?: Date
-  createdAtBefore?: Date
-  [id: string]: any
+  public state: Observable<IRewardState> = of()
+
+  constructor(public id: string, public context: Arc) {
+    this.id = id
+    this.context = context
+    this.state = Reward.search(this.context, {id: this.id}).pipe(
+      map((rewards) => {
+        if (rewards.length === 0) {
+          throw Error(`No rewards with id ${this.id} found`)
+        } else if (rewards.length > 1) {
+          throw Error(`This should never happen`)
+        } else {
+          return rewards[0]
+        }
+      })
+    )
+  }
 }
