@@ -172,15 +172,15 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
 
   const avatar = new web3.eth.Contract(require('@daostack/arc/build/contracts/Avatar.json').abi, Avatar, opts)
 
-  const NativeToken = await avatar.methods.nativeToken().call()
-  const NativeReputation = await avatar.methods.nativeReputation().call()
+  const DAOToken = await avatar.methods.nativeToken().call()
+  const Reputation = await avatar.methods.nativeReputation().call()
 
   return {
     dao: {
       name: orgName,
       Avatar,
-      NativeToken,
-      NativeReputation
+      DAOToken,
+      Reputation
     }
   }
 }

@@ -95,15 +95,15 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
   )
 
   const Avatar = avatarAddress
-  const NativeToken = await avatar.methods.nativeToken().call()
-  const NativeReputation = await avatar.methods.nativeReputation().call()
+  const DAOToken = await avatar.methods.nativeToken().call()
+  const Reputation = await avatar.methods.nativeReputation().call()
 
   return {
     test: {
       name: orgName,
       Avatar,
-      NativeToken,
-      NativeReputation,
+      DAOToken,
+      Reputation,
       proposalId
     }
   }
