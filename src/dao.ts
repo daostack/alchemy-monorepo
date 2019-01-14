@@ -89,7 +89,7 @@ export class DAO implements IStateful<IDAOState> {
       }
     }`
     const itemMap = (item: any): Member => new Member(item.id, this.context)
-    return this.context._getObservableList(query, 'members', itemMap) as Observable<Member[]>
+    return this.context._getObservableList(query, itemMap) as Observable<Member[]>
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
@@ -116,7 +116,6 @@ export class DAO implements IStateful<IDAOState> {
 
     return this.context._getObservableList(
       query,
-      'proposals',
       (r: any) => new Proposal(r.id, this.context)
     ) as Observable<Proposal[]>
   }
@@ -149,7 +148,6 @@ export class DAO implements IStateful<IDAOState> {
 
     return this.context._getObservableList(
       query,
-      'rewards',
       (r: any) => new Reward(r.id, this.context)
     ) as Observable<Reward[]>
   }
@@ -183,7 +181,6 @@ export class DAO implements IStateful<IDAOState> {
     `
     return this.context._getObservableListWithFilter(
       query,
-      'proposalVotes',
       (r: any) => new Vote(r.id, r.member.id, r.createdAt, r.outcome, r.reputation, r.proposal.id,  r.member.dao.id),
       (r: any) => r[0].member.dao.id === this.address
     ) as Observable<IVote[]>

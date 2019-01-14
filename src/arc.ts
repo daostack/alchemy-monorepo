@@ -60,7 +60,6 @@ export class Arc {
     `
     return this._getObservableList(
       query,
-      'daos',
       (r: any) => new DAO(r.id, this)
     ) as Observable<DAO[]>
   }
@@ -89,7 +88,7 @@ export class Arc {
    *        address
    *      }
    *    }`
-   *    _getObservableList(query, 'daos', (r:any) => new DAO(r.address))
+   *    _getObservableList(query, (r:any) => new DAO(r.address))
    *
    * @param query The query to be run
    * @param  entity  name of the graphql entity to be queried.
@@ -98,12 +97,12 @@ export class Arc {
    */
   public _getObservableList(
     query: any,
-    entity: string,
     itemMap: (o: object) => object = (o) => o
   ) {
+    const entity = query.definitions[0].selectionSet.selections[0].name.value
     return this.getObservable(query).pipe(
       map((r) => {
-        if (!r.data[entity]) { throw Error(`Could not find ${entity} in ${r.data}`)}
+        if (!r.data[entity]) { throw Error(`Could not find entity "${entity}" in ${Object.keys(r.data)}`)}
         return r.data[entity]
       }),
       map((rs: object[]) => rs.map(itemMap))
@@ -122,7 +121,7 @@ export class Arc {
    *        address
    *      }
    *    }`
-   *    _getObservableList(query, 'daos', (r:any) => new DAO(r.address), filter((r:any) => r.address === "0x1234..."))
+   *    _getObservableList(query, (r:any) => new DAO(r.address), filter((r:any) => r.address === "0x1234..."))
    *
    * @param query The query to be run
    * @param  entity  name of the graphql entity to be queried.
@@ -132,10 +131,10 @@ export class Arc {
    */
   public _getObservableListWithFilter(
     query: any,
-    entity: string,
     itemMap: (o: object) => object = (o) => o,
     filterFunc: (o: any) => boolean
   ) {
+    const entity = query.definitions[0].selectionSet.selections[0].name.value
     return this.getObservable(query).pipe(
       map((r) => {
         if (!r.data[entity]) { throw Error(`Could not find ${entity} in ${r.data}`)}
@@ -167,17 +166,22 @@ export class Arc {
       subscription ${query}
     `
 
+    console.log(`creating observable for query:\n${query.loc.source.body}`)
     const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({ query: subscriptionQuery })
     const subscriptionObservable = Observable.create((observer: Observer<object[]>) => {
       const subscription = zenObservable.subscribe(observer)
       return () => subscription.unsubscribe()
     })
-    const queryPromise: Promise<
-      ApolloQueryResult<{ [key: string]: object[] }>
-    > = this.apolloClient.query({ query })
+    const queryPromise: Promise<ApolloQueryResult<{ [key: string]: object[] }>> =
+      this.apolloClient.query({ query })
     const queryObservable = from(queryPromise).pipe(
       concat(subscriptionObservable)
     )
     return queryObservable as Observable<any>
+  }
+
+  public sendQuery(query: any) {
+    const queryPromise = this.apolloClient.query({ query })
+    return queryPromise
   }
 }

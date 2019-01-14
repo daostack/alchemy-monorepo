@@ -88,6 +88,6 @@ export class Token implements IStateful<ITokenState> {
         id, contract, owner, spender, txHash, value
       }
     }`
-    return this.context._getObservableList( query, 'tokenApprovals')
+    return this.context._getObservableList(query)
   }
 }
