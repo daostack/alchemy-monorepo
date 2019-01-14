@@ -2,7 +2,7 @@ import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { Observable as ZenObservable } from 'apollo-link'
 import gql from 'graphql-tag'
 import { from, Observable, Observer, of } from 'rxjs'
-import { concat, filter, map } from 'rxjs/operators'
+import { catchError, concat, filter, map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { Operation } from './operation'
 import { Proposal } from './proposal'
@@ -166,17 +166,23 @@ export class Arc {
       subscription ${query}
     `
 
-    // console.log(`creating observable for query:\n${query.loc.source.body}`)
+    console.log(`creating observable for query:\n${query.loc.source.body}`)
     const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({ query: subscriptionQuery })
     const subscriptionObservable = Observable.create((observer: Observer<object[]>) => {
       const subscription = zenObservable.subscribe(observer)
       return () => subscription.unsubscribe()
     })
-    const queryPromise: Promise<ApolloQueryResult<{ [key: string]: object[] }>> =
-      this.apolloClient.query({ query })
+
+    const queryPromise: Promise<ApolloQueryResult<{[key: string]: object[]}>> = this.apolloClient.query({ query })
+
     const queryObservable = from(queryPromise).pipe(
       concat(subscriptionObservable)
+    ).pipe(
+      catchError((err) => {
+        throw Error(`${err.message}\n${query.loc.source.body}`)
+      })
     )
+
     return queryObservable as Observable<any>
   }
 

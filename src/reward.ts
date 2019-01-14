@@ -1,32 +1,36 @@
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
-import { map, switchMap } from 'rxjs/operators'
+import { map } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Proposal } from './proposal'
 import { Address, ICommonQueryOptions, IStateful } from './types'
 
 export enum RewardType {
+  Reputation,
+  Token,
+  ETH,
+  External
+}
+
+export enum RewardReason {
   Contribution,
   Proposer,
-  Staker,
   Voter,
+  Staker,
   Bounty
 }
 
 export interface IRewardState {
   id: string
   // createdAt: number
-  contract: Address
-  beneficiary: string
-  ethReward: number
-  executedAt: number
-  externalTokenReward: number
-  nativeTokenReward: number
-  periods: number
-  periodLength: number
+  beneficiary: Address
+  createdAt: Date
   proposal: Proposal
-  reputationReward: number
+  reason: RewardReason,
   type: RewardType
+  tokenAddress: Address,
+  amount: number,
+  redeemed: number
 }
 
 export interface IRewardQueryOptions extends ICommonQueryOptions {
@@ -50,10 +54,10 @@ export class Reward implements IStateful<IRewardState> {
     const query = gql`{
       rewards (where: {${where}}) {
         id
+        createdAt
         dao {
           id
         }
-        type
         member {
           id
         }
@@ -63,25 +67,22 @@ export class Reward implements IStateful<IRewardState> {
            id
          }
         redeemed
-        createdAt
         tokenAddress
+        type
       }
     } `
 
     const itemMap = (item: any): IRewardState => {
       return {
-        beneficiary: item.beneficiary,
-        contract: item.contract,
-        ethReward: item.ethReward, // TODO: pending..
-        executedAt: item.executedAt,
-        externalTokenReward: item.externalTokenReward,
+        amount: Number(item.amount),
+        beneficiary: item.member.id,
+        createdAt: item.createdAt,
         id: item.id,
-        nativeTokenReward: item.nativeTokenReward,
-        periodLength: item.periodLength,
-        periods: item.periods,
-        proposal: new Proposal(item.proposalId, context),
-        reputationReward: item.reputationReward ,
-        type: RewardType.Contribution
+        proposal: new Proposal(item.proposal.id, context),
+        reason: item.reason,
+        redeemed: Number(item.redeemed),
+        tokenAddress: item.tokenAddress,
+        type: item.type
       }
     }
 

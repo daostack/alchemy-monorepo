@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc } from './arc'
-import { ProposalOutcome} from './proposal'
+import { Proposal, ProposalOutcome} from './proposal'
 import { Address, ICommonQueryOptions } from './types'
 
 export interface IStakeQueryOptions extends ICommonQueryOptions {
@@ -13,7 +13,7 @@ export interface IStake {
   staker: Address
   outcome: ProposalOutcome
   amount: number // amount staked
-  proposalId: string
+  proposal: Proposal
   createdAt: Date
 }
 
@@ -29,7 +29,7 @@ export class Stake implements IStake {
         // TODO: next line filters bu DAO, which is a sort of hack we can use if  we need This
         // before https://github.com/daostack/subgraph/issues/65 is resolved
         daoFilter = (r: any) => r[0].member.dao.id === options.dao
-      } else {
+      } else if (options[key] !== undefined) {
         where += `${key}: "${options[key] as string}",\n`
       }
     }
@@ -52,7 +52,7 @@ export class Stake implements IStake {
     `
     return context._getObservableListWithFilter(
       query,
-      (r: any) => new Stake(r.id, r.staker.id, r.createdAt, r.outcome, r.amount, r.proposal.id),
+      (r: any) => new Stake(r.id, r.staker.id, r.createdAt, r.outcome, r.amount, new Proposal(r.proposal.id, context)),
       daoFilter
     ) as Observable<IStake[]>
   }
@@ -63,6 +63,6 @@ export class Stake implements IStake {
       public createdAt: Date,
       public outcome: ProposalOutcome,
       public amount: number,
-      public proposalId: string
+      public proposal: Proposal
   ) {}
 }
