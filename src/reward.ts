@@ -44,7 +44,15 @@ export interface IRewardQueryOptions extends ICommonQueryOptions {
 
 export class Reward implements IStateful<IRewardState> {
 
-  public static search(context: Arc, options: IRewardQueryOptions) {
+  // TODO: Reward.search returns a list of IRewardState instances (not Reward instances)
+  // this is much more conveient client side, but the behavior is not consistent with the other `serach` implementations
+  /**
+   * Reward.search(context, options) searches for reward entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. IRewardQueryOptions
+   * @return         an observable of IRewardState objects
+   */
+  public static search(context: Arc, options: IRewardQueryOptions): Observable<IRewardState[]> {
     let where = ''
     for (const key of Object.keys(options)) {
       if (where !== '') { where += ',\n'}
@@ -97,7 +105,7 @@ export class Reward implements IStateful<IRewardState> {
     this.state = Reward.search(this.context, {id: this.id}).pipe(
       map((rewards) => {
         if (rewards.length === 0) {
-          throw Error(`No rewards with id ${this.id} found`)
+          throw Error(`No reward with id ${this.id} found`)
         } else if (rewards.length > 1) {
           throw Error(`This should never happen`)
         } else {
