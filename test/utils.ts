@@ -1,3 +1,5 @@
+import { ApolloClient, ApolloQueryResult } from 'apollo-client'
+import gql from 'graphql-tag'
 import Arc from '../src/index'
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack/graphql'
 export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/daostack'
@@ -54,11 +56,19 @@ export async function getOptions(web3: any) {
 }
 
 export function getArc() {
-  return new Arc({
+  const arc = new Arc({
+    contractAddresses: getContractAddresses(),
     graphqlHttpProvider,
     graphqlWsProvider,
     web3Provider
   })
+
+  for (const pk of pks) {
+    const account = arc.web3.eth.accounts.privateKeyToAccount(pk)
+    arc.web3.eth.accounts.wallet.add(account)
+  }
+  arc.web3.eth.defaultAccount = arc.web3.eth.accounts.wallet[0].address
+  return arc
 }
 
 // TODO: itnegration this in src.repution.ts
@@ -72,11 +82,37 @@ export async function mintSomeReputation() {
   await reputation.methods.mint(accounts[1].address, '99').send()
 }
 
-export async function waitUntilTrue(f: () => boolean) {
+export async function waitUntilTrue(test: () => boolean) {
   return new Promise((resolve, reject) => {
     (function waitForIt() {
-        if (f()) { return resolve() }
+        if (test()) { return resolve() }
         setTimeout(waitForIt, 30)
     })()
   })
+}
+
+export async function getContractAddressesFromSubgraph(): Promise<{ daos: any } > {
+  const arc = getArc()
+  const query = gql`
+        {
+              daos { id
+              nativeReputation {
+                id
+              }
+              nativeToken {
+                id
+              }
+          }
+      }
+    `
+  const response = await arc.apolloClient.query({query}) as ApolloQueryResult<{ daos: any[]}>
+  const daos = response.data.daos
+  return { daos: daos.map((dao: any) => {
+    return {
+      address: dao.id,
+      nativeReputation: dao.nativeReputation.id,
+      nativeToken: dao.nativeToken.id
+    }
+  })
+}
 }

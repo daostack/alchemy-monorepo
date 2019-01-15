@@ -65,7 +65,7 @@ describe('Proposal', () => {
     expect(proposal).toBeInstanceOf(Proposal)
     delete proposalState.dao
     delete proposalState.createdAt
-    expect(proposalState).toEqual({
+    expect(proposalState).toMatchObject({
         beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
         boostedAt: 0,
         boostedVotePeriodLimit: 259200,
@@ -74,10 +74,11 @@ describe('Proposal', () => {
         ethReward: 10,
         executedAt: null,
         externalTokenReward: 10,
-        id: '0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e',
+        // id: '0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e',
         ipfsHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
         preBoostedVotePeriodLimit: 259200,
         proposer: '0x1cea1e112ec409762ab4795daead616b5a3acf72879303434a87cbcd3a1785b9',
+        proposingRepReward: 5000000000,
         quietEndingPeriodBeganAt: null,
         reputationReward: 10,
         resolvedAt: null,
@@ -102,5 +103,25 @@ describe('Proposal', () => {
     const vote = votes[0]
     expect(vote.proposalId).toBe(proposalId)
     expect(vote.dao).toBe(Avatar.toLowerCase())
+  })
+
+  it('get proposal rewards', async () => {
+    const { proposalId } = DAOstackMigration.migration('private').test
+    const proposal = new Proposal(proposalId, arc)
+    const rewards = await proposal.rewards().pipe(first()).toPromise()
+    return
+    expect(rewards.length).toBeGreaterThan(0)
+    console.log(rewards)
+    const reward = rewards[0]
+    console.log(reward)
+
+    expect(reward.proposal.id).toBe(proposalId)
+  })
+
+  it('get proposal stakes', async () => {
+    const { proposalId } = DAOstackMigration.migration('private').test
+    const proposal = new Proposal(proposalId, arc)
+    const stakes = await proposal.stakes().pipe(first()).toPromise()
+    expect(stakes.length).toEqual(0)
   })
 })

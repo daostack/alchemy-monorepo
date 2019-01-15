@@ -77,3 +77,16 @@ export function checkWebsocket(options: { url: string }) {
     }, 500)
   }
 }
+
+export const nullAddress = '0x0000000000000000000000000000000000000000'
+
+export async function getOptions(web3: any) {
+  if (web3.eth.defaultAccount === null) {
+    throw Error('No default account specified: please set web3.eth.defaultAccount')
+  }
+  const block = await web3.eth.getBlock('latest')
+  return {
+    from: web3.eth.defaultAccount,
+    gas: block.gasLimit - 100000
+  }
+}

@@ -1,5 +1,3 @@
-import { ApolloClient } from 'apollo-client'
-import gql from 'graphql-tag'
 import { from, Observable, Observer, of } from 'rxjs'
 import { checkWebsocket, createApolloClient } from '../src/utils'
 import { graphqlHttpProvider, graphqlWsProvider, mintSomeReputation, web3Provider } from './utils'

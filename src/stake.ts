@@ -1,29 +1,25 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc } from './arc'
-import { ProposalOutcome } from './proposal'
-import { Address, Date, ICommonQueryOptions } from './types'
+import { ProposalOutcome} from './proposal'
+import { Address, ICommonQueryOptions } from './types'
 
-export interface IVote {
-    id: string
-    proposer: string
-    createdAt: Date
-    outcome: ProposalOutcome
-    amount: number // amount of reputation that was voted with
-    proposalId: string
-    dao: Address
-}
-
-export interface IVoteQueryOptions extends ICommonQueryOptions {
-  member?: Address
-  proposal?: string
-  dao?: Address
+export interface IStakeQueryOptions extends ICommonQueryOptions {
+  proposalId?: string
   [key: string]: any
 }
 
-export class Vote implements IVote {
+export interface IStake {
+  staker: Address
+  outcome: ProposalOutcome
+  amount: number // amount staked
+  proposalId: string
+  createdAt: Date
+}
 
-  public static search(context: Arc, options: IVoteQueryOptions = {}): Observable <IVote[]> {
+export class Stake implements IStake {
+
+  public static search(context: Arc, options: IStakeQueryOptions = {}): Observable<IStake[]> {
     let where = ''
     let daoFilter: (r: any) => boolean
     daoFilter = (r: any) => true
@@ -40,39 +36,33 @@ export class Vote implements IVote {
 
     const query = gql`
       {
-        proposalVotes(where: {
+        proposalStakes (where: {
           ${where}
         }) {
           id
           createdAt
-          member {
-            id
-            dao {
-              id
-            }
-          }
+          staker
           proposal {
             id
           }
           outcome
-          reputation
+          amount
         }
       }
     `
     return context._getObservableListWithFilter(
       query,
-      (r: any) => new Vote(r.id, r.member.id, r.createdAt, r.outcome, r.reputation, r.proposal.id,  r.member.dao.id),
+      (r: any) => new Stake(r.id, r.staker.id, r.createdAt, r.outcome, r.amount, r.proposal.id),
       daoFilter
-    ) as Observable<IVote[]>
+    ) as Observable<IStake[]>
   }
 
   constructor(
       public id: string,
-      public proposer: string,
+      public staker: string,
       public createdAt: Date,
       public outcome: ProposalOutcome,
       public amount: number,
-      public proposalId: string,
-      public dao: Address
+      public proposalId: string
   ) {}
 }
