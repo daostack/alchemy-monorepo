@@ -209,7 +209,7 @@ export class Proposal implements IStateful<IProposalState> {
     )
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable <IVote[]> {
+  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
     options.proposal = this.id
     return Vote.search(this.context, options)
   }

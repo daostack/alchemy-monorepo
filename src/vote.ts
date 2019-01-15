@@ -6,7 +6,7 @@ import { Address, Date, ICommonQueryOptions } from './types'
 
 export interface IVote {
     id: string
-    proposer: string
+    voter: string
     createdAt: Date
     outcome: ProposalOutcome
     amount: number // amount of reputation that was voted with
@@ -15,7 +15,7 @@ export interface IVote {
 }
 
 export interface IVoteQueryOptions extends ICommonQueryOptions {
-  member?: Address
+  voter?: Address
   proposal?: string
   dao?: Address
   [key: string]: any
@@ -26,7 +26,7 @@ export class Vote implements IVote {
   public static search(context: Arc, options: IVoteQueryOptions = {}): Observable <IVote[]> {
     let where = ''
     let daoFilter: (r: any) => boolean
-    daoFilter = (r: any) => true
+    daoFilter = () => true
 
     for (const key of Object.keys(options)) {
       if (key === 'dao') {
@@ -68,7 +68,7 @@ export class Vote implements IVote {
 
   constructor(
       public id: string,
-      public proposer: string,
+      public voter: string,
       public createdAt: Date,
       public outcome: ProposalOutcome,
       public amount: number,

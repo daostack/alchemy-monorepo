@@ -16,7 +16,7 @@ describe('Stake', () => {
   })
 
   it('Stake is instantiable', () => {
-    const stake = new Stake('0x1234id', '0x124staker', new Date(), ProposalOutcome.Fail, 3e18, '0x12445proposalId' )
+    const stake = new Stake('0x1234id', '0x124staker', new Date(), ProposalOutcome.Fail, 3e18, '0x12445proposalId', arc)
     expect(stake).toBeInstanceOf(Stake)
   })
 

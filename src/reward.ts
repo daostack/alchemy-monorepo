@@ -1,32 +1,36 @@
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
-import { map, switchMap } from 'rxjs/operators'
+import { map } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Proposal } from './proposal'
 import { Address, ICommonQueryOptions, IStateful } from './types'
 
 export enum RewardType {
+  Reputation,
+  Token,
+  ETH,
+  External
+}
+
+export enum RewardReason {
   Contribution,
   Proposer,
-  Staker,
   Voter,
+  Staker,
   Bounty
 }
 
 export interface IRewardState {
   id: string
   // createdAt: number
-  contract: Address
-  beneficiary: string
-  ethReward: number
-  executedAt: number
-  externalTokenReward: number
-  nativeTokenReward: number
-  periods: number
-  periodLength: number
+  beneficiary: Address
+  createdAt: Date
   proposal: Proposal
-  reputationReward: number
+  reason: RewardReason,
   type: RewardType
+  tokenAddress: Address,
+  amount: number,
+  redeemed: number
 }
 
 export interface IRewardQueryOptions extends ICommonQueryOptions {
@@ -40,7 +44,15 @@ export interface IRewardQueryOptions extends ICommonQueryOptions {
 
 export class Reward implements IStateful<IRewardState> {
 
-  public static search(context: Arc, options: IRewardQueryOptions) {
+  // TODO: Reward.search returns a list of IRewardState instances (not Reward instances)
+  // this is much more conveient client side, but the behavior is not consistent with the other `serach` implementations
+  /**
+   * Reward.search(context, options) searches for reward entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. IRewardQueryOptions
+   * @return         an observable of IRewardState objects
+   */
+  public static search(context: Arc, options: IRewardQueryOptions): Observable<IRewardState[]> {
     let where = ''
     for (const key of Object.keys(options)) {
       if (where !== '') { where += ',\n'}
@@ -50,10 +62,10 @@ export class Reward implements IStateful<IRewardState> {
     const query = gql`{
       rewards (where: {${where}}) {
         id
+        createdAt
         dao {
           id
         }
-        type
         member {
           id
         }
@@ -63,25 +75,22 @@ export class Reward implements IStateful<IRewardState> {
            id
          }
         redeemed
-        createdAt
         tokenAddress
+        type
       }
     } `
 
     const itemMap = (item: any): IRewardState => {
       return {
-        beneficiary: item.beneficiary,
-        contract: item.contract,
-        ethReward: item.ethReward, // TODO: pending..
-        executedAt: item.executedAt,
-        externalTokenReward: item.externalTokenReward,
+        amount: Number(item.amount),
+        beneficiary: item.member.id,
+        createdAt: item.createdAt,
         id: item.id,
-        nativeTokenReward: item.nativeTokenReward,
-        periodLength: item.periodLength,
-        periods: item.periods,
-        proposal: new Proposal(item.proposalId, context),
-        reputationReward: item.reputationReward ,
-        type: RewardType.Contribution
+        proposal: new Proposal(item.proposal.id, context),
+        reason: item.reason,
+        redeemed: Number(item.redeemed),
+        tokenAddress: item.tokenAddress,
+        type: item.type
       }
     }
 
@@ -96,7 +105,7 @@ export class Reward implements IStateful<IRewardState> {
     this.state = Reward.search(this.context, {id: this.id}).pipe(
       map((rewards) => {
         if (rewards.length === 0) {
-          throw Error(`No rewards with id ${this.id} found`)
+          throw Error(`No reward with id ${this.id} found`)
         } else if (rewards.length > 1) {
           throw Error(`This should never happen`)
         } else {
