@@ -42,10 +42,10 @@ export class DAO implements IStateful<IDAOState> {
     const query = gql`{
       dao(id: "${this.address}") {
         id
-        members { id },
         name,
         nativeReputation { id, totalSupply },
         nativeToken { id, name, symbol, totalSupply },
+        membersCount
       }
     }`
 
@@ -61,9 +61,7 @@ export class DAO implements IStateful<IDAOState> {
         // TODO: get external token balance, cf. https://github.com/daostack/subgraph/issues/62
         externalTokenBalance: 314159265359,
         externalTokenSymbol: '',
-        // TODO: getting all members is not really scaleable - we need a way ot get the member count
-        // from the subgraph
-        memberCount: item.members.length,
+        memberCount: Number(item.membersCount),
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, context),
         reputationTotalSupply: item.nativeReputation.totalSupply,
