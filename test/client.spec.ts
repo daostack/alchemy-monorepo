@@ -18,7 +18,7 @@ function getClient() {
  */
 describe('apolloClient', () => {
   let client
-  jest.setTimeout(5000)
+  jest.setTimeout(10000)
 
   it('can be instantiated', () => {
     client = getClient()
@@ -41,7 +41,8 @@ describe('apolloClient', () => {
     expect(typeof result.data).toEqual(typeof [])
   })
 
-  it('handles subscriptions', async () => {
+  // TODO: skipping this test until https://github.com/daostack/subgraph/issues/58 is resolved
+  it.skip('handles subscriptions', async () => {
     client = getClient()
     const query = gql`
       subscription {
@@ -62,7 +63,7 @@ describe('apolloClient', () => {
     const returnedData: object[] = []
     let cntr: number = 0
 
-    await observable.subscribe(
+    const subscription = observable.subscribe(
       (eventData: any) => {
         // Do something on receipt of the event
         cntr += 1
@@ -81,9 +82,11 @@ describe('apolloClient', () => {
 
     expect(returnedData.length).toBeGreaterThan(0)
     expect(cntr).toEqual(2)
+    subscription.unsubscribe()
   })
 
-  it('getObservable works', async () => {
+  // TODO: skipping this test until https://github.com/daostack/subgraph/issues/58 is resolved
+  it.skip('getObservable works', async () => {
     const arc = new Arc({
       graphqlHttpProvider,
       graphqlWsProvider,
@@ -104,7 +107,7 @@ describe('apolloClient', () => {
 
     let returnedData: object[] = []
 
-    observable.subscribe(
+    const subscription = observable.subscribe(
       (eventData: any) => {
         // Do something on receipt of the event
         cntr += 1
@@ -129,6 +132,7 @@ describe('apolloClient', () => {
     await waitUntilTrue(() => cntr === 3 )
     expect(returnedData.length).toBeGreaterThan(0)
     expect(cntr).toEqual(3)
+    subscription.unsubscribe()
   })
 
 })

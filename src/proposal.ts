@@ -1,13 +1,15 @@
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
-import { map, switchMap } from 'rxjs/operators'
+import { map } from 'rxjs/operators'
 
 import { Arc } from './arc'
 import { DAO } from './dao'
 import { Operation } from './operation'
-import { IRewardQueryOptions, Reward } from './reward'
+import { IRewardQueryOptions, IRewardState, Reward } from './reward'
+import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import { IVote } from './vote'
+import { getOptions, nullAddress } from './utils'
+import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export enum ProposalOutcome {
   None,
@@ -31,34 +33,64 @@ export interface IProposalState {
   createdAt: Date
   dao: DAO
   description?: string
-  ethReward: number,
+  ethReward: number
   executedAt: Date
-  externalTokenReward: number,
+  externalTokenReward: number
   ipfsHash: string
-  preBoostedVotePeriodLimit: number,
+  preBoostedVotePeriodLimit: number
   proposer: Address
+  proposingRepReward: number
   quietEndingPeriodBeganAt: Date
-  reputationReward: number,
-  resolvedAt: Date,
+  reputationReward: number
+  resolvedAt: Date
   stage: ProposalStage
   stakesFor: number
   stakesAgainst: number
   title?: string
   url?: string
-  tokensReward: number,
+  tokensReward: number
   votesFor: number
   votesAgainst: number
   winningOutcome: ProposalOutcome
 }
 
-export interface IStake {
-  address: Address
-  outcome: ProposalOutcome
-  amount: number // amount staked
-  proposalId: string
-}
-
 export class Proposal implements IStateful<IProposalState> {
+
+  // Create a new proposal
+  // TODO: we want to return an observer for the transaction here
+  public static async create(options: IProposalCreateOptions, context: Arc) {
+
+    if (!options.dao) {
+      throw Error(`Proposal.create(options): options must include an address for "dao"`)
+    }
+    const web3 = context.web3
+
+    const opts = await getOptions(web3)
+    const addresses = context.contractAddresses
+    const ContributionReward = require('@daostack/arc/build/contracts/ContributionReward.json')
+    const contributionReward = new web3.eth.Contract(ContributionReward.abi, addresses.ContributionReward, opts)
+
+    const propose = contributionReward.methods.proposeContributionReward(
+        options.dao,
+        // TODO: after upgrading arc, use empty string as default value for ipfsHash
+        options.ipfsHash || '0x0000000000000000000000000000000000000000000000000000000000000000',
+        options.reputationReward || 0,
+        [
+          options.nativeTokenReward || 0,
+          options.ethReward || 0,
+          options.externalTokenReward || 0,
+          // TODO: what are decent default values for periodLength and periods?
+          options.periodLength || 0,
+          options.periods || 0
+        ],
+        options.externalTokenAddress || nullAddress,
+        options.beneficiary
+    )
+    const proposalId = await propose.call()
+    const transaction = await propose.send()
+    return  { transaction, proposalId }
+
+  }
   /**
    * `state` is an observable of the proposal state
    */
@@ -148,6 +180,7 @@ export class Proposal implements IStateful<IProposalState> {
         ipfsHash: item.ipfsHash,
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposer: item.proposer && item.proposer.id,
+        proposingRepReward: Number(item.proposingRepReward),
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
         reputationReward: Number(item.reputationReward),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : null,
@@ -166,6 +199,8 @@ export class Proposal implements IStateful<IProposalState> {
     this.state = context._getObservableObject(query, 'proposal', itemMap) as Observable<IProposalState>
   }
 
+  // Note that although this is implemented as an observable, the value is actually static
+  // and will never change.
   public dao(): Observable<DAO> {
     return this.state.pipe(
       map((state) => {
@@ -174,40 +209,28 @@ export class Proposal implements IStateful<IProposalState> {
     )
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
-    return this.dao().pipe(
-      switchMap((dao) => {
-        options.proposal = this.id
-        return dao.votes(options)
-    }))
+  public votes(options: IVoteQueryOptions = {}): Observable <IVote[]> {
+    options.proposal = this.id
+    return Vote.search(this.context, options)
   }
 
-  public vote(outcome: ProposalOutcome): Operation < void > {
+  public vote(outcome: ProposalOutcome): Operation<void> {
     throw new Error('not implemented')
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
-    throw new Error('not implemented')
-    // return this.dao().pipe(
-    //   switchMap((dao) => {
-    //     return dao.stakes({ ...options, proposalId: this.id })
-    //   })
-    // )
+  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
+    options.proposal = this.id
+    return Stake.search(this.context, options)
   }
 
-  public stake(outcome: ProposalOutcome, amount: number): Operation < void > {
+  public stake(outcome: ProposalOutcome, amount: number): Operation<void> {
     throw new Error('not implemented')
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable < Reward[] > {
-    throw new Error('not implemented')
-    // return this.dao().pipe(
-    //   switchMap((dao) => {
-    //     return dao.rewards({ ...options, proposalId: this.id })
-    //   })
-    // )
+  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
+    options.proposal = this.id
+    return Reward.search(this.context, options)
   }
-
 }
 
 enum ProposalQuerySortOptions {
@@ -228,13 +251,16 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
   [key: string]: any
 }
 
-export interface IVoteQueryOptions extends ICommonQueryOptions {
-  member?: Address
-  proposal?: string
-  [key: string]: any
-}
-
-export interface IStakeQueryOptions extends ICommonQueryOptions {
-  proposalId?: string
-  [key: string]: any
-}
+export interface IProposalCreateOptions {
+  beneficiary: Address
+  dao?: Address
+  ipfsHash?: string
+  nativeTokenReward?: number
+  reputationReward?: number
+  ethReward?: number
+  externalTokenReward?: number
+  externalTokenAddress?: Address
+  periodLength?: number
+  periods?: any
+  type?: string
+  }

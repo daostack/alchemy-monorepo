@@ -1,21 +1,19 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
-import { filter } from 'rxjs/operators'
 import { Arc } from './arc'
 import { IMemberQueryOptions, Member } from './member'
 import {
+  IProposalCreateOptions,
   IProposalQueryOptions,
-  IStake,
-  IStakeQueryOptions,
-  IVoteQueryOptions,
   Proposal,
   ProposalStage
 } from './proposal'
 import { Reputation } from './reputation'
-import { IRewardQueryOptions, Reward } from './reward'
+import { IRewardQueryOptions, IRewardState, Reward } from './reward'
+import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
-import { IVote, Vote } from './vote'
+import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export interface IDAOState {
   address: Address // address of the avatar
@@ -24,11 +22,14 @@ export interface IDAOState {
   reputation: Reputation
   reputationTotalSupply: number,
   token: Token,
+  tokenBalance: number,
   tokenName: string,
   tokenSymbol: string,
   tokenTotalSupply: number,
+  externalTokenAddress: Address,
+  externalTokenBalance: number
   externalTokenSymbol: string,
-  externalTokenAddress: Address
+  ethBalance: number
 }
 
 export class DAO implements IStateful<IDAOState> {
@@ -41,10 +42,10 @@ export class DAO implements IStateful<IDAOState> {
     const query = gql`{
       dao(id: "${this.address}") {
         id
-        members { id },
         name,
         nativeReputation { id, totalSupply },
         nativeToken { id, name, symbol, totalSupply },
+        membersCount
       }
     }`
 
@@ -54,15 +55,19 @@ export class DAO implements IStateful<IDAOState> {
       }
       return {
         address: item.id,
+        // TODO: get Eth balance, cf https://github.com/daostack/subgraph/issues/62
+        ethBalance: 314159265359,
         externalTokenAddress: '',
+        // TODO: get external token balance, cf. https://github.com/daostack/subgraph/issues/62
+        externalTokenBalance: 314159265359,
         externalTokenSymbol: '',
-        // TODO: getting all members is not really scaleable - we need a way ot get the member count
-        // from the subgraph
-        memberCount: item.members.length,
+        memberCount: Number(item.membersCount),
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, context),
         reputationTotalSupply: item.nativeReputation.totalSupply,
         token: new Token(item.nativeToken.id, context),
+        // TODO: get external token balance, cf. https://github.com/daostack/subgraph/issues/62
+        tokenBalance: 314159265359,
         tokenName: item.nativeToken.name,
         tokenSymbol: item.nativeToken.symbol,
         tokenTotalSupply: item.nativeToken.totalSupply
@@ -79,11 +84,10 @@ export class DAO implements IStateful<IDAOState> {
       }
     }`
     const itemMap = (item: any): Member => new Member(item.id, this.context)
-    return this.context._getObservableList(query, 'members', itemMap) as Observable<Member[]>
+    return this.context._getObservableList(query, itemMap) as Observable<Member[]>
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
-
     // TODO: there must be  better way to construct a where clause from a dictionary
     let where = ''
     for (const key of Object.keys(options)) {
@@ -107,7 +111,6 @@ export class DAO implements IStateful<IDAOState> {
 
     return this.context._getObservableList(
       query,
-      'proposals',
       (r: any) => new Proposal(r.id, this.context)
     ) as Observable<Proposal[]>
   }
@@ -116,67 +119,24 @@ export class DAO implements IStateful<IDAOState> {
     return new Proposal(id, this.context)
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
-    let where = ''
-    for (const key of Object.keys(options)) {
-      where += `${key}: "${options[key] as string}",\n`
-    }
-
-    const query = gql`
-      {
-        rewards (where: {
-          ${where}
-          dao: "${this.address}"
-        }) {
-          id
-        }
-      }
-    `
-
-    return this.context._getObservableList(
-      query,
-      'rewards',
-      (r: any) => new Reward(r.id, this.context)
-    ) as Observable<Reward[]>
+  public createProposal(options: IProposalCreateOptions) {
+    options.dao = this.address
+    return Proposal.create(options, this.context)
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
-    let where = ''
-    for (const key of Object.keys(options)) {
-      where += `${key}: "${options[key] as string}",\n`
-    }
+  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
+    options.dao = this.address
+    return Reward.search(this.context, options)
+  }
 
-    const query = gql`
-      {
-        proposalVotes(where: {
-          ${where}
-        }) {
-          id
-          createdAt
-          member {
-            id
-            dao {
-              id
-            }
-          }
-          proposal {
-            id
-          }
-          outcome
-          reputation
-        }
-      }
-    `
-    return this.context._getObservableListWithFilter(
-      query,
-      'proposalVotes',
-      (r: any) => new Vote(r.id, r.member.id, r.createdAt, r.outcome, r.reputation, r.proposal.id,  r.member.dao.id),
-      (r: any) => r[0].member.dao.id === this.address
-    ) as Observable<IVote[]>
+  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
+    options.dao = this.address
+    return Vote.search(this.context, options)
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
-    throw new Error('not implemented')
+    options.dao = this.address
+    return Stake.search(this.context, options)
   }
 
   public ethBalance(): Observable < number > {

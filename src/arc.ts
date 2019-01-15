@@ -19,22 +19,31 @@ export class Arc {
 
   public pendingOperations: Observable<Array<Operation<any>>> = of()
   public apolloClient: ApolloClient<object>
+  // TODO: are there proper Web3 types available?
+  public web3: any
+  public contractAddresses: { [key: string]: Address } = {}
 
   constructor(options: {
     graphqlHttpProvider: string
     graphqlWsProvider: string
-    web3HttpProvider: string
-    web3WsProvider: string
+    web3HttpProvider?: string
+    web3WsProvider?: string
+    contractAddresses?: { [key: string]: Address }
   }) {
     this.graphqlHttpProvider = options.graphqlHttpProvider
     this.graphqlWsProvider = options.graphqlWsProvider
-    this.web3HttpProvider = options.web3HttpProvider
-    this.web3WsProvider = options.web3WsProvider
+    this.web3HttpProvider = options.web3HttpProvider || ''
+    this.web3WsProvider = options.web3WsProvider || ''
 
     this.apolloClient = utils.createApolloClient({
       graphqlHttpProvider: this.graphqlHttpProvider,
       graphqlWsProvider: this.graphqlWsProvider
     })
+
+    if (this.web3HttpProvider) {
+      this.web3 = new Web3(this.web3HttpProvider)
+    }
+    this.contractAddresses = options.contractAddresses || {}
   }
 
   /**
@@ -56,7 +65,6 @@ export class Arc {
     `
     return this._getObservableList(
       query,
-      'daos',
       (r: any) => new DAO(r.id, this)
     ) as Observable<DAO[]>
   }
@@ -72,17 +80,27 @@ export class Arc {
    */
   public getBalance(address: Address): Observable < number > {
     const web3 = new Web3(this.web3WsProvider)
-    return Observable.create((observer: any) => {
+    // observe balance on new blocks
+    // (note that we are basically doing expensive polling here)
+    const balanceObservable = Observable.create((observer: any) => {
       web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
         if (err) {
+          console.log(err)
           observer.error(err)
         } else {
+          console.log('newblock')
           web3.eth.getBalance(address).then((balance: any) => {
-              observer.next(balance)
+            // TODO: we should probably only call next if the balance has changed
+            observer.next(balance)
           })
         }
       })
     })
+    // get the current balance ad start observing new blocks for balace changes
+    const queryObservable = from(web3.eth.getBalance(address)).pipe(
+      concat(balanceObservable)
+    )
+    return queryObservable as Observable<any>
   }
 
   /**
@@ -97,7 +115,7 @@ export class Arc {
    *        address
    *      }
    *    }`
-   *    _getObservableList(query, 'daos', (r:any) => new DAO(r.address))
+   *    _getObservableList(query, (r:any) => new DAO(r.address))
    *
    * @param query The query to be run
    * @param  entity  name of the graphql entity to be queried.
@@ -106,12 +124,12 @@ export class Arc {
    */
   public _getObservableList(
     query: any,
-    entity: string,
     itemMap: (o: object) => object = (o) => o
   ) {
+    const entity = query.definitions[0].selectionSet.selections[0].name.value
     return this.getObservable(query).pipe(
       map((r) => {
-        if (!r.data[entity]) { throw Error(`Could not find ${entity} in ${r.data}`)}
+        if (!r.data[entity]) { throw Error(`Could not find entity "${entity}" in ${Object.keys(r.data)}`)}
         return r.data[entity]
       }),
       map((rs: object[]) => rs.map(itemMap))
@@ -130,7 +148,7 @@ export class Arc {
    *        address
    *      }
    *    }`
-   *    _getObservableList(query, 'daos', (r:any) => new DAO(r.address), filter((r:any) => r.address === "0x1234..."))
+   *    _getObservableList(query, (r:any) => new DAO(r.address), filter((r:any) => r.address === "0x1234..."))
    *
    * @param query The query to be run
    * @param  entity  name of the graphql entity to be queried.
@@ -140,10 +158,10 @@ export class Arc {
    */
   public _getObservableListWithFilter(
     query: any,
-    entity: string,
     itemMap: (o: object) => object = (o) => o,
     filterFunc: (o: any) => boolean
   ) {
+    const entity = query.definitions[0].selectionSet.selections[0].name.value
     return this.getObservable(query).pipe(
       map((r) => {
         if (!r.data[entity]) { throw Error(`Could not find ${entity} in ${r.data}`)}
@@ -175,18 +193,22 @@ export class Arc {
       subscription ${query}
     `
 
+    // console.log(`creating observable for query:\n${query.loc.source.body}`)
     const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({ query: subscriptionQuery })
-
     const subscriptionObservable = Observable.create((observer: Observer<object[]>) => {
       const subscription = zenObservable.subscribe(observer)
       return () => subscription.unsubscribe()
     })
-    const queryPromise: Promise<
-      ApolloQueryResult<{ [key: string]: object[] }>
-    > = this.apolloClient.query({ query })
+    const queryPromise: Promise<ApolloQueryResult<{ [key: string]: object[] }>> =
+      this.apolloClient.query({ query })
     const queryObservable = from(queryPromise).pipe(
       concat(subscriptionObservable)
     )
     return queryObservable as Observable<any>
+  }
+
+  public sendQuery(query: any) {
+    const queryPromise = this.apolloClient.query({ query })
+    return queryPromise
   }
 }
