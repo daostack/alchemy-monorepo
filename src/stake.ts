@@ -18,7 +18,6 @@ export interface IStake {
 }
 
 export class Stake implements IStake {
-
   public static search(context: Arc, options: IStakeQueryOptions = {}): Observable<IStake[]> {
     let where = ''
     let daoFilter: (r: any) => boolean
@@ -52,10 +51,12 @@ export class Stake implements IStake {
     `
     return context._getObservableListWithFilter(
       query,
-      (r: any) => new Stake(r.id, r.staker.id, r.createdAt, r.outcome, r.amount, new Proposal(r.proposal.id, context)),
+      (r: any) => new Stake(r.id, r.staker.id, r.createdAt, r.outcome, r.amount, r.prposal.id, context),
       daoFilter
     ) as Observable<IStake[]>
   }
+
+  public proposal: Proposal
 
   constructor(
       public id: string,
@@ -63,6 +64,9 @@ export class Stake implements IStake {
       public createdAt: Date,
       public outcome: ProposalOutcome,
       public amount: number,
-      public proposal: Proposal
-  ) {}
+      public proposalId: string,
+      public context: Arc
+  ) {
+    this.proposal = new Proposal(proposalId, this.context)
+  }
 }
