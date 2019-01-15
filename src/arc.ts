@@ -136,7 +136,7 @@ export class Arc {
   ) {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
     return this.getObservable(query).pipe(
-      map((r) => {
+      map((r: any) => {
         if (!r.data[entity]) { throw Error(`Could not find ${entity} in ${r.data}`)}
         return r.data[entity]
       }),
@@ -151,7 +151,7 @@ export class Arc {
     itemMap: (o: object) => object = (o) => o
   ) {
     return this.getObservable(query).pipe(
-      map((r) => {
+      map((r: any) => {
         if (!r.data) {
           return null
         }
@@ -178,8 +178,8 @@ export class Arc {
     const queryObservable = from(queryPromise).pipe(
       concat(subscriptionObservable)
     ).pipe(
-      catchError((err) => {
-        throw Error(`${err.message}\n${query.loc.source.body}`)
+      catchError((err: Error) => {
+        throw Error(`${err.name}: ${err.message}\n${query.loc.source.body}`)
       })
     )
 
