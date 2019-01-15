@@ -166,7 +166,7 @@ export class Arc {
       subscription ${query}
     `
 
-    console.log(`creating observable for query:\n${query.loc.source.body}`)
+    // console.log(`creating observable for query:\n${query.loc.source.body}`)
     const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({ query: subscriptionQuery })
     const subscriptionObservable = Observable.create((observer: Observer<object[]>) => {
       const subscription = zenObservable.subscribe(observer)

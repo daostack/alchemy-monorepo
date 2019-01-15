@@ -7,5 +7,6 @@ export { Proposal, IProposalState, ProposalOutcome, ProposalStage } from './prop
 export { Reputation, IReputationState } from './reputation'
 export { IRewardState, Reward, RewardType, RewardReason } from './reward'
 export { Token, ITokenState } from './token'
-export { Stake, IStakeQueryOptions } from './stake'
+export { Stake, IStake, IStakeQueryOptions } from './stake'
+export { Vote, IVote, IVoteQueryOptions } from './vote'
 export { Address } from './types'

@@ -21,7 +21,7 @@ export class Stake implements IStake {
   public static search(context: Arc, options: IStakeQueryOptions = {}): Observable<IStake[]> {
     let where = ''
     let daoFilter: (r: any) => boolean
-    daoFilter = (r: any) => true
+    daoFilter = () => true
 
     for (const key of Object.keys(options)) {
       if (key === 'dao') {
