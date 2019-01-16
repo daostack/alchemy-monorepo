@@ -14,7 +14,9 @@ const Web3 = require('web3')
 export class Arc {
   public graphqlHttpProvider: string
   public graphqlWsProvider: string
-  public web3Provider: string
+  public web3HttpProvider: string
+  public web3WsProvider: string
+
   public pendingOperations: Observable<Array<Operation<any>>> = of()
   public apolloClient: ApolloClient<object>
   // TODO: are there proper Web3 types available?
@@ -24,20 +26,23 @@ export class Arc {
   constructor(options: {
     graphqlHttpProvider: string
     graphqlWsProvider: string
-    web3Provider: string
-    // TODO: this temporary workaround: contractAddresses will in the future be taken from the graphql server
+    web3HttpProvider?: string
+    web3WsProvider?: string
     contractAddresses?: { [key: string]: Address }
   }) {
     this.graphqlHttpProvider = options.graphqlHttpProvider
     this.graphqlWsProvider = options.graphqlWsProvider
-    this.web3Provider = options.web3Provider
+    this.web3HttpProvider = options.web3HttpProvider || ''
+    this.web3WsProvider = options.web3WsProvider || ''
 
     this.apolloClient = utils.createApolloClient({
       graphqlHttpProvider: this.graphqlHttpProvider,
       graphqlWsProvider: this.graphqlWsProvider
     })
 
-    this.web3 = new Web3(this.web3Provider)
+    if (this.web3HttpProvider) {
+      this.web3 = new Web3(this.web3HttpProvider)
+    }
     this.contractAddresses = options.contractAddresses || {}
   }
 
@@ -73,9 +78,31 @@ export class Arc {
    * @param  address [description]
    * @return         [description]
    */
-  public getBalance(address: Address) {
-    // web3 = new Web3(this.web3 )
+  public getBalance(address: Address): Observable < number > {
+    const web3 = new Web3(this.web3WsProvider)
+    // observe balance on new blocks
+    // (note that we are basically doing expensive polling here)
+    const balanceObservable = Observable.create((observer: any) => {
+      web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
+        if (err) {
+          console.log(err)
+          observer.error(err)
+        } else {
+          console.log('newblock')
+          web3.eth.getBalance(address).then((balance: any) => {
+            // TODO: we should probably only call next if the balance has changed
+            observer.next(balance)
+          })
+        }
+      })
+    })
+    // get the current balance ad start observing new blocks for balace changes
+    const queryObservable = from(web3.eth.getBalance(address)).pipe(
+      concat(balanceObservable)
+    )
+    return queryObservable as Observable<any>
   }
+
   /**
    * Returns an observable that:
    * - sends a query over http and returns the current list of results

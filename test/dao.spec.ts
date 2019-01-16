@@ -1,4 +1,4 @@
-import { first} from 'rxjs/operators'
+import { first, last, takeLast} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { getArc, getContractAddresses, getContractAddressesFromSubgraph,
@@ -105,4 +105,19 @@ describe('DAO', () => {
     expect(members.length).toBeGreaterThan(0)
     const member = members[0]
   })
+
+  it('dao.ethBalance() should work', async () => {
+    const dao = arc.dao(addresses.Avatar.toLowerCase())
+    const previousBalance = await dao.ethBalance().pipe(first()).toPromise()
+    await web3.eth.sendTransaction({
+      from: web3.eth.defaultAccount,
+      gas: 4000000,
+      gasPrice: 100000000000,
+      to: addresses.Avatar.toLowerCase(),
+      value: web3.utils.toWei('1', 'ether')
+    })
+    const newBalance = await dao.ethBalance().pipe(first()).toPromise()
+    expect(newBalance - previousBalance).toBe(Number(web3.utils.toWei('1')))
+  })
+
 })

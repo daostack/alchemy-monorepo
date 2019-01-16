@@ -138,6 +138,10 @@ export class DAO implements IStateful<IDAOState> {
     options.dao = this.address
     return Stake.search(this.context, options)
   }
+
+  public ethBalance(): Observable < number > {
+    return this.context.getBalance(this.address)
+  }
 }
 
 export interface IDAOQueryOptions extends ICommonQueryOptions {

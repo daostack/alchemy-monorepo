@@ -1,6 +1,6 @@
 import { from, Observable, Observer, of } from 'rxjs'
 import { checkWebsocket, createApolloClient } from '../src/utils'
-import { graphqlHttpProvider, graphqlWsProvider, mintSomeReputation, web3Provider } from './utils'
+import { graphqlHttpProvider, graphqlWsProvider } from './utils'
 const { execute } = require('apollo-link')
 const { WebSocketLink } = require('apollo-link-ws')
 const { SubscriptionClient } = require('subscriptions-transport-ws')
