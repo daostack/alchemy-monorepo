@@ -1,4 +1,5 @@
-import { Observable } from 'rxjs'
+import { Observable, Observer, of } from 'rxjs'
+import { map } from 'rxjs/operators'
 
 export enum TransactionState {
   Sent,
@@ -27,3 +28,48 @@ export interface ITransactionUpdate<T> {
  * An operation is a stream of transaction updates
  */
 export type Operation<T> = Observable<ITransactionUpdate<T>>
+
+type web3receipt = object
+
+export function sendTransaction<T>(transaction: any, map: (receipt: web3receipt) => T): Operation<T> {
+  const emitter = transaction.send()
+  const observable = Observable.create((observer: Observer<ITransactionUpdate<T>>) => {
+    let transactionHash: string
+    let result: any
+    emitter
+      .once('transactionHash', (hash: string) => {
+        transactionHash = hash
+        observer.next({
+          state: TransactionState.Sent,
+          transactionHash
+        })
+        })
+      .once('receipt', (receipt: any) => {
+        result = map(receipt)
+        observer.next({
+          confirmations: 0,
+          receipt,
+          result,
+          state: TransactionState.Mined,
+          transactionHash
+        })
+      })
+      .on('confirmation', (confNumber: number, receipt: any) => {
+        // const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
+        observer.next({
+          confirmations: confNumber,
+          receipt,
+          result,
+          state: TransactionState.Mined,
+          transactionHash
+        })
+      })
+      .on('error', (error: Error) => {
+        observer.error(error)
+        console.log(`Error: ${error.message}`)
+      })
+    .on('error', (error: Error) => {  console.log(`Error: ${error.message}`) })
+  })
+  return observable
+
+}

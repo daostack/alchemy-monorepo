@@ -30,13 +30,12 @@ describe('Create ContributionReward Proposal', () => {
       type: 'ConributionReward'
     }
 
-    // collect the first 4 results of the observable
+    // collect the first 4 results of the observable in a a listOfUpdates array
     const listOfUpdates = await dao.createProposal(options)
       .pipe(
         take(5),
         reduce((acc: Array<ITransactionUpdate<Proposal>> , val: ITransactionUpdate<Proposal>) => {
-          acc.push(val)
-          return acc
+          acc.push(val); return acc
         }, [])
       )
       .toPromise()

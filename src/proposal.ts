@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators'
 
 import { Arc } from './arc'
 import { DAO } from './dao'
-import { ITransactionUpdate, Operation, TransactionState } from './operation'
+import { ITransactionUpdate, Operation, sendTransaction, TransactionState } from './operation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
@@ -87,48 +87,10 @@ export class Proposal implements IStateful<IProposalState> {
         options.beneficiary
     )
 
-    const emitter = propose.send()
-
-    const observable = Observable.create((observer: Observer<ITransactionUpdate<Proposal>>) => {
-      let transactionHash: string
-      let proposal: Proposal
-      emitter
-        .once('transactionHash', (hash: string) => {
-          transactionHash = hash
-          observer.next({
-            state: TransactionState.Sent,
-            transactionHash
-          })
-          })
-        .once('receipt', (receipt: any) => {
-          const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
-          proposal = new Proposal(proposalId, context)
-
-          observer.next({
-            confirmations: 0,
-            receipt,
-            result: proposal,
-            state: TransactionState.Mined,
-            transactionHash
-          })
-        })
-        .on('confirmation', (confNumber: number, receipt: any) => {
-          // const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
-          observer.next({
-            confirmations: confNumber,
-            receipt,
-            result: proposal,
-            state: TransactionState.Mined,
-            transactionHash
-          })
-        })
-        .on('error', (error: Error) => {
-          observer.error(error)
-          console.log(`Error: ${error.message}`)
-        })
-      .on('error', (error: Error) => {  console.log(`Error: ${error.message}`) })
+    return sendTransaction(propose, (receipt: any) => {
+      const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
+      return new Proposal(proposalId, context)
     })
-    return observable
   }
   /**
    * `state` is an observable of the proposal state
