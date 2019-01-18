@@ -1,3 +1,4 @@
+import { reduce, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { ITransactionUpdate, TransactionState } from '../src/operation'
@@ -28,27 +29,19 @@ describe('Create ContributionReward Proposal', () => {
       periods: 5,
       type: 'ConributionReward'
     }
-    let latestUpdate: ITransactionUpdate<Proposal>
-    const listOfUpdates: Array<ITransactionUpdate<Proposal>> = []
-    const subscription =  dao.createProposal(options).subscribe(
-      (data: any) => {
-        // Do something on receipt of the event
-        latestUpdate = data
-        listOfUpdates.push(latestUpdate)
-      },
-      (err: any) => {
-        throw err
-      }
-    )
 
-    // wait for 4 confirmations
-    await waitUntilTrue(() => {
-      const confirmations = latestUpdate && latestUpdate.confirmations && latestUpdate.confirmations || 0
-      return Boolean(confirmations > 3)
-    })
-    subscription.unsubscribe()
+    // collect the first 4 results of the observable
+    const listOfUpdates = await dao.createProposal(options)
+      .pipe(
+        take(5),
+        reduce((acc: Array<ITransactionUpdate<Proposal>> , val: ITransactionUpdate<Proposal>) => {
+          acc.push(val)
+          return acc
+        }, [])
+      )
+      .toPromise()
 
-    // the first returned value is expected to be the "sent" thing
+    // the first returned value is expected to be the "sent" (i.e. not mined yet)
     expect(listOfUpdates[0]).toMatchObject({
       state: TransactionState.Sent
     })
