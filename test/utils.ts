@@ -1,10 +1,12 @@
 import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import gql from 'graphql-tag'
+import {DAO} from '../src/dao'
 import Arc from '../src/index'
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack/graphql'
 export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/daostack'
 export const web3HttpProvider: string = 'http://127.0.0.1:8545'
 export const web3WsProvider: string = 'ws://127.0.0.1:8545'
+
 const Web3 = require('web3')
 
 export const nullAddress: string  = '0x' + padZeros('', 40)
@@ -117,4 +119,11 @@ export async function getContractAddressesFromSubgraph(): Promise<{ daos: any } 
     }
   })
 }
+}
+
+export async function getTestDAO() {
+  const addresses = await getContractAddressesFromSubgraph()
+  const address = addresses.daos[0].address
+  const arc = await getArc()
+  return arc.dao(address)
 }
