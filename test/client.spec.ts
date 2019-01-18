@@ -1,6 +1,7 @@
 import { ApolloClient } from 'apollo-client'
 import gql from 'graphql-tag'
 import { Observable, Observer } from 'rxjs'
+import { reduce, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { createApolloClient } from '../src/utils'
 import { graphqlHttpProvider, graphqlWsProvider, mintSomeReputation, waitUntilTrue } from './utils'
@@ -73,6 +74,17 @@ describe('apolloClient', () => {
         throw err
       }
     )
+    // TODO: we can do all this more elegantly using the following pattern
+    // but until subscriptions work reliably in graph-node, i cannot be bother to test this
+    // const p = observable
+    //   .pipe(
+    //     take(2),
+    //     reduce((acc: object[], val: object) => {
+    //       console.log(val)
+    //       acc.push(val); return acc
+    //     }, [])
+    //   )
+    // const xx = await p.toPromise()
 
     await mintSomeReputation()
     await mintSomeReputation()

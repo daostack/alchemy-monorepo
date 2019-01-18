@@ -3,7 +3,7 @@ import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { ITransactionUpdate, TransactionState } from '../src/operation'
 import { Proposal } from '../src/proposal'
-import { getArc, waitUntilTrue } from './utils'
+import { getArc } from './utils'
 
 describe('Create ContributionReward Proposal', () => {
   let arc: Arc

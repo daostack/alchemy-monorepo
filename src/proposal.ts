@@ -56,8 +56,12 @@ export interface IProposalState {
 
 export class Proposal implements IStateful<IProposalState> {
 
-  // Create a new proposal
-  // TODO: we want to return an observer for the transaction here
+  /**
+   * Proposal.create() creates a new proposal
+   * @param  options cf. IProposalCreateOptions
+   * @param  context [description]
+   * @return  an observable that streams the various states
+   */
   public static create(options: IProposalCreateOptions, context: Arc): Operation<Proposal> {
 
     if (!options.dao) {

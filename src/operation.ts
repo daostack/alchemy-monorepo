@@ -1,5 +1,4 @@
-import { Observable, Observer, of } from 'rxjs'
-import { map } from 'rxjs/operators'
+import { Observable, Observer } from 'rxjs'
 
 export enum TransactionState {
   Sent,
@@ -43,7 +42,7 @@ export function sendTransaction<T>(transaction: any, map: (receipt: web3receipt)
           state: TransactionState.Sent,
           transactionHash
         })
-        })
+      })
       .once('receipt', (receipt: any) => {
         result = map(receipt)
         observer.next({
@@ -55,7 +54,6 @@ export function sendTransaction<T>(transaction: any, map: (receipt: web3receipt)
         })
       })
       .on('confirmation', (confNumber: number, receipt: any) => {
-        // const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
         observer.next({
           confirmations: confNumber,
           receipt,
@@ -63,13 +61,14 @@ export function sendTransaction<T>(transaction: any, map: (receipt: web3receipt)
           state: TransactionState.Mined,
           transactionHash
         })
+        if (confNumber > 23) {
+          // the web3 observer will confirm up to 24 subscriptions, so we are done here
+          observer.complete()
+        }
       })
       .on('error', (error: Error) => {
         observer.error(error)
-        console.log(`Error: ${error.message}`)
       })
-    .on('error', (error: Error) => {  console.log(`Error: ${error.message}`) })
   })
   return observable
-
 }

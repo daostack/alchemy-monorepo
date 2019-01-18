@@ -19,7 +19,10 @@ describe('Reward', () => {
     const reward = new Reward(id, arc)
     expect(reward).toBeInstanceOf(Reward)
   })
+
   it('Rewards are searchable', async () => {
+
+    // create a proposal with some rewards
     let result
 
     result = await Reward.search(arc, {})
