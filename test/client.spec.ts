@@ -42,7 +42,7 @@ describe('apolloClient', () => {
   })
 
   // TODO: skipping this test until https://github.com/daostack/subgraph/issues/58 is resolved
-  it.skip('handles subscriptions', async () => {
+  it('handles subscriptions', async () => {
     client = getClient()
     const query = gql`
       subscription {

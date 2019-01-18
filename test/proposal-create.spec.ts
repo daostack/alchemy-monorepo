@@ -1,6 +1,8 @@
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { getArc } from './utils'
+import { ITransactionUpdate, TransactionState } from '../src/operation'
+import { Proposal } from '../src/proposal'
+import { getArc, waitUntilTrue } from './utils'
 
 describe('Create ContributionReward Proposal', () => {
   let arc: Arc
@@ -26,8 +28,54 @@ describe('Create ContributionReward Proposal', () => {
       periods: 5,
       type: 'ConributionReward'
     }
-    const result = await dao.createProposal(options)
-    expect(result.proposalId).toHaveLength(66)
-    expect(result.proposalId).toMatch(/^0x/)
+    let latestUpdate: ITransactionUpdate<Proposal>
+    const listOfUpdates: Array<ITransactionUpdate<Proposal>> = []
+    const subscription =  dao.createProposal(options).subscribe(
+      (data: any) => {
+        // Do something on receipt of the event
+        latestUpdate = data
+        listOfUpdates.push(latestUpdate)
+      },
+      (err: any) => {
+        throw err
+      }
+    )
+
+    // wait for 4 confirmations
+    await waitUntilTrue(() => {
+      const confirmations = latestUpdate && latestUpdate.confirmations && latestUpdate.confirmations || 0
+      return Boolean(confirmations > 3)
+    })
+    subscription.unsubscribe()
+
+    // the first returned value is expected to be the "sent" thing
+    expect(listOfUpdates[0]).toMatchObject({
+      state: TransactionState.Sent
+    })
+    expect(listOfUpdates[1]).toMatchObject({
+      confirmations: 0,
+      state: TransactionState.Mined
+    })
+    expect(listOfUpdates[1].result).toBeDefined()
+    expect(listOfUpdates[1].receipt).toBeDefined()
+    expect(listOfUpdates[1].transactionHash).toBeDefined()
+
+    const proposal = listOfUpdates[1].result
+    if (proposal) {
+      expect(proposal.id).toBeDefined()
+    }
+
+    expect(listOfUpdates[2]).toMatchObject({
+      confirmations: 1,
+      state: TransactionState.Mined
+    })
+    expect(listOfUpdates[3]).toMatchObject({
+      confirmations: 2,
+      receipt: listOfUpdates[1].receipt,
+      // result: listOfUpdates[1].result,
+      state: TransactionState.Mined,
+      transactionHash: listOfUpdates[1].transactionHash
+    })
+
   })
 })

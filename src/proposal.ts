@@ -1,14 +1,14 @@
 import gql from 'graphql-tag'
-import { Observable, of } from 'rxjs'
+import { Observable, Observer, of } from 'rxjs'
 import { map } from 'rxjs/operators'
 
 import { Arc } from './arc'
 import { DAO } from './dao'
-import { Operation } from './operation'
+import { ITransactionUpdate, Operation, TransactionState } from './operation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import { getOptions, nullAddress } from './utils'
+import { getWeb3Options, nullAddress } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export enum ProposalOutcome {
@@ -58,14 +58,14 @@ export class Proposal implements IStateful<IProposalState> {
 
   // Create a new proposal
   // TODO: we want to return an observer for the transaction here
-  public static async create(options: IProposalCreateOptions, context: Arc) {
+  public static create(options: IProposalCreateOptions, context: Arc): Operation<Proposal> {
 
     if (!options.dao) {
       throw Error(`Proposal.create(options): options must include an address for "dao"`)
     }
     const web3 = context.web3
 
-    const opts = await getOptions(web3)
+    const opts = getWeb3Options(web3)
     const addresses = context.contractAddresses
     const ContributionReward = require('@daostack/arc/build/contracts/ContributionReward.json')
     const contributionReward = new web3.eth.Contract(ContributionReward.abi, addresses.ContributionReward, opts)
@@ -86,18 +86,57 @@ export class Proposal implements IStateful<IProposalState> {
         options.externalTokenAddress || nullAddress,
         options.beneficiary
     )
-    const proposalId = await propose.call()
-    const transaction = await propose.send()
-    return  { transaction, proposalId }
 
+    const emitter = propose.send()
+
+    const observable = Observable.create((observer: Observer<ITransactionUpdate<Proposal>>) => {
+      let transactionHash: string
+      let proposal: Proposal
+      emitter
+        .once('transactionHash', (hash: string) => {
+          transactionHash = hash
+          observer.next({
+            state: TransactionState.Sent,
+            transactionHash
+          })
+          })
+        .once('receipt', (receipt: any) => {
+          const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
+          proposal = new Proposal(proposalId, context)
+
+          observer.next({
+            confirmations: 0,
+            receipt,
+            result: proposal,
+            state: TransactionState.Mined,
+            transactionHash
+          })
+        })
+        .on('confirmation', (confNumber: number, receipt: any) => {
+          // const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
+          observer.next({
+            confirmations: confNumber,
+            receipt,
+            result: proposal,
+            state: TransactionState.Mined,
+            transactionHash
+          })
+        })
+        .on('error', (error: Error) => {
+          observer.error(error)
+          console.log(`Error: ${error.message}`)
+        })
+      .on('error', (error: Error) => {  console.log(`Error: ${error.message}`) })
+    })
+    return observable
   }
   /**
    * `state` is an observable of the proposal state
    */
-  public state: Observable<IProposalState> = of()
+  public state: Observable < IProposalState > = of()
   public context: Arc
 
-  constructor(public id: string, context: Arc) {
+constructor(public id: string, context: Arc) {
     this.id = id
     this.context = context
 
@@ -201,7 +240,7 @@ export class Proposal implements IStateful<IProposalState> {
 
   // Note that although this is implemented as an observable, the value is actually static
   // and will never change.
-  public dao(): Observable<DAO> {
+  public dao(): Observable < DAO > {
     return this.state.pipe(
       map((state) => {
         return state.dao
@@ -209,25 +248,25 @@ export class Proposal implements IStateful<IProposalState> {
     )
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
+  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
     options.proposal = this.id
     return Vote.search(this.context, options)
   }
 
-  public vote(outcome: ProposalOutcome): Operation<void> {
+  public vote(outcome: ProposalOutcome): Operation < void > {
     throw new Error('not implemented')
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
+  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
     options.proposal = this.id
     return Stake.search(this.context, options)
   }
 
-  public stake(outcome: ProposalOutcome, amount: number): Operation<void> {
+  public stake(outcome: ProposalOutcome, amount: number): Operation < void > {
     throw new Error('not implemented')
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
+  public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
     options.proposal = this.id
     return Reward.search(this.context, options)
   }

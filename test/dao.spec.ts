@@ -1,8 +1,8 @@
-import { first, last, takeLast} from 'rxjs/operators'
+import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { getArc, getContractAddresses, getContractAddressesFromSubgraph,
-  getOptions, getWeb3, nullAddress } from './utils'
+  getWeb3 } from './utils'
 
 /**
  * DAO test

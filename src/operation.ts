@@ -11,14 +11,16 @@ export enum TransactionState {
 export interface ITransactionUpdate<T> {
   state: TransactionState
   /**
-   * depth of the transaction in the blockchain.
+   *  number of confirmations
    */
-  depth: number
+  transactionHash: string
+  receipt?: object
+  confirmations?: number
   /**
    * Parsed return value from the method call
    * or contract address in the case of contract creation tx.
    */
-  result: T
+  result?: T
 }
 
 /**
