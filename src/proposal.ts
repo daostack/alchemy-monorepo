@@ -99,7 +99,7 @@ export class Proposal implements IStateful<IProposalState> {
   /**
    * `state` is an observable of the proposal state
    */
-  public state: Observable < IProposalState > = of()
+  public state: Observable<IProposalState> = of()
   public context: Arc
 
 constructor(public id: string, context: Arc) {
@@ -206,7 +206,7 @@ constructor(public id: string, context: Arc) {
 
   // Note that although this is implemented as an observable, the value is actually static
   // and will never change.
-  public dao(): Observable < DAO > {
+  public dao(): Observable<DAO> {
     return this.state.pipe(
       map((state) => {
         return state.dao
@@ -214,25 +214,25 @@ constructor(public id: string, context: Arc) {
     )
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
+  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
     options.proposal = this.id
     return Vote.search(this.context, options)
   }
 
-  public vote(outcome: ProposalOutcome): Operation < void > {
+  public vote(outcome: ProposalOutcome): Operation<void> {
     throw new Error('not implemented')
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
+  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
     options.proposal = this.id
     return Stake.search(this.context, options)
   }
 
-  public stake(outcome: ProposalOutcome, amount: number): Operation < void > {
+  public stake(outcome: ProposalOutcome, amount: number): Operation<void> {
     throw new Error('not implemented')
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
+  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
     options.proposal = this.id
     return Reward.search(this.context, options)
   }
