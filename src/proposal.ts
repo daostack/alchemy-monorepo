@@ -1,14 +1,14 @@
 import gql from 'graphql-tag'
-import { Observable, of } from 'rxjs'
+import { Observable, Observer, of } from 'rxjs'
 import { map } from 'rxjs/operators'
 
 import { Arc } from './arc'
 import { DAO } from './dao'
-import { Operation } from './operation'
+import { ITransactionUpdate, Operation, sendTransaction, TransactionState } from './operation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import { getOptions, nullAddress } from './utils'
+import { getWeb3Options, nullAddress } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export enum ProposalOutcome {
@@ -56,16 +56,20 @@ export interface IProposalState {
 
 export class Proposal implements IStateful<IProposalState> {
 
-  // Create a new proposal
-  // TODO: we want to return an observer for the transaction here
-  public static async create(options: IProposalCreateOptions, context: Arc) {
+  /**
+   * Proposal.create() creates a new proposal
+   * @param  options cf. IProposalCreateOptions
+   * @param  context [description]
+   * @return  an observable that streams the various states
+   */
+  public static create(options: IProposalCreateOptions, context: Arc): Operation<Proposal> {
 
     if (!options.dao) {
       throw Error(`Proposal.create(options): options must include an address for "dao"`)
     }
     const web3 = context.web3
 
-    const opts = await getOptions(web3)
+    const opts = getWeb3Options(web3)
     const addresses = context.contractAddresses
     const ContributionReward = require('@daostack/arc/build/contracts/ContributionReward.json')
     const contributionReward = new web3.eth.Contract(ContributionReward.abi, addresses.ContributionReward, opts)
@@ -86,10 +90,11 @@ export class Proposal implements IStateful<IProposalState> {
         options.externalTokenAddress || nullAddress,
         options.beneficiary
     )
-    const proposalId = await propose.call()
-    const transaction = await propose.send()
-    return  { transaction, proposalId }
 
+    return sendTransaction(propose, (receipt: any) => {
+      const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
+      return new Proposal(proposalId, context)
+    })
   }
   /**
    * `state` is an observable of the proposal state
@@ -97,7 +102,7 @@ export class Proposal implements IStateful<IProposalState> {
   public state: Observable<IProposalState> = of()
   public context: Arc
 
-  constructor(public id: string, context: Arc) {
+constructor(public id: string, context: Arc) {
     this.id = id
     this.context = context
 

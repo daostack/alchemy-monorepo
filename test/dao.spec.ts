@@ -1,27 +1,17 @@
-import { first, last, takeLast} from 'rxjs/operators'
+import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { getArc, getContractAddresses, getContractAddressesFromSubgraph,
-  getOptions, getWeb3, nullAddress } from './utils'
+import { getArc, getTestDAO, getWeb3 } from './utils'
 
 /**
  * DAO test
  */
 describe('DAO', () => {
-  let addresses: { [key: string]: string }
   let arc: Arc
   let web3: any
   let accounts: any
 
-  async function _getSomeDAOAddress() {
-    addresses = getContractAddresses()
-    const result = await getContractAddressesFromSubgraph()
-    return result.daos[0].address
-    // return result.daos[0].address
-  }
-
   beforeAll(async () => {
-    addresses = getContractAddresses()
     arc = getArc()
     web3 = await getWeb3()
     accounts = web3.eth.accounts.wallet
@@ -35,9 +25,7 @@ describe('DAO', () => {
   })
 
   it('should be possible to get the token balance of the DAO', async () => {
-    // const address = addresses.Avatar
-    const address = await _getSomeDAOAddress()
-    const dao = new DAO(address, arc)
+    const dao = await getTestDAO()
     const { token } = await dao.state.pipe(first()).toPromise()
     const balance = await token.balanceOf(dao.address).pipe(first()).toPromise()
     expect(balance).toEqual(0)
@@ -53,18 +41,14 @@ describe('DAO', () => {
     const daoList = await daos.pipe(first()).toPromise()
     expect(typeof daoList).toBe('object')
     expect(daoList.length).toBeGreaterThan(0)
-    // expect(daoList[daoList.length - 2].address).toBe(addresses.Avatar.toLowerCase())
   })
 
   it('get the dao state', async () => {
-    // const dao = arc.dao(addresses.Avatar.toLowerCase())
-    const address = await _getSomeDAOAddress()
-    const dao = arc.dao(address)
+    const dao = await getTestDAO()
     expect(dao).toBeInstanceOf(DAO)
     const state = await dao.state.pipe(first()).toPromise()
     const expected = {
-       // address: addresses.Avatar.toLowerCase(),
-       address,
+       address: dao.address,
        memberCount: 6,
        name: 'Genesis Test'
     }
@@ -97,9 +81,7 @@ describe('DAO', () => {
 
   it.skip('dao.members() should work', async () => {
     // TODO: because we have not setup with proposals, we are only testing if the current state returns the emty list
-    const address = await _getSomeDAOAddress()
-    const dao = arc.dao(address)
-    // const dao = arc.dao(addresses.Avatar.toLowerCase())
+    const dao = await getTestDAO()
     const members = await dao.members().pipe(first()).toPromise()
     expect(typeof members).toEqual(typeof [])
     expect(members.length).toBeGreaterThan(0)
@@ -107,13 +89,13 @@ describe('DAO', () => {
   })
 
   it('dao.ethBalance() should work', async () => {
-    const dao = arc.dao(addresses.Avatar.toLowerCase())
+    const dao = await getTestDAO()
     const previousBalance = await dao.ethBalance().pipe(first()).toPromise()
     await web3.eth.sendTransaction({
       from: web3.eth.defaultAccount,
       gas: 4000000,
       gasPrice: 100000000000,
-      to: addresses.Avatar.toLowerCase(),
+      to: dao.address,
       value: web3.utils.toWei('1', 'ether')
     })
     const newBalance = await dao.ethBalance().pipe(first()).toPromise()

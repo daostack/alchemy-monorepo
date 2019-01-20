@@ -78,7 +78,7 @@ export class Arc {
    * @param  address [description]
    * @return         [description]
    */
-  public getBalance(address: Address): Observable < number > {
+  public getBalance(address: Address): Observable<number> {
     const web3 = new Web3(this.web3WsProvider)
     // observe balance on new blocks
     // (note that we are basically doing expensive polling here)

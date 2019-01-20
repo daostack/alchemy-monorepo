@@ -1,5 +1,8 @@
+import { reduce, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
+import { ITransactionUpdate, TransactionState } from '../src/operation'
+import { Proposal } from '../src/proposal'
 import { getArc } from './utils'
 
 describe('Create ContributionReward Proposal', () => {
@@ -26,8 +29,45 @@ describe('Create ContributionReward Proposal', () => {
       periods: 5,
       type: 'ConributionReward'
     }
-    const result = await dao.createProposal(options)
-    expect(result.proposalId).toHaveLength(66)
-    expect(result.proposalId).toMatch(/^0x/)
+
+    // collect the first 4 results of the observable in a a listOfUpdates array
+    const listOfUpdates = await dao.createProposal(options)
+      .pipe(
+        take(5),
+        reduce((acc: Array<ITransactionUpdate<Proposal>> , val: ITransactionUpdate<Proposal>) => {
+          acc.push(val); return acc
+        }, [])
+      )
+      .toPromise()
+
+    // the first returned value is expected to be the "sent" (i.e. not mined yet)
+    expect(listOfUpdates[0]).toMatchObject({
+      state: TransactionState.Sent
+    })
+    expect(listOfUpdates[1]).toMatchObject({
+      confirmations: 0,
+      state: TransactionState.Mined
+    })
+    expect(listOfUpdates[1].result).toBeDefined()
+    expect(listOfUpdates[1].receipt).toBeDefined()
+    expect(listOfUpdates[1].transactionHash).toBeDefined()
+
+    const proposal = listOfUpdates[1].result
+    if (proposal) {
+      expect(proposal.id).toBeDefined()
+    }
+
+    expect(listOfUpdates[2]).toMatchObject({
+      confirmations: 1,
+      state: TransactionState.Mined
+    })
+    expect(listOfUpdates[3]).toMatchObject({
+      confirmations: 2,
+      receipt: listOfUpdates[1].receipt,
+      // result: listOfUpdates[1].result,
+      state: TransactionState.Mined,
+      transactionHash: listOfUpdates[1].transactionHash
+    })
+
   })
 })
