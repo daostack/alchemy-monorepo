@@ -155,7 +155,7 @@ export class Arc {
     query: any,
     itemMap: (o: object) => object = (o) => o,
     filterFunc: (o: object) => boolean,
-    apolloQueryOptions: IApolloQueryOptions
+    apolloQueryOptions: IApolloQueryOptions = {}
   ) {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
     return this.getObservable(query, apolloQueryOptions).pipe(
