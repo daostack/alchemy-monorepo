@@ -91,8 +91,7 @@ export async function mintSomeReputation() {
   await reputation.methods.mint(accounts[1].address, '99').send()
 }
 
-export async function waitUntilTrue(test: () => Promise<boolean>) {
-  const cntr = 0
+export async function waitUntilTrue(test: () => Promise<boolean> | boolean) {
   return new Promise((resolve, reject) => {
     (async function waitForIt(): Promise<void> {
     //     cntr += 1
