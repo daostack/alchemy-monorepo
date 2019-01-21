@@ -13,7 +13,8 @@ export interface IStake {
   staker: Address
   outcome: ProposalOutcome
   amount: number // amount staked
-  proposal: Proposal
+  proposalId: string,
+  // proposal: Proposal
   createdAt: Date
 }
 
@@ -51,12 +52,12 @@ export class Stake implements IStake {
     `
     return context._getObservableListWithFilter(
       query,
-      (r: any) => new Stake(r.id, r.staker.id, r.createdAt, r.outcome, r.amount, r.prposal.id, context),
+      (r: any) => new Stake(r.id, r.staker.id, r.createdAt, r.outcome, r.amount, r.proposal.id, context),
       daoFilter
     ) as Observable<IStake[]>
   }
 
-  public proposal: Proposal
+  // public proposal: Proposal
 
   constructor(
       public id: string,
@@ -67,6 +68,6 @@ export class Stake implements IStake {
       public proposalId: string,
       public context: Arc
   ) {
-    this.proposal = new Proposal(proposalId, this.context)
+    // this.proposal = new Proposal(proposalId, this.dao, this.context)
   }
 }

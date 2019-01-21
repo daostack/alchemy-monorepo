@@ -1,7 +1,10 @@
-import { ApolloClient, ApolloQueryResult } from 'apollo-client'
+import { ApolloQueryResult } from 'apollo-client'
 import gql from 'graphql-tag'
-import {DAO} from '../src/dao'
+import { take } from 'rxjs/operators'
+import { DAO } from '../src/dao'
 import Arc from '../src/index'
+import { Proposal } from '../src/proposal'
+
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack/graphql'
 export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/daostack'
 export const web3HttpProvider: string = 'http://127.0.0.1:8545'
@@ -24,11 +27,13 @@ process.env = {
   ...process.env
 }
 
-const { node_ws, ethereum, test_mnemonic } = process.env
+const { ethereum } = process.env
 
 const pks = [
   '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d',
-  '0x6cbed15c793ce57650b9877cf6fa156fbef513c4e6134f022a85b1ffdd59b2a1'
+  '0x6cbed15c793ce57650b9877cf6fa156fbef513c4e6134f022a85b1ffdd59b2a1',
+  '0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c',
+  '0x646f1ce2fdad0e6deeeb5c7e8e5543bdde65e86029e2fd9fc169899c440a7913'
 ]
 
 export async function getWeb3() {
@@ -86,16 +91,19 @@ export async function mintSomeReputation() {
   await reputation.methods.mint(accounts[1].address, '99').send()
 }
 
-export async function waitUntilTrue(test: () => boolean) {
+export async function waitUntilTrue(test: () => Promise<boolean>) {
+  const cntr = 0
   return new Promise((resolve, reject) => {
-    (function waitForIt() {
-        if (test()) { return resolve() }
-        setTimeout(waitForIt, 30)
+    (async function waitForIt(): Promise<void> {
+    //     cntr += 1
+    //     if (cntr > 1000) { throw new Error((`Waited but got nothing :-()`))}
+      if (await test()) { return resolve() }
+      setTimeout(waitForIt, 30)
     })()
   })
 }
 
-export async function getContractAddressesFromSubgraph(): Promise<{ daos: any } > {
+export async function getContractAddressesFromSubgraph(): Promise<{ daos: any }> {
   const arc = getArc()
   const query = gql`
         {
@@ -126,4 +134,22 @@ export async function getTestDAO() {
   const address = addresses.daos[0].address
   const arc = await getArc()
   return arc.dao(address)
+}
+
+export async function createAProposal(dao: DAO) {
+  const options = {
+    beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+    ethReward: 300,
+    externalTokenAddress: undefined,
+    externalTokenReward: 0,
+    nativeTokenReward: 1,
+    periodLength: 12,
+    periods: 5,
+    type: 'ConributionReward'
+  }
+
+  // collect the first 4 results of the observable in a a listOfUpdates array
+  const response = await dao.createProposal(options).pipe(take(2)).toPromise()
+  return response.result as Proposal
+
 }

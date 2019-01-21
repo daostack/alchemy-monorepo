@@ -102,4 +102,9 @@ describe('DAO', () => {
     expect(newBalance - previousBalance).toBe(Number(web3.utils.toWei('1')))
   })
 
+  it('dao.getContract() works', async () => {
+    const dao = await getTestDAO()
+    expect(dao.getContract('ContributionReward')).toBeInstanceOf(dao.context.web3.eth.Contract)
+    expect(dao.getContract('AbsoluteVote')).toBeInstanceOf(dao.context.web3.eth.Contract)
+  })
 })

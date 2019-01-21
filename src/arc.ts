@@ -5,7 +5,6 @@ import { from, Observable, Observer, of } from 'rxjs'
 import { catchError, concat, filter, map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { Operation } from './operation'
-import { Proposal } from './proposal'
 import { Address } from './types'
 import * as utils from './utils'
 
@@ -67,10 +66,6 @@ export class Arc {
       query,
       (r: any) => new DAO(r.id, this)
     ) as Observable<DAO[]>
-  }
-
-  public proposal(id: string): Proposal {
-    return new Proposal(id, this)
   }
 
   /**
@@ -159,15 +154,16 @@ export class Arc {
   public _getObservableListWithFilter(
     query: any,
     itemMap: (o: object) => object = (o) => o,
-    filterFunc: (o: any) => boolean
+    filterFunc: (o: object) => boolean,
+    apolloQueryOptions: IApolloQueryOptions
   ) {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
-    return this.getObservable(query).pipe(
+    return this.getObservable(query, apolloQueryOptions).pipe(
       map((r: any) => {
         if (!r.data[entity]) { throw Error(`Could not find ${entity} in ${r.data}`)}
         return r.data[entity]
       }),
-      filter(filterFunc),
+      filter((rs) => rs.filter(filterFunc)),
       map((rs: object[]) => rs.map(itemMap))
     )
   }
@@ -188,7 +184,7 @@ export class Arc {
     )
   }
 
-  public getObservable(query: any) {
+  public getObservable(query: any, apolloQueryOptions: IApolloQueryOptions = {}) {
     const subscriptionQuery = gql`
       subscription ${query}
     `
@@ -200,7 +196,8 @@ export class Arc {
       return () => subscription.unsubscribe()
     })
 
-    const queryPromise: Promise<ApolloQueryResult<{[key: string]: object[]}>> = this.apolloClient.query({ query })
+    const queryPromise: Promise<ApolloQueryResult<{[key: string]: object[]}>> = this.apolloClient.query(
+      { query, ...apolloQueryOptions, fetchPolicy: 'no-cache' })
 
     const queryObservable = from(queryPromise).pipe(
       concat(subscriptionObservable)
@@ -217,4 +214,8 @@ export class Arc {
     const queryPromise = this.apolloClient.query({ query })
     return queryPromise
   }
+}
+
+export interface IApolloQueryOptions {
+  fetchPolicy?: 'cache-first' | 'cache-and-network' | 'network-only' | 'cache-only' | 'no-cache' | 'standby'
 }

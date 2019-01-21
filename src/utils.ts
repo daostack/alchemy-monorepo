@@ -1,11 +1,13 @@
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ApolloClient, ApolloQueryResult } from 'apollo-client'
-import { Observable as ZenObservable, split } from 'apollo-link'
+import { split } from 'apollo-link'
 import { HttpLink } from 'apollo-link-http'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 import fetch from 'isomorphic-fetch'
 import * as WebSocket from 'isomorphic-ws'
+
+const web3 = require('web3')
 
 export function createApolloClient(options: {
   graphqlHttpProvider: string
@@ -92,8 +94,40 @@ export async function getOptionsFromChain(web3: any) {
 }
 
 export function getWeb3Options(web3: any) {
+  if (!web3.eth.defaultAccount) {
+    throw Error(`No defaultAccount was set -- cannot send transaction`)
+  }
   return {
     from: web3.eth.defaultAccount,
     gas: 7900000
   }
+}
+
+// function lifted and adapted from @daostack/subgraph/src/utils to generate unique ids
+export function concat(a: Uint8Array, b: Uint8Array): Uint8Array {
+
+  const out = new Uint8Array(a.length + b.length)
+  for (let i = 0; i < a.length; i++) {
+    out[i] = a[i]
+  }
+  for (let j = 0; j < b.length; j++) {
+    out[a.length + j] = b[j]
+  }
+  // return out as ByteArray
+  return web3.utils.bytesToHex(out)
+  return out
+  // return web3.utils.keccak256(out)
+}
+
+type EthereumEvent = any
+
+export function eventId(event: EthereumEvent): string {
+  // console.log(event)
+  console.log(event.transactionHash)
+  console.log(event.logIndex)
+  console.log(concat(web3.utils.hexToBytes(event.transactionHash), event.logIndex as Uint8Array))
+  console.log(web3.utils.bytesToHex(concat(event.transactionHash, event.logIndex as Uint8Array)))
+  const hash = web3.utils.keccak256(concat(event.transactionHash, event.logIndex as Uint8Array))
+  console.log(hash)
+  return hash
 }
