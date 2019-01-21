@@ -71,7 +71,17 @@ export class Vote implements IVote {
     `
     return context._getObservableListWithFilter(
       query,
-      (r: any) => new Vote(r.id, r.member.id, r.createdAt, r.outcome, r.reputation, r.proposal.id,  r.member.dao.id),
+      (r: any) => {
+        let outcome: ProposalOutcome = ProposalOutcome.Pass
+        if (r.outcome === 'Pass') {
+          outcome = ProposalOutcome.Pass
+        } else if (r.outcome === 'Fail') {
+          outcome = ProposalOutcome.Fail
+        } else {
+          throw new Error(`Unexpected value for proposalVote.outcome: ${r.outcome}`)
+        }
+        return new Vote(r.id, r.member.id, r.createdAt, outcome, r.reputation, r.proposal.id,  r.member.dao.id)
+      },
       daoFilter,
       apolloQueryOptions
     ) as Observable<IVote[]>
