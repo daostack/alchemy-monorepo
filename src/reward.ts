@@ -86,7 +86,7 @@ export class Reward implements IStateful<IRewardState> {
         beneficiary: item.member.id,
         createdAt: item.createdAt,
         id: item.id,
-        proposal: new Proposal(item.proposal.id, context),
+        proposal: new Proposal(item.proposal.id, item.dao.id, context),
         reason: item.reason,
         redeemed: Number(item.redeemed),
         tokenAddress: item.tokenAddress,

@@ -8,7 +8,7 @@ import { ITransactionUpdate, Operation, sendTransaction, TransactionState } from
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import { getWeb3Options, nullAddress } from './utils'
+import { concat, eventId, getWeb3Options, nullAddress } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export enum ProposalOutcome {
@@ -67,12 +67,8 @@ export class Proposal implements IStateful<IProposalState> {
     if (!options.dao) {
       throw Error(`Proposal.create(options): options must include an address for "dao"`)
     }
-    const web3 = context.web3
-
-    const opts = getWeb3Options(web3)
-    const addresses = context.contractAddresses
-    const ContributionReward = require('@daostack/arc/build/contracts/ContributionReward.json')
-    const contributionReward = new web3.eth.Contract(ContributionReward.abi, addresses.ContributionReward, opts)
+    const dao = new DAO(options.dao, context)
+    const contributionReward = context.getContract('ContributionReward')
 
     const propose = contributionReward.methods.proposeContributionReward(
         options.dao,
@@ -93,7 +89,7 @@ export class Proposal implements IStateful<IProposalState> {
 
     return sendTransaction(propose, (receipt: any) => {
       const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
-      return new Proposal(proposalId, context)
+      return new Proposal(proposalId, dao.address, context)
     })
   }
   /**
@@ -101,10 +97,12 @@ export class Proposal implements IStateful<IProposalState> {
    */
   public state: Observable<IProposalState> = of()
   public context: Arc
+  public dao: DAO
 
-constructor(public id: string, context: Arc) {
+constructor(public id: string, public daoAddress: Address, context: Arc) {
     this.id = id
     this.context = context
+    this.dao = new DAO(daoAddress, context)
 
     const query = gql`
       {
@@ -204,23 +202,58 @@ constructor(public id: string, context: Arc) {
     this.state = context._getObservableObject(query, 'proposal', itemMap) as Observable<IProposalState>
   }
 
-  // Note that although this is implemented as an observable, the value is actually static
-  // and will never change.
-  public dao(): Observable<DAO> {
-    return this.state.pipe(
-      map((state) => {
-        return state.dao
-      })
-    )
-  }
-
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
     options.proposal = this.id
     return Vote.search(this.context, options)
   }
 
-  public vote(outcome: ProposalOutcome): Operation<void> {
-    throw new Error('not implemented')
+  public vote(outcome: ProposalOutcome): Operation<Vote> {
+
+    // TODO: cf next two lines from alchemy on how to get the votingMacchineAddress
+    // (does not work with new contract versions anymore, though, it seems)
+    // const contributionRewardInstance = this.dao.getContract('ContributionReward')
+    // const result = await contributionRewardInstance.methods.parameters(this.dao.address).call()
+    // const votingMachineAddress = (
+    //   await contributionRewardInstance.methods.getSchemeParameters(daoAvatarAddress)).votingMachineAddress
+
+    // the graph indexes it at contributionRewardProposal.votingMachine, but not on the proposal entity
+    // const votingMachine = this.dao.getContract('AbsoluteVote')
+    const votingMachine = this.context.getContract('GenesisProtocol')
+
+    // TODO: implement error handling
+    // One type of error is that the proposalId is not known:
+    // const proposal = await votingMachine.methods.proposals(this.id).call()
+
+    const voteMethod = votingMachine.methods.vote(
+      this.id,  // proposalId
+      outcome, // a value between 0 to and the proposal number of choices.
+      0, // aamount the reputation amount to vote with . if _amount == 0 it will use all voter reputation.
+      nullAddress
+    )
+
+    return sendTransaction(voteMethod, (receipt: any) => {
+      const event = receipt.events.VoteProposal
+      if (!event) {
+        console.log(receipt)
+        // for some reason, a transaction was mined but no error was raised before
+        throw new Error(`Error voting: no VoteProposal event was found - ${Object.keys(receipt.events)}`)
+      }
+      // TODO: calculate the voteId. This uses some subgraph-internal logic
+      // const voteId = eventId(event)
+      const voteId = '0xdummy'
+
+      return new Vote(
+        voteId,
+        event.returnValues._voter,
+        // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
+        0, // creatdeAt -
+        outcome,
+        event.returnValues._reputation, // amount
+        this.id, // proposalID
+        this.dao.address
+      )
+    })
+
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
@@ -232,7 +265,7 @@ constructor(public id: string, context: Arc) {
     throw new Error('not implemented')
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
+  public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
     options.proposal = this.id
     return Reward.search(this.context, options)
   }

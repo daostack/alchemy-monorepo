@@ -15,6 +15,8 @@ import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
+const Web3 = require('web3')
+
 export interface IDAOState {
   address: Address // address of the avatar
   memberCount: number
@@ -111,12 +113,12 @@ export class DAO implements IStateful<IDAOState> {
 
     return this.context._getObservableList(
       query,
-      (r: any) => new Proposal(r.id, this.context)
+      (r: any) => new Proposal(r.id, this.address, this.context)
     ) as Observable<Proposal[]>
   }
 
   public proposal(id: string): Proposal {
-    return new Proposal(id, this.context)
+    return new Proposal(id, this.address, this.context)
   }
 
   public createProposal(options: IProposalCreateOptions) {
@@ -142,6 +144,7 @@ export class DAO implements IStateful<IDAOState> {
   public ethBalance(): Observable<number> {
     return this.context.getBalance(this.address)
   }
+
 }
 
 export interface IDAOQueryOptions extends ICommonQueryOptions {

@@ -24,7 +24,7 @@ describe('Proposal', () => {
 
   it('Proposal is instantiable', () => {
     const id = 'some-id'
-    const proposal = new Proposal(id, arc)
+    const proposal = new Proposal(id, '', arc)
     expect(proposal).toBeInstanceOf(Proposal)
   })
 
@@ -51,16 +51,16 @@ describe('Proposal', () => {
     const { Avatar, proposalId } = DAOstackMigration.migration('private').test
 
     const dao = arc.dao(Avatar.toLowerCase()).address
-    const proposal = new Proposal(proposalId, arc)
-    const proposalDao = await proposal.dao().pipe(first()).toPromise()
+    const proposal = new Proposal(proposalId, dao, arc)
+    // const proposalDao = await proposal.dao.pipe(first()).toPromise()
     expect(proposal).toBeInstanceOf(Proposal)
-    expect(proposalDao.address).toBe(dao)
+    expect(proposal.dao.address).toBe(dao)
   })
 
   it('Check proposal state is correct', async () => {
     const { proposalId } = DAOstackMigration.migration('private').test
 
-    const proposal = new Proposal(proposalId, arc)
+    const proposal = new Proposal(proposalId, '', arc)
     const proposalState = await proposal.state.pipe(first()).toPromise()
     expect(proposal).toBeInstanceOf(Proposal)
     delete proposalState.dao
@@ -97,7 +97,7 @@ describe('Proposal', () => {
   it('get proposal votes', async () => {
     const { Avatar, proposalId } = DAOstackMigration.migration('private').test
 
-    const proposal = new Proposal(proposalId, arc)
+    const proposal = new Proposal(proposalId, '', arc)
     const votes = await proposal.votes().pipe(first()).toPromise()
     expect(votes.length).toBeGreaterThan(0)
     const vote = votes[0]
@@ -107,20 +107,21 @@ describe('Proposal', () => {
 
   it('get proposal rewards', async () => {
     const { proposalId } = DAOstackMigration.migration('private').test
-    const proposal = new Proposal(proposalId, arc)
+    const proposal = new Proposal(proposalId, '', arc)
     const rewards = await proposal.rewards().pipe(first()).toPromise()
     return
-    expect(rewards.length).toBeGreaterThan(0)
-    console.log(rewards)
-    const reward = rewards[0]
-    console.log(reward)
-
-    expect(reward.proposal.id).toBe(proposalId)
+    // TODO: fix this once the subgraph corretly indexes rewards
+    // expect(rewards.length).toBeGreaterThan(0)
+    // console.log(rewards)
+    // const reward = rewards[0]
+    // console.log(reward)
+    //
+    // expect(reward.proposal.id).toBe(proposalId)
   })
 
   it('get proposal stakes', async () => {
     const { proposalId } = DAOstackMigration.migration('private').test
-    const proposal = new Proposal(proposalId, arc)
+    const proposal = new Proposal(proposalId, '', arc)
     const stakes = await proposal.stakes().pipe(first()).toPromise()
     expect(stakes.length).toEqual(0)
   })

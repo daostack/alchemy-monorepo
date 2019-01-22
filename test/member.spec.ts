@@ -10,7 +10,7 @@ const DAOstackMigration = require('@daostack/migration')
  * Member test
  */
 describe('Member', () => {
-  let id = '0xed311355e6510582a3b6699ffbb84e214ddb82871c0bdee04975d7a0f345a78c'
+  let id = '0x07090158a93a8512293f75197c0da4d60d3997596474d141c8610479abe9beab'
 
   let addresses: { [key: string]: string }
   let arc: Arc
@@ -40,7 +40,7 @@ describe('Member', () => {
   })
 
   it('Member proposals works', async () => {
-    const { Avatar, proposalId } = DAOstackMigration.migration('private').test
+    const { proposalId } = DAOstackMigration.migration('private').test
 
     id = '0x1cea1e112ec409762ab4795daead616b5a3acf72879303434a87cbcd3a1785b9'
     const member = new Member(id, arc)

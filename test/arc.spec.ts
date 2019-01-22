@@ -1,4 +1,5 @@
 import Arc from '../src/index'
+import { getArc } from './utils'
 
 /**
  * Arc test
@@ -12,5 +13,11 @@ describe('Arc ', () => {
       web3WsProvider: 'wss://web3.provider'
     })
     expect(arc).toBeInstanceOf(Arc)
+  })
+
+  it('arc.getContract() works', async () => {
+    const arc = await getArc()
+    expect(arc.getContract('ContributionReward')).toBeInstanceOf(arc.web3.eth.Contract)
+    expect(arc.getContract('AbsoluteVote')).toBeInstanceOf(arc.web3.eth.Contract)
   })
 })

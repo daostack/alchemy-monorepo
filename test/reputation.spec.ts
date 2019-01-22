@@ -52,7 +52,7 @@ describe('Reputation', () => {
 
   it('get someones reputation', async () => {
     const reputation = new Reputation(address, arc)
-    const reputationOf = await reputation.reputationOf(accounts[0].address)
+    const reputationOf = await reputation.reputationOf(accounts[2].address)
       .pipe(first()).toPromise()
     expect(reputationOf).toEqual(1e21)
   })

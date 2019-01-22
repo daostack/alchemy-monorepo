@@ -1,6 +1,6 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
-import { Arc } from './arc'
+import { Arc, IApolloQueryOptions } from './arc'
 import { ProposalOutcome } from './proposal'
 import { Address, Date, ICommonQueryOptions } from './types'
 
@@ -23,7 +23,11 @@ export interface IVoteQueryOptions extends ICommonQueryOptions {
 
 export class Vote implements IVote {
 
-  public static search(context: Arc, options: IVoteQueryOptions = {}): Observable <IVote[]> {
+  public static search(
+    context: Arc,
+    options: IVoteQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable <IVote[]> {
     let where = ''
     let daoFilter: (r: any) => boolean
     daoFilter = () => true
@@ -32,7 +36,13 @@ export class Vote implements IVote {
       if (key === 'dao') {
         // TODO: next line filters bu DAO, which is a sort of hack we can use if  we need This
         // before https://github.com/daostack/subgraph/issues/65 is resolved
-        daoFilter = (r: any) => r[0].member.dao.id === options.dao
+        daoFilter = (r: any) => {
+          if (r.length > 0) {
+            return r[0].member.dao.id === options.dao
+          } else {
+            return false
+          }
+        }
       } else {
         where += `${key}: "${options[key] as string}",\n`
       }
@@ -61,8 +71,19 @@ export class Vote implements IVote {
     `
     return context._getObservableListWithFilter(
       query,
-      (r: any) => new Vote(r.id, r.member.id, r.createdAt, r.outcome, r.reputation, r.proposal.id,  r.member.dao.id),
-      daoFilter
+      (r: any) => {
+        let outcome: ProposalOutcome = ProposalOutcome.Pass
+        if (r.outcome === 'Pass') {
+          outcome = ProposalOutcome.Pass
+        } else if (r.outcome === 'Fail') {
+          outcome = ProposalOutcome.Fail
+        } else {
+          throw new Error(`Unexpected value for proposalVote.outcome: ${r.outcome}`)
+        }
+        return new Vote(r.id, r.member.id, r.createdAt, outcome, r.reputation, r.proposal.id,  r.member.dao.id)
+      },
+      daoFilter,
+      apolloQueryOptions
     ) as Observable<IVote[]>
   }
 
