@@ -82,23 +82,23 @@ export function checkWebsocket(options: { url: string }) {
 
 export const nullAddress = '0x0000000000000000000000000000000000000000'
 
-export async function getOptionsFromChain(web3: any) {
-  if (web3.eth.defaultAccount === null) {
+export async function getOptionsFromChain(web3Instance: any) {
+  if (web3Instance.eth.defaultAccount === null) {
     throw Error('No default account specified: please set web3.eth.defaultAccount')
   }
-  const block = await web3.eth.getBlock('latest')
+  const block = await web3Instance.eth.getBlock('latest')
   return {
-    from: web3.eth.defaultAccount,
+    from: web3Instance.eth.defaultAccount,
     gas: block.gasLimit - 100000
   }
 }
 
-export function getWeb3Options(web3: any) {
-  if (!web3.eth.defaultAccount) {
+export function getWeb3Options(web3Instance: any) {
+  if (!web3Instance.eth.defaultAccount) {
     throw Error(`No defaultAccount was set -- cannot send transaction`)
   }
   return {
-    from: web3.eth.defaultAccount,
+    from: web3Instance.eth.defaultAccount,
     gas: 7900000
   }
 }
