@@ -1,7 +1,7 @@
 import { first, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { ProposalOutcome } from '../src/proposal'
+import { Proposal, ProposalOutcome } from '../src/proposal'
 import { Stake } from '../src/stake'
 import { createAProposal, getArc, waitUntilTrue } from './utils'
 
@@ -25,30 +25,11 @@ describe('Stake on a ContributionReward', () => {
     const proposal = await createAProposal(dao)
 
     // apporve the spend, for staking
+    const defaultAccount = web3.eth.defaultAccount
+    await stakingToken.methods.mint(defaultAccount, '10000').send()
     await stakingToken.methods
       .approve(genesisProtocol.options.address, '100')
       .send()
-
-    // check preconditios
-    const defaultAccount = web3.eth.defaultAccount
-
-    // TODO: implement error handling as part of the stake function..
-    // One type of error is that the proposalId is not known:
-    const prop = await genesisProtocol.methods.proposals(proposal.id).call()
-    expect(prop.proposer).toEqual(defaultAccount)
-
-    // the staking conract is the one we expect
-    const stakingTokenAddress = await genesisProtocol.methods.stakingToken().call()
-    expect(stakingTokenAddress).toEqual(stakingToken.options.address)
-    // staker has sufficient balance
-    await stakingToken.methods.mint(defaultAccount, '10000').send()
-    const balance = await stakingToken.methods.balanceOf(defaultAccount).call()
-    expect(Number(balance)).toBeGreaterThanOrEqual(10000)
-
-    // staker has approved the token spend
-    const allowance = await stakingToken.methods.allowance(defaultAccount, genesisProtocol.options.address).call()
-    expect(Number(allowance)).toBeGreaterThanOrEqual(100)
-    // end preconditions check
 
     const stake = await proposal.stake(ProposalOutcome.Pass, 100).pipe(take(2)).toPromise()
 
@@ -67,5 +48,37 @@ describe('Stake on a ContributionReward', () => {
     await waitUntilTrue(stakeIsIndexed)
 
     expect(stakes.length).toEqual(1)
+  })
+
+  it('throws a meaningful error if an insufficient amount tokens is approved for staking', async () => {
+    const dao = new DAO(arc.contractAddresses.Avatar, arc)
+    const proposal = await createAProposal(dao)
+    proposal.context.web3.eth.defaultAccount = accounts[1].address
+    await expect(proposal.stake(ProposalOutcome.Pass, 100).pipe(take(2)).toPromise()).rejects.toThrow(
+      /insufficient allowance/i
+    )
+
+  })
+
+  it('throws a meaningful error if then senders balance is too low', async () => {
+    const dao = new DAO(arc.contractAddresses.Avatar, arc)
+    const proposal = await createAProposal(dao)
+    proposal.context.web3.eth.defaultAccount = accounts[2].address
+    await expect(proposal.stake(ProposalOutcome.Pass, 10000000).pipe(take(2)).toPromise()).rejects.toThrow(
+      /insufficient balance/i
+    )
+  })
+
+  it('throws a meaningful error if the proposal does not exist', async () => {
+    const dao = new DAO(arc.contractAddresses.Avatar, arc)
+    // a non-existing proposal
+    const proposal = new Proposal(
+      '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, arc
+    )
+    proposal.context.web3.eth.defaultAccount = accounts[2].address
+    await expect(proposal.stake(ProposalOutcome.Pass, 10000000).pipe(take(2)).toPromise()).rejects.toThrow(
+      /unknown proposal/i
+    )
+
   })
 })

@@ -30,57 +30,66 @@ export type Operation<T> = Observable<ITransactionUpdate<T>>
 
 type web3receipt = object
 
-export function sendTransaction<T>(transaction: any, map: (receipt: web3receipt) => T): Operation<T> {
-  const emitter = transaction.send()
+export function sendTransaction<T>(
+  transaction: any,
+  map: (receipt: web3receipt) => T,
+  errorHandler: (error: Error) => Promise<Error> | Error = (error) => error
+): Operation < T > {
   const observable = Observable.create((observer: Observer<ITransactionUpdate<T>>) => {
-  let transactionHash: string
-  let result: any
-  emitter
-    .once('transactionHash', (hash: string) => {
-      transactionHash = hash
-      observer.next({
-        state: TransactionState.Sent,
-        transactionHash
+    let transactionHash: string
+    let result: any
+    transaction.send()
+      .once('transactionHash', (hash: string) => {
+        transactionHash = hash
+        observer.next({
+          state: TransactionState.Sent,
+          transactionHash
+        })
       })
-    })
-    .once('receipt', (receipt: any) => {
-      try {
-        result = map(receipt)
-      } catch (err) {
-        observer.error(err)
-      }
-      observer.next({
-        confirmations: 0,
-        receipt,
-        result,
-        state: TransactionState.Mined,
-        transactionHash
-      })
-    })
-    .on('confirmation', (confNumber: number, receipt: any) => {
-      // we assume result has been set by previous call to 'receipt'
-      if (!result) {
+      .once('receipt', (receipt: any) => {
+        // console.log('--------------------')
+        // console.log(receipt)
+        if (receipt.status === 0) {
+          throw new Error('asdfklasdfjl;sdfj ')
+        }
         try {
           result = map(receipt)
         } catch (err) {
           observer.error(err)
         }
-      }
-      observer.next({
-        confirmations: confNumber,
-        receipt,
-        result,
-        state: TransactionState.Mined,
-        transactionHash
+        observer.next({
+          confirmations: 0,
+          receipt,
+          result,
+          state: TransactionState.Mined,
+          transactionHash
+        })
       })
-      if (confNumber > 23) {
-        // the web3 observer will confirm up to 24 subscriptions, so we are done here
-        observer.complete()
-      }
-    })
-    .on('error', (error: Error) => {
-      observer.error(error)
-    })
-  })
+      .on('confirmation', (confNumber: number, receipt: any) => {
+        // result should have been set by previous call to 'receipt', but better be sure
+        if (!result) {
+          try {
+            result = map(receipt)
+          } catch (err) {
+            observer.error(err)
+          }
+        }
+        observer.next({
+          confirmations: confNumber,
+          receipt,
+          result,
+          state: TransactionState.Mined,
+          transactionHash
+        })
+        if (confNumber > 23) {
+          // the web3 observer will confirm up to 24 subscriptions, so we are done here
+          observer.complete()
+        }
+      })
+      .on('error', async (error: Error) => {
+        observer.error(await errorHandler(error))
+      })
+    }
+  )
   return observable
 }

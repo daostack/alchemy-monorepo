@@ -261,7 +261,6 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
   }
 
   public stake(outcome: ProposalOutcome, amount: number ): Operation<Stake> {
-
     // TODO: cf next two lines from alchemy on how to get the votingMacchineAddress
     // (does not work with new contract versions anymore, though, it seems)
     // const contributionRewardInstance = this.dao.getContract('ContributionReward')
@@ -284,28 +283,55 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
       // nullAddress
     )
 
-    return sendTransaction(stakeMethod, (receipt: any) => {
-      const event = receipt.events.Stake
-      if (!event) {
-        console.log(receipt)
-        // for some reason, a transaction was mined but no error was raised before
-        throw new Error(`Error voting: no "Stake" event was found - ${Object.keys(receipt.events)}`)
+    return sendTransaction(
+      stakeMethod,
+      (receipt: any) => { // map extracts Stake instance from receipt
+        const event = receipt.events.Stake
+        if (!event) {
+          console.log(receipt)
+          // for some reason, a transaction was mined but no error was raised before
+          throw new Error(`Error voting: no "Stake" event was found - ${Object.keys(receipt.events)}`)
+        }
+        // TODO: calculate the voteId. This uses some subgraph-internal logic
+        // const voteId = eventId(event)
+        const stakeId = '0xdummy'
+
+        return new Stake(
+          stakeId,
+          event.returnValues._staker,
+          // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
+          undefined,
+          outcome,
+          event.returnValues._reputation, // amount
+          this.id // proposalID
+        )
+      },
+      async (error: Error) => { // errorHandler
+        if (error.message.match(/revert/)) {
+          const proposal = this
+          const stakingToken = this.context.getContract('DAOToken')
+          const prop = await votingMachine.methods.proposals(proposal.id).call()
+          if (prop.proposer === nullAddress ) {
+            return new Error(`Unknown proposal with id ${proposal.id}`)
+          }
+
+          // staker has sufficient balance
+          const defaultAccount = this.context.web3.eth.defaultAccount
+          const balance = await stakingToken.methods.balanceOf(defaultAccount).call()
+          if (Number(balance) < amount) {
+            return new Error(`Staker has insufficient balance to stake ${amount} (balance is ${balance})`)
+          }
+
+          // staker has approved the token spend
+          const allowance = await stakingToken.methods.allowance(defaultAccount, votingMachine.options.address).call()
+          if (Number(allowance) < amount) {
+            return new Error(`Staker has insufficient allowance to stake ${amount} (allowance is ${allowance})`)
+          }
+        }
+        // if we have found no known error, we return the original error
+        return error
       }
-      // TODO: calculate the voteId. This uses some subgraph-internal logic
-      // const voteId = eventId(event)
-      const stakeId = '0xdummy'
-
-      return new Stake(
-        stakeId,
-        event.returnValues._staker,
-        // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
-        undefined,
-        outcome,
-        event.returnValues._reputation, // amount
-        this.id // proposalID
-      )
-    })
-
+    )
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
