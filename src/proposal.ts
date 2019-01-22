@@ -1,14 +1,13 @@
 import gql from 'graphql-tag'
-import { Observable, Observer, of } from 'rxjs'
-import { map } from 'rxjs/operators'
+import { Observable, of } from 'rxjs'
 
 import { Arc } from './arc'
 import { DAO } from './dao'
-import { ITransactionUpdate, Operation, sendTransaction, TransactionState } from './operation'
+import { Operation, sendTransaction } from './operation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import { concat, eventId, getWeb3Options, nullAddress } from './utils'
+import { nullAddress } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export enum ProposalOutcome {
@@ -261,8 +260,52 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
     return Stake.search(this.context, options)
   }
 
-  public stake(outcome: ProposalOutcome, amount: number): Operation<void> {
-    throw new Error('not implemented')
+  public stake(outcome: ProposalOutcome, amount: number ): Operation<Stake> {
+
+    // TODO: cf next two lines from alchemy on how to get the votingMacchineAddress
+    // (does not work with new contract versions anymore, though, it seems)
+    // const contributionRewardInstance = this.dao.getContract('ContributionReward')
+    // const result = await contributionRewardInstance.methods.parameters(this.dao.address).call()
+    // const votingMachineAddress = (
+    //   await contributionRewardInstance.methods.getSchemeParameters(daoAvatarAddress)).votingMachineAddress
+
+    // the graph indexes it at contributionRewardProposal.votingMachine, but not on the proposal entity
+    // const votingMachine = this.dao.getContract('AbsoluteVote')
+    const votingMachine = this.context.getContract('GenesisProtocol')
+
+    // TODO: implement error handling
+    // One type of error is that the proposalId is not known:
+    // const proposal = await votingMachine.methods.proposals(this.id).call()
+
+    const stakeMethod = votingMachine.methods.stake(
+      this.id,  // proposalId
+      outcome, // a value between 0 to and the proposal number of choices.
+      amount // aamount the reputation amount to stake with . if _amount == 0 it will use all staker reputation.
+      // nullAddress
+    )
+
+    return sendTransaction(stakeMethod, (receipt: any) => {
+      const event = receipt.events.Stake
+      if (!event) {
+        console.log(receipt)
+        // for some reason, a transaction was mined but no error was raised before
+        throw new Error(`Error voting: no "Stake" event was found - ${Object.keys(receipt.events)}`)
+      }
+      // TODO: calculate the voteId. This uses some subgraph-internal logic
+      // const voteId = eventId(event)
+      const stakeId = '0xdummy'
+
+      return new Stake(
+        stakeId,
+        event.returnValues._staker,
+        // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
+        undefined,
+        outcome,
+        event.returnValues._reputation, // amount
+        this.id // proposalID
+      )
+    })
+
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {

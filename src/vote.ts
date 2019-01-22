@@ -5,13 +5,13 @@ import { ProposalOutcome } from './proposal'
 import { Address, Date, ICommonQueryOptions } from './types'
 
 export interface IVote {
-    id: string
-    voter: string
-    createdAt: Date
-    outcome: ProposalOutcome
-    amount: number // amount of reputation that was voted with
-    proposalId: string
-    dao: Address
+  id: string
+  voter: string
+  createdAt: Date | undefined
+  outcome: ProposalOutcome
+  amount: number // amount of reputation that was voted with
+  proposalId: string
+  dao: Address
 }
 
 export interface IVoteQueryOptions extends ICommonQueryOptions {
@@ -90,7 +90,7 @@ export class Vote implements IVote {
   constructor(
       public id: string,
       public voter: string,
-      public createdAt: Date,
+      public createdAt: Date | undefined,
       public outcome: ProposalOutcome,
       public amount: number,
       public proposalId: string,
