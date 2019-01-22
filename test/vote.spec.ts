@@ -44,10 +44,6 @@ describe('Stake', () => {
     // let's have a vote
     await proposal.vote(ProposalOutcome.Pass).pipe(take(2)).toPromise()
 
-    result = await Vote.search(arc, {proposal: '0x8ec40ce2c3708fe021c59e8011c3bae94db66de3987b54543fe4020507e3ec41'})
-      .pipe(first()).toPromise()
-    expect(result.length).toEqual(1)
-
     const voteIsIndexed = async () => {
       // we pass no-cache to make sure we hit the server on each request
       result = await Vote.search(arc, {proposal: proposal.id}, { fetchPolicy: 'no-cache' })
