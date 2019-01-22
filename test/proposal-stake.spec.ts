@@ -79,6 +79,5 @@ describe('Stake on a ContributionReward', () => {
     await expect(proposal.stake(ProposalOutcome.Pass, 10000000).pipe(take(2)).toPromise()).rejects.toThrow(
       /unknown proposal/i
     )
-
   })
 })

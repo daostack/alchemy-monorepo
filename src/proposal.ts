@@ -206,7 +206,7 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
     return Vote.search(this.context, options)
   }
 
-  public vote(outcome: ProposalOutcome): Operation<Vote> {
+  public vote(outcome: ProposalOutcome, amount: number = 0): Operation<Vote> {
 
     // TODO: cf next two lines from alchemy on how to get the votingMacchineAddress
     // (does not work with new contract versions anymore, though, it seems)
@@ -219,40 +219,49 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
     // const votingMachine = this.dao.getContract('AbsoluteVote')
     const votingMachine = this.context.getContract('GenesisProtocol')
 
-    // TODO: implement error handling
-    // One type of error is that the proposalId is not known:
-    // const proposal = await votingMachine.methods.proposals(this.id).call()
-
     const voteMethod = votingMachine.methods.vote(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
-      0, // aamount the reputation amount to vote with . if _amount == 0 it will use all voter reputation.
+      amount, // amount of reputation to vote with . if _amount == 0 it will use all voter reputation.
       nullAddress
     )
 
-    return sendTransaction(voteMethod, (receipt: any) => {
-      const event = receipt.events.VoteProposal
-      if (!event) {
-        console.log(receipt)
-        // for some reason, a transaction was mined but no error was raised before
-        throw new Error(`Error voting: no VoteProposal event was found - ${Object.keys(receipt.events)}`)
+    return sendTransaction(
+      voteMethod,
+      (receipt: any) => {
+        const event = receipt.events.VoteProposal
+        if (!event) {
+          console.log(receipt)
+          // for some reason, a transaction was mined but no error was raised before
+          throw new Error(`Error voting: no VoteProposal event was found - ${Object.keys(receipt.events)}`)
+        }
+        // TODO: calculate the voteId. This uses some subgraph-internal logic
+        // const voteId = eventId(event)
+        const voteId = '0xdummy'
+
+        return new Vote(
+          voteId,
+          event.returnValues._voter,
+          // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
+          0, // createdAt -
+          outcome,
+          event.returnValues._reputation, // amount
+          this.id, // proposalID
+          this.dao.address
+        )
+      },
+      async (error: Error) => { // errorHandler
+        if (error.message.match(/revert/)) {
+          const proposal = this
+          const prop = await votingMachine.methods.proposals(proposal.id).call()
+          if (prop.proposer === nullAddress ) {
+            return new Error(`Unknown proposal with id ${proposal.id}`)
+          }
+        }
+        // if we have found no known error, we return the original error
+        return error
       }
-      // TODO: calculate the voteId. This uses some subgraph-internal logic
-      // const voteId = eventId(event)
-      const voteId = '0xdummy'
-
-      return new Vote(
-        voteId,
-        event.returnValues._voter,
-        // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
-        0, // creatdeAt -
-        outcome,
-        event.returnValues._reputation, // amount
-        this.id, // proposalID
-        this.dao.address
-      )
-    })
-
+    )
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
@@ -261,25 +270,13 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
   }
 
   public stake(outcome: ProposalOutcome, amount: number ): Operation<Stake> {
-    // TODO: cf next two lines from alchemy on how to get the votingMacchineAddress
-    // (does not work with new contract versions anymore, though, it seems)
-    // const contributionRewardInstance = this.dao.getContract('ContributionReward')
-    // const result = await contributionRewardInstance.methods.parameters(this.dao.address).call()
-    // const votingMachineAddress = (
-    //   await contributionRewardInstance.methods.getSchemeParameters(daoAvatarAddress)).votingMachineAddress
-
-    // the graph indexes it at contributionRewardProposal.votingMachine, but not on the proposal entity
-    // const votingMachine = this.dao.getContract('AbsoluteVote')
+    // TODO: cf. vote() function: get the contract from the proposal
     const votingMachine = this.context.getContract('GenesisProtocol')
-
-    // TODO: implement error handling
-    // One type of error is that the proposalId is not known:
-    // const proposal = await votingMachine.methods.proposals(this.id).call()
 
     const stakeMethod = votingMachine.methods.stake(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
-      amount // aamount the reputation amount to stake with . if _amount == 0 it will use all staker reputation.
+      amount // amount the reputation amount to stake with . if _amount == 0 it will use all staker reputation.
       // nullAddress
     )
 
