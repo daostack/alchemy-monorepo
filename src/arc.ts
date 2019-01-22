@@ -6,7 +6,7 @@ import { catchError, concat, filter, map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { Operation } from './operation'
 import { Address } from './types'
-import * as utils from './utils'
+import { createApolloClient, getWeb3Options } from './utils'
 
 const Web3 = require('web3')
 
@@ -34,7 +34,7 @@ export class Arc {
     this.web3HttpProvider = options.web3HttpProvider || ''
     this.web3WsProvider = options.web3WsProvider || ''
 
-    this.apolloClient = utils.createApolloClient({
+    this.apolloClient = createApolloClient({
       graphqlHttpProvider: this.graphqlHttpProvider,
       graphqlWsProvider: this.graphqlWsProvider
     })
@@ -208,6 +208,32 @@ export class Arc {
     )
 
     return queryObservable as Observable<any>
+  }
+
+  public getContract(name: string) {
+    // TODO: we are taking the default contracts from the migration repo adn assume
+    // that they are the ones used by the current DAO. This assumption is only valid
+    // on our controlled test environment. Should get the correct contracts instead
+    const opts = getWeb3Options(this.web3)
+    const addresses = this.contractAddresses
+    let contractClass
+    let contract
+    switch (name) {
+      case 'AbsoluteVote':
+        contractClass = require('@daostack/arc/build/contracts/AbsoluteVote.json')
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.AbsoluteVote, opts)
+        return contract
+      case 'ContributionReward':
+        contractClass = require('@daostack/arc/build/contracts/ContributionReward.json')
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.ContributionReward, opts)
+        return contract
+      case 'GenesisProtocol':
+        contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenesisProtocol, opts)
+        return contract
+      default:
+        throw Error(`Unknown contract: ${name}`)
+    }
   }
 
   public sendQuery(query: any) {

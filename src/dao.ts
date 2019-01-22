@@ -13,7 +13,6 @@ import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
-import { getWeb3Options } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 const Web3 = require('web3')
@@ -146,31 +145,6 @@ export class DAO implements IStateful<IDAOState> {
     return this.context.getBalance(this.address)
   }
 
-  public getContract(name: string) {
-    // TODO: we are taking the default contracts from the migration repo adn assume
-    // that they are the ones used by the current DAO. This assumption is only valid
-    // on our controlled test environment. Should get the correct contracts instead
-    const opts = getWeb3Options(this.context.web3)
-    const addresses = this.context.contractAddresses
-    let contractClass
-    let contract
-    switch (name) {
-      case 'AbsoluteVote':
-        contractClass = require('@daostack/arc/build/contracts/AbsoluteVote.json')
-        contract = new this.context.web3.eth.Contract(contractClass.abi, addresses.AbsoluteVote, opts)
-        return contract
-      case 'ContributionReward':
-        contractClass = require('@daostack/arc/build/contracts/ContributionReward.json')
-        contract = new this.context.web3.eth.Contract(contractClass.abi, addresses.ContributionReward, opts)
-        return contract
-      case 'GenesisProtocol':
-        contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
-        contract = new this.context.web3.eth.Contract(contractClass.abi, addresses.GenesisProtocol, opts)
-        return contract
-      default:
-        throw Error(`Unknown contract: ${name}`)
-    }
-  }
 }
 
 export interface IDAOQueryOptions extends ICommonQueryOptions {

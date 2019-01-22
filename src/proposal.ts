@@ -68,7 +68,7 @@ export class Proposal implements IStateful<IProposalState> {
       throw Error(`Proposal.create(options): options must include an address for "dao"`)
     }
     const dao = new DAO(options.dao, context)
-    const contributionReward = dao.getContract('ContributionReward')
+    const contributionReward = context.getContract('ContributionReward')
 
     const propose = contributionReward.methods.proposeContributionReward(
         options.dao,
@@ -218,7 +218,7 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
 
     // the graph indexes it at contributionRewardProposal.votingMachine, but not on the proposal entity
     // const votingMachine = this.dao.getContract('AbsoluteVote')
-    const votingMachine = this.dao.getContract('GenesisProtocol')
+    const votingMachine = this.context.getContract('GenesisProtocol')
 
     // TODO: implement error handling
     // One type of error is that the proposalId is not known:
