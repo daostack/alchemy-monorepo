@@ -34,25 +34,19 @@ describe('Vote on a ContributionReward', () => {
     const response = await dao.createProposal(options).pipe(take(2)).toPromise()
     const proposal = response.result as Proposal
     const voteResponse = await proposal.vote(ProposalOutcome.Pass).pipe(take(2)).toPromise()
-    // expect(false).toEqual(true)
     expect(voteResponse.result).toMatchObject({
       outcome : ProposalOutcome.Pass
     })
 
-    return
-    // we expect now to be able to find the vote in the subgraph
-    const result = voteResponse.result as Vote
     let votes: Vote[] = []
-    const voteObserver = dao.votes({
-      // TODO: be precise and filter by proposer (depends on https://github.com/daostack/subgraph/issues/67)
-      proposal: result.proposalId
-    })
-    waitUntilTrue(() => {
-      voteObserver.pipe(first()).toPromise().then(
-        (items) => votes = items
-      )
+
+    const voteIsIndexed = async () => {
+      // we pass no-cache to make sure we hit the server on each request
+      votes = await Vote.search(arc, {proposal: proposal.id}, { fetchPolicy: 'no-cache' })
+        .pipe(first()).toPromise()
       return votes.length > 0
-    })
+    }
+    await waitUntilTrue(voteIsIndexed)
 
     expect(votes.length).toEqual(1)
 

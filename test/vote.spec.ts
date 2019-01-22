@@ -16,22 +16,16 @@ describe('Stake', () => {
   })
 
   it('Vote is instantiable', () => {
-      // public voter: string,
-      // public createdAt: Date,
-      // public outcome: ProposalOutcome,
-      // public amount: number,
-      // public proposalId: string,
-      // public dao: Addre
-  const stake = new Vote(
-    '0x1234id',
-    '0x124votes',
-    0,
-    ProposalOutcome.Fail,
-    3e18,
-    '0x12445proposalId',
-    '0x12445daoAddress'
-  )
-  expect(stake).toBeInstanceOf(Vote)
+    const vote = new Vote(
+      '0x1234id',
+      '0x124votes',
+      0,
+      ProposalOutcome.Fail,
+      3e18,
+      '0x12445proposalId',
+      '0x12445daoAddress'
+    )
+    expect(vote).toBeInstanceOf(Vote)
   })
 
   it('Votes are searchable', async () => {
@@ -46,6 +40,7 @@ describe('Stake', () => {
 
     const voteIsIndexed = async () => {
       // we pass no-cache to make sure we hit the server on each request
+      // TODO: would be better to search for vote.id here, but we don't have that
       result = await Vote.search(arc, {proposal: proposal.id}, { fetchPolicy: 'no-cache' })
         .pipe(first()).toPromise()
       return result.length > 0
