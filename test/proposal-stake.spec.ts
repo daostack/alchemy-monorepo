@@ -52,7 +52,9 @@ describe('Stake on a ContributionReward', () => {
 
   it('throws a meaningful error if an insufficient amount tokens is approved for staking', async () => {
     const dao = new DAO(arc.contractAddresses.Avatar, arc)
+    const stakingToken =  arc.getContract('DAOToken')
     const proposal = await createAProposal(dao)
+    await stakingToken.methods.mint(accounts[1].address, '100').send()
     proposal.context.web3.eth.defaultAccount = accounts[1].address
     await expect(proposal.stake(ProposalOutcome.Pass, 100).pipe(take(2)).toPromise()).rejects.toThrow(
       /insufficient allowance/i
