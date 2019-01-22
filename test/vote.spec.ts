@@ -36,7 +36,7 @@ describe('Stake', () => {
 
   it('Votes are searchable', async () => {
 
-    let result
+    let result: Vote[] = []
     // TODO: setup a proposal and create some votes
     const dao = await getTestDAO()
     const proposal = await createAProposal(dao)
@@ -51,8 +51,10 @@ describe('Stake', () => {
       return result.length > 0
     }
     await waitUntilTrue(voteIsIndexed)
-    expect(result.length).toEqual(1)
-    expect(result[0].outcome).toEqual(ProposalOutcome.Pass)
+    if (result) {
+      expect(result.length).toEqual(1)
+      expect(result[0].outcome).toEqual(ProposalOutcome.Pass)
+    }
 
     result = await Vote.search(arc, {})
       .pipe(first()).toPromise()
