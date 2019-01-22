@@ -114,7 +114,7 @@ export function concat(a: Uint8Array, b: Uint8Array): Uint8Array {
     out[a.length + j] = b[j]
   }
   // return out as ByteArray
-  return web3.utils.bytesToHex(out)
+  // return web3.utils.bytesToHex(out)
   return out
   // return web3.utils.keccak256(out)
 }
@@ -123,11 +123,11 @@ type EthereumEvent = any
 
 export function eventId(event: EthereumEvent): string {
   // console.log(event)
-  console.log(event.transactionHash)
-  console.log(event.logIndex)
-  console.log(concat(web3.utils.hexToBytes(event.transactionHash), event.logIndex as Uint8Array))
-  console.log(web3.utils.bytesToHex(concat(event.transactionHash, event.logIndex as Uint8Array)))
+  // console.log(event.transactionHash)
+  // console.log(event.logIndex)
+  // console.log(concat(web3.utils.hexToBytes(event.transactionHash), event.logIndex as Uint8Array))
+  // console.log(web3.utils.bytesToHex(concat(event.transactionHash, event.logIndex as Uint8Array)))
   const hash = web3.utils.keccak256(concat(event.transactionHash, event.logIndex as Uint8Array))
-  console.log(hash)
+  // console.log(hash)
   return hash
 }
