@@ -3,7 +3,6 @@ import { Observable, of } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Address, Hash, IStateful } from './types'
-import * as utils from './utils'
 
 export interface ITokenState {
   address: Address

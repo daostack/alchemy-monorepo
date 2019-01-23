@@ -1,7 +1,7 @@
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Proposal, ProposalStage } from '../src/proposal'
-import { getArc, getContractAddresses, getOptions, getWeb3, nullAddress } from './utils'
+import { getArc,  getWeb3 } from './utils'
 
 const DAOstackMigration = require('@daostack/migration')
 
@@ -9,17 +9,15 @@ const DAOstackMigration = require('@daostack/migration')
  * Proposal test
  */
 describe('Proposal', () => {
-  let addresses: { [key: string]: string }
   let arc: Arc
   let web3: any
-  let accounts: any
+  // let accounts: any
 
   beforeAll(async () => {
-    addresses = getContractAddresses()
     arc = getArc()
     web3 = await getWeb3()
-    accounts = web3.eth.accounts.wallet
-    web3.eth.defaultAccount = accounts[0].address
+    // accounts = web3.eth.accounts.wallet
+    // web3.eth.defaultAccount = accounts[0].address
   })
 
   it('Proposal is instantiable', () => {
@@ -71,11 +69,11 @@ describe('Proposal', () => {
         boostedVotePeriodLimit: 259200,
         boostingThreshold: 0,
         description: null,
+        descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
         ethReward: 10,
         executedAt: null,
         externalTokenReward: 10,
         // id: '0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e',
-        ipfsHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
         preBoostedVotePeriodLimit: 259200,
         proposer: '0x1cea1e112ec409762ab4795daead616b5a3acf72879303434a87cbcd3a1785b9',
         proposingRepReward: 5000000000,

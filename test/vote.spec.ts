@@ -34,7 +34,6 @@ describe('Stake', () => {
     // TODO: setup a proposal and create some votes
     const dao = await getTestDAO()
     const proposal = await createAProposal(dao)
-
     // let's have a vote
     await proposal.vote(ProposalOutcome.Pass).pipe(take(2)).toPromise()
 

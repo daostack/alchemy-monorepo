@@ -82,8 +82,8 @@
   "devDependencies": {
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
-    "@daostack/migration": "0.0.1-rc.3-v1",
-    "@daostack/subgraph": "git+https://github.com/daostack/subgraph.git#5ae1fa260e2a6a398c7d340b55c84a3df73c6575",
+    "@daostack/migration": "0.0.1-rc.6-v1",
+    "@daostack/subgraph": "git+https://github.com/daostack/subgraph.git#18a9f5bc31d28da0a4866685be6b0af52b45d3a8",
     "@types/graphql": "^14.0.3",
     "@types/isomorphic-fetch": "0.0.34",
     "@types/jest": "^23.3.2",
@@ -135,7 +135,7 @@
     "node-gyp": "^3.8.0",
     "rxjs": "^6.3.3",
     "subscriptions-transport-ws": "^0.9.15",
-    "web3": "^1.0.0-beta.36",
+    "web3": "^1.0.0-beta.37",
     "ws": "^6.1.2"
   }
 }

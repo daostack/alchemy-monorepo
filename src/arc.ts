@@ -40,7 +40,7 @@ export class Arc {
     })
 
     if (this.web3HttpProvider) {
-      this.web3 = new Web3(this.web3HttpProvider)
+      this.web3 = new Web3(Web3.givenProvider || this.web3WsProvider || this.web3HttpProvider)
     }
     this.contractAddresses = options.contractAddresses || {}
   }
@@ -74,17 +74,17 @@ export class Arc {
    * @return         [description]
    */
   public getBalance(address: Address): Observable<number> {
-    const web3 = new Web3(this.web3WsProvider)
+    // const web3 = new Web3(this.web3WsProvider)
     // observe balance on new blocks
     // (note that we are basically doing expensive polling here)
     const balanceObservable = Observable.create((observer: any) => {
-      web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
+      this.web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
         if (err) {
           console.log(err)
           observer.error(err)
         } else {
           console.log('newblock')
-          web3.eth.getBalance(address).then((balance: any) => {
+          this.web3.eth.getBalance(address).then((balance: any) => {
             // TODO: we should probably only call next if the balance has changed
             observer.next(balance)
           })
@@ -92,7 +92,7 @@ export class Arc {
       })
     })
     // get the current balance ad start observing new blocks for balace changes
-    const queryObservable = from(web3.eth.getBalance(address)).pipe(
+    const queryObservable = from(this.web3.eth.getBalance(address)).pipe(
       concat(balanceObservable)
     )
     return queryObservable as Observable<any>
