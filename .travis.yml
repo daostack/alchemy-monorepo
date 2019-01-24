@@ -15,11 +15,12 @@ node_js:
 before_install:
   - sudo apt-get install libsecret-1-dev
 script:
-  # start the subgraph docker containers
+  - echo 'npm ci:' && echo -en 'travis_fold:start:script.1\\r'
   - npm ci
+  - echo -en 'travis_fold:end:script.1\\r'
+
   - docker-compose up -d graph-node
   - ./scripts/wait-for-it.sh 127.0.0.1:8545
-  - ./scripts/wait-for-it.sh localhost:8545
   - ./scripts/wait-for-it.sh 127.0.0.1:8000
   - ./scripts/wait-for-it.sh 127.0.0.1:8020
   - sleep 15
