@@ -18,7 +18,7 @@ describe('Vote on a ContributionReward', () => {
   })
 
   it('works and gets indexed', async () => {
-    const dao = new DAO(arc.contractAddresses.Avatar, arc)
+    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       ethReward: 300,

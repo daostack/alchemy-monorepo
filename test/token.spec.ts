@@ -1,5 +1,5 @@
 import { first} from 'rxjs/operators'
-import { Arc } from '../src/arc'
+import { Arc, IContractAddresses } from '../src/arc'
 import { Token } from '../src/token'
 import { Address } from '../src/types'
 import { getArc, getContractAddresses, getWeb3 } from './utils'
@@ -7,7 +7,7 @@ import { getArc, getContractAddresses, getWeb3 } from './utils'
  * Token test
  */
 describe('Token', () => {
-  let addresses: { [key: string]: Address }
+  let addresses: IContractAddresses
   let arc: Arc
   let address: Address
   let web3: any
@@ -15,7 +15,7 @@ describe('Token', () => {
   beforeAll(async () => {
     arc = getArc()
     addresses = getContractAddresses()
-    address = addresses.NativeToken
+    address = addresses.dao.DAOToken
     web3 = await getWeb3()
   })
 

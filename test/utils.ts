@@ -1,11 +1,13 @@
 import { ApolloQueryResult } from 'apollo-client'
 import gql from 'graphql-tag'
 import { take } from 'rxjs/operators'
+import { IContractAddresses } from '../src/arc'
 import { DAO } from '../src/dao'
 import Arc from '../src/index'
 import { Proposal } from '../src/proposal'
+import { Address } from '../src/types'
 
-export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack/graphql'
+export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack'
 export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/daostack'
 export const web3HttpProvider: string = 'http://127.0.0.1:8545'
 export const web3WsProvider: string = 'ws://127.0.0.1:8545'
@@ -21,7 +23,7 @@ export function padZeros(str: string, max = 36): string {
 
 process.env = {
   ethereum: 'http://127.0.0.1:8545',
-  node_http: 'http://127.0.0.1:8000/subgraphs/name/daostack/graphql',
+  node_http: 'http://127.0.0.1:8000/subgraphs/name/daostack',
   node_ws: 'http://127.0.0.1:8001/subgraphs/name/daostack',
   // test_mnemonic: "myth like bonus scare over problem client lizard pioneer submit female collect",
   ...process.env
@@ -46,13 +48,14 @@ export async function getWeb3() {
   return web3
 }
 
-export function getContractAddresses() {
+export function getContractAddresses(): IContractAddresses {
   const path = '@daostack/subgraph/migration.json'
-  const addresses = { ...require(path).private.base, ...require(path).private.dao }
+  const addresses = require(path)
+  // const addresses = { base: require(path).private.base, dao: require(path).private.dao }
   if (!addresses || addresses === {}) {
     throw Error(`No addresses found, does the file at ${path} exist?`)
   }
-  return addresses
+  return { base: addresses.private.base, dao: addresses.private.dao }
 }
 
 export async function getOptions(web3: any) {
@@ -87,12 +90,16 @@ export async function mintSomeReputation() {
   const opts = await getOptions(web3)
   const accounts = web3.eth.accounts.wallet
   const Reputation = require('@daostack/arc/build/contracts/Reputation.json')
-  const reputation = new web3.eth.Contract(Reputation.abi, addresses.Reputation, opts)
+  const reputation = new web3.eth.Contract(Reputation.abi, addresses.base.Reputation, opts)
   await reputation.methods.mint(accounts[1].address, '99').send()
 }
 
+export function mineANewBlock() {
+  return mintSomeReputation()
+}
+
 export async function waitUntilTrue(test: () => Promise<boolean> | boolean) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     (async function waitForIt(): Promise<void> {
     //     cntr += 1
     //     if (cntr > 1000) { throw new Error((`Waited but got nothing :-()`))}
@@ -122,7 +129,8 @@ export async function getContractAddressesFromSubgraph(): Promise<{ daos: any }>
     return {
       address: dao.id,
       nativeReputation: dao.nativeReputation.id,
-      nativeToken: dao.nativeToken.id
+      nativeToken: dao.nativeToken.id,
+      membersCount: dao.membersCount
     }
   })
 }
@@ -130,7 +138,15 @@ export async function getContractAddressesFromSubgraph(): Promise<{ daos: any }>
 
 export async function getTestDAO() {
   const addresses = await getContractAddressesFromSubgraph()
-  const address = addresses.daos[0].address
+  // we have two indexed daos with the same name, but one has 6 members, and that is the one
+  // we are using for testing
+  let address: Address
+  if (addresses.daos[0].membersCount === 6) {
+    address = addresses.daos[0].address
+  } else {
+    address = addresses.daos[1].address
+
+  }
   const arc = await getArc()
   return arc.dao(address)
 }

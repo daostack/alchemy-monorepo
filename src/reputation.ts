@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import { Observable, of } from 'rxjs'
+import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Address, IStateful } from './types'
