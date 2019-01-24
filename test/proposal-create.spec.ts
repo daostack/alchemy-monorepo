@@ -31,11 +31,12 @@ describe('Create ContributionReward Proposal', () => {
     }
 
     // collect the first 4 results of the observable in a a listOfUpdates array
+    const promises: Array<Promise<any>> = []
     const listOfUpdates = await dao.createProposal(options)
       .pipe(
-        take(5),
+        take(4),
         reduce((acc: Array<ITransactionUpdate<Proposal>> , val: ITransactionUpdate<Proposal>) => {
-          mineANewBlock()
+          promises.push(mineANewBlock())
           acc.push(val); return acc
         }, [])
       )
@@ -69,6 +70,11 @@ describe('Create ContributionReward Proposal', () => {
       state: TransactionState.Mined,
       transactionHash: listOfUpdates[1].transactionHash
     })
+
+    // wait for all transactions to finish before passing to the next test
+    console.log(`waiting for all txs to be mined`)
+    console.log(promises)
+    await Promise.all(promises)
 
   })
 })
