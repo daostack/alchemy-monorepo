@@ -79,16 +79,13 @@ export class Arc {
    * @return         [description]
    */
   public getBalance(address: Address): Observable<number> {
-    // const web3 = new Web3(this.web3WsProvider)
     // observe balance on new blocks
     // (note that we are basically doing expensive polling here)
     const balanceObservable = Observable.create((observer: any) => {
       this.web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
         if (err) {
-          console.log(err)
           observer.error(err)
         } else {
-          console.log('newblock')
           this.web3.eth.getBalance(address).then((balance: any) => {
             // TODO: we should probably only call next if the balance has changed
             observer.next(balance)

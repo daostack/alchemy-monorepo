@@ -72,8 +72,6 @@ describe('Create ContributionReward Proposal', () => {
     })
 
     // wait for all transactions to finish before passing to the next test
-    console.log(`waiting for all txs to be mined`)
-    console.log(promises)
     await Promise.all(promises)
 
   })
