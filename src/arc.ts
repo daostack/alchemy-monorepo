@@ -1,6 +1,7 @@
 import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { Observable as ZenObservable } from 'apollo-link'
 import gql from 'graphql-tag'
+import * as Logger from 'js-logger'
 import { from, Observable, Observer, of } from 'rxjs'
 import { catchError, concat, filter, map } from 'rxjs/operators'
 import { DAO } from './dao'
@@ -8,22 +9,25 @@ import { Operation } from './operation'
 import { Address } from './types'
 import { createApolloClient, getWeb3Options } from './utils'
 
+const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
 
-export interface IContractAddresses {
-  base: { [key: string]: Address }
-  dao: { [key: string]: Address }
-}
+Logger.useDefaults()
+Logger.setLevel(Logger.OFF)
+export { Logger }
 
 export class Arc {
   public graphqlHttpProvider: string
   public graphqlWsProvider: string
   public web3HttpProvider: string
   public web3WsProvider: string
+  public ipfsProvider: string
 
   public pendingOperations: Observable<Array<Operation<any>>> = of()
   public apolloClient: ApolloClient<object>
   // TODO: are there proper Web3 types available?
+
+  public ipfs: any
   public web3: any
   public contractAddresses: IContractAddresses
 
@@ -32,12 +36,14 @@ export class Arc {
     graphqlWsProvider: string
     web3HttpProvider?: string
     web3WsProvider?: string
+    ipfsProvider?: string
     contractAddresses?: IContractAddresses
   }) {
     this.graphqlHttpProvider = options.graphqlHttpProvider
     this.graphqlWsProvider = options.graphqlWsProvider
     this.web3HttpProvider = options.web3HttpProvider || ''
     this.web3WsProvider = options.web3WsProvider || ''
+    this.ipfsProvider = options.ipfsProvider || ''
 
     this.apolloClient = createApolloClient({
       graphqlHttpProvider: this.graphqlHttpProvider,
@@ -48,6 +54,10 @@ export class Arc {
       this.web3 = new Web3(Web3.givenProvider || this.web3WsProvider || this.web3HttpProvider)
     }
     this.contractAddresses = options.contractAddresses || { base: {}, dao: {}}
+
+    if (this.ipfsProvider) {
+      this.ipfs = IPFSClient(this.ipfsProvider)
+    }
   }
 
   /**
@@ -121,10 +131,11 @@ export class Arc {
    */
   public _getObservableList(
     query: any,
-    itemMap: (o: object) => object = (o) => o
+    itemMap: (o: object) => object = (o) => o,
+    apolloQueryOptions: IApolloQueryOptions = {}
   ) {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
-    return this.getObservable(query).pipe(
+    return this.getObservable(query, apolloQueryOptions).pipe(
       map((r) => {
         if (!r.data[entity]) { throw Error(`Could not find entity "${entity}" in ${Object.keys(r.data)}`)}
         return r.data[entity]
@@ -172,10 +183,12 @@ export class Arc {
 
   public _getObservableObject(
     query: any,
-    entity: string,
-    itemMap: (o: object) => object = (o) => o
+    itemMap: (o: object) => object = (o) => o,
+    apolloQueryOptions: IApolloQueryOptions = {}
   ) {
-    return this.getObservable(query).pipe(
+    const entity = query.definitions[0].selectionSet.selections[0].name.value
+
+    return this.getObservable(query, apolloQueryOptions).pipe(
       map((r: any) => {
         if (!r.data) {
           return null
@@ -187,11 +200,11 @@ export class Arc {
   }
 
   public getObservable(query: any, apolloQueryOptions: IApolloQueryOptions = {}) {
+    Logger.debug(query.loc.source.body)
+
     const subscriptionQuery = gql`
       subscription ${query}
     `
-
-    // console.log(`creating observable for query:\n${query.loc.source.body}`)
     const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({ query: subscriptionQuery })
     const subscriptionObservable = Observable.create((observer: Observer<object[]>) => {
       const subscription = zenObservable.subscribe(observer)
@@ -199,7 +212,7 @@ export class Arc {
     })
 
     const queryPromise: Promise<ApolloQueryResult<{[key: string]: object[]}>> = this.apolloClient.query(
-      { query, ...apolloQueryOptions, fetchPolicy: 'no-cache' })
+      { query, ...apolloQueryOptions })
 
     const queryObservable = from(queryPromise).pipe(
       concat(subscriptionObservable)
@@ -246,4 +259,9 @@ export class Arc {
 
 export interface IApolloQueryOptions {
   fetchPolicy?: 'cache-first' | 'cache-and-network' | 'network-only' | 'cache-only' | 'no-cache' | 'standby'
+}
+
+export interface IContractAddresses {
+  base: { [key: string]: Address }
+  dao: { [key: string]: Address }
 }

@@ -1,7 +1,6 @@
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
-
-import { Arc } from './arc'
+import { Arc, IApolloQueryOptions, Logger } from './arc'
 import { DAO } from './dao'
 import { Operation, sendTransaction } from './operation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
@@ -35,7 +34,7 @@ export interface IProposalState {
   ethReward: number
   executedAt: Date
   externalTokenReward: number
-  descriptionHash: string
+  descriptionHash?: string
   preBoostedVotePeriodLimit: number
   proposer: Address
   proposingRepReward: number
@@ -66,9 +65,22 @@ export class Proposal implements IStateful<IProposalState> {
     if (!options.dao) {
       throw Error(`Proposal.create(options): options must include an address for "dao"`)
     }
+
+    let ipfsDataToSave: object = {}
+    if (options.title || options.url || options.description) {
+      ipfsDataToSave = {
+        description: options.description,
+        title: options.title,
+        url: options.url
+      }
+      if (options.descriptionHash) {
+        const msg = `Proposal.create() takes a descriptionHash, or a value for title, url and description, but not both`
+        throw Error(msg)
+      }
+    }
     const contributionReward = context.getContract('ContributionReward')
 
-    const propose = contributionReward.methods.proposeContributionReward(
+    const transaction = contributionReward.methods.proposeContributionReward(
         options.dao,
         // TODO: after upgrading arc, use empty string as default value for descriptionHash
         options.descriptionHash || '0x0000000000000000000000000000000000000000000000000000000000000000',
@@ -85,13 +97,49 @@ export class Proposal implements IStateful<IProposalState> {
         options.beneficiary
     )
 
-    return sendTransaction(
-      propose,
-      (receipt: any) => {
-        const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
-        return new Proposal(proposalId, options.dao as string, context)
+    const map = (receipt: any) => {
+      const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
+      return new Proposal(proposalId, options.dao as string, context)
+    }
+
+    const before = async () => {
+      // Logger.debug('BEFORE WAS CALLED!!')
+    }
+    return sendTransaction(transaction, map, before)
+  }
+
+  public static search(
+    options: IProposalQueryOptions,
+    context: Arc,
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Proposal[]> {
+    let where = ''
+    for (const key of Object.keys(options)) {
+      if (key === 'stage' && options[key] !== undefined) {
+        where += `${key}: ${ProposalStage[options[key] as ProposalStage]},\n`
+      } else {
+        where += `${key}: "${options[key] as string}",`
       }
-    )
+    }
+
+    const query = gql`
+      {
+        proposals(where: {
+          ${where}
+        }) {
+          id
+          dao {
+            id
+          }
+        }
+      }
+    `
+
+    return context._getObservableList(
+      query,
+      (r: any) => new Proposal(r.id, r.dao.id, context),
+      apolloQueryOptions
+    ) as Observable<Proposal[]>
   }
   /**
    * `state` is an observable of the proposal state
@@ -100,7 +148,7 @@ export class Proposal implements IStateful<IProposalState> {
   public context: Arc
   public dao: DAO
 
-constructor(public id: string, public daoAddress: Address, context: Arc) {
+  constructor(public id: string, public daoAddress: Address, context: Arc) {
     this.id = id
     this.context = context
     this.dao = new DAO(daoAddress, context)
@@ -200,7 +248,7 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
       }
     }
 
-    this.state = context._getObservableObject(query, 'proposal', itemMap) as Observable<IProposalState>
+    this.state = context._getObservableObject(query, itemMap, { fetchPolicy: 'no-cache' }) as Observable<IProposalState>
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
@@ -293,6 +341,7 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
 export interface IProposalCreateOptions {
   beneficiary: Address
   dao?: Address
+  description?: string
   descriptionHash?: string
   nativeTokenReward?: number
   reputationReward?: number
@@ -301,5 +350,7 @@ export interface IProposalCreateOptions {
   externalTokenAddress?: Address
   periodLength?: number
   periods?: any
+  title?: string
   type?: string
+  url?: string
   }
