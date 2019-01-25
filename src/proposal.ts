@@ -162,6 +162,7 @@ export class Proposal implements IStateful<IProposalState> {
           }
           proposer {
             id
+            address
           }
           stage
           createdAt
@@ -217,6 +218,24 @@ export class Proposal implements IStateful<IProposalState> {
         throw Error(`Could not find a Proposal with id '${id}'`)
       }
 
+      let proposalStage: ProposalStage
+      switch (item.stage) {
+        case 'Open':
+          proposalStage = ProposalStage.Open
+          break
+        case 'Boosted':
+          proposalStage = ProposalStage.Boosted
+          break
+        case 'QuietEndingPeriod':
+          proposalStage = ProposalStage.QuietEndingPeriod
+          break
+        case 'Resolved':
+          proposalStage = ProposalStage.Resolved
+          break
+        default:
+          throw Error(`Unknown proposal stage: ${item.stage}`)
+      }
+
       return {
         beneficiary: item.beneficiary,
         boostedAt: Number(item.boostedAt),
@@ -231,12 +250,12 @@ export class Proposal implements IStateful<IProposalState> {
         externalTokenReward: Number(item.externalTokenReward),
         id: item.id,
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
-        proposer: item.proposer && item.proposer.id,
+        proposer: item.proposer && item.proposer.address,
         proposingRepReward: Number(item.proposingRepReward),
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
         reputationReward: Number(item.reputationReward),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : null,
-        stage: item.stage,
+        stage: proposalStage,
         stakesAgainst: Number(item.stakesAgainst),
         stakesFor: Number(item.stakesFor),
         title: item.title,

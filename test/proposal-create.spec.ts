@@ -1,8 +1,7 @@
-import { first, reduce, take } from 'rxjs/operators'
+import { first, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { ITransactionUpdate, TransactionState } from '../src/operation'
-import { Proposal } from '../src/proposal'
+import { Proposal, ProposalStage } from '../src/proposal'
 import { getArc, mineANewBlock, waitUntilTrue } from './utils'
 
 describe('Create a ContributionReward proposal', () => {
@@ -46,9 +45,24 @@ describe('Create a ContributionReward proposal', () => {
     // with this id does not exist". How is that possible?
     const proposal2 = new Proposal(proposal.id, proposal.dao.address, arc)
     const proposalState = await proposal2.state.pipe(first()).toPromise()
-    expect(proposalState).toMatchObject({
-      beneficiary: options.beneficiary
-    })
 
+    expect(proposalState).toMatchObject({
+      beneficiary: options.beneficiary,
+      ethReward: options.ethReward,
+      executedAt: null,
+      externalTokenReward: 0,
+      proposer: dao.context.web3.eth.defaultAccount.toLowerCase(),
+      quietEndingPeriodBeganAt: null,
+      reputationReward: 0,
+      resolvedAt: null,
+      stage: ProposalStage.Open,
+      stakesAgainst: 0,
+      stakesFor: 0
+    })
+    expect(proposalState.dao.address).toEqual(dao.address)
+
+  })
+  it('saves title etc on ipfs', async () => {
+    // TODO!
   })
 })
