@@ -40,7 +40,8 @@ contract GenesisProtocolLogic is IntVoteInterface {
         uint256 votersReputationLossRatio;//Unsuccessful pre booster
                                           //voters lose votersReputationLossRatio% of their reputation.
         uint256 minimumDaoBounty;
-        uint256 daoBountyConst;
+        uint256 daoBountyConst;//The DAO downstake for each proposal is calculate according to the formula
+                               //(daoBountyConst * averageBoostDownstakes)/100 .
         uint256 activationTime;//the point in time after which proposals can be created.
         //if this address is set so only this address is allowed to vote of behalf of someone else.
         address voteOnBehalf;
@@ -113,6 +114,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
         uint256 _amount
     );
 
+    event StateChange(bytes32 indexed _proposalId, ProposalState _proposalState);
     event GPExecuteProposal(bytes32 indexed _proposalId, ExecutionState _executionState);
     event ExpirationCallBounty(bytes32 indexed _proposalId, address indexed _beneficiary, uint256 _amount);
 
@@ -196,7 +198,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
         }
         //calc dao bounty
         uint256 daoBounty =
-        parameters[_paramsHash].daoBountyConst.mul(averagesDownstakesOfBoosted[proposal.organizationId]);
+        parameters[_paramsHash].daoBountyConst.mul(averagesDownstakesOfBoosted[proposal.organizationId]).div(100);
         if (daoBounty < parameters[_paramsHash].minimumDaoBounty) {
             proposal.daoBountyRemain = parameters[_paramsHash].minimumDaoBounty;
         } else {
@@ -586,6 +588,9 @@ contract GenesisProtocolLogic is IntVoteInterface {
             emit GPExecuteProposal(_proposalId, executionState);
             ProposalExecuteInterface(proposal.callbacks).executeProposal(_proposalId, int(proposal.winningVote));
             proposal.daoBounty = proposal.daoBountyRemain;
+        }
+        if (tmpProposal.state != proposal.state) {
+            emit StateChange(_proposalId, proposal.state);
         }
         return (executionState != ExecutionState.None);
     }

@@ -25,7 +25,7 @@ const setupGenesisProtocolParams = async function(
                                             _proposingRepReward=60,
                                             _votersReputationLossRatio=10,
                                             _minimumDaoBounty=15,
-                                            _daoBountyConst=10,
+                                            _daoBountyConst=1000,
                                             _activationTime=0,
                                             ) {
   var genesisProtocolParams = new GenesisProtocolParams();
@@ -67,7 +67,7 @@ const setup = async function (accounts,
                               _proposingRepReward=60,
                               _votersReputationLossRatio=10,
                               _minimumDaoBounty=15,
-                              _daoBountyConst=10,
+                              _daoBountyConst=1000,
                               _activationTime=0) {
    var testSetup = new helpers.TestSetup();
    testSetup.stakingToken = await ERC827TokenMock.new(accounts[0],web3.utils.toWei(((new BigNumber(2)).pow(200)).toString(10)));
@@ -526,12 +526,14 @@ contract('GenesisProtocol', accounts => {
 
     // // the decisive vote is cast now and the proposal will be executed
     var tx = await testSetup.genesisProtocol.vote(proposalId, 2,0,helpers.NULL_ADDRESS, { from: accounts[2] });
-    assert.equal(tx.logs.length, 3);
+    assert.equal(tx.logs.length, 4);
     assert.equal(tx.logs[1].event, "ExecuteProposal");
     assert.equal(tx.logs[1].args._proposalId, proposalId);
     assert.equal(tx.logs[1].args._decision, 2);
     assert.equal(tx.logs[2].event, "GPExecuteProposal");
     assert.equal(tx.logs[2].args._executionState, 1); //QueBarCrossed
+    assert.equal(tx.logs[3].event, "StateChange");
+    assert.equal(tx.logs[3].args._proposalState, 2);
   });
 
   it("should log the ExecuteProposal event after time pass for preBoostedVotePeriodLimit (decision == 2 )", async function() {
@@ -545,7 +547,7 @@ contract('GenesisProtocol', accounts => {
     await helpers.increaseTime(3);
     // the decisive vote is cast now and the proposal will be executed
     var tx = await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS, { from: accounts[2] });
-    assert.equal(tx.logs.length, 2);
+    assert.equal(tx.logs.length, 3);
     assert.equal(tx.logs[0].event, "ExecuteProposal");
     assert.equal(tx.logs[0].args._proposalId, proposalId);
     assert.equal(tx.logs[0].args._decision, 2);
@@ -1459,7 +1461,7 @@ contract('GenesisProtocol', accounts => {
 
       let voteTX = await testSetup.genesisProtocol.vote(proposalId, 1,0,accounts[2],{from:voteOnBehalf});
 
-      assert.equal(voteTX.logs.length, 3);
+      assert.equal(voteTX.logs.length, 4);
       assert.equal(voteTX.logs[0].event, "VoteProposal");
       assert.equal(voteTX.logs[0].args._proposalId, proposalId);
       assert.equal(voteTX.logs[0].args._voter, accounts[2]);
@@ -1693,10 +1695,10 @@ contract('GenesisProtocol', accounts => {
     await helpers.increaseTime(60+addTime);
     var tx = await testSetup.genesisProtocol.executeBoosted(proposalId);
 
-    assert.equal(tx.logs[2].event, "ExpirationCallBounty");
-    assert.equal(tx.logs[2].args._proposalId, proposalId);
-    assert.equal(tx.logs[2].args._beneficiary, accounts[0]);
-    assert.equal(tx.logs[2].args._amount, 1 + addTime/15);
+    assert.equal(tx.logs[3].event, "ExpirationCallBounty");
+    assert.equal(tx.logs[3].args._proposalId, proposalId);
+    assert.equal(tx.logs[3].args._beneficiary, accounts[0]);
+    assert.equal(tx.logs[3].args._amount, 1 + addTime/15);
 
     var redeemRewards = await testSetup.genesisProtocol.redeem.call(proposalId,accounts[0]);
     var redeemToken = redeemRewards[0].toNumber();
@@ -1722,10 +1724,10 @@ contract('GenesisProtocol', accounts => {
     var addTime =15*100 ;
     await helpers.increaseTime(60+addTime);
     var tx = await testSetup.genesisProtocol.executeBoosted(proposalId);
-    assert.equal(tx.logs[2].event, "ExpirationCallBounty");
-    assert.equal(tx.logs[2].args._proposalId, proposalId);
-    assert.equal(tx.logs[2].args._beneficiary, accounts[0]);
-    assert.equal(tx.logs[2].args._amount, 100);
+    assert.equal(tx.logs[3].event, "ExpirationCallBounty");
+    assert.equal(tx.logs[3].args._proposalId, proposalId);
+    assert.equal(tx.logs[3].args._beneficiary, accounts[0]);
+    assert.equal(tx.logs[3].args._amount, 100);
   });
   it("activation time", async () => {
     var activationTime = (await web3.eth.getBlock("latest")).timestamp + 1000;
