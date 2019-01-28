@@ -39,7 +39,8 @@ describe('Member', () => {
     expect(memberState.dao.address).toBe(addresses.dao.Avatar.toLowerCase())
   })
 
-  it('Member proposals works', async () => {
+  it.skip('Member proposals works', async () => {
+    // TODO: we should evaluate if we want to keep the member object at all
     id = '0x1cea1e112ec409762ab4795daead616b5a3acf72879303434a87cbcd3a1785b9'
     const member = new Member(id, arc)
     const proposals = await member.proposals().pipe(first()).toPromise()
