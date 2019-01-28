@@ -1,5 +1,5 @@
 import { Observable, Observer } from 'rxjs'
-import { Logger } from './arc'
+import { Logger } from './logger'
 
 export enum TransactionState {
   Sent,

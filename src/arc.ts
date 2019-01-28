@@ -1,20 +1,16 @@
 import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { Observable as ZenObservable } from 'apollo-link'
 import gql from 'graphql-tag'
-import * as Logger from 'js-logger'
 import { from, Observable, Observer, of } from 'rxjs'
 import { catchError, concat, filter, map } from 'rxjs/operators'
 import { DAO } from './dao'
+import { Logger } from './logger'
 import { Operation } from './operation'
 import { Address } from './types'
 import { createApolloClient, getWeb3Options } from './utils'
 
 const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
-
-Logger.useDefaults()
-Logger.setLevel(Logger.OFF)
-export { Logger }
 
 export class Arc {
   public graphqlHttpProvider: string
