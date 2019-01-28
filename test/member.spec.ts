@@ -47,8 +47,8 @@ describe('Member', () => {
     expect(proposals[0].id).toBeDefined()
   })
 
-  it('Member votes works', async () => {
-
+  it.skip('Member votes works', async () => {
+    // TODO: we should evaluate if we want to keep the member object at all
     id = '0x40163b1a33965a2d41f1c2888cdd2ffec4b5fb25a5071846bfbece19c8e13a81'
     const member = new Member(id, arc)
     const votes = await member.votes().pipe(first()).toPromise()

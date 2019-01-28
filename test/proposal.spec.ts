@@ -84,7 +84,7 @@ describe('Proposal', () => {
         stakesAgainst: 0,
         stakesFor: 0,
         title: null,
-        tokensReward: 10,
+        nativeTokenReward: 10,
         url: null,
         votesAgainst: web3.utils.toWei('1000'),
         votesFor: web3.utils.toWei('1000'),
