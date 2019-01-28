@@ -34,7 +34,7 @@
     "setup-env": "npm run subgraph:deploy",
     "subgraph:deploy": "npm explore @daostack/subgraph -- npm install && npm explore @daostack/subgraph -- npm run deploy",
     "subgraph:test": "npm explore @daostack/subgraph -- npm run migrate:development && npm explore @daostack/subgraph -- npm run deploy && npm run test Subscription",
-    "test": "jest --forceExit",
+    "test": "jest --runInBand --forceExit",
     "test:watch": "jest --watch",
     "tslint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'"
   },
