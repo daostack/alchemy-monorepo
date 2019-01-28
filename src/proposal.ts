@@ -36,6 +36,7 @@ export interface IProposalState {
   executedAt: Date
   externalTokenReward: number
   descriptionHash?: string
+  nativeTokenReward: number
   preBoostedVotePeriodLimit: number
   proposer: Address
   proposingRepReward: number
@@ -47,7 +48,6 @@ export interface IProposalState {
   stakesAgainst: number
   title?: string
   url?: string
-  nativeTokenReward: number
   votesFor: number
   votesAgainst: number
   winningOutcome: ProposalOutcome
@@ -253,6 +253,7 @@ export class Proposal implements IStateful<IProposalState> {
         executedAt: item.executedAt,
         externalTokenReward: Number(item.externalTokenReward),
         id: item.id,
+        nativeTokenReward: Number(item.nativeTokenReward),
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposer: item.proposer,
         proposingRepReward: Number(item.proposingRepReward),
@@ -263,7 +264,6 @@ export class Proposal implements IStateful<IProposalState> {
         stakesAgainst: Number(item.stakesAgainst),
         stakesFor: Number(item.stakesFor),
         title: item.title,
-        nativeTokenReward: Number(item.nativeTokenReward),
         url: item.url,
         votesAgainst: item.votesFor,
         votesFor: item.votesAgainst,
