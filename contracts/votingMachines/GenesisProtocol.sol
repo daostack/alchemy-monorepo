@@ -21,7 +21,7 @@ contract GenesisProtocol is IntVoteInterface, GenesisProtocolLogic {
     "uint256 Nonce"
     ));
 
-    mapping(bytes=>bool) private stakeSignatures; //stake signatures
+    mapping(address=>uint256) public stakesNonce; //stakes Nonce
 
     /**
      * @dev Constructor
@@ -69,7 +69,6 @@ contract GenesisProtocol is IntVoteInterface, GenesisProtocolLogic {
         external
         returns(bool)
         {
-        require(stakeSignatures[_signature] == false);
         // Recreate the digest the user signed
         bytes32 delegationDigest;
         if (_signatureType == 2) {
@@ -98,7 +97,8 @@ contract GenesisProtocol is IntVoteInterface, GenesisProtocolLogic {
         address staker = delegationDigest.recover(_signature);
         //a garbage staker address due to wrong signature will revert due to lack of approval and funds.
         require(staker != address(0), "staker address cannot be 0");
-        stakeSignatures[_signature] = true;
+        require(stakesNonce[staker] == _nonce);
+        stakesNonce[staker] = stakesNonce[staker].add(1);
         return _stake(_proposalId, _vote, _amount, staker);
     }
 

@@ -204,16 +204,14 @@ const threshold = async function(_testSetup) {
 };
 
 const signatureType = 1;
-var nonce = 0;
 const stake = async function(_testSetup,_proposalId,_vote,_amount,_staker) {
+  var nonce =  (await _testSetup.genesisProtocol.stakesNonce(_staker)).toString();
   var textMsg = "0x"+ethereumjs.soliditySHA3(
     ["address","bytes32","uint", "uint","uint"],
     [_testSetup.genesisProtocol.address, _proposalId,_vote,_amount, nonce]
   ).toString("hex");
   const signature = await web3.eth.sign(textMsg, _staker);
   const encodeABI = await new web3.eth.Contract(_testSetup.genesisProtocol.abi).methods.stakeWithSignature(_proposalId,_vote,_amount,nonce,signatureType,signature).encodeABI();
-
-  nonce++;
 
   const transaction = await _testSetup.stakingToken.approveAndCall(
     _testSetup.genesisProtocol.address, _amount, encodeABI ,{from : _staker}
@@ -872,13 +870,15 @@ contract('GenesisProtocol', accounts => {
     staker = await testSetup.genesisProtocol.getStaker(proposalId,accounts[0]);
     assert.equal(staker[0],1);
     assert.equal(staker[1],10);
-     nonce--;
+    var nonce =  await testSetup.genesisProtocol.stakesNonce(accounts[0]);
+    nonce--;
+
     var textMsg = "0x"+ethereumjs.soliditySHA3(
         ["address","bytes32","uint", "uint","uint"],
-        [testSetup.genesisProtocol.address, proposalId,1,10, nonce]
+        [testSetup.genesisProtocol.address, proposalId,1,10, nonce.toString()]
       ).toString("hex");
     const signature = await web3.eth.sign(textMsg ,accounts[0]);
-    const encodeABI = await new web3.eth.Contract(testSetup.genesisProtocol.abi).methods.stakeWithSignature(proposalId,1,10,nonce,signatureType,signature).encodeABI();
+    const encodeABI = await new web3.eth.Contract(testSetup.genesisProtocol.abi).methods.stakeWithSignature(proposalId,1,10,nonce.toString(),signatureType,signature).encodeABI();
     try {
      await testSetup.stakingToken.approveAndCall(
         testSetup.genesisProtocol.address, 10, encodeABI ,{from : accounts[0]}
@@ -898,6 +898,7 @@ contract('GenesisProtocol', accounts => {
     let staker = await testSetup.genesisProtocol.getStaker(proposalId,accounts[0]);
     assert.equal(staker[0],0);
     assert.equal(staker[1],0);
+    var nonce =  (await testSetup.genesisProtocol.stakesNonce(accounts[0])).toString();
     var textMsg = "0x"+ethereumjs.soliditySHA3(
         ["address","bytes32","uint", "uint","uint"],
         [testSetup.genesisProtocol.address, proposalId,1,10, nonce]
