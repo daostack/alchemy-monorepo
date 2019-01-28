@@ -31,19 +31,29 @@ export type Operation<T> = Observable<ITransactionUpdate<T>>
 
 type web3receipt = object
 
+/**
+ * send a transaction to the ethereumblockchain, and return a observable of ITransactionUpdatessend
+ * @parameter transaction A web3 transaction, or an (async) function that returns a transaction
+ * @parameter map A function that takes the receipt of the transaction and returns an object
+ * @return An observable with ITransactionUpdate instnces
+ */
 export function sendTransaction<T>(
     transaction: any,
-    map: (receipt: web3receipt) => T,
-    before?: () => void | Promise<void>
+    map: (receipt: web3receipt) => T
   ): Operation<T> {
 
-  const emitter = transaction.send()
-  const observable = Observable.create(async (observer: Observer<ITransactionUpdate<T>>) => {
+const observable = Observable.create(async (observer: Observer<ITransactionUpdate<T>>) => {
     let transactionHash: string
     let result: any
-    if (before) {
-      await before()
+    let tx
+    if (typeof transaction === 'function') {
+      tx = await transaction()
+    }  else {
+      tx = transaction
     }
+
+    const emitter = tx.send()
+
     emitter
       .once('transactionHash', (hash: string) => {
         Logger.debug('Sending transaction..')
@@ -93,5 +103,5 @@ export function sendTransaction<T>(
         observer.error(error)
       })
   })
-  return observable
+return observable
 }

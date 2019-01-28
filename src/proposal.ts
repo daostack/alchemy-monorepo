@@ -81,32 +81,39 @@ export class Proposal implements IStateful<IProposalState> {
     }
     const contributionReward = context.getContract('ContributionReward')
 
-    const transaction = contributionReward.methods.proposeContributionReward(
-        options.dao,
-        // TODO: after upgrading arc, use empty string as default value for descriptionHash
-        options.descriptionHash || '0x0000000000000000000000000000000000000000000000000000000000000000',
-        options.reputationReward || 0,
-        [
-          options.nativeTokenReward || 0,
-          options.ethReward || 0,
-          options.externalTokenReward || 0,
-          // TODO: what are decent default values for periodLength and periods?
-          options.periodLength || 0,
-          options.periods || 0
-        ],
-        options.externalTokenAddress || nullAddress,
-        options.beneficiary
-    )
+    async function createTransaction() {
+      if (ipfsDataToSave !== {}) {
+        Logger.debug('Saving data on IPFS...')
+        const ipfsResponse = await context.ipfs.add(new Buffer(JSON.stringify(ipfsDataToSave)))
+        options.descriptionHash = ipfsResponse[0].path
+        Logger.debug(`Data saved successfully as ${options.descriptionHash}`)
+      }
+
+      const transaction = contributionReward.methods.proposeContributionReward(
+          options.dao,
+          // TODO: after upgrading arc, use empty string as default value for descriptionHash
+          options.descriptionHash || '0x0000000000000000000000000000000000000000000000000000000000000000',
+          options.reputationReward || 0,
+          [
+            options.nativeTokenReward || 0,
+            options.ethReward || 0,
+            options.externalTokenReward || 0,
+            // TODO: what are decent default values for periodLength and periods?
+            options.periodLength || 0,
+            options.periods || 0
+          ],
+          options.externalTokenAddress || nullAddress,
+          options.beneficiary
+      )
+      return transaction
+    }
 
     const map = (receipt: any) => {
       const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
       return new Proposal(proposalId, options.dao as string, context)
     }
 
-    const before = async () => {
-      // Logger.debug('BEFORE WAS CALLED!!')
-    }
-    return sendTransaction(transaction, map, before)
+    return sendTransaction(createTransaction, map)
   }
 
   public static search(
