@@ -75,7 +75,7 @@ export class DAO implements IStateful<IDAOState> {
         tokenTotalSupply: item.nativeToken.totalSupply
       }
     }
-    this.state = this.context._getObservableObject(query, 'dao', itemMap) as Observable<IDAOState>
+    this.state = this.context._getObservableObject(query, itemMap) as Observable<IDAOState>
   }
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
@@ -90,31 +90,9 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
-    // TODO: there must be  better way to construct a where clause from a dictionary
-    let where = ''
-    for (const key of Object.keys(options)) {
-      if (key === 'stage' && options[key] !== undefined) {
-        where += `${key}: ${ProposalStage[options[key] as ProposalStage]},\n`
-      } else {
-        where += `${key}: "${options[key] as string}",`
-      }
-    }
+    options.dao = this.address
+    return Proposal.search(options, this.context)
 
-    const query = gql`
-      {
-        proposals(where: {
-          ${where}
-          dao: "${this.address}"
-        }) {
-          id
-        }
-      }
-    `
-
-    return this.context._getObservableList(
-      query,
-      (r: any) => new Proposal(r.id, this.address, this.context)
-    ) as Observable<Proposal[]>
   }
 
   public proposal(id: string): Proposal {

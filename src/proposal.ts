@@ -1,8 +1,8 @@
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
-
-import { Arc } from './arc'
+import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
+import { Logger } from './logger'
 import { Operation, sendTransaction } from './operation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
@@ -35,7 +35,7 @@ export interface IProposalState {
   ethReward: number
   executedAt: Date
   externalTokenReward: number
-  descriptionHash: string
+  descriptionHash?: string
   preBoostedVotePeriodLimit: number
   proposer: Address
   proposingRepReward: number
@@ -66,32 +66,88 @@ export class Proposal implements IStateful<IProposalState> {
     if (!options.dao) {
       throw Error(`Proposal.create(options): options must include an address for "dao"`)
     }
+
+    let ipfsDataToSave: object = {}
+    if (options.title || options.url || options.description) {
+      ipfsDataToSave = {
+        description: options.description,
+        title: options.title,
+        url: options.url
+      }
+      if (options.descriptionHash) {
+        const msg = `Proposal.create() takes a descriptionHash, or a value for title, url and description, but not both`
+        throw Error(msg)
+      }
+    }
     const contributionReward = context.getContract('ContributionReward')
 
-    const propose = contributionReward.methods.proposeContributionReward(
-        options.dao,
-        // TODO: after upgrading arc, use empty string as default value for descriptionHash
-        options.descriptionHash || '0x0000000000000000000000000000000000000000000000000000000000000000',
-        options.reputationReward || 0,
-        [
-          options.nativeTokenReward || 0,
-          options.ethReward || 0,
-          options.externalTokenReward || 0,
-          // TODO: what are decent default values for periodLength and periods?
-          options.periodLength || 0,
-          options.periods || 0
-        ],
-        options.externalTokenAddress || nullAddress,
-        options.beneficiary
-    )
-
-    return sendTransaction(
-      propose,
-      (receipt: any) => {
-        const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
-        return new Proposal(proposalId, options.dao as string, context)
+    async function createTransaction() {
+      if (ipfsDataToSave !== {}) {
+        Logger.debug('Saving data on IPFS...')
+        const ipfsResponse = await context.ipfs.add(new Buffer(JSON.stringify(ipfsDataToSave)))
+        options.descriptionHash = ipfsResponse[0].path
+        Logger.debug(`Data saved successfully as ${options.descriptionHash}`)
       }
-    )
+
+      const transaction = contributionReward.methods.proposeContributionReward(
+          options.dao,
+          // TODO: after upgrading arc, use empty string as default value for descriptionHash
+          options.descriptionHash || '0x0000000000000000000000000000000000000000000000000000000000000000',
+          options.reputationReward || 0,
+          [
+            options.nativeTokenReward || 0,
+            options.ethReward || 0,
+            options.externalTokenReward || 0,
+            // TODO: what are decent default values for periodLength and periods?
+            options.periodLength || 0,
+            options.periods || 0
+          ],
+          options.externalTokenAddress || nullAddress,
+          options.beneficiary
+      )
+      return transaction
+    }
+
+    const map = (receipt: any) => {
+      const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
+      return new Proposal(proposalId, options.dao as string, context)
+    }
+
+    return sendTransaction(createTransaction, map)
+  }
+
+  public static search(
+    options: IProposalQueryOptions,
+    context: Arc,
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Proposal[]> {
+    let where = ''
+    for (const key of Object.keys(options)) {
+      if (key === 'stage' && options[key] !== undefined) {
+        where += `${key}: ${ProposalStage[options[key] as ProposalStage]},\n`
+      } else {
+        where += `${key}: "${options[key] as string}",`
+      }
+    }
+
+    const query = gql`
+      {
+        proposals(where: {
+          ${where}
+        }) {
+          id
+          dao {
+            id
+          }
+        }
+      }
+    `
+
+    return context._getObservableList(
+      query,
+      (r: any) => new Proposal(r.id, r.dao.id, context),
+      apolloQueryOptions
+    ) as Observable<Proposal[]>
   }
   /**
    * `state` is an observable of the proposal state
@@ -100,7 +156,7 @@ export class Proposal implements IStateful<IProposalState> {
   public context: Arc
   public dao: DAO
 
-constructor(public id: string, public daoAddress: Address, context: Arc) {
+  constructor(public id: string, public daoAddress: Address, context: Arc) {
     this.id = id
     this.context = context
     this.dao = new DAO(daoAddress, context)
@@ -114,6 +170,7 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
           }
           proposer {
             id
+            address
           }
           stage
           createdAt
@@ -169,6 +226,24 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
         throw Error(`Could not find a Proposal with id '${id}'`)
       }
 
+      let proposalStage: ProposalStage
+      switch (item.stage) {
+        case 'Open':
+          proposalStage = ProposalStage.Open
+          break
+        case 'Boosted':
+          proposalStage = ProposalStage.Boosted
+          break
+        case 'QuietEndingPeriod':
+          proposalStage = ProposalStage.QuietEndingPeriod
+          break
+        case 'Resolved':
+          proposalStage = ProposalStage.Resolved
+          break
+        default:
+          throw Error(`Unknown proposal stage: ${item.stage}`)
+      }
+
       return {
         beneficiary: item.beneficiary,
         boostedAt: Number(item.boostedAt),
@@ -183,12 +258,12 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
         externalTokenReward: Number(item.externalTokenReward),
         id: item.id,
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
-        proposer: item.proposer && item.proposer.id,
+        proposer: item.proposer && item.proposer.address,
         proposingRepReward: Number(item.proposingRepReward),
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
         reputationReward: Number(item.reputationReward),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : null,
-        stage: item.stage,
+        stage: proposalStage,
         stakesAgainst: Number(item.stakesAgainst),
         stakesFor: Number(item.stakesFor),
         title: item.title,
@@ -200,7 +275,7 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
       }
     }
 
-    this.state = context._getObservableObject(query, 'proposal', itemMap) as Observable<IProposalState>
+    this.state = context._getObservableObject(query, itemMap, { fetchPolicy: 'no-cache' }) as Observable<IProposalState>
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
@@ -360,6 +435,7 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
 export interface IProposalCreateOptions {
   beneficiary: Address
   dao?: Address
+  description?: string
   descriptionHash?: string
   nativeTokenReward?: number
   reputationReward?: number
@@ -368,5 +444,7 @@ export interface IProposalCreateOptions {
   externalTokenAddress?: Address
   periodLength?: number
   periods?: any
+  title?: string
   type?: string
+  url?: string
   }

@@ -1,11 +1,10 @@
-import { reduce, take } from 'rxjs/operators'
+import { first, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { ITransactionUpdate, TransactionState } from '../src/operation'
-import { Proposal } from '../src/proposal'
-import { getArc, mineANewBlock } from './utils'
+import { Proposal, ProposalStage } from '../src/proposal'
+import { getArc, mineANewBlock, waitUntilTrue } from './utils'
 
-describe('Create ContributionReward Proposal', () => {
+describe('Create a ContributionReward proposal', () => {
   let arc: Arc
   let web3: any
   let accounts: any
@@ -17,7 +16,7 @@ describe('Create ContributionReward Proposal', () => {
     web3.eth.defaultAccount = accounts[0].address
   })
 
-  it('Sanity', async () => {
+  it('is properly indexed', async () => {
     const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
@@ -27,52 +26,81 @@ describe('Create ContributionReward Proposal', () => {
       nativeTokenReward: 1,
       periodLength: 12,
       periods: 5,
-      type: 'ConributionReward'
+      type: 'ContributionReward'
     }
 
-    // collect the first 4 results of the observable in a a listOfUpdates array
-    const promises: Array<Promise<any>> = []
-    const listOfUpdates = await dao.createProposal(options)
-      .pipe(
-        take(4),
-        reduce((acc: Array<ITransactionUpdate<Proposal>> , val: ITransactionUpdate<Proposal>) => {
-          promises.push(mineANewBlock())
-          acc.push(val); return acc
-        }, [])
-      )
-      .toPromise()
+    const response = await dao.createProposal(options).pipe(take(2)).toPromise()
+    const proposal = response.result as Proposal
+    let proposals: Proposal[] = []
+    const proposalIsIndexed = async () => {
+      // we pass no-cache to make sure we hit the server on each request
+      proposals = await Proposal.search({id: proposal.id}, arc, { fetchPolicy: 'no-cache' })
+        .pipe(first()).toPromise()
+      return proposals.length > 0
+    }
+    await waitUntilTrue(proposalIsIndexed)
 
-    // the first returned value is expected to be the "sent" (i.e. not mined yet)
-    expect(listOfUpdates[0]).toMatchObject({
-      state: TransactionState.Sent
-    })
-    expect(listOfUpdates[1]).toMatchObject({
-      confirmations: 0,
-      state: TransactionState.Mined
-    })
-    expect(listOfUpdates[1].result).toBeDefined()
-    expect(listOfUpdates[1].receipt).toBeDefined()
-    expect(listOfUpdates[1].transactionHash).toBeDefined()
+    expect(proposal.id).toBeDefined()
+    // TODO: if we use the existing "proposal" and get its state, I get an "proposal
+    // with this id does not exist". How is that possible?
+    const proposal2 = new Proposal(proposal.id, proposal.dao.address, arc)
+    const proposalState = await proposal2.state.pipe(first()).toPromise()
 
-    const proposal = listOfUpdates[1].result
-    if (proposal) {
-      expect(proposal.id).toBeDefined()
+    expect(proposalState).toMatchObject({
+      beneficiary: options.beneficiary,
+      ethReward: options.ethReward,
+      executedAt: null,
+      externalTokenReward: 0,
+      proposer: dao.context.web3.eth.defaultAccount.toLowerCase(),
+      quietEndingPeriodBeganAt: null,
+      reputationReward: 0,
+      resolvedAt: null,
+      stage: ProposalStage.Open,
+      stakesAgainst: 0,
+      stakesFor: 0
+    })
+    expect(proposalState.dao.address).toEqual(dao.address)
+
+  })
+  it('saves title etc on ipfs', async () => {
+    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
+    const options = {
+      beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+      description: 'Just eat them',
+      ethReward: 300,
+      externalTokenAddress: undefined,
+      externalTokenReward: 0,
+      nativeTokenReward: 1,
+      periodLength: 12,
+      periods: 5,
+      title: 'A modest proposal',
+      type: 'ContributionReward',
+      url: 'http://swift.org/modest'
     }
 
-    expect(listOfUpdates[2]).toMatchObject({
-      confirmations: 1,
-      state: TransactionState.Mined
-    })
-    expect(listOfUpdates[3]).toMatchObject({
-      confirmations: 2,
-      receipt: listOfUpdates[1].receipt,
-      // result: listOfUpdates[1].result,
-      state: TransactionState.Mined,
-      transactionHash: listOfUpdates[1].transactionHash
-    })
+    const response = await dao.createProposal(options).pipe(take(2)).toPromise()
+    const proposal = response.result as Proposal
+    let proposals: Proposal[] = []
+    const proposalIsIndexed = async () => {
+      // we pass no-cache to make sure we hit the server on each request
+      proposals = await Proposal.search({id: proposal.id}, arc, { fetchPolicy: 'no-cache' })
+        .pipe(first()).toPromise()
+      return proposals.length > 0
+    }
+    await waitUntilTrue(proposalIsIndexed)
+    const proposal2 = new Proposal(proposal.id, proposal.dao.address, arc)
+    const proposalState = await proposal2.state.pipe(first()).toPromise()
+    expect(proposalState.descriptionHash).toEqual('QmRg47CGnf8KgqTZheTejowoxt4SvfZFqi7KGzr2g163uL')
 
-    // wait for all transactions to finish before passing to the next test
-    await Promise.all(promises)
+    // get the data
+    // TODO - do the round trip test to see if subgraph properly indexs the fields
+    // (depends on https://github.com/daostack/subgraph/issues/42)
+    const savedData = await arc.ipfs.cat(proposalState.descriptionHash) // + proposalState.descriptionHash)
+    expect(JSON.parse(savedData.toString())).toEqual({
+      description: options.description,
+      title: options.title,
+      url: options.url
+    })
 
   })
 })

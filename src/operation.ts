@@ -1,4 +1,5 @@
 import { Observable, Observer } from 'rxjs'
+import { Logger } from './logger'
 
 export enum TransactionState {
   Sent,
@@ -30,16 +31,33 @@ export type Operation<T> = Observable<ITransactionUpdate<T>>
 
 type web3receipt = object
 
+/**
+ * send a transaction to the ethereumblockchain, and return a observable of ITransactionUpdatessend
+ * @parameter transaction A web3 transaction, or an (async) function that returns a transaction
+ * @parameter map A function that takes the receipt of the transaction and returns an object
+ * @return An observable with ITransactionUpdate instnces
+ */
 export function sendTransaction<T>(
-  transaction: any,
-  map: (receipt: web3receipt) => T,
-  errorHandler: (error: Error) => Promise<Error> | Error = (error) => error
-): Operation < T > {
-  const observable = Observable.create((observer: Observer<ITransactionUpdate<T>>) => {
+    transaction: any,
+    map: (receipt: web3receipt) => T,
+    errorHandler: (error: Error) => Promise<Error> | Error = (error) => error
+  ): Operation<T> {
+
+const observable = Observable.create(async (observer: Observer<ITransactionUpdate<T>>) => {
     let transactionHash: string
     let result: any
-    transaction.send()
+    let tx
+    if (typeof transaction === 'function') {
+      tx = await transaction()
+    }  else {
+      tx = transaction
+    }
+
+    const emitter = tx.send()
+
+    emitter
       .once('transactionHash', (hash: string) => {
+        Logger.debug('Sending transaction..')
         transactionHash = hash
         observer.next({
           state: TransactionState.Sent,
@@ -47,11 +65,7 @@ export function sendTransaction<T>(
         })
       })
       .once('receipt', (receipt: any) => {
-        // console.log('--------------------')
-        // console.log(receipt)
-        if (receipt.status === 0) {
-          throw new Error('asdfklasdfjl;sdfj ')
-        }
+        Logger.debug(`transaction mined!`)
         try {
           result = map(receipt)
         } catch (err) {
@@ -91,5 +105,5 @@ export function sendTransaction<T>(
       })
     }
   )
-  return observable
+return observable
 }

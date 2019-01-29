@@ -47,7 +47,7 @@ export class Token implements IStateful<ITokenState> {
         totalSupply: item.totalSupply
       }
     }
-    this.state = this.context._getObservableObject(query, 'token', itemMap) as Observable<ITokenState>
+    this.state = this.context._getObservableObject(query, itemMap) as Observable<ITokenState>
   }
 
   public balanceOf(address: string): Observable<number> {

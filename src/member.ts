@@ -60,7 +60,7 @@ export class Member implements IStateful<IMemberState> {
       }
     }
 
-    this.state = context._getObservableObject(query, 'member', itemMap) as Observable<IMemberState>
+    this.state = context._getObservableObject(query, itemMap) as Observable<IMemberState>
 
   }
 
