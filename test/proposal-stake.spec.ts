@@ -18,7 +18,7 @@ describe('Stake on a ContributionReward', () => {
   })
 
   it('works and gets indexed', async () => {
-    const dao = new DAO(arc.contractAddresses.Avatar, arc)
+    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
     const genesisProtocol = arc.getContract('GenesisProtocol')
     const stakingToken =  arc.getContract('DAOToken')
 
@@ -51,7 +51,7 @@ describe('Stake on a ContributionReward', () => {
   })
 
   it('throws a meaningful error if an insufficient amount tokens is approved for staking', async () => {
-    const dao = new DAO(arc.contractAddresses.Avatar, arc)
+    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
     const stakingToken =  arc.getContract('DAOToken')
     const proposal = await createAProposal(dao)
     await stakingToken.methods.mint(accounts[1].address, '100').send()
@@ -63,7 +63,7 @@ describe('Stake on a ContributionReward', () => {
   })
 
   it('throws a meaningful error if then senders balance is too low', async () => {
-    const dao = new DAO(arc.contractAddresses.Avatar, arc)
+    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
     const proposal = await createAProposal(dao)
     proposal.context.web3.eth.defaultAccount = accounts[2].address
     await expect(proposal.stake(ProposalOutcome.Pass, 10000000).pipe(take(2)).toPromise()).rejects.toThrow(
@@ -72,7 +72,7 @@ describe('Stake on a ContributionReward', () => {
   })
 
   it('throws a meaningful error if the proposal does not exist', async () => {
-    const dao = new DAO(arc.contractAddresses.Avatar, arc)
+    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
     // a non-existing proposal
     const proposal = new Proposal(
       '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, arc
