@@ -1,25 +1,31 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
-import { Arc } from './arc'
-import { Proposal, ProposalOutcome} from './proposal'
+import { Arc, IApolloQueryOptions } from './arc'
+import { ProposalOutcome} from './proposal'
 import { Address, ICommonQueryOptions } from './types'
+
+export interface IStake {
+  id: string
+  staker: Address
+  createdAt: Date | undefined
+  outcome: ProposalOutcome
+  amount: number // amount staked
+  proposalId: string
+  // dao: Address
+}
 
 export interface IStakeQueryOptions extends ICommonQueryOptions {
   proposalId?: string
   [key: string]: any
 }
 
-export interface IStake {
-  staker: Address
-  outcome: ProposalOutcome
-  amount: number // amount staked
-  proposalId: string,
-  // proposal: Proposal
-  createdAt: Date
-}
-
 export class Stake implements IStake {
-  public static search(context: Arc, options: IStakeQueryOptions = {}): Observable<IStake[]> {
+  public static search(
+    context: Arc,
+    options: IStakeQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable <IStake[]> {
+
     let where = ''
     let daoFilter: (r: any) => boolean
     daoFilter = () => true
@@ -52,22 +58,20 @@ export class Stake implements IStake {
     `
     return context._getObservableListWithFilter(
       query,
-      (r: any) => new Stake(r.id, r.staker.id, r.createdAt, r.outcome, r.amount, r.proposal.id, context),
-      daoFilter
+      (r: any) => new Stake(r.id, r.staker.id, r.createdAt, r.outcome, r.amount, r.proposal.id),
+      daoFilter,
+      apolloQueryOptions
     ) as Observable<IStake[]>
   }
-
-  // public proposal: Proposal
 
   constructor(
       public id: string,
       public staker: string,
-      public createdAt: Date,
+      public createdAt: Date | undefined,
       public outcome: ProposalOutcome,
       public amount: number,
-      public proposalId: string,
-      public context: Arc
+      public proposalId: string
+      // public dao: Address
   ) {
-    // this.proposal = new Proposal(proposalId, this.dao, this.context)
   }
 }

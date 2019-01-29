@@ -208,7 +208,7 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
     return Vote.search(this.context, options)
   }
 
-  public vote(outcome: ProposalOutcome): Operation<Vote> {
+  public vote(outcome: ProposalOutcome, amount: number = 0): Operation<Vote> {
 
     // TODO: cf next two lines from alchemy on how to get the votingMacchineAddress
     // (does not work with new contract versions anymore, though, it seems)
@@ -221,40 +221,49 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
     // const votingMachine = this.dao.getContract('AbsoluteVote')
     const votingMachine = this.context.getContract('GenesisProtocol')
 
-    // TODO: implement error handling
-    // One type of error is that the proposalId is not known:
-    // const proposal = await votingMachine.methods.proposals(this.id).call()
-
     const voteMethod = votingMachine.methods.vote(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
-      0, // aamount the reputation amount to vote with . if _amount == 0 it will use all voter reputation.
+      amount, // amount of reputation to vote with . if _amount == 0 it will use all voter reputation.
       nullAddress
     )
 
-    return sendTransaction(voteMethod, (receipt: any) => {
-      const event = receipt.events.VoteProposal
-      if (!event) {
-        console.log(receipt)
-        // for some reason, a transaction was mined but no error was raised before
-        throw new Error(`Error voting: no VoteProposal event was found - ${Object.keys(receipt.events)}`)
+    return sendTransaction(
+      voteMethod,
+      (receipt: any) => {
+        const event = receipt.events.VoteProposal
+        if (!event) {
+          console.log(receipt)
+          // for some reason, a transaction was mined but no error was raised before
+          throw new Error(`Error voting: no VoteProposal event was found - ${Object.keys(receipt.events)}`)
+        }
+        // TODO: calculate the voteId. This uses some subgraph-internal logic
+        // const voteId = eventId(event)
+        const voteId = '0xdummy'
+
+        return new Vote(
+          voteId,
+          event.returnValues._voter,
+          // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
+          0, // createdAt -
+          outcome,
+          event.returnValues._reputation, // amount
+          this.id, // proposalID
+          this.dao.address
+        )
+      },
+      async (error: Error) => { // errorHandler
+        if (error.message.match(/revert/)) {
+          const proposal = this
+          const prop = await votingMachine.methods.proposals(proposal.id).call()
+          if (prop.proposer === nullAddress ) {
+            return new Error(`Unknown proposal with id ${proposal.id}`)
+          }
+        }
+        // if we have found no known error, we return the original error
+        return error
       }
-      // TODO: calculate the voteId. This uses some subgraph-internal logic
-      // const voteId = eventId(event)
-      const voteId = '0xdummy'
-
-      return new Vote(
-        voteId,
-        event.returnValues._voter,
-        // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
-        0, // creatdeAt -
-        outcome,
-        event.returnValues._reputation, // amount
-        this.id, // proposalID
-        this.dao.address
-      )
-    })
-
+    )
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
@@ -262,8 +271,66 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
     return Stake.search(this.context, options)
   }
 
-  public stake(outcome: ProposalOutcome, amount: number): Operation<void> {
-    throw new Error('not implemented')
+  public stake(outcome: ProposalOutcome, amount: number ): Operation<Stake> {
+    // TODO: cf. vote() function: get the contract from the proposal
+    const votingMachine = this.context.getContract('GenesisProtocol')
+
+    const stakeMethod = votingMachine.methods.stake(
+      this.id,  // proposalId
+      outcome, // a value between 0 to and the proposal number of choices.
+      amount // amount the reputation amount to stake with . if _amount == 0 it will use all staker reputation.
+      // nullAddress
+    )
+
+    return sendTransaction(
+      stakeMethod,
+      (receipt: any) => { // map extracts Stake instance from receipt
+        const event = receipt.events.Stake
+        if (!event) {
+          console.log(receipt)
+          // for some reason, a transaction was mined but no error was raised before
+          throw new Error(`Error voting: no "Stake" event was found - ${Object.keys(receipt.events)}`)
+        }
+        // TODO: calculate the voteId. This uses some subgraph-internal logic
+        // const voteId = eventId(event)
+        const stakeId = '0xdummy'
+
+        return new Stake(
+          stakeId,
+          event.returnValues._staker,
+          // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
+          undefined,
+          outcome,
+          event.returnValues._reputation, // amount
+          this.id // proposalID
+        )
+      },
+      async (error: Error) => { // errorHandler
+        if (error.message.match(/revert/)) {
+          const proposal = this
+          const stakingToken = this.context.getContract('DAOToken')
+          const prop = await votingMachine.methods.proposals(proposal.id).call()
+          if (prop.proposer === nullAddress ) {
+            return new Error(`Unknown proposal with id ${proposal.id}`)
+          }
+
+          // staker has sufficient balance
+          const defaultAccount = this.context.web3.eth.defaultAccount
+          const balance = await stakingToken.methods.balanceOf(defaultAccount).call()
+          if (Number(balance) < amount) {
+            return new Error(`Staker has insufficient balance to stake ${amount} (balance is ${balance})`)
+          }
+
+          // staker has approved the token spend
+          const allowance = await stakingToken.methods.allowance(defaultAccount, votingMachine.options.address).call()
+          if (Number(allowance) < amount) {
+            return new Error(`Staker has insufficient allowance to stake ${amount} (allowance is ${allowance})`)
+          }
+        }
+        // if we have found no known error, we return the original error
+        return error
+      }
+    )
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
