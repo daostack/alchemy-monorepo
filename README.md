@@ -254,7 +254,7 @@ In order to release a version:
 2. In the another terminal tab:
 
    1. Make sure you have the required `.env` variables set (`kovan_provider`, `kovan_private_key`, `rinkeby_provider`,
-      `rinkeby_private_key`).
+      `rinkeby_private_key`, `mainnet_provider`, `mainnet_private_key`).
    2. Make sure you are not on the `master` branch. If needed, create a new branch for the relase process.
    3. `npm run prepare-release` - This will perform all the nesserary steps to update version and prepare for a new release. The changes made here will be committed to the git branch.
    4. Create a PR and merge the new branch with the changes into `master`.

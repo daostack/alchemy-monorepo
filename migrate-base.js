@@ -44,13 +44,19 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
     addresses[contractName] = c.options.address
     return c.options.address
   }
-  const DAOToken = await deploy(
-    require('@daostack/arc/build/contracts/DAOToken.json'),
-    [],
-    'DAOstack',
-    'GEN',
-    web3.utils.toWei('100000000')
-  )
+
+  const network = await web3.eth.net.getNetworkType()
+  let DAOToken = '0x0000000000000000000000000000000000000000'
+
+  if (network === 'private') {
+    DAOToken = await deploy(
+      require('@daostack/arc/build/contracts/DAOToken.json'),
+      [],
+      'DAOstack',
+      'GEN',
+      web3.utils.toWei('100000000')
+    )
+  }
 
   const ControllerCreator = await deploy(require('@daostack/arc/build/contracts/ControllerCreator.json'))
 
@@ -82,12 +88,6 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
     ['ContributionReward', 'GenesisProtocol'],
     ContributionReward,
     GenesisProtocol
-  )
-
-  // deploy Reputation
-  await deploy(
-    require('@daostack/arc/build/contracts/Reputation.json'),
-    []
   )
 
   await deploy(require('@daostack/arc/build/contracts/GenericScheme.json'))
