@@ -36,6 +36,7 @@ export interface IProposalState {
   executedAt: Date
   externalTokenReward: number
   descriptionHash?: string
+  nativeTokenReward: number
   preBoostedVotePeriodLimit: number
   proposer: Address
   proposingRepReward: number
@@ -47,7 +48,6 @@ export interface IProposalState {
   stakesAgainst: number
   title?: string
   url?: string
-  tokensReward: number
   votesFor: number
   votesAgainst: number
   winningOutcome: ProposalOutcome
@@ -168,10 +168,7 @@ export class Proposal implements IStateful<IProposalState> {
           dao {
             id
           }
-          proposer {
-            id
-            address
-          }
+          proposer
           stage
           createdAt
           boostedAt
@@ -203,15 +200,14 @@ export class Proposal implements IStateful<IProposalState> {
           limitExponentValue
           quietEndingPeriod
           proposingRepReward
-          minimumStakingFee
-          # votersReputationLossRatio FIXME
+          votersReputationLossRatio
           minimumDaoBounty
           daoBountyConst
           activationTime
           voteOnBehalf
           beneficiary
           reputationReward
-          tokensReward
+          nativeTokenReward
           ethReward
           externalTokenReward
           externalToken
@@ -257,8 +253,9 @@ export class Proposal implements IStateful<IProposalState> {
         executedAt: item.executedAt,
         externalTokenReward: Number(item.externalTokenReward),
         id: item.id,
+        nativeTokenReward: Number(item.nativeTokenReward),
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
-        proposer: item.proposer && item.proposer.address,
+        proposer: item.proposer,
         proposingRepReward: Number(item.proposingRepReward),
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
         reputationReward: Number(item.reputationReward),
@@ -267,7 +264,6 @@ export class Proposal implements IStateful<IProposalState> {
         stakesAgainst: Number(item.stakesAgainst),
         stakesFor: Number(item.stakesFor),
         title: item.title,
-        tokensReward: Number(item.tokensReward),
         url: item.url,
         votesAgainst: item.votesFor,
         votesFor: item.votesAgainst,

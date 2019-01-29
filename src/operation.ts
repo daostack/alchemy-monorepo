@@ -38,12 +38,11 @@ type web3receipt = object
  * @return An observable with ITransactionUpdate instnces
  */
 export function sendTransaction<T>(
-    transaction: any,
-    map: (receipt: web3receipt) => T,
-    errorHandler: (error: Error) => Promise<Error> | Error = (error) => error
-  ): Operation<T> {
-
-const observable = Observable.create(async (observer: Observer<ITransactionUpdate<T>>) => {
+  transaction: any,
+  map: (receipt: web3receipt) => T,
+  errorHandler: (error: Error) => Promise<Error> | Error = (error) => error
+): Operation < T > {
+  const observable = Observable.create(async (observer: Observer<ITransactionUpdate<T>>) => {
     let transactionHash: string
     let result: any
     let tx
@@ -105,5 +104,5 @@ const observable = Observable.create(async (observer: Observer<ITransactionUpdat
       })
     }
   )
-return observable
+  return observable
 }
