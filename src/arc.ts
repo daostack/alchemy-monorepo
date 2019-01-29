@@ -227,9 +227,17 @@ export class Arc {
         contractClass = require('@daostack/arc/build/contracts/ContributionReward.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.ContributionReward, opts)
         return contract
+      case 'DAOToken':
+        contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.DAOToken, opts)
+        return contract
       case 'GenesisProtocol':
         contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenesisProtocol, opts)
+        return contract
+      case 'Reputation':
+        contractClass = require('@daostack/arc/build/contracts/Reputation.json')
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.Reputation, opts)
         return contract
       default:
         throw Error(`Unknown contract: ${name}`)
