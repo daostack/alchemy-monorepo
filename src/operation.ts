@@ -37,7 +37,6 @@ type web3receipt = object
  * @parameter map A function that takes the receipt of the transaction and returns an object
  * @return An observable with ITransactionUpdate instnces
  */
-
 export function sendTransaction<T>(
   transaction: any,
   map: (receipt: web3receipt) => T,

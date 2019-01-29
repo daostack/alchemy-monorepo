@@ -1,14 +1,8 @@
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
-<<<<<<< HEAD
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { Logger } from './logger'
-=======
-
-import { Arc } from './arc'
-import { DAO } from './dao'
->>>>>>> master
 import { Operation, sendTransaction } from './operation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
