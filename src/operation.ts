@@ -39,7 +39,8 @@ type web3receipt = object
  */
 export function sendTransaction<T>(
     transaction: any,
-    map: (receipt: web3receipt) => T
+    map: (receipt: web3receipt) => T,
+    errorHandler: (error: Error) => Promise<Error> | Error = (error) => error
   ): Operation<T> {
 
 const observable = Observable.create(async (observer: Observer<ITransactionUpdate<T>>) => {
@@ -79,7 +80,7 @@ const observable = Observable.create(async (observer: Observer<ITransactionUpdat
         })
       })
       .on('confirmation', (confNumber: number, receipt: any) => {
-        // we assume result has been set by previous call to 'receipt'
+        // result should have been set by previous call to 'receipt', but better be sure
         if (!result) {
           try {
             result = map(receipt)
@@ -99,9 +100,10 @@ const observable = Observable.create(async (observer: Observer<ITransactionUpdat
           observer.complete()
         }
       })
-      .on('error', (error: Error) => {
-        observer.error(error)
+      .on('error', async (error: Error) => {
+        observer.error(await errorHandler(error))
       })
-  })
+    }
+  )
 return observable
 }
