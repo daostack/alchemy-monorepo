@@ -1,7 +1,5 @@
-import gql from 'graphql-tag'
-import { concat, first} from 'rxjs/operators'
+import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { DAO } from '../src/dao'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
 import { getArc, getContractAddresses, getWeb3 } from './utils'
@@ -10,7 +8,7 @@ import { getArc, getContractAddresses, getWeb3 } from './utils'
  */
 describe('Reputation', () => {
 
-  let addresses: { [key: string]: string }
+  let addresses: any
   let arc: Arc
   let address: Address
   let web3: any
@@ -18,7 +16,7 @@ describe('Reputation', () => {
 
   beforeAll(async () => {
     addresses = getContractAddresses()
-    address = addresses.NativeReputation
+    address = addresses.dao.Reputation
     arc = getArc()
     web3 = await getWeb3()
     accounts = web3.eth.accounts.wallet

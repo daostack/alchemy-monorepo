@@ -3,7 +3,7 @@ import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { ITransactionUpdate, TransactionState } from '../src/operation'
 import { Proposal } from '../src/proposal'
-import { getArc } from './utils'
+import { getArc, mineANewBlock } from './utils'
 
 describe('Create ContributionReward Proposal', () => {
   let arc: Arc
@@ -18,7 +18,7 @@ describe('Create ContributionReward Proposal', () => {
   })
 
   it('Sanity', async () => {
-    const dao = new DAO(arc.contractAddresses.Avatar, arc)
+    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       ethReward: 300,
@@ -31,10 +31,12 @@ describe('Create ContributionReward Proposal', () => {
     }
 
     // collect the first 4 results of the observable in a a listOfUpdates array
+    const promises: Array<Promise<any>> = []
     const listOfUpdates = await dao.createProposal(options)
       .pipe(
-        take(5),
+        take(4),
         reduce((acc: Array<ITransactionUpdate<Proposal>> , val: ITransactionUpdate<Proposal>) => {
+          promises.push(mineANewBlock())
           acc.push(val); return acc
         }, [])
       )
@@ -68,6 +70,9 @@ describe('Create ContributionReward Proposal', () => {
       state: TransactionState.Mined,
       transactionHash: listOfUpdates[1].transactionHash
     })
+
+    // wait for all transactions to finish before passing to the next test
+    await Promise.all(promises)
 
   })
 })

@@ -35,7 +35,7 @@ export interface IProposalState {
   ethReward: number
   executedAt: Date
   externalTokenReward: number
-  ipfsHash: string
+  descriptionHash: string
   preBoostedVotePeriodLimit: number
   proposer: Address
   proposingRepReward: number
@@ -66,13 +66,12 @@ export class Proposal implements IStateful<IProposalState> {
     if (!options.dao) {
       throw Error(`Proposal.create(options): options must include an address for "dao"`)
     }
-    const dao = new DAO(options.dao, context)
     const contributionReward = context.getContract('ContributionReward')
 
     const propose = contributionReward.methods.proposeContributionReward(
         options.dao,
-        // TODO: after upgrading arc, use empty string as default value for ipfsHash
-        options.ipfsHash || '0x0000000000000000000000000000000000000000000000000000000000000000',
+        // TODO: after upgrading arc, use empty string as default value for descriptionHash
+        options.descriptionHash || '0x0000000000000000000000000000000000000000000000000000000000000000',
         options.reputationReward || 0,
         [
           options.nativeTokenReward || 0,
@@ -86,10 +85,13 @@ export class Proposal implements IStateful<IProposalState> {
         options.beneficiary
     )
 
-    return sendTransaction(propose, (receipt: any) => {
-      const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
-      return new Proposal(proposalId, dao.address, context)
-    })
+    return sendTransaction(
+      propose,
+      (receipt: any) => {
+        const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
+        return new Proposal(proposalId, options.dao as string, context)
+      }
+    )
   }
   /**
    * `state` is an observable of the proposal state
@@ -118,7 +120,7 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
           boostedAt
           quietEndingPeriodBeganAt
           executedAt
-          ipfsHash
+          descriptionHash
           title
           description
           url
@@ -175,11 +177,11 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
         createdAt: Number(item.createdAt),
         dao: new DAO(item.dao.id, this.context),
         description: item.description,
+        descriptionHash: item.descriptionHash,
         ethReward: Number(item.ethReward),
         executedAt: item.executedAt,
         externalTokenReward: Number(item.externalTokenReward),
         id: item.id,
-        ipfsHash: item.ipfsHash,
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposer: item.proposer && item.proposer.id,
         proposingRepReward: Number(item.proposingRepReward),
@@ -358,7 +360,7 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
 export interface IProposalCreateOptions {
   beneficiary: Address
   dao?: Address
-  ipfsHash?: string
+  descriptionHash?: string
   nativeTokenReward?: number
   reputationReward?: number
   ethReward?: number

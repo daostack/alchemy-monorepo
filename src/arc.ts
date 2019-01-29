@@ -10,6 +10,11 @@ import { createApolloClient, getWeb3Options } from './utils'
 
 const Web3 = require('web3')
 
+export interface IContractAddresses {
+  base: { [key: string]: Address }
+  dao: { [key: string]: Address }
+}
+
 export class Arc {
   public graphqlHttpProvider: string
   public graphqlWsProvider: string
@@ -20,14 +25,14 @@ export class Arc {
   public apolloClient: ApolloClient<object>
   // TODO: are there proper Web3 types available?
   public web3: any
-  public contractAddresses: { [key: string]: Address } = {}
+  public contractAddresses: IContractAddresses
 
   constructor(options: {
     graphqlHttpProvider: string
     graphqlWsProvider: string
     web3HttpProvider?: string
     web3WsProvider?: string
-    contractAddresses?: { [key: string]: Address }
+    contractAddresses?: IContractAddresses
   }) {
     this.graphqlHttpProvider = options.graphqlHttpProvider
     this.graphqlWsProvider = options.graphqlWsProvider
@@ -40,9 +45,9 @@ export class Arc {
     })
 
     if (this.web3HttpProvider) {
-      this.web3 = new Web3(this.web3HttpProvider)
+      this.web3 = new Web3(Web3.givenProvider || this.web3WsProvider || this.web3HttpProvider)
     }
-    this.contractAddresses = options.contractAddresses || {}
+    this.contractAddresses = options.contractAddresses || { base: {}, dao: {}}
   }
 
   /**
@@ -74,17 +79,14 @@ export class Arc {
    * @return         [description]
    */
   public getBalance(address: Address): Observable<number> {
-    const web3 = new Web3(this.web3WsProvider)
     // observe balance on new blocks
     // (note that we are basically doing expensive polling here)
     const balanceObservable = Observable.create((observer: any) => {
-      web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
+      this.web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
         if (err) {
-          console.log(err)
           observer.error(err)
         } else {
-          console.log('newblock')
-          web3.eth.getBalance(address).then((balance: any) => {
+          this.web3.eth.getBalance(address).then((balance: any) => {
             // TODO: we should probably only call next if the balance has changed
             observer.next(balance)
           })
@@ -92,7 +94,7 @@ export class Arc {
       })
     })
     // get the current balance ad start observing new blocks for balace changes
-    const queryObservable = from(web3.eth.getBalance(address)).pipe(
+    const queryObservable = from(this.web3.eth.getBalance(address)).pipe(
       concat(balanceObservable)
     )
     return queryObservable as Observable<any>
@@ -221,23 +223,23 @@ export class Arc {
     switch (name) {
       case 'AbsoluteVote':
         contractClass = require('@daostack/arc/build/contracts/AbsoluteVote.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.AbsoluteVote, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.AbsoluteVote, opts)
         return contract
       case 'ContributionReward':
         contractClass = require('@daostack/arc/build/contracts/ContributionReward.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.ContributionReward, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.ContributionReward, opts)
         return contract
       case 'DAOToken':
         contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.DAOToken, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.DAOToken, opts)
         return contract
       case 'GenesisProtocol':
         contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenesisProtocol, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.GenesisProtocol, opts)
         return contract
       case 'Reputation':
         contractClass = require('@daostack/arc/build/contracts/Reputation.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.Reputation, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.Reputation, opts)
         return contract
       default:
         throw Error(`Unknown contract: ${name}`)

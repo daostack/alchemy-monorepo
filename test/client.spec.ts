@@ -1,7 +1,6 @@
 import { ApolloClient } from 'apollo-client'
 import gql from 'graphql-tag'
 import { Observable, Observer } from 'rxjs'
-import { reduce, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { createApolloClient } from '../src/utils'
 import { graphqlHttpProvider, graphqlWsProvider, mintSomeReputation, waitUntilTrue } from './utils'
@@ -36,7 +35,6 @@ describe('apolloClient', () => {
         }
       }
     `
-
     const result = await client.query({ query })
     expect(result.networkStatus).toEqual(7)
     expect(typeof result.data).toEqual(typeof [])

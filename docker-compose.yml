@@ -4,17 +4,17 @@
 version: "3"
 services:
   graph-node:
-    image: graphprotocol/graph-node:v0.5.0
+    image: graphprotocol/graph-node:latest@sha256:a11adda030fcb4ac42d0c31c58cffaacadfda333fecfb1e361d9ec5a72ba1026
     ports:
       - 8000:8000
       - 8001:8001
       - 8020:8020
     links:
       - ipfs
-      - postgres4graphnode
+      - postgres
       - ganache
     environment:
-      postgres_host: postgres4graphnode:5432
+      postgres_host: postgres:5432
       postgres_user: postgres
       postgres_pass: 'letmein'
       postgres_db: postgres
@@ -27,7 +27,7 @@ services:
     ports:
       - 5001:5001
 
-  postgres4graphnode:
+  postgres:
     image: postgres
     ports:
       - 9432:5432
@@ -35,10 +35,8 @@ services:
       POSTGRES_PASSWORD: 'letmein'
 
   ganache:
-    image: trufflesuite/ganache-cli:v6.2.5
+    image: daostack/migration:0.0.1-rc.6-v1
     ports:
       - 8545:8545
     command: >
-      --deterministic
       --gasLimit 8000000
-      --networkId ganache
