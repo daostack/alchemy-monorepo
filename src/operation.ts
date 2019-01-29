@@ -37,12 +37,13 @@ type web3receipt = object
  * @parameter map A function that takes the receipt of the transaction and returns an object
  * @return An observable with ITransactionUpdate instnces
  */
-export function sendTransaction<T>(
-    transaction: any,
-    map: (receipt: web3receipt) => T
-  ): Operation<T> {
 
-const observable = Observable.create(async (observer: Observer<ITransactionUpdate<T>>) => {
+export function sendTransaction<T>(
+  transaction: any,
+  map: (receipt: web3receipt) => T,
+  errorHandler: (error: Error) => Promise<Error> | Error = (error) => error
+): Operation < T > {
+  const observable = Observable.create(async (observer: Observer<ITransactionUpdate<T>>) => {
     let transactionHash: string
     let result: any
     let tx
@@ -79,7 +80,7 @@ const observable = Observable.create(async (observer: Observer<ITransactionUpdat
         })
       })
       .on('confirmation', (confNumber: number, receipt: any) => {
-        // we assume result has been set by previous call to 'receipt'
+        // result should have been set by previous call to 'receipt', but better be sure
         if (!result) {
           try {
             result = map(receipt)
@@ -99,9 +100,10 @@ const observable = Observable.create(async (observer: Observer<ITransactionUpdat
           observer.complete()
         }
       })
-      .on('error', (error: Error) => {
-        observer.error(error)
+      .on('error', async (error: Error) => {
+        observer.error(await errorHandler(error))
       })
-  })
-return observable
+    }
+  )
+  return observable
 }
