@@ -46,7 +46,7 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
   }
 
   const network = await web3.eth.net.getNetworkType()
-  let DAOToken = '0x0000000000000000000000000000000000000000'
+  let DAOToken = '0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf'
 
   if (network === 'private') {
     DAOToken = await deploy(
@@ -56,6 +56,8 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
       'GEN',
       web3.utils.toWei('100000000')
     )
+  } else {
+    addresses['GEN'] = DAOToken
   }
 
   const ControllerCreator = await deploy(require('@daostack/arc/build/contracts/ControllerCreator.json'))
