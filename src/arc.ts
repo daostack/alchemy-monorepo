@@ -49,6 +49,10 @@ export class Arc {
     if (this.web3HttpProvider) {
       this.web3 = new Web3(Web3.givenProvider || this.web3WsProvider || this.web3HttpProvider)
     }
+
+    if (!options.contractAddresses) {
+      Logger.warn('No contract addresses given to the Arc.constructor: expect most write operations to fail!')
+    }
     this.contractAddresses = options.contractAddresses || { base: {}, dao: {}}
 
     if (this.ipfsProvider) {
@@ -222,7 +226,7 @@ export class Arc {
   }
 
   public getContract(name: string) {
-    // TODO: we are taking the default contracts from the migration repo adn assume
+    // TODO: we are taking the default contracts from the migration repo and assume
     // that they are the ones used by the current DAO. This assumption is only valid
     // on our controlled test environment. Should get the correct contracts instead
     const opts = getWeb3Options(this.web3)
