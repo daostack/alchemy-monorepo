@@ -10,8 +10,13 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
     const sameDeps = deps.reduce((acc, dep) => addresses[dep] === existing[dep] && acc, true)
     const code = existing[contractName] && (await web3.eth.getCode(existing[contractName]))
     const sameCode = existing[contractName] && deployedBytecode === code
+
+    if (contractName === 'DAOToken') {
+      contractName = 'GEN'
+    }
+
     if (
-      contractName === 'DAOToken' &&
+      contractName === 'GEN' &&
       existing[contractName] &&
       code !== '0x' &&
       !(await confirm(`Found existing GEN (DAOToken) contract, Deploy new instance?`, false))
@@ -46,10 +51,10 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
   }
 
   const network = await web3.eth.net.getNetworkType()
-  let DAOToken = '0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf'
+  let GENToken = '0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf'
 
   if (network === 'private') {
-    DAOToken = await deploy(
+    GENToken = await deploy(
       require('@daostack/arc/build/contracts/DAOToken.json'),
       [],
       'DAOstack',
@@ -57,7 +62,7 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
       web3.utils.toWei('100000000')
     )
   } else {
-    addresses['GEN'] = DAOToken
+    addresses['GEN'] = GENToken
   }
 
   const ControllerCreator = await deploy(require('@daostack/arc/build/contracts/ControllerCreator.json'))
@@ -71,7 +76,7 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
   const GenesisProtocol = await deploy(
     require('@daostack/arc/build/contracts/GenesisProtocol.json'),
     ['DAOToken'],
-    DAOToken
+    GENToken
   )
   await deploy(require('@daostack/arc/build/contracts/SchemeRegistrar.json'))
   await deploy(require('@daostack/arc/build/contracts/UpgradeScheme.json'))
