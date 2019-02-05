@@ -5,7 +5,7 @@ import { from, Observable, Observer, of } from 'rxjs'
 import { catchError, concat, filter, map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { Logger } from './logger'
-import { Operation } from './operation'
+import { Operation, sendTransaction, web3receipt } from './operation'
 import { Address } from './types'
 import { createApolloClient, getWeb3Options } from './utils'
 
@@ -259,6 +259,13 @@ export class Arc {
     }
   }
 
+  public sendTransaction<T>(
+    transaction: any,
+    mapToObject: (receipt: web3receipt) => T,
+    errorHandler: (error: Error) => Promise<Error> | Error = (error) => error
+  ) {
+    return sendTransaction(transaction, mapToObject, errorHandler, this)
+  }
   public sendQuery(query: any) {
     const queryPromise = this.apolloClient.query({ query })
     return queryPromise

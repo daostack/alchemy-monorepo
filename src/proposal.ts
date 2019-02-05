@@ -113,7 +113,7 @@ export class Proposal implements IStateful<IProposalState> {
       return new Proposal(proposalId, options.dao as string, context)
     }
 
-    return sendTransaction(createTransaction, map)
+    return context.sendTransaction(createTransaction, map)
   }
 
   public static search(
@@ -299,7 +299,7 @@ export class Proposal implements IStateful<IProposalState> {
       nullAddress
     )
 
-    return sendTransaction(
+    return this.context.sendTransaction(
       voteMethod,
       (receipt: any) => {
         const event = receipt.events.VoteProposal
@@ -353,7 +353,7 @@ export class Proposal implements IStateful<IProposalState> {
       // nullAddress
     )
 
-    return sendTransaction(
+    return this.context.sendTransaction(
       stakeMethod,
       (receipt: any) => { // map extracts Stake instance from receipt
         const event = receipt.events.Stake

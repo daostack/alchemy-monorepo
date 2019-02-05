@@ -1,4 +1,5 @@
 import { Observable, Observer } from 'rxjs'
+import { Arc } from './arc'
 import { Logger } from './logger'
 
 export enum TransactionState {
@@ -29,7 +30,7 @@ export interface ITransactionUpdate<T> {
  */
 export type Operation<T> = Observable<ITransactionUpdate<T>>
 
-type web3receipt = object
+export type web3receipt = object
 
 /**
  * send a transaction to the ethereumblockchain, and return a observable of ITransactionUpdatessend
@@ -40,8 +41,9 @@ type web3receipt = object
 export function sendTransaction<T>(
   transaction: any,
   map: (receipt: web3receipt) => T,
-  errorHandler: (error: Error) => Promise<Error> | Error = (error) => error
-): Operation < T > {
+  errorHandler: (error: Error) => Promise<Error> | Error = (error) => error,
+  context: Arc
+): Operation<T> {
   const observable = Observable.create(async (observer: Observer<ITransactionUpdate<T>>) => {
     let transactionHash: string
     let result: any
@@ -52,7 +54,9 @@ export function sendTransaction<T>(
       tx = transaction
     }
 
-    const emitter = tx.send()
+    const emitter = tx.send({
+      from: context.web3.eth.defaultAccount
+    })
 
     emitter
       .once('transactionHash', (hash: string) => {
