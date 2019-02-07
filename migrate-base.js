@@ -8,33 +8,32 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
     deps = deps || []
     const existing = previousMigration.base || {}
     const sameDeps = deps.reduce((acc, dep) => addresses[dep] === existing[dep] && acc, true)
-    const code = existing[contractName] && (await web3.eth.getCode(existing[contractName]))
-    const sameCode = existing[contractName] && deployedBytecode === code
 
-    if (contractName === 'DAOToken') {
-      contractName = 'GEN'
-    }
+    const entryName = (contractName === 'DAOToken') ? contractName = 'GEN' : contractName
+
+    const code = existing[entryName] && (await web3.eth.getCode(existing[contractName]))
+    const sameCode = existing[entryName] && deployedBytecode === code
 
     if (
-      contractName === 'GEN' &&
-      existing[contractName] &&
+      entryName === 'GEN' &&
+      existing[entryName] &&
       code !== '0x' &&
       !(await confirm(`Found existing GEN (DAOToken) contract, Deploy new instance?`, false))
     ) {
-      addresses[contractName] = existing[contractName]
-      return existing[contractName]
+      addresses[entryName] = existing[entryName]
+      return existing[entryName]
     } else if (
       sameCode &&
       sameDeps &&
       !(await confirm(
-        `Found existing '${contractName}' instance with same bytecode and ${
+        `Found existing '${entryName}' instance with same bytecode and ${
           !deps.length ? 'no ' : ''
-        }dependencies on other contracts at '${existing[contractName]}'. Deploy new instance?`,
+        }dependencies on other contracts at '${existing[entryName]}'. Deploy new instance?`,
         false
       ))
     ) {
-      addresses[contractName] = existing[contractName]
-      return existing[contractName]
+      addresses[entryName] = existing[entryName]
+      return existing[entryName]
     }
 
     spinner.start(`Migrating ${contractName}...`)
