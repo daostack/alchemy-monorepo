@@ -1,6 +1,5 @@
 import { first, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { DAO } from '../src/dao'
 import { Proposal, ProposalOutcome } from '../src/proposal'
 import { Vote } from '../src/vote'
 import { createAProposal, getArc, getTestDAO, waitUntilTrue } from './utils'
@@ -13,6 +12,7 @@ describe('Vote on a ContributionReward', () => {
   })
 
   it('works and gets indexed', async () => {
+    const dao = await getTestDAO()
     const proposal = await createAProposal()
 
     const voteResponse = await proposal.vote(ProposalOutcome.Pass).pipe(take(2)).toPromise()
@@ -31,6 +31,9 @@ describe('Vote on a ContributionReward', () => {
     await waitUntilTrue(voteIsIndexed)
 
     expect(votes.length).toEqual(1)
+    const vote = votes[0]
+    expect(vote.proposalId).toBe(proposal.id)
+    expect(vote.dao).toEqual(dao.address)
   })
 
   it('throws a meaningful error if the proposal does not exist', async () => {
