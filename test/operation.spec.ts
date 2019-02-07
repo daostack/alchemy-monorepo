@@ -5,6 +5,8 @@ import { ITransactionUpdate, TransactionState } from '../src/operation'
 import { Proposal } from '../src/proposal'
 import { getArc, getTestDAO, mineANewBlock } from './utils'
 
+jest.setTimeout(10000)
+
 describe('Operation', () => {
   let arc: Arc
   let web3: any
