@@ -5,7 +5,7 @@ import { from, Observable, Observer, of } from 'rxjs'
 import { catchError, concat, filter, map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { Logger } from './logger'
-import { Operation } from './operation'
+import { Operation, sendTransaction, web3receipt } from './operation'
 import { Address } from './types'
 import { createApolloClient, getWeb3Options } from './utils'
 
@@ -48,6 +48,10 @@ export class Arc {
 
     if (this.web3HttpProvider) {
       this.web3 = new Web3(Web3.givenProvider || this.web3WsProvider || this.web3HttpProvider)
+    }
+
+    if (!options.contractAddresses) {
+      Logger.warn('No contract addresses given to the Arc.constructor: expect most write operations to fail!')
     }
     this.contractAddresses = options.contractAddresses || { base: {}, dao: {}}
 
@@ -222,7 +226,7 @@ export class Arc {
   }
 
   public getContract(name: string) {
-    // TODO: we are taking the default contracts from the migration repo adn assume
+    // TODO: we are taking the default contracts from the migration repo and assume
     // that they are the ones used by the current DAO. This assumption is only valid
     // on our controlled test environment. Should get the correct contracts instead
     const opts = getWeb3Options(this.web3)
@@ -255,6 +259,13 @@ export class Arc {
     }
   }
 
+  public sendTransaction<T>(
+    transaction: any,
+    mapToObject: (receipt: web3receipt) => T,
+    errorHandler: (error: Error) => Promise<Error> | Error = (error) => error
+  ) {
+    return sendTransaction(transaction, mapToObject, errorHandler, this)
+  }
   public sendQuery(query: any) {
     const queryPromise = this.apolloClient.query({ query })
     return queryPromise

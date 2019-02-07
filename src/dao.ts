@@ -5,8 +5,7 @@ import { IMemberQueryOptions, Member } from './member'
 import {
   IProposalCreateOptions,
   IProposalQueryOptions,
-  Proposal,
-  ProposalStage
+  Proposal
 } from './proposal'
 import { Reputation } from './reputation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
