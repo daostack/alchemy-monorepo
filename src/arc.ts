@@ -1,3 +1,5 @@
+/*global window: any */
+
 import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { Observable as ZenObservable } from 'apollo-link'
 import gql from 'graphql-tag'
@@ -46,8 +48,21 @@ export class Arc {
       graphqlWsProvider: this.graphqlWsProvider
     })
 
-    if (this.web3HttpProvider) {
-      this.web3 = new Web3(Web3.givenProvider || this.web3WsProvider || this.web3HttpProvider)
+    let provider: any
+
+    // check if we have a web3 provider set in the window object (in the browser)
+    // cf. https://metamask.github.io/metamask-docs/API_Reference/Ethereum_Provider
+    if (typeof window !== 'undefined' &&
+      (typeof (window as any).ethereum !== 'undefined' || typeof (window as any).web3 !== 'undefined')
+    ) {
+      // Web3 browser user detected. You can now use the provider.
+      provider = (window as any).ethereum || (window as any).web3.currentProvider
+    } else {
+      provider = Web3.givenProvider || this.web3WsProvider || this.web3HttpProvider
+    }
+
+    if (provider) {
+      this.web3 = new Web3(provider)
     }
 
     if (!options.contractAddresses) {
@@ -70,7 +85,7 @@ export class Arc {
     return new DAO(address, this)
   }
 
-  public daos(): Observable<DAO[]> {
+  public daos(): Observable < DAO[] > {
     const query = gql`
       {
         daos {
@@ -89,7 +104,7 @@ export class Arc {
    * @param  address [description]
    * @return         [description]
    */
-  public getBalance(address: Address): Observable<number> {
+  public getBalance(address: Address): Observable < number > {
     // observe balance on new blocks
     // (note that we are basically doing expensive polling here)
     const balanceObservable = Observable.create((observer: any) => {
