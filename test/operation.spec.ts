@@ -3,7 +3,7 @@ import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { ITransactionUpdate, TransactionState } from '../src/operation'
 import { Proposal } from '../src/proposal'
-import { getArc, mineANewBlock } from './utils'
+import { getArc, getTestDAO, mineANewBlock } from './utils'
 
 describe('Operation', () => {
   let arc: Arc
@@ -18,7 +18,7 @@ describe('Operation', () => {
   })
 
   it('returns the correct sequence of states', async () => {
-    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
+    const dao = await getTestDAO()
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       ethReward: 300,
