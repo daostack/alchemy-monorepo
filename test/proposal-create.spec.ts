@@ -55,13 +55,14 @@ describe('Create a ContributionReward proposal', () => {
       quietEndingPeriodBeganAt: null,
       reputationReward: 0,
       resolvedAt: null,
-      stage: ProposalStage.Open,
+      stage: ProposalStage.Queued,
       stakesAgainst: 100000000000,
       stakesFor: 0
     })
     expect(proposalState.dao.address).toEqual(dao.address)
 
   })
+
   it('saves title etc on ipfs', async () => {
     const dao = await getTestDAO()
     const options = {

@@ -248,7 +248,7 @@ export class Arc {
         return contract
       case 'DAOToken':
         contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.dao.DAOToken, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.DAOToken, opts)
         return contract
       case 'GenesisProtocol':
         contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')

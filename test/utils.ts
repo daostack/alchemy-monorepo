@@ -131,18 +131,14 @@ export async function getContractAddressesFromSubgraph(): Promise<{ daos: any }>
 }
 
 export async function getTestDAO() {
-  const addresses = await getContractAddressesFromSubgraph()
   // we have two indexed daos with the same name, but one has 6 members, and that is the one
   // we are using for testing
-  let address: Address
-  if (addresses.daos[0].membersCount === 6) {
-    address = addresses.daos[0].address
-  } else {
-    address = addresses.daos[1].address
-
-  }
   const arc = await getArc()
-  return arc.dao(address)
+  if (arc.contractAddresses) {
+    return arc.dao(arc.contractAddresses.dao.Avatar)
+  } else {
+    return arc.dao('0xnotfound')
+  }
 }
 
 export async function createAProposal(dao?: DAO) {

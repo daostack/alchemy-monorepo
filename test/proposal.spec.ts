@@ -80,7 +80,7 @@ describe('Proposal', () => {
         quietEndingPeriodBeganAt: null,
         reputationReward: 10,
         resolvedAt: null,
-        stage: ProposalStage.Open,
+        stage: ProposalStage.Queued,
         stakesAgainst: 100000000000,
         stakesFor: 0,
         title: null,
