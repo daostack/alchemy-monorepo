@@ -25,7 +25,7 @@ export class Arc {
 
   public ipfs: any
   public web3: any
-  public contractAddresses: IContractAddresses
+  public contractAddresses: IContractAddresses | undefined
 
   constructor(options: {
     graphqlHttpProvider: string
@@ -52,8 +52,9 @@ export class Arc {
 
     if (!options.contractAddresses) {
       Logger.warn('No contract addresses given to the Arc.constructor: expect most write operations to fail!')
+    } else {
+      this.contractAddresses = options.contractAddresses
     }
-    this.contractAddresses = options.contractAddresses || { base: {}, dao: {}}
 
     if (this.ipfsProvider) {
       this.ipfs = IPFSClient(this.ipfsProvider)
@@ -231,6 +232,9 @@ export class Arc {
     // on our controlled test environment. Should get the correct contracts instead
     const opts = getWeb3Options(this.web3)
     const addresses = this.contractAddresses
+    if (!addresses) {
+      throw new Error(`Cannot get contract: no contractAddress set`)
+    }
     let contractClass
     let contract
     switch (name) {
@@ -244,7 +248,7 @@ export class Arc {
         return contract
       case 'DAOToken':
         contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.DAOToken, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.dao.DAOToken, opts)
         return contract
       case 'GenesisProtocol':
         contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
@@ -252,7 +256,7 @@ export class Arc {
         return contract
       case 'Reputation':
         contractClass = require('@daostack/arc/build/contracts/Reputation.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.Reputation, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.dao.Reputation, opts)
         return contract
       default:
         throw Error(`Unknown contract: ${name}`)
@@ -279,4 +283,6 @@ export interface IApolloQueryOptions {
 export interface IContractAddresses {
   base: { [key: string]: Address }
   dao: { [key: string]: Address }
+  organs: { [key: string]: Address }
+  test: { [key: string]: Address }
 }

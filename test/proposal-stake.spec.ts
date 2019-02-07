@@ -3,7 +3,7 @@ import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { Proposal, ProposalOutcome } from '../src/proposal'
 import { Stake } from '../src/stake'
-import { createAProposal, getArc, waitUntilTrue } from './utils'
+import { createAProposal, getArc, getTestDAO, waitUntilTrue } from './utils'
 
 describe('Stake on a ContributionReward', () => {
   let arc: Arc
@@ -18,7 +18,7 @@ describe('Stake on a ContributionReward', () => {
   })
 
   it('works and gets indexed', async () => {
-    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
+    const dao = await getTestDAO()
     const genesisProtocol = arc.getContract('GenesisProtocol')
     const stakingToken =  arc.getContract('DAOToken')
 
@@ -51,7 +51,7 @@ describe('Stake on a ContributionReward', () => {
   })
 
   it('throws a meaningful error if an insufficient amount tokens is approved for staking', async () => {
-    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
+    const dao = await getTestDAO()
     const stakingToken =  arc.getContract('DAOToken')
     const proposal = await createAProposal(dao)
     await stakingToken.methods.mint(accounts[1].address, '100').send()
@@ -63,16 +63,16 @@ describe('Stake on a ContributionReward', () => {
   })
 
   it('throws a meaningful error if then senders balance is too low', async () => {
-    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
+    const dao = await getTestDAO()
     const proposal = await createAProposal(dao)
-    proposal.context.web3.eth.defaultAccount = accounts[2].address
+    proposal.context.web3.eth.defaultAccount = accounts[4].address
     await expect(proposal.stake(ProposalOutcome.Pass, 10000000).pipe(take(2)).toPromise()).rejects.toThrow(
       /insufficient balance/i
     )
   })
 
   it('throws a meaningful error if the proposal does not exist', async () => {
-    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
+    const dao = await getTestDAO()
     // a non-existing proposal
     const proposal = new Proposal(
       '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, arc

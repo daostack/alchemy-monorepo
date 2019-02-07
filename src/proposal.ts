@@ -388,6 +388,8 @@ export class Proposal implements IStateful<IProposalState> {
           // staker has sufficient balance
           const defaultAccount = this.context.web3.eth.defaultAccount
           const balance = await stakingToken.methods.balanceOf(defaultAccount).call()
+          Logger.warn('--------------------------------')
+          Logger.warn(balance)
           if (Number(balance) < amount) {
             return new Error(`Staker has insufficient balance to stake ${amount} (balance is ${balance})`)
           }

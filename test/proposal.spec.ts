@@ -81,7 +81,7 @@ describe('Proposal', () => {
         reputationReward: 10,
         resolvedAt: null,
         stage: ProposalStage.Open,
-        stakesAgainst: 0,
+        stakesAgainst: 100000000000,
         stakesFor: 0,
         title: null,
         nativeTokenReward: 10,
