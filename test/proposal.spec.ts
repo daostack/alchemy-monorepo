@@ -39,7 +39,7 @@ describe('Proposal', () => {
   it('dao.proposals() accepts different query arguments', async () => {
     const { Avatar, proposalId } = DAOstackMigration.migration('private').test
     const dao = arc.dao(Avatar.toLowerCase())
-    const proposals = await dao.proposals({ stage: ProposalStage.Open}).pipe(first()).toPromise()
+    const proposals = await dao.proposals({ stage: ProposalStage.Queued}).pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
     expect(proposals.length).toBeGreaterThan(0)
     expect(proposals[proposals.length - 1].id).toBe(proposalId)
