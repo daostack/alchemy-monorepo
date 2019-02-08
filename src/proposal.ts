@@ -272,8 +272,8 @@ export class Proposal implements IStateful<IProposalState> {
         stakesFor: Number(item.stakesFor),
         title: item.title,
         url: item.url,
-        votesAgainst: item.votesFor,
-        votesFor: item.votesAgainst,
+        votesAgainst: Number(item.votesAgainst),
+        votesFor: Number(item.votesFor),
         winningOutcome: item.winningOutcome
       }
     }
