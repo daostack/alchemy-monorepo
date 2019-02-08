@@ -39,7 +39,7 @@ describe('Proposal', () => {
   it('dao.proposals() accepts different query arguments', async () => {
     const { Avatar, proposalId } = DAOstackMigration.migration('private').test
     const dao = arc.dao(Avatar.toLowerCase())
-    const proposals = await dao.proposals({ stage: ProposalStage.Open}).pipe(first()).toPromise()
+    const proposals = await dao.proposals({ stage: ProposalStage.Queued}).pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
     expect(proposals.length).toBeGreaterThan(0)
     expect(proposals[proposals.length - 1].id).toBe(proposalId)
@@ -80,8 +80,8 @@ describe('Proposal', () => {
         quietEndingPeriodBeganAt: null,
         reputationReward: 10,
         resolvedAt: null,
-        stage: ProposalStage.Open,
-        stakesAgainst: 0,
+        stage: ProposalStage.Queued,
+        stakesAgainst: 100000000000,
         stakesFor: 0,
         title: null,
         nativeTokenReward: 10,
@@ -90,17 +90,6 @@ describe('Proposal', () => {
         votesFor: web3.utils.toWei('1000'),
         winningOutcome: 'Fail'
     })
-  })
-
-  it('get proposal votes', async () => {
-    const { Avatar, proposalId } = DAOstackMigration.migration('private').test
-
-    const proposal = new Proposal(proposalId, '', arc)
-    const votes = await proposal.votes().pipe(first()).toPromise()
-    expect(votes.length).toBeGreaterThan(0)
-    const vote = votes[0]
-    expect(vote.proposalId).toBe(proposalId)
-    expect(vote.dao).toBe(Avatar.toLowerCase())
   })
 
   it('get proposal rewards', async () => {

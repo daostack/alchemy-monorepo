@@ -23,10 +23,12 @@ export function padZeros(str: string, max = 36): string {
 }
 
 const pks = [
-  '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d',
-  '0x6cbed15c793ce57650b9877cf6fa156fbef513c4e6134f022a85b1ffdd59b2a1',
-  '0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c',
-  '0x646f1ce2fdad0e6deeeb5c7e8e5543bdde65e86029e2fd9fc169899c440a7913'
+  // default accounts of ganache
+  '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d', // 0
+  '0x6cbed15c793ce57650b9877cf6fa156fbef513c4e6134f022a85b1ffdd59b2a1', // 1
+  '0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c', // 2
+  '0x646f1ce2fdad0e6deeeb5c7e8e5543bdde65e86029e2fd9fc169899c440a7913', // 3
+  '0xb0057716d5917badaf911b193b12b910811c1497b5bada8d7711f758981c3773' // 9
 ]
 
 export function getContractAddresses(): IContractAddresses {
@@ -36,7 +38,7 @@ export function getContractAddresses(): IContractAddresses {
   if (!addresses || addresses === {}) {
     throw Error(`No addresses found, does the file at ${path} exist?`)
   }
-  return { base: addresses.private.base, dao: addresses.private.dao }
+  return addresses.private
 }
 
 export async function getOptions(web3: any) {
@@ -82,7 +84,7 @@ export async function mintSomeReputation() {
   const opts = await getOptions(web3)
   const accounts = web3.eth.accounts.wallet
   const Reputation = require('@daostack/arc/build/contracts/Reputation.json')
-  const reputation = new web3.eth.Contract(Reputation.abi, addresses.base.Reputation, opts)
+  const reputation = new web3.eth.Contract(Reputation.abi, addresses.organs.DemoReputation, opts)
   await reputation.methods.mint(accounts[1].address, '99').send()
 }
 
@@ -129,18 +131,14 @@ export async function getContractAddressesFromSubgraph(): Promise<{ daos: any }>
 }
 
 export async function getTestDAO() {
-  const addresses = await getContractAddressesFromSubgraph()
   // we have two indexed daos with the same name, but one has 6 members, and that is the one
   // we are using for testing
-  let address: Address
-  if (addresses.daos[0].membersCount === 6) {
-    address = addresses.daos[0].address
-  } else {
-    address = addresses.daos[1].address
-
-  }
   const arc = await getArc()
-  return arc.dao(address)
+  if (arc.contractAddresses) {
+    return arc.dao(arc.contractAddresses.dao.Avatar)
+  } else {
+    return arc.dao('0xnotfound')
+  }
 }
 
 export async function createAProposal(dao?: DAO) {

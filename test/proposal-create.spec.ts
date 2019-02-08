@@ -2,7 +2,7 @@ import { first, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { Proposal, ProposalStage } from '../src/proposal'
-import { getArc, mineANewBlock, waitUntilTrue } from './utils'
+import { getArc, getTestDAO, waitUntilTrue } from './utils'
 
 describe('Create a ContributionReward proposal', () => {
   let arc: Arc
@@ -17,7 +17,7 @@ describe('Create a ContributionReward proposal', () => {
   })
 
   it('is properly indexed', async () => {
-    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
+    const dao = await getTestDAO()
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       ethReward: 300,
@@ -55,15 +55,16 @@ describe('Create a ContributionReward proposal', () => {
       quietEndingPeriodBeganAt: null,
       reputationReward: 0,
       resolvedAt: null,
-      stage: ProposalStage.Open,
-      stakesAgainst: 0,
+      stage: ProposalStage.Queued,
+      stakesAgainst: 100000000000,
       stakesFor: 0
     })
     expect(proposalState.dao.address).toEqual(dao.address)
 
   })
+
   it('saves title etc on ipfs', async () => {
-    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
+    const dao = await getTestDAO()
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       description: 'Just eat them',
