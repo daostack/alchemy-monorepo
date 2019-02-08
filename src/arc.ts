@@ -48,7 +48,7 @@ export class Arc {
       graphqlWsProvider: this.graphqlWsProvider
     })
 
-    let provider: any
+    let web3provider: any
 
     // check if we have a web3 provider set in the window object (in the browser)
     // cf. https://metamask.github.io/metamask-docs/API_Reference/Ethereum_Provider
@@ -56,13 +56,13 @@ export class Arc {
       (typeof (window as any).ethereum !== 'undefined' || typeof (window as any).web3 !== 'undefined')
     ) {
       // Web3 browser user detected. You can now use the provider.
-      provider = (window as any).ethereum || (window as any).web3.currentProvider
+      web3provider = (window as any).ethereum || (window as any).web3.currentProvider
     } else {
-      provider = Web3.givenProvider || this.web3WsProvider || this.web3HttpProvider
+      web3provider = Web3.givenProvider || this.web3WsProvider || this.web3HttpProvider
     }
 
-    if (provider) {
-      this.web3 = new Web3(provider)
+    if (web3provider) {
+      this.web3 = new Web3(web3provider)
     }
 
     if (!options.contractAddresses) {

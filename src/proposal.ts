@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { Logger } from './logger'
-import { Operation, sendTransaction } from './operation'
+import { Operation } from './operation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
@@ -278,23 +278,37 @@ export class Proposal implements IStateful<IProposalState> {
     this.state = context._getObservableObject(query, itemMap, { fetchPolicy: 'no-cache' }) as Observable<IProposalState>
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
-    options.proposal = this.id
-    return Vote.search(this.context, options)
-  }
-
-  public vote(outcome: ProposalOutcome, amount: number = 0): Operation<Vote> {
-
+  /**
+   * [votingMachine description]
+   * @return [description]
+   */
+  public votingMachine() {
+    // TODO: get the contract not from migration.json but from the proposal itself!
     // TODO: cf next two lines from alchemy on how to get the votingMacchineAddress
     // (does not work with new contract versions anymore, though, it seems)
     // const contributionRewardInstance = this.dao.getContract('ContributionReward')
     // const result = await contributionRewardInstance.methods.parameters(this.dao.address).call()
     // const votingMachineAddress = (
     //   await contributionRewardInstance.methods.getSchemeParameters(daoAvatarAddress)).votingMachineAddress
-
     // the graph indexes it at contributionRewardProposal.votingMachine, but not on the proposal entity
-    // const votingMachine = this.dao.getContract('AbsoluteVote')
-    const votingMachine = this.context.getContract('GenesisProtocol')
+    return this.context.getContract('GenesisProtocol')
+  }
+
+  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
+    options.proposal = this.id
+    return Vote.search(this.context, options)
+  }
+
+  /**
+   * Vote for this proposal
+   * @param  outcome one of ProposalOutcome.Pass (0) or ProposalOutcome.FAIL (1)
+   * @param  amount the amount of reputation to vote with. Defaults to 0 - in that case,
+   *  all the sender's rep will be used
+   * @return  an observable Operation<Vote>
+   */
+  public vote(outcome: ProposalOutcome, amount: number = 0): Operation<Vote> {
+
+    const votingMachine = this.votingMachine()
 
     const voteMethod = votingMachine.methods.vote(
       this.id,  // proposalId
@@ -346,10 +360,7 @@ export class Proposal implements IStateful<IProposalState> {
   }
 
   public stake(outcome: ProposalOutcome, amount: number ): Operation<Stake> {
-    // TODO: cf. vote() function: get the contract from the proposal
-    const votingMachine = this.context.getContract('GenesisProtocol')
-
-    const stakeMethod = votingMachine.methods.stake(
+    const stakeMethod = this.votingMachine().methods.stake(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
       amount // amount the amount to stake with . if _amount == 0 it will use all staker reputation.
@@ -382,7 +393,7 @@ export class Proposal implements IStateful<IProposalState> {
         if (error.message.match(/revert/)) {
           const proposal = this
           const stakingToken = this.context.getContract('DAOToken')
-          const prop = await votingMachine.methods.proposals(proposal.id).call()
+          const prop = await this.votingMachine().methods.proposals(proposal.id).call()
           if (prop.proposer === nullAddress ) {
             return new Error(`Unknown proposal with id ${proposal.id}`)
           }
@@ -395,7 +406,10 @@ export class Proposal implements IStateful<IProposalState> {
             return new Error(`Staker has insufficient balance to stake ${amount} (balance is ${balance})`)
           }
 
-          const allowance = await stakingToken.methods.allowance(defaultAccount, votingMachine.options.address).call()
+          // staker has approved the token spend
+          const allowance = await stakingToken.methods.allowance(
+            defaultAccount, this.votingMachine().options.address
+          ).call()
           if (Number(allowance) < amount) {
             return new Error(`Staker has insufficient allowance to stake ${amount} (allowance is ${allowance})`)
           }
@@ -406,9 +420,28 @@ export class Proposal implements IStateful<IProposalState> {
     )
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
+  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
     options.proposal = this.id
     return Reward.search(this.context, options)
+  }
+
+  public claimRewards(account: Address): Operation<boolean> {
+    const transaction = this.votingMachine().methods.redeem(this.id, account)
+    return this.context.sendTransaction(transaction, () => true)
+  }
+
+  public execute(): Operation<any> {
+    const transaction = this.votingMachine().methods.execute(this.id)
+    const map = (receipt: any) => {
+      if (Object.keys(receipt.events).length  === 0) {
+        // TODO: fix error message and do some p
+        const msg = `Proposal execution failed: NO Events FOUND (so it pbly did not work)`
+        throw new Error(msg)
+      } else {
+        return receipt
+      }
+    }
+    return this.context.sendTransaction(transaction, map)
   }
 }
 
