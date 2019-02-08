@@ -55,4 +55,7 @@ describe('Reputation', () => {
     expect(reputationOf).toEqual(1e21)
   })
 
+  it.skip('reputationOf throws a meaningful error if an invalid address is provided', async () => {
+    // write this test
+  })
 })

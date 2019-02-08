@@ -1,6 +1,5 @@
 import { first, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { DAO } from '../src/dao'
 import { Proposal, ProposalStage } from '../src/proposal'
 import { getArc, getTestDAO, waitUntilTrue } from './utils'
 

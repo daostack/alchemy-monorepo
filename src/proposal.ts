@@ -17,11 +17,12 @@ export enum ProposalOutcome {
 }
 
 export enum ProposalStage {
-  Open,
-  Boosted,
-  QuietEndingPeriod,
+  ExpiredInQueue,
+  Executed,
   Queued,
-  Resolved
+  PreBoosted,
+  Boosted,
+  QuietEndingPeriod
 }
 
 export interface IProposalState {
@@ -85,7 +86,7 @@ export class Proposal implements IStateful<IProposalState> {
     async function createTransaction() {
       if (ipfsDataToSave !== {}) {
         Logger.debug('Saving data on IPFS...')
-        const ipfsResponse = await context.ipfs.add(new Buffer(JSON.stringify(ipfsDataToSave)))
+        const ipfsResponse = await context.ipfs.add(Buffer.from(JSON.stringify(ipfsDataToSave)))
         options.descriptionHash = ipfsResponse[0].path
         Logger.debug(`Data saved successfully as ${options.descriptionHash}`)
       }
@@ -220,29 +221,31 @@ export class Proposal implements IStateful<IProposalState> {
 
     const itemMap = (item: any) => {
       if (item === null) {
-        throw Error(`Could not find a Proposal with id '${id}'`)
+        return item
+        // throw Error(`Could not find a Proposal with id '${id}'`)
       }
 
-      let proposalStage: ProposalStage
-      switch (item.stage) {
-        case 'Open':
-          proposalStage = ProposalStage.Open
-          break
-        case 'Boosted':
-          proposalStage = ProposalStage.Boosted
-          break
-        case 'Queued':
-          proposalStage = ProposalStage.Queued
-          break
-        case 'QuietEndingPeriod':
-          proposalStage = ProposalStage.QuietEndingPeriod
-          break
-        case 'Resolved':
-          proposalStage = ProposalStage.Resolved
-          break
-        default:
-          throw Error(`Unknown proposal stage: ${item.stage}`)
-      }
+      const proposalStage = ProposalStage[item.stage]
+      //
+      // switch (item.stage) {
+      //   case 'None':
+      //     proposalStage = ProposalStage.None
+      //     break
+      //   case 'Boosted':
+      //     proposalStage = ProposalStage.Boosted
+      //     break
+      //   case 'Queued':
+      //     proposalStage = ProposalStage.Queued
+      //     break
+      //   case 'QuietEndingPeriod':
+      //     proposalStage = ProposalStage.QuietEndingPeriod
+      //     break
+      //   case 'Resolved':
+      //     proposalStage = ProposalStage.Resolved
+      //     break
+      //   default:
+      //     throw Error(`Unknown proposal stage: ${item.stage}`)
+      // }
 
       return {
         beneficiary: item.beneficiary,
@@ -275,6 +278,7 @@ export class Proposal implements IStateful<IProposalState> {
       }
     }
 
+    // TODO: the 'no-cache' statement here is suspicious, check if it is really needed and why
     this.state = context._getObservableObject(query, itemMap, { fetchPolicy: 'no-cache' }) as Observable<IProposalState>
   }
 
@@ -323,6 +327,7 @@ export class Proposal implements IStateful<IProposalState> {
         const event = receipt.events.VoteProposal
         if (!event) {
           // for some reason, a transaction was mined but no error was raised before
+
           throw new Error(`Error voting: no VoteProposal event was found - ${Object.keys(receipt.events)}`)
         }
         // TODO: calculate the voteId. This uses some subgraph-internal logic
@@ -434,9 +439,8 @@ export class Proposal implements IStateful<IProposalState> {
     const transaction = this.votingMachine().methods.execute(this.id)
     const map = (receipt: any) => {
       if (Object.keys(receipt.events).length  === 0) {
-        // TODO: fix error message and do some p
-        const msg = `Proposal execution failed: NO Events FOUND (so it pbly did not work)`
-        throw new Error(msg)
+        // this does not mean that anything failed,
+        return receipt
       } else {
         return receipt
       }

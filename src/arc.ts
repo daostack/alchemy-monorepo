@@ -150,7 +150,7 @@ export class Arc {
   ) {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
     return this.getObservable(query, apolloQueryOptions).pipe(
-      map((r) => {
+      map((r: ApolloQueryResult<any>) => {
         if (!r.data[entity]) { throw Error(`Could not find entity "${entity}" in ${Object.keys(r.data)}`)}
         return r.data[entity]
       }),
@@ -186,11 +186,11 @@ export class Arc {
   ) {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
     return this.getObservable(query, apolloQueryOptions).pipe(
-      map((r: any) => {
+      map((r: ApolloQueryResult<object[]>) => {
         if (!r.data[entity]) { throw Error(`Could not find ${entity} in ${r.data}`)}
         return r.data[entity]
       }),
-      filter((rs) => rs.filter(filterFunc)),
+      filter(filterFunc),
       map((rs: object[]) => rs.map(itemMap))
     )
   }
@@ -203,7 +203,7 @@ export class Arc {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
 
     return this.getObservable(query, apolloQueryOptions).pipe(
-      map((r: any) => {
+      map((r: ApolloQueryResult<any>) => {
         if (!r.data) {
           return null
         }
@@ -214,29 +214,35 @@ export class Arc {
   }
 
   public getObservable(query: any, apolloQueryOptions: IApolloQueryOptions = {}) {
-    Logger.debug(query.loc.source.body)
 
-    const subscriptionQuery = gql`
-      subscription ${query}
-    `
-    const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({ query: subscriptionQuery })
-    const subscriptionObservable = Observable.create((observer: Observer<object[]>) => {
-      const subscription = zenObservable.subscribe(observer)
-      return () => subscription.unsubscribe()
+    return Observable.create((observer: Observer<ApolloQueryResult<any>>) => {
+      Logger.debug(query.loc.source.body)
+
+      // we query directly to get the current state
+      const queryPromise: Promise<ApolloQueryResult<{[key: string]: object[]}>> = this.apolloClient.query(
+        { query, ...apolloQueryOptions })
+
+      const subscriptionQuery = gql`
+          subscription ${query}
+        `
+      const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({ query: subscriptionQuery })
+      const subscriptionObservable = Observable.create((obs: Observer<any>) => {
+          const subscription = zenObservable.subscribe(obs)
+          return () => subscription.unsubscribe()
+        })
+
+      const sub = from(queryPromise)
+        .pipe(
+          concat(subscriptionObservable)
+        )
+        .pipe(
+          catchError((err: Error) => {
+            throw Error(`${err.name}: ${err.message}\n${query.loc.source.body}`)
+          })
+        )
+        .subscribe(observer)
+      return () => sub.unsubscribe()
     })
-
-    const queryPromise: Promise<ApolloQueryResult<{[key: string]: object[]}>> = this.apolloClient.query(
-      { query, ...apolloQueryOptions })
-
-    const queryObservable = from(queryPromise).pipe(
-      concat(subscriptionObservable)
-    ).pipe(
-      catchError((err: Error) => {
-        throw Error(`${err.name}: ${err.message}\n${query.loc.source.body}`)
-      })
-    )
-
-    return queryObservable as Observable<any>
   }
 
   public getContract(name: string) {

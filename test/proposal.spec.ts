@@ -1,7 +1,7 @@
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { Proposal, ProposalStage } from '../src/proposal'
-import { getArc,  getWeb3 } from './utils'
+import { IProposalState, Proposal, ProposalOutcome, ProposalStage } from '../src/proposal'
+import { createAProposal, getArc,  getWeb3, waitUntilTrue} from './utils'
 
 const DAOstackMigration = require('@daostack/migration')
 
@@ -111,5 +111,29 @@ describe('Proposal', () => {
     const proposal = new Proposal(proposalId, '', arc)
     const stakes = await proposal.stakes().pipe(first()).toPromise()
     expect(stakes.length).toEqual(0)
+  })
+
+  it.skip('state gets all updates', async () => {
+    // TODO: write this test!
+    const states: IProposalState[] = []
+    const proposal = await createAProposal()
+    proposal.state.subscribe(
+      (state: any) => {
+        console.log('New state')
+        console.log(state)
+        states.push(state)
+      },
+      (err: any) => {
+        throw err
+      }
+    )
+    // do stuff like votings, staking, etc,
+    await proposal.vote(ProposalOutcome.Fail).pipe(first()).toPromise()
+    // check state updatees..
+    await waitUntilTrue(() => {
+      // console.log(states)
+      return states.length > 1234}
+    )
+
   })
 })
