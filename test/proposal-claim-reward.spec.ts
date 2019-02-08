@@ -1,8 +1,7 @@
 import { take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { DAO } from '../src/dao'
 import { Proposal } from '../src/proposal'
-import { getArc, waitUntilTrue } from './utils'
+import { getArc, getTestDAO } from './utils'
 
 describe('Claim rewards', () => {
   let arc: Arc
@@ -12,7 +11,7 @@ describe('Claim rewards', () => {
   })
 
   it.skip('works ', async () => {
-    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
+    const dao = await getTestDAO()
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const ethReward = 300
     const prevEthBalance = await arc.web3.eth.getBalance(beneficiary)
