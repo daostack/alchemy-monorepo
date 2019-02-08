@@ -147,7 +147,9 @@ describe('Proposal', () => {
       votesFor: 0,
       winningOutcome: 'Fail'
     })
-    // TODO: votesFor do not seem to have been counted, what is the deal here?
+    // TODO: the observable pushes (sometimes) also some intermediate "repeat" results
+    // that seem to be ust copies of the first result (which is why we need the states.length-1 logic)
+    // this is not very efficient and we should check if we improve that situation
     expect(states[states.length - 1].votesFor).toBeGreaterThan(0)
     expect(states[states.length - 1].winningOutcome).toEqual('Pass')
   })
