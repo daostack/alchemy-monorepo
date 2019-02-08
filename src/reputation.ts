@@ -1,3 +1,4 @@
+import { ApolloQueryResult } from 'apollo-client'
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
@@ -49,7 +50,7 @@ export class Reputation implements IStateful<IReputationState> {
       }
     }`
     return this.context.getObservable(query).pipe(
-      map((r) => r.data.reputationHolders),
+      map((r: ApolloQueryResult<any>) => r.data.reputationHolders),
       map((items: any[]) => {
         const item = items.length > 0 && items[0]
         return item.balance !== undefined ? Number(item.balance) : 0

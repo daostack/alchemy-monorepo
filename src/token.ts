@@ -1,3 +1,4 @@
+import { ApolloQueryResult } from 'apollo-client'
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
 import { map } from 'rxjs/operators'
@@ -63,7 +64,7 @@ export class Token implements IStateful<ITokenState> {
       }
     }`
     return this.context.getObservable(query).pipe(
-      map((r) => r.data.tokenHolders),
+      map((r: ApolloQueryResult<any>) => r.data.tokenHolders),
       map((items: any[]) => {
         const item = items.length > 0 && items[0]
         if (item) {
