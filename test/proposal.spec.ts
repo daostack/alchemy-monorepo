@@ -113,14 +113,12 @@ describe('Proposal', () => {
     expect(stakes.length).toEqual(0)
   })
 
-  it.skip('state gets all updates', async () => {
+  it('state gets all updates', async () => {
     // TODO: write this test!
     const states: IProposalState[] = []
     const proposal = await createAProposal()
     proposal.state.subscribe(
       (state: any) => {
-        console.log('New state')
-        console.log(state)
         states.push(state)
       },
       (err: any) => {
@@ -128,12 +126,29 @@ describe('Proposal', () => {
       }
     )
     // do stuff like votings, staking, etc,
-    await proposal.vote(ProposalOutcome.Fail).pipe(first()).toPromise()
-    // check state updatees..
-    await waitUntilTrue(() => {
-      // console.log(states)
-      return states.length > 1234}
-    )
+    await proposal.vote(ProposalOutcome.Pass).pipe(first()).toPromise()
 
+    // wait until all transactions are indexed
+    await waitUntilTrue(() => {
+      if (states.length > 2 && states[states.length - 1].votesFor > 0) {
+        console.log(states)
+        return true
+      } else {
+        return false
+      }
+    })
+
+    // we expect our first state to be null
+    // (we just created the proposal and subscribed immediately)
+    expect(states[0]).toEqual(null)
+    expect(states[1]).toMatchObject({
+      id: proposal.id,
+      votesAgainst: 0,
+      votesFor: 0,
+      winningOutcome: 'Fail'
+    })
+    // TODO: votesFor do not seem to have been counted, what is the deal here?
+    expect(states[states.length - 1].votesFor).toBeGreaterThan(0)
+    expect(states[states.length - 1].winningOutcome).toEqual('Pass')
   })
 })
