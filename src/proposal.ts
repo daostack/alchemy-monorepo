@@ -310,7 +310,7 @@ export class Proposal implements IStateful<IProposalState> {
    *  all the sender's rep will be used
    * @return  an observable Operation<Vote>
    */
-  public vote(outcome: ProposalOutcome, amount: number = 0): Operation<Vote> {
+  public vote(outcome: ProposalOutcome, amount: number = 0): Operation<Vote|null> {
 
     const votingMachine = this.votingMachine()
 
@@ -326,9 +326,8 @@ export class Proposal implements IStateful<IProposalState> {
       (receipt: any) => {
         const event = receipt.events.VoteProposal
         if (!event) {
-          // for some reason, a transaction was mined but no error was raised before
-
-          throw new Error(`Error voting: no VoteProposal event was found - ${Object.keys(receipt.events)}`)
+          // no vote was cast
+          return null
         }
         // TODO: calculate the voteId. This uses some subgraph-internal logic
         // const voteId = eventId(event)

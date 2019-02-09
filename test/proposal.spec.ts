@@ -74,6 +74,7 @@ describe('Proposal', () => {
         executedAt: null,
         externalTokenReward: 10,
         // id: '0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e',
+        nativeTokenReward: 10,
         preBoostedVotePeriodLimit: 259200,
         proposer: '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1',
         proposingRepReward: 5000000000,
@@ -84,10 +85,9 @@ describe('Proposal', () => {
         stakesAgainst: 100000000000,
         stakesFor: 0,
         title: null,
-        nativeTokenReward: 10,
         url: null,
-        votesAgainst: web3.utils.toWei('1000'),
-        votesFor: web3.utils.toWei('1000'),
+        votesAgainst: 1e+21,
+        votesFor: 1e+21,
         winningOutcome: 'Fail'
     })
   })
@@ -125,7 +125,7 @@ describe('Proposal', () => {
         throw err
       }
     )
-    // do stuff like votings, staking, etc,
+    // vote for the proposal
     await proposal.vote(ProposalOutcome.Pass).pipe(first()).toPromise()
 
     // wait until all transactions are indexed
