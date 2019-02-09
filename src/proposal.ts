@@ -221,31 +221,11 @@ export class Proposal implements IStateful<IProposalState> {
 
     const itemMap = (item: any) => {
       if (item === null) {
-        return item
-        // throw Error(`Could not find a Proposal with id '${id}'`)
+        // no proposal was found - we return null
+        return null
       }
 
       const proposalStage = ProposalStage[item.stage]
-      //
-      // switch (item.stage) {
-      //   case 'None':
-      //     proposalStage = ProposalStage.None
-      //     break
-      //   case 'Boosted':
-      //     proposalStage = ProposalStage.Boosted
-      //     break
-      //   case 'Queued':
-      //     proposalStage = ProposalStage.Queued
-      //     break
-      //   case 'QuietEndingPeriod':
-      //     proposalStage = ProposalStage.QuietEndingPeriod
-      //     break
-      //   case 'Resolved':
-      //     proposalStage = ProposalStage.Resolved
-      //     break
-      //   default:
-      //     throw Error(`Unknown proposal stage: ${item.stage}`)
-      // }
 
       return {
         beneficiary: item.beneficiary,
