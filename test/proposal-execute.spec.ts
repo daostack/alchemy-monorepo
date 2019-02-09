@@ -74,11 +74,6 @@ describe('Proposal execute()', () => {
     await proposal.vote(ProposalOutcome.Pass).pipe(take(2)).toPromise()
     proposal.context.web3.eth.accounts.defaultAccount = accounts[0]
 
-    // const daoState = await dao.state.pipe(first()).toPromise()
-    // const daoReputation =  daoState.reputation
-    // console.log(await daoReputation.reputationOf(accounts[0].address).pipe(first()).toPromise())
-    // console.log(await daoReputation.reputationOf(accounts[1].address).pipe(first()).toPromise())
-
     // wait until the votes have been counted
     await waitUntilTrue(async () => {
       proposalState = await getCurrentState(proposalId)
@@ -88,7 +83,20 @@ describe('Proposal execute()', () => {
     expect(proposalState.votesFor).toBeGreaterThan(0)
     expect(proposalState.votesAgainst).toEqual(0)
 
+    console.log('stake on the proposal')
+    await proposal.stakingToken().mint(accounts[0].address, 1000).pipe(take(2)).toPromise()
+    await proposal.stakingToken().approveForStaking(1000).pipe(take(2)).toPromise()
+
+    await proposal.stake(ProposalOutcome.Pass, 200).pipe(take(2)).toPromise()
+    await waitUntilTrue(async () => {
+      proposalState = await getCurrentState(proposalId)
+      return proposalState.stakesFor > 0
+    })
+
+    expect(proposalState.stakesFor).toBeGreaterThan(0)
+    expect(proposalState.stage).toEqual(ProposalStage.Queued)
     return
+
   }, 10000)
 
   it.skip('throws a meaningful error if the proposal does not exist', async () => {
