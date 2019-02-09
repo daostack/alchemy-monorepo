@@ -20,16 +20,14 @@ describe('Stake on a ContributionReward', () => {
   it('works and gets indexed', async () => {
     const dao = await getTestDAO()
     const genesisProtocol = arc.getContract('GenesisProtocol')
-    const stakingToken =  arc.getContract('DAOToken')
 
     const proposal = await createAProposal(dao)
+    const stakingToken =  await proposal.stakingToken()
 
     // apporve the spend, for staking
     const defaultAccount = web3.eth.defaultAccount
-    await stakingToken.methods.mint(defaultAccount, '10000').send()
-    await stakingToken.methods
-      .approve(genesisProtocol.options.address, '100')
-      .send()
+    await stakingToken.mint(defaultAccount, 10000).pipe(take(2)).toPromise()
+    await stakingToken.approveForStaking(100).pipe(take(2)).toPromise()
 
     const stake = await proposal.stake(ProposalOutcome.Pass, 100).pipe(take(2)).toPromise()
 

@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc } from './arc'
-import { Address, Hash, IStateful } from './types'
+import { Address, Hash, IStateful, Web3Receipt } from './types'
 
 export interface ITokenState {
   address: Address
@@ -74,6 +74,42 @@ export class Token implements IStateful<ITokenState> {
         }
       })
     )
+  }
+  /*
+   * get a web3 contract instance for this token
+   */
+  public getContract() {
+    // TODO: use a generic ERC20 Abi here instead of the current quick hack
+    const contract = this.context.getContract('DAOToken')
+    if (contract.options.address !== this.address) {
+      throw Error(`Cannot find contract address`)
+    }
+    return contract
+
+  }
+  public mint(beneficiary: Address, amount: number) {
+    const contract = this.getContract()
+    const transaction = contract.methods.mint(beneficiary, amount)
+    const mapReceipt = (receipt: Web3Receipt) => receipt
+    return this.context.sendTransaction(transaction, mapReceipt)
+  }
+
+  public approveForStaking(amount: number) {
+    const stakingToken = this.getContract()
+    // TODO: we should get the protocol address from the DAO
+    const genesisProtocol = this.context.getContract('GenesisProtocol')
+
+    const transaction = stakingToken.methods.approve(genesisProtocol.options.address, amount)
+
+    const mapReceipt = (receipt: Web3Receipt) => {
+      if (Object.keys(receipt.events).length  === 0) {
+        // this does not mean that anything failed,
+        return receipt
+      } else {
+        return receipt
+      }
+    }
+    return this.context.sendTransaction(transaction, mapReceipt)
   }
 
   public approvals(address: string): Observable<any[]> {

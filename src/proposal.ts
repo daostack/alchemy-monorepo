@@ -6,6 +6,7 @@ import { Logger } from './logger'
 import { Operation } from './operation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
+import { Token } from './token'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
 import { nullAddress } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
@@ -336,6 +337,11 @@ export class Proposal implements IStateful<IProposalState> {
         return error
       }
     )
+  }
+
+  public stakingToken() {
+    // TODO: the token to stake with from the proposal, instead ot he generic one
+    return new Token(this.context.getContract('DAOToken').options.address, this.context)
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
