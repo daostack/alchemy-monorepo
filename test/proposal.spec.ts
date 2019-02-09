@@ -131,7 +131,6 @@ describe('Proposal', () => {
     // wait until all transactions are indexed
     await waitUntilTrue(() => {
       if (states.length > 2 && states[states.length - 1].votesFor > 0) {
-        console.log(states)
         return true
       } else {
         return false
