@@ -197,7 +197,7 @@ export class Arc {
 
   public _getObservableObject(
     query: any,
-    itemMap: (o: object) => object = (o) => o,
+    itemMap: (o: object) => object|null = (o) => o,
     apolloQueryOptions: IApolloQueryOptions = {}
   ) {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
