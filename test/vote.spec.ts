@@ -42,7 +42,6 @@ describe('Stake', () => {
       // TODO: would be better to search for vote.id here, but we don't have that
       result = await Vote.search(arc, {proposal: proposal.id}, { fetchPolicy: 'no-cache' })
         .pipe(first()).toPromise()
-      console.log(result)
       return result.length > 0
     }
     await waitUntilTrue(voteIsIndexed)

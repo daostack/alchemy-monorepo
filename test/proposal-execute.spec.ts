@@ -44,8 +44,6 @@ describe('Proposal execute()', () => {
     const proposalStates: IProposalState[] = []
     proposal.state.subscribe(
       (next) => {
-        // console.log(next)
-        console.log(proposalIsIndexed)
         if (next) {
           proposalIsIndexed = true
         }
