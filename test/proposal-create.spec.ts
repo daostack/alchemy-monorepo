@@ -1,7 +1,15 @@
 import { first, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Proposal, ProposalStage } from '../src/proposal'
-import { getArc, getTestDAO, waitUntilTrue } from './utils'
+import {
+  getArc,
+  getTestDAO,
+  graphqlHttpProvider,
+  graphqlWsProvider,
+  waitUntilTrue,
+  web3HttpProvider,
+  web3WsProvider
+} from './utils'
 
 describe('Create a ContributionReward proposal', () => {
   let arc: Arc
@@ -102,5 +110,32 @@ describe('Create a ContributionReward proposal', () => {
       url: options.url
     })
 
+  })
+  it('handles the fact that the ipfs url is not set elegantly', async () => {
+    const arc = new Arc({
+      graphqlHttpProvider,
+      graphqlWsProvider,
+      ipfsProvider: '',
+      web3HttpProvider,
+      web3WsProvider
+    })
+
+    const dao = arc.dao('0xnotfound')
+    const options = {
+      beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+      description: 'Just eat them',
+      ethReward: 300,
+      externalTokenAddress: undefined,
+      nativeTokenReward: 1,
+      periodLength: 12,
+      periods: 5,
+      title: 'A modest proposal',
+      type: 'ContributionReward',
+      url: 'http://swift.org/modest'
+    }
+
+    expect(() => dao.createProposal(options)).toThrowError(
+      /no ipfsProvider set/i
+    )
   })
 })

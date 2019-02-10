@@ -21,7 +21,6 @@ export class Arc {
 
   public pendingOperations: Observable<Array<Operation<any>>> = of()
   public apolloClient: ApolloClient<object>
-  // TODO: are there proper Web3 types available?
 
   public ipfs: any
   public web3: any

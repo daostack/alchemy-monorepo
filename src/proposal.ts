@@ -72,6 +72,9 @@ export class Proposal implements IStateful<IProposalState> {
 
     let ipfsDataToSave: object = {}
     if (options.title || options.url || options.description) {
+      if (!context.ipfsProvider) {
+        throw Error(`No ipfsProvider set on Arc instance - cannot save data on IPFS`)
+      }
       ipfsDataToSave = {
         description: options.description,
         title: options.title,
@@ -86,6 +89,7 @@ export class Proposal implements IStateful<IProposalState> {
 
     async function createTransaction() {
       if (ipfsDataToSave !== {}) {
+        console.log('Saving data on IPFS...')
         Logger.debug('Saving data on IPFS...')
         const ipfsResponse = await context.ipfs.add(Buffer.from(JSON.stringify(ipfsDataToSave)))
         options.descriptionHash = ipfsResponse[0].path
