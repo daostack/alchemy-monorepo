@@ -1,21 +1,16 @@
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { getArc, getTestDAO, getWeb3 } from './utils'
+import { getArc, getTestDAO } from './utils'
 
 /**
  * DAO test
  */
 describe('DAO', () => {
   let arc: Arc
-  let web3: any
-  let accounts: any
 
   beforeAll(async () => {
     arc = getArc()
-    web3 = await getWeb3()
-    accounts = web3.eth.accounts.wallet
-    web3.eth.defaultAccount = accounts[0].address
 })
 
   it('DAO is instantiable', () => {
@@ -91,12 +86,12 @@ describe('DAO', () => {
   it('dao.ethBalance() should work', async () => {
     const dao = await getTestDAO()
     const previousBalance = await dao.ethBalance().pipe(first()).toPromise()
-    await web3.eth.sendTransaction({
-      from: web3.eth.defaultAccount,
+    await arc.web3.eth.sendTransaction({
+      from: arc.web3.eth.defaultAccount,
       gas: 4000000,
       gasPrice: 100000000000,
       to: dao.address,
-      value: web3.utils.toWei('1', 'ether')
+      value: arc.web3.utils.toWei('1', 'ether')
     })
     const newBalance = await dao.ethBalance().pipe(first()).toPromise()
     expect(newBalance - previousBalance).toBe(Number(web3.utils.toWei('1')))

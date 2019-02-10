@@ -89,7 +89,6 @@ export class Proposal implements IStateful<IProposalState> {
 
     async function createTransaction() {
       if (ipfsDataToSave !== {}) {
-        console.log('Saving data on IPFS...')
         Logger.debug('Saving data on IPFS...')
         const ipfsResponse = await context.ipfs.add(Buffer.from(JSON.stringify(ipfsDataToSave)))
         options.descriptionHash = ipfsResponse[0].path

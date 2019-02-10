@@ -35,7 +35,7 @@ describe('Stake', () => {
     const dao = await getTestDAO()
     const proposal = await createAProposal(dao)
     // let's have a vote
-    await proposal.vote(ProposalOutcome.Pass).pipe(take(2)).toPromise()
+    await proposal.vote(ProposalOutcome.Pass).send()
 
     const voteIsIndexed = async () => {
       // we pass no-cache to make sure we hit the server on each request

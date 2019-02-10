@@ -11,15 +11,13 @@ describe('Reputation', () => {
   let addresses: any
   let arc: Arc
   let address: Address
-  let web3: any
   let accounts: any
 
   beforeAll(async () => {
     addresses = getContractAddresses()
     address = addresses.dao.Reputation
     arc = getArc()
-    web3 = await getWeb3()
-    accounts = web3.eth.accounts.wallet
+    accounts = arc.web3.eth.accounts.wallet
   })
 
   it('Reputation is instantiable', () => {

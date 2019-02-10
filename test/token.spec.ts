@@ -10,13 +10,11 @@ describe('Token', () => {
   let addresses: IContractAddresses
   let arc: Arc
   let address: Address
-  let web3: any
 
   beforeAll(async () => {
     arc = getArc()
     addresses = getContractAddresses()
     address = addresses.dao.DAOToken
-    web3 = await getWeb3()
   })
 
   it('Token is instantiable', () => {

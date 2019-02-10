@@ -1,5 +1,6 @@
-import { first, take } from 'rxjs/operators'
+import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
+import { Logger } from '../src/logger'
 import { Proposal, ProposalStage } from '../src/proposal'
 import {
   getArc,
@@ -10,6 +11,8 @@ import {
   web3HttpProvider,
   web3WsProvider
 } from './utils'
+
+Logger.setLevel(Logger.OFF)
 
 describe('Create a ContributionReward proposal', () => {
   let arc: Arc
@@ -36,7 +39,7 @@ describe('Create a ContributionReward proposal', () => {
       type: 'ContributionReward'
     }
 
-    const response = await dao.createProposal(options).pipe(take(2)).toPromise()
+    const response = await dao.createProposal(options).send()
     const proposal = response.result as Proposal
     let proposals: Proposal[] = []
     const proposalIsIndexed = async () => {
@@ -86,7 +89,7 @@ describe('Create a ContributionReward proposal', () => {
       url: 'http://swift.org/modest'
     }
 
-    const response = await dao.createProposal(options).pipe(take(2)).toPromise()
+    const response = await dao.createProposal(options).send()
     const proposal = response.result as Proposal
     let proposals: Proposal[] = []
     const proposalIsIndexed = async () => {
@@ -112,7 +115,7 @@ describe('Create a ContributionReward proposal', () => {
 
   })
   it('handles the fact that the ipfs url is not set elegantly', async () => {
-    const arc = new Arc({
+    const arcWithoutIPFS = new Arc({
       graphqlHttpProvider,
       graphqlWsProvider,
       ipfsProvider: '',
@@ -120,7 +123,7 @@ describe('Create a ContributionReward proposal', () => {
       web3WsProvider
     })
 
-    const dao = arc.dao('0xnotfound')
+    const dao = arcWithoutIPFS.dao('0xnotfound')
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       description: 'Just eat them',

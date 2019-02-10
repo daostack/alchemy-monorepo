@@ -4,8 +4,6 @@ import { DAO } from '../src/dao'
 import { Member } from '../src/member'
 import { getArc, getContractAddresses, getWeb3 } from './utils'
 
-const DAOstackMigration = require('@daostack/migration')
-
 /**
  * Member test
  */

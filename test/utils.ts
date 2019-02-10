@@ -157,7 +157,7 @@ export async function createAProposal(dao?: DAO) {
   }
 
   // collect the first 4 results of the observable in a a listOfUpdates array
-  const response = await dao.createProposal(options).pipe(take(2)).toPromise()
+  const response = await dao.createProposal(options).send()
   return response.result as Proposal
 
 }

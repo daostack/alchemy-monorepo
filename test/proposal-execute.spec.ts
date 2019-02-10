@@ -26,7 +26,7 @@ describe('Proposal execute()', () => {
       reputationReward: 1,
       type: 'ContributionReward'
     }
-    const response = await dao.createProposal(options).pipe(take(2)).toPromise()
+    const response = await dao.createProposal(options).send()
     const proposalId = (response.result as any).id
     // wait for the proposal to be indexed before subscribing to the state
     // TODO: change this once  https://github.com/daostack/client/issues/78 is resolved
@@ -62,16 +62,16 @@ describe('Proposal execute()', () => {
     expect(proposalStates[1].stage).toEqual(ProposalStage.Queued)
 
     // calling execute in this stage has no effect on the stage
-    await proposal.execute().pipe(take(2)).toPromise()
+    await proposal.execute().send()
     await waitUntilTrue(() => proposalStates.length > 2)
     proposalState = await getCurrentState(proposalId)
     expect(proposalStates[2].stage).toEqual(ProposalStage.Queued)
     expect(proposalStates.length).toEqual(3)
 
-    await proposal.vote(ProposalOutcome.Pass).pipe(take(2)).toPromise()
+    await proposal.vote(ProposalOutcome.Pass).send()
     // let's vote for the proposal with accounts[1]
     proposal.context.web3.eth.accounts.defaultAccount = accounts[1]
-    await proposal.vote(ProposalOutcome.Pass).pipe(take(2)).toPromise()
+    await proposal.vote(ProposalOutcome.Pass).send()
     proposal.context.web3.eth.accounts.defaultAccount = accounts[0]
 
     // wait until the votes have been counted
@@ -84,10 +84,10 @@ describe('Proposal execute()', () => {
     expect(proposalState.votesAgainst).toEqual(0)
 
     console.log('stake on the proposal')
-    await proposal.stakingToken().mint(accounts[0].address, 1000).pipe(take(2)).toPromise()
-    await proposal.stakingToken().approveForStaking(1000).pipe(take(2)).toPromise()
+    await proposal.stakingToken().mint(accounts[0].address, 1000).send()
+    await proposal.stakingToken().approveForStaking(1000).send()
 
-    await proposal.stake(ProposalOutcome.Pass, 200).pipe(take(2)).toPromise()
+    await proposal.stake(ProposalOutcome.Pass, 200).send()
     await waitUntilTrue(async () => {
       proposalState = await getCurrentState(proposalId)
       return proposalState.stakesFor > 0
@@ -105,14 +105,14 @@ describe('Proposal execute()', () => {
     const proposal = new Proposal(
       '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, arc
     )
-    await expect(proposal.execute().pipe(take(2)).toPromise()).rejects.toThrow(
+    await expect(proposal.execute().send()).rejects.toThrow(
       /unknown proposal/i
     )
   })
 
   it.skip('throws a meaningful error if the proposal cannot be executed', async () => {
     const proposal = await createAProposal()
-    await expect(proposal.execute().pipe(take(2)).toPromise()).rejects.toThrow(
+    await expect(proposal.execute().send()).rejects.toThrow(
       /proposal execution failed/i
     )
   })

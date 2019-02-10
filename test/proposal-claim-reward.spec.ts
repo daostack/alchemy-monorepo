@@ -26,10 +26,10 @@ describe('Claim rewards', () => {
       type: 'ContributionReward'
     }
 
-    const response = await dao.createProposal(options).pipe(take(2)).toPromise()
+    const response = await dao.createProposal(options).send()
     const proposal = response.result as Proposal
 
-    await proposal.claimRewards(beneficiary).pipe(take(2)).toPromise()
+    await proposal.claimRewards(beneficiary).send()
     const newEthBalance = await arc.web3.eth.getBalance(beneficiary)
     expect(newEthBalance - prevEthBalance).toEqual('whatever-the-rewards are')
   })

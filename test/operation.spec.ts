@@ -1,23 +1,11 @@
 import { reduce, take } from 'rxjs/operators'
-import { Arc } from '../src/arc'
-import { DAO } from '../src/dao'
 import { ITransactionUpdate, TransactionState } from '../src/operation'
 import { Proposal } from '../src/proposal'
-import { getArc, getTestDAO, mineANewBlock } from './utils'
+import { getTestDAO, mineANewBlock } from './utils'
 
 jest.setTimeout(10000)
 
 describe('Operation', () => {
-  let arc: Arc
-  let web3: any
-  let accounts: any
-
-  beforeAll(async () => {
-    arc = getArc()
-    web3 = arc.web3
-    accounts = web3.eth.accounts.wallet
-    web3.eth.defaultAccount = accounts[0].address
-  })
 
   it('returns the correct sequence of states', async () => {
     const dao = await getTestDAO()

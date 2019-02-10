@@ -1,7 +1,7 @@
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IProposalState, Proposal, ProposalOutcome, ProposalStage } from '../src/proposal'
-import { createAProposal, getArc,  getWeb3, waitUntilTrue} from './utils'
+import { createAProposal, getArc, waitUntilTrue} from './utils'
 
 const DAOstackMigration = require('@daostack/migration')
 
@@ -10,14 +10,9 @@ const DAOstackMigration = require('@daostack/migration')
  */
 describe('Proposal', () => {
   let arc: Arc
-  let web3: any
-  // let accounts: any
 
   beforeAll(async () => {
     arc = getArc()
-    web3 = await getWeb3()
-    // accounts = web3.eth.accounts.wallet
-    // web3.eth.defaultAccount = accounts[0].address
   })
 
   it('Proposal is instantiable', () => {
