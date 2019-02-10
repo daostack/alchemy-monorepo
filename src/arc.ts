@@ -144,7 +144,7 @@ export class Arc {
    */
   public _getObservableList(
     query: any,
-    itemMap: (o: object) => object = (o) => o,
+    itemMap: (o: object) => object|null = (o) => o,
     apolloQueryOptions: IApolloQueryOptions = {}
   ) {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
@@ -179,7 +179,7 @@ export class Arc {
    */
   public _getObservableListWithFilter(
     query: any,
-    itemMap: (o: object) => object = (o) => o,
+    itemMap: (o: object) => object|null = (o) => o,
     filterFunc: (o: object) => boolean,
     apolloQueryOptions: IApolloQueryOptions = {}
   ) {

@@ -2,7 +2,9 @@ import { first} from 'rxjs/operators'
 import { Arc, IContractAddresses } from '../src/arc'
 import { Token } from '../src/token'
 import { Address } from '../src/types'
-import { getArc, getContractAddresses, getWeb3 } from './utils'
+import { getArc, getContractAddresses, waitUntilTrue } from './utils'
+
+jest.setTimeout(10000)
 /**
  * Token test
  */
@@ -54,6 +56,25 @@ describe('Token', () => {
       .pipe(first()).toPromise()
     expect(approvals).toEqual([])
     // todo: this needs a test with some approvals
+
+  })
+
+  it('approveForStaking works and is indexed property', async () => {
+    const token = new Token(addresses.base.DAOToken, arc)
+    const amount = 31415
+    await token.approveForStaking(amount).send()
+
+    let allowances: object[] = []
+    console.log(arc.web3.eth.defaultAccount)
+    token.allowances({ owner: arc.web3.eth.defaultAccount}).subscribe(
+      (next: any) => allowances = next
+    )
+    await waitUntilTrue(() => allowances.length > 0)
+    expect(allowances).toContainEqual({
+      amount,
+      owner: arc.web3.eth.defaultAccount.toLowerCase(),
+      spender: arc.getContract('GenesisProtocol').options.address.toLowerCase()
+    })
 
   })
 })

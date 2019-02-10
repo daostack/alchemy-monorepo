@@ -122,6 +122,24 @@ export class DAO implements IStateful<IDAOState> {
     return this.context.getBalance(this.address)
   }
 
+  public allowance(address: string): Observable<any[]> {
+    const genesisProtocol = this.context.getContract('GenesisProtocol')
+    const query = gql`{
+      allowances (where {
+        owner: "${address}"
+        spender: "${genesisProtocol}"
+      }){
+        id
+        owner {
+          id
+        }
+        spender
+        amount
+      }
+    }`
+    return this.context._getObservableList(query)
+  }
+
 }
 
 export interface IDAOQueryOptions extends ICommonQueryOptions {
