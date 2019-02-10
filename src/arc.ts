@@ -6,6 +6,7 @@ import { catchError, concat, filter, map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
+import { Token } from './token'
 import { Address } from './types'
 import { createApolloClient, getWeb3Options } from './utils'
 
@@ -264,6 +265,10 @@ export class Arc {
         contractClass = require('@daostack/arc/build/contracts/ContributionReward.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.ContributionReward, opts)
         return contract
+      case 'GEN':
+        contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.DAOToken, opts)
+        return contract
       case 'DAOToken':
         contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.DAOToken, opts)
@@ -281,6 +286,13 @@ export class Arc {
     }
   }
 
+  public GENToken() {
+    if (this.contractAddresses) {
+      return new Token(this.contractAddresses.base.DAOToken, this)
+    } else {
+      throw Error(`Cannot get GEN Token because no contract addresses were provided`)
+    }
+  }
   public sendTransaction<T>(
     transaction: any,
     mapToObject: (receipt: web3receipt) => T,

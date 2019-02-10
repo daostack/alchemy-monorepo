@@ -347,7 +347,7 @@ export class Proposal implements IStateful<IProposalState> {
 
   public stakingToken() {
     // TODO: the token to stake with from the proposal, instead ot he generic one
-    return new Token(this.context.getContract('DAOToken').options.address, this.context)
+    return new Token(this.context.getContract('GEN').options.address, this.context)
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
@@ -388,7 +388,7 @@ export class Proposal implements IStateful<IProposalState> {
       async (error: Error) => { // errorHandler
         if (error.message.match(/revert/)) {
           const proposal = this
-          const stakingToken = this.context.getContract('DAOToken')
+          const stakingToken = this.context.getContract('GEN')
           const prop = await this.votingMachine().methods.proposals(proposal.id).call()
           if (prop.proposer === nullAddress ) {
             return new Error(`Unknown proposal with id ${proposal.id}`)

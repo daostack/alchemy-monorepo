@@ -83,7 +83,7 @@ export class Token implements IStateful<ITokenState> {
    */
   public getContract() {
     // TODO: use a generic ERC20 Abi here instead of the current quick hack
-    const contract = this.context.getContract('DAOToken')
+    const contract = this.context.getContract('GEN')
     if (contract.options.address !== this.address) {
       throw Error(`Cannot find contract address`)
     }
@@ -132,7 +132,7 @@ export class Token implements IStateful<ITokenState> {
 
   public allowances(options: { owner?: Address, spender?: Address}): Observable<any[]> {
     // the allownaces entry tracks the GEN token, so the query only makes sense if the current token is the GEN token
-    if (this.address !== this.context.getContract('DAOToken').options.address) {
+    if (this.address !== this.context.getContract('GEN').options.address) {
       throw Error(`The current Token is not the GEN token - cannot query for allowances`)
     }
 

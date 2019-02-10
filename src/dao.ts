@@ -124,15 +124,13 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public approveForStaking(amount: number) {
-    const genContract = this.context.getContract('DAOToken').options.address
-    return (new Token(genContract, this.context)).approveForStaking(amount)
+    return this.context.GENToken().approveForStaking(amount)
   }
   /*
    * return the allownace on the GEN conract for spender is GenesisProtocol
    */
   public allowance(owner: string): Observable < any > {
-    const genContract = this.context.getContract('DAOToken').options.address
-    return(new Token(genContract, this.context)).allowances({
+    return this.context.GENToken().allowances({
       owner
     }).pipe(
       map((rs: object[]) => rs[0])

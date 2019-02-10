@@ -60,7 +60,7 @@ describe('Token', () => {
   })
 
   it('approveForStaking works and is indexed property', async () => {
-    const token = new Token(arc.getContract('DAOToken').options.address, arc)
+    const token = new Token(arc.getContract('GEN').options.address, arc)
     const amount = 31415
     await token.approveForStaking(amount).send()
 
