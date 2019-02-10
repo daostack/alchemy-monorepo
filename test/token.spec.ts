@@ -64,11 +64,12 @@ describe('Token', () => {
     const amount = 31415
     await token.approveForStaking(amount).send()
 
-    let allowances: object[] = []
+    let allowances: any[] = []
+
     token.allowances({ owner: arc.web3.eth.defaultAccount}).subscribe(
       (next: any) => allowances = next
     )
-    await waitUntilTrue(() => allowances.length > 0)
+    await waitUntilTrue(() => allowances.length > 0 && allowances[0].amount >= amount)
     expect(allowances).toContainEqual({
       amount,
       owner: arc.web3.eth.defaultAccount.toLowerCase(),

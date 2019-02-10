@@ -116,6 +116,9 @@ describe('Proposal', () => {
     await waitUntilTrue(() => stakes.length > 0 && stakes[stakes.length - 1].length > 0)
     expect(stakes[0].length).toEqual(0)
     expect(stakes[stakes.length - 1].length).toEqual(1)
+    const proposalState = await proposal.state.pipe(first()).toPromise()
+    // TODO: uncomment next test when https://github.com/daostack/subgraph/issues/90 is resolved
+    // expect(proposalState.confidence).toEqual(proposalState.stakesFor/proposalState.stakesAgainst)
   })
 
   it('state gets all updates', async () => {

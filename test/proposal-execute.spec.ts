@@ -83,7 +83,6 @@ describe('Proposal execute()', () => {
     expect(proposalState.votesFor).toBeGreaterThan(0)
     expect(proposalState.votesAgainst).toEqual(0)
 
-    console.log('stake on the proposal')
     await proposal.stakingToken().mint(accounts[0].address, 1000).send()
     await proposal.stakingToken().approveForStaking(1000).send()
 
