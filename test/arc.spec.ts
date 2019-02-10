@@ -1,6 +1,8 @@
 import Arc from '../src/index'
+import { Logger } from '../src/logger'
 import { getArc } from './utils'
 
+Logger.setLevel(Logger.OFF)
 /**
  * Arc test
  */
