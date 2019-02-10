@@ -1,7 +1,7 @@
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IProposalState, Proposal, ProposalOutcome, ProposalStage } from '../src/proposal'
-import { createAProposal, getArc, waitUntilTrue} from './utils'
+import { createAProposal, getArc, getTestDAO, waitUntilTrue} from './utils'
 
 const DAOstackMigration = require('@daostack/migration')
 
@@ -70,6 +70,7 @@ describe('Proposal', () => {
         boostedAt: 0,
         boostedVotePeriodLimit: 259200,
         boostingThreshold: 0,
+        confidence: 0,
         description: null,
         descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
         ethReward: 10,
@@ -95,24 +96,26 @@ describe('Proposal', () => {
   })
 
   it('get proposal rewards', async () => {
+    // TODO: fix this once the subgraph corretly indexes rewards
     const { proposalId } = DAOstackMigration.migration('private').test
     const proposal = new Proposal(proposalId, '', arc)
     const rewards = await proposal.rewards().pipe(first()).toPromise()
     return
-    // TODO: fix this once the subgraph corretly indexes rewards
-    // expect(rewards.length).toBeGreaterThan(0)
-    // console.log(rewards)
-    // const reward = rewards[0]
-    // console.log(reward)
-    //
-    // expect(reward.proposal.id).toBe(proposalId)
   })
 
   it('get proposal stakes', async () => {
-    const { proposalId } = DAOstackMigration.migration('private').test
-    const proposal = new Proposal(proposalId, '', arc)
-    const stakes = await proposal.stakes().pipe(first()).toPromise()
-    expect(stakes.length).toEqual(0)
+    const dao = await getTestDAO()
+    const proposal = await createAProposal()
+    const stakes: any[] = []
+    proposal.stakes().subscribe((next) => stakes.push(next))
+
+    await dao.approveForStaking(1008).send()
+    await proposal.stake(ProposalOutcome.Pass, 1008).send()
+
+    // wait until we have the we got the stake update
+    await waitUntilTrue(() => stakes.length > 0 && stakes[stakes.length - 1].length > 0)
+    expect(stakes[0].length).toEqual(0)
+    expect(stakes[stakes.length - 1].length).toEqual(1)
   })
 
   it('state gets all updates', async () => {

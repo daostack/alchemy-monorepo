@@ -1,7 +1,7 @@
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { getArc, getTestDAO } from './utils'
+import { getArc, getTestDAO, waitUntilTrue } from './utils'
 
 /**
  * DAO test
@@ -99,8 +99,20 @@ describe('DAO', () => {
 
   it('dao.allowance() should work', async () => {
     const dao = await getTestDAO()
-    const approval = await dao.allowance(arc.web3.eth.defaultAccount).pipe(first()).toPromise()
-    expect(approval.amount)
-  })
+    let approval: any
+    dao.allowance(arc.web3.eth.defaultAccount).subscribe(
+      (next: any) => approval = next
+    )
 
+    await dao.approveForStaking(1001).send()
+    await waitUntilTrue(() => {
+      if (approval) {
+        // console.log(approval.amount)
+        return approval.amount === 1001
+      } else {
+        return false
+      }
+    })
+    expect(approval.amount).toEqual(1001)
+  })
 })

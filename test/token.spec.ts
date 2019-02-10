@@ -60,7 +60,7 @@ describe('Token', () => {
   })
 
   it('approveForStaking works and is indexed property', async () => {
-    const token = new Token(addresses.base.DAOToken, arc)
+    const token = new Token(arc.getContract('DAOToken').options.address, arc)
     const amount = 31415
     await token.approveForStaking(amount).send()
 
@@ -74,6 +74,5 @@ describe('Token', () => {
       owner: arc.web3.eth.defaultAccount.toLowerCase(),
       spender: arc.getContract('GenesisProtocol').options.address.toLowerCase()
     })
-
   })
 })

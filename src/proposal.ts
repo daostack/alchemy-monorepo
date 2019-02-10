@@ -32,6 +32,7 @@ export interface IProposalState {
   boostedAt: Date
   boostingThreshold: number
   boostedVotePeriodLimit: number
+  confidence: number
   createdAt: Date
   dao: DAO
   description?: string
@@ -171,36 +172,41 @@ export class Proposal implements IStateful<IProposalState> {
       {
         proposal(id: "${id}") {
           id
+          activationTime
+          boostedAt
+          boostedVotePeriodLimit
+          confidence
+          createdAt
           dao {
             id
           }
-          proposer
-          stage
-          createdAt
-          boostedAt
-          quietEndingPeriodBeganAt
-          executedAt
-          descriptionHash
-          title
+          daoBountyConst
           description
-          url
+          descriptionHash
+          ethReward
+          externalTokenReward
+          executedAt
+          proposer
+          quietEndingPeriodBeganAt
+          queuedVotePeriodLimit
+          queuedVoteRequiredPercentage
           rewards {
             id
           }
+          stage
+          stakes {
+            id
+          }
+          stakesFor
+          stakesAgainst
+          title
+          url
           votes {
             id
           }
           votesFor
           votesAgainst
           winningOutcome
-          stakes {
-            id
-          }
-          stakesFor
-          stakesAgainst
-          queuedVoteRequiredPercentage
-          queuedVotePeriodLimit
-          boostedVotePeriodLimit
           preBoostedVotePeriodLimit
           thresholdConst
           limitExponentValue
@@ -208,15 +214,11 @@ export class Proposal implements IStateful<IProposalState> {
           proposingRepReward
           votersReputationLossRatio
           minimumDaoBounty
-          daoBountyConst
-          activationTime
+          externalToken
           voteOnBehalf
           beneficiary
           reputationReward
           nativeTokenReward
-          ethReward
-          externalTokenReward
-          externalToken
           periods
           periodLength
         }
@@ -236,6 +238,7 @@ export class Proposal implements IStateful<IProposalState> {
         boostedAt: Number(item.boostedAt),
         boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
         boostingThreshold: 0, // TODO:
+        confidence: Number(item.confidence),
         createdAt: Number(item.createdAt),
         dao: new DAO(item.dao.id, this.context),
         description: item.description,
