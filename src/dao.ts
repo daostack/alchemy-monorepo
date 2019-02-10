@@ -1,5 +1,6 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
+import { map } from 'rxjs/operators'
 import { Arc } from './arc'
 import { IMemberQueryOptions, Member } from './member'
 import {
@@ -122,22 +123,20 @@ export class DAO implements IStateful<IDAOState> {
     return this.context.getBalance(this.address)
   }
 
-  public allowance(address: string): Observable<any[]> {
-    const genesisProtocol = this.context.getContract('GenesisProtocol')
-    const query = gql`{
-      allowances (where {
-        owner: "${address}"
-        spender: "${genesisProtocol}"
-      }){
-        id
-        owner {
-          id
-        }
-        spender
-        amount
-      }
-    }`
-    return this.context._getObservableList(query)
+  public approveForStaking(amount: number) {
+    const genContract = this.context.getContract('DAOToken').options.address
+    return (new Token(genContract, this.context)).approveForStaking(amount)
+  }
+  /*
+   * return the allownace on the GEN conract for spender is GenesisProtocol
+   */
+  public allowance(owner: string): Observable < any > {
+    const genContract = this.context.getContract('DAOToken').options.address
+    return(new Token(genContract, this.context)).allowances({
+      owner
+    }).pipe(
+      map((rs: object[]) => rs[0])
+    )
   }
 
 }

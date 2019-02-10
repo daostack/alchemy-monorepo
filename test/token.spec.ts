@@ -65,7 +65,6 @@ describe('Token', () => {
     await token.approveForStaking(amount).send()
 
     let allowances: object[] = []
-    console.log(arc.web3.eth.defaultAccount)
     token.allowances({ owner: arc.web3.eth.defaultAccount}).subscribe(
       (next: any) => allowances = next
     )

@@ -166,7 +166,11 @@ export class Token implements IStateful<ITokenState> {
           spender: r.allowances[0].spender
         }
       } else {
-        return null
+        return {
+          amount: 0,
+          owner: options.owner
+          // spender: r.allowances[0].spender
+        }
       }
     }
     return this.context._getObservableList(query, itemMap)

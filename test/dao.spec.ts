@@ -94,7 +94,13 @@ describe('DAO', () => {
       value: arc.web3.utils.toWei('1', 'ether')
     })
     const newBalance = await dao.ethBalance().pipe(first()).toPromise()
-    expect(newBalance - previousBalance).toBe(Number(web3.utils.toWei('1')))
+    expect(newBalance - previousBalance).toBe(Number(arc.web3.utils.toWei('1')))
+  })
+
+  it('dao.allowance() should work', async () => {
+    const dao = await getTestDAO()
+    const approval = await dao.allowance(arc.web3.eth.defaultAccount).pipe(first()).toPromise()
+    expect(approval.amount)
   })
 
 })
