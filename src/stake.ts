@@ -6,7 +6,7 @@ import { Address, ICommonQueryOptions } from './types'
 import { whereClause } from './utils'
 
 export interface IStake {
-  id: string
+  id: string|undefined
   staker: Address
   createdAt: Date | undefined
   outcome: ProposalOutcome
@@ -54,7 +54,7 @@ export class Stake implements IStake {
   }
 
   constructor(
-      public id: string,
+      public id: string|undefined,
       public staker: string,
       public createdAt: Date | undefined,
       public outcome: ProposalOutcome,

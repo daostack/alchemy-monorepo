@@ -305,9 +305,7 @@ export class Proposal implements IStateful<IProposalState> {
           // no vote was cast
           return null
         }
-        // TODO: calculate the voteId. This uses some subgraph-internal logic
-        // const voteId = eventId(event)
-        const voteId = '0xdummy'
+        const voteId = undefined
 
         return new Vote(
           voteId,
@@ -335,7 +333,6 @@ export class Proposal implements IStateful<IProposalState> {
   }
 
   public stakingToken() {
-    // TODO: the token to stake with from the proposal, instead ot he generic one
     return new Token(this.context.getContract('GEN').options.address, this.context)
   }
 
@@ -359,9 +356,7 @@ export class Proposal implements IStateful<IProposalState> {
           // for some reason, a transaction was mined but no error was raised before
           throw new Error(`Error voting: no "Stake" event was found - ${Object.keys(receipt.events)}`)
         }
-        // TODO: calculate the voteId. This uses some subgraph-internal logic
-        // const voteId = eventId(event)
-        const stakeId = '0xdummy'
+        const stakeId = undefined
 
         return new Stake(
           stakeId,

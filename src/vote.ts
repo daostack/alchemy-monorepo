@@ -5,7 +5,7 @@ import { ProposalOutcome } from './proposal'
 import { Address, Date, ICommonQueryOptions } from './types'
 
 export interface IVote {
-  id: string
+  id: string|undefined
   voter: string
   createdAt: Date | undefined
   outcome: ProposalOutcome
@@ -88,7 +88,7 @@ export class Vote implements IVote {
   }
 
   constructor(
-      public id: string,
+      public id: string|undefined,
       public voter: string,
       public createdAt: Date | undefined,
       public outcome: ProposalOutcome,

@@ -30,10 +30,9 @@ describe('Reputation', () => {
     const reputation = new Reputation(address, arc)
     expect(reputation).toBeInstanceOf(Reputation)
     const state = await reputation.state.pipe(first()).toPromise()
-    expect(Object.keys(state)).toEqual(['address', 'name', 'symbol', 'totalSupply'])
+    expect(Object.keys(state)).toEqual(['address', 'totalSupply'])
     const expected = {
-       address: address.toLowerCase(),
-       symbol: 'REP'
+       address: address.toLowerCase()
     }
     expect(state).toMatchObject(expected)
   })
