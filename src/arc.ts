@@ -307,8 +307,10 @@ export class Arc {
   public approveForStaking(amount: number) {
     return this.GENToken().approveForStaking(amount)
   }
-  /*
-   * return the allownace on the GEN conract for spender is GenesisProtocol
+  /**
+   * How much GEN the genesisProtocol may spend on behalve of the owner
+   * @param  owner owner for which to check the allowance
+   * @return A number
    */
   public allowance(owner: string): Observable < any > {
     return this.GENToken().allowances({
