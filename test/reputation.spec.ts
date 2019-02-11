@@ -2,7 +2,7 @@ import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
-import { getArc, getContractAddresses, getWeb3 } from './utils'
+import { getArc, getContractAddresses } from './utils'
 /**
  * Reputation test
  */

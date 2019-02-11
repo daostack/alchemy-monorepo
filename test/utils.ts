@@ -49,16 +49,6 @@ export async function getOptions(web3: any) {
   }
 }
 
-export async function getWeb3() {
-  const web3 = new Web3(web3HttpProvider)
-  for (const pk of pks) {
-    const account = web3.eth.accounts.privateKeyToAccount(pk)
-    web3.eth.accounts.wallet.add(account)
-  }
-  web3.eth.defaultAccount = web3.eth.accounts.wallet[0].address
-  return web3
-}
-
 export function getArc() {
   const arc = new Arc({
     contractAddresses: getContractAddresses(),

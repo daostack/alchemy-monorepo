@@ -2,7 +2,7 @@ import { first} from 'rxjs/operators'
 import { Arc, IContractAddresses } from '../src/arc'
 import { DAO } from '../src/dao'
 import { Member } from '../src/member'
-import { getArc, getContractAddresses, getWeb3 } from './utils'
+import { getArc, getContractAddresses } from './utils'
 
 /**
  * Member test
@@ -12,15 +12,10 @@ describe('Member', () => {
 
   let addresses: IContractAddresses
   let arc: Arc
-  let web3: any
-  let accounts: any
 
   beforeAll(async () => {
     addresses = getContractAddresses()
     arc = getArc()
-    web3 = await getWeb3()
-    accounts = web3.eth.accounts.wallet
-    web3.eth.defaultAccount = accounts[0].address
   })
 
   it('Member is instantiable', () => {
