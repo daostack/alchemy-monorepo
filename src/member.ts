@@ -13,8 +13,6 @@ import { IVote, IVoteQueryOptions, Vote } from './vote'
 export interface IMemberState {
   address: Address
   dao: DAO,
-  // TODO: include ETH balance
-  // eth: number
   reputation: number
   // 'tokens' --> balance of address in dao.nativeToken.balanceOf
   tokens: number
@@ -54,13 +52,12 @@ export class Member implements IStateful<IMemberState> {
 
     const itemMap = (items: any) => {
       if (items.length === 0) {
-        // TODO: we did not find the member, so we know the reputation is 0
-        // however, this account may still posess some tokens, so we shoudl not assume that tokens: 0
-        // Probably best to solve by also adding tokenholders to he member collection in the subgraph
         return {
           address,
           dao: new DAO(daoAddress, this.context),
           reputation: 0,
+          // TODO: we did not find the member, so we do not know how many tokens she holds,
+          // cf. https://github.com/daostack/subgraph/issues/97
           tokens: 0
         }
       } else {
