@@ -150,9 +150,6 @@ describe('Proposal', () => {
     // we expect our first state to be null
     // (we just created the proposal and subscribed immediately)
     expect(states[0]).toEqual(null)
-    // TODO: the observable pushes (sometimes) also some intermediate "repeat" results
-    // that seem to be ust copies of the first result (which is why we need the states.length-1 logic)
-    // this is not very efficient and we should check if we improve that situation
     expect(states[states.length - 1].votesFor).toBeGreaterThan(0)
     expect(states[states.length - 1].winningOutcome).toEqual('Pass')
   })

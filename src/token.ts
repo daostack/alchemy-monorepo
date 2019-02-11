@@ -99,7 +99,6 @@ export class Token implements IStateful<ITokenState> {
 
   public approveForStaking(amount: number) {
     const stakingToken = this.getContract()
-    // TODO: we should get the protocol address from the DAO
     const genesisProtocol = this.context.getContract('GenesisProtocol')
 
     const transaction = stakingToken.methods.approve(genesisProtocol.options.address, amount)

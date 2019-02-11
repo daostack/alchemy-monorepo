@@ -67,7 +67,7 @@ export function getArc() {
   return arc
 }
 
-// TODO: integration this in src.repution.ts
+// TODO: use the Repuation.mint() function here
 export async function mintSomeReputation() {
   const arc = getArc()
   const web3 = arc.web3

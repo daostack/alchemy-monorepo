@@ -51,10 +51,7 @@ describe('Create a ContributionReward proposal', () => {
     await waitUntilTrue(proposalIsIndexed)
 
     expect(proposal.id).toBeDefined()
-    // TODO: if we use the existing "proposal" and get its state, I get an "proposal
-    // with this id does not exist". How is that possible?
-    const proposal2 = new Proposal(proposal.id, proposal.dao.address, arc)
-    const proposalState = await proposal2.state.pipe(first()).toPromise()
+    const proposalState = await proposal.state.pipe(first()).toPromise()
 
     expect(proposalState).toMatchObject({
       beneficiary: options.beneficiary,
