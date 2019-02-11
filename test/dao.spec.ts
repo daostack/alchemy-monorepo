@@ -102,24 +102,4 @@ describe('DAO', () => {
     expect(newBalance - previousBalance).toBe(Number(arc.web3.utils.toWei('1')))
   })
 
-  it('dao.allowance() should work', async () => {
-    const dao = await getTestDAO()
-    let approval: any
-    dao.allowance(arc.web3.eth.defaultAccount).subscribe(
-      (next: any) => {
-        console.log(next)
-        approval = next
-      }
-    )
-
-    await dao.approveForStaking(1001).send()
-    await waitUntilTrue(() => {
-      if (approval) {
-        return approval.amount === 1001
-      } else {
-        return false
-      }
-    })
-    expect(approval.amount).toEqual(1001)
-  })
 })

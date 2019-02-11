@@ -50,6 +50,13 @@ describe('Token', () => {
     expect(balanceOf).toEqual(1e21)
   })
 
+  it('mint some new tokens', async () => {
+    const token = new Token(address, arc)
+    const balanceOf = await token.balanceOf('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1')
+      .pipe(first()).toPromise()
+    expect(balanceOf).toEqual(1e21)
+  })
+
   it('see approvals', async () => {
     const token = new Token(address, arc)
     const approvals = await token.approvals('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1')
@@ -63,7 +70,6 @@ describe('Token', () => {
     const token = new Token(arc.getContract('GEN').options.address, arc)
     const amount = 31415
     await token.approveForStaking(amount).send()
-
     let allowances: any[] = []
 
     token.allowances({ owner: arc.web3.eth.defaultAccount}).subscribe(

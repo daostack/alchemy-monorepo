@@ -136,21 +136,6 @@ export class DAO implements IStateful<IDAOState> {
   public ethBalance(): Observable<number> {
     return this.context.getBalance(this.address)
   }
-
-  public approveForStaking(amount: number) {
-    return this.context.GENToken().approveForStaking(amount)
-  }
-  /*
-   * return the allownace on the GEN conract for spender is GenesisProtocol
-   */
-  public allowance(owner: string): Observable < any > {
-    return this.context.GENToken().allowances({
-      owner
-    }).pipe(
-      map((rs: object[]) => rs[0])
-    )
-  }
-
 }
 
 export interface IDAOQueryOptions extends ICommonQueryOptions {

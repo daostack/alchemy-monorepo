@@ -3,6 +3,7 @@ import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { ProposalOutcome} from './proposal'
 import { Address, ICommonQueryOptions } from './types'
+import { whereClause } from './utils'
 
 export interface IStake {
   id: string
@@ -26,22 +27,13 @@ export class Stake implements IStake {
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable <IStake[]> {
 
-    let where = ''
-    let daoFilter: (r: any) => boolean
-    daoFilter = () => true
-
-    for (const key of Object.keys(options)) {
-      if (options.dao) {
-        // TODO: we ignore the options.dao argument while waiting for https://github.com/daostack/subgraph/issues/65
-      } else {
-        where += `${key}: "${options[key] as string}"\n`
-      }
-    }
+    // TODO: we ignore the options.dao argument while waiting for https://github.com/daostack/subgraph/issues/65
+    options.dao = undefined
 
     const query = gql`
       {
         proposalStakes (where: {
-          ${where}
+          ${whereClause(options)}
         }) {
           id
           createdAt
@@ -54,10 +46,9 @@ export class Stake implements IStake {
         }
       }
     `
-    return context._getObservableListWithFilter(
+    return context._getObservableList(
       query,
-      (r: any) => new Stake(r.id, r.staker.id, r.createdAt, r.outcome, Number(r.amount), r.proposal.id),
-      daoFilter,
+      (r: any) => new Stake(r.id, r.staker, r.createdAt, r.outcome, Number(r.amount), r.proposal.id),
       apolloQueryOptions
     ) as Observable<IStake[]>
   }

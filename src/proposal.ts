@@ -388,7 +388,7 @@ export class Proposal implements IStateful<IProposalState> {
       async (error: Error) => { // errorHandler
         if (error.message.match(/revert/)) {
           const proposal = this
-          const stakingToken = this.context.getContract('GEN')
+          const stakingToken = this.stakingToken()
           const prop = await this.votingMachine().methods.proposals(proposal.id).call()
           if (prop.proposer === nullAddress ) {
             return new Error(`Unknown proposal with id ${proposal.id}`)
@@ -396,14 +396,15 @@ export class Proposal implements IStateful<IProposalState> {
 
           // staker has sufficient balance
           const defaultAccount = this.context.web3.eth.defaultAccount
-          const balance = await stakingToken.methods.balanceOf(defaultAccount).call()
+          const balance = await stakingToken.getContract().methods.balanceOf(defaultAccount).call()
 
           if (Number(balance) < amount) {
-            return new Error(`Staker has insufficient balance to stake ${amount} (balance is ${balance})`)
+            const msg = `Staker ${defaultAccount} has insufficient balance to stake ${amount} (balance is ${balance})`
+            return new Error(msg)
           }
 
           // staker has approved the token spend
-          const allowance = await stakingToken.methods.allowance(
+          const allowance = await stakingToken.getContract().methods.allowance(
             defaultAccount, this.votingMachine().options.address
           ).call()
           if (Number(allowance) < amount) {

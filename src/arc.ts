@@ -125,29 +125,33 @@ export class Arc {
   }
 
   /**
-   * [getObservable description]
-   * @param  query              [description]
-   * @param  apolloQueryOptions [description]
-   * @return                    [description]
+   * Given a gql query, will return an observable of query results
+   * @param  query              a gql query object to execute
+   * @param  apolloQueryOptions options to pass on to Apollo, cf ..
+   * @return an Obsevable that will first yield the current result, and yields updates every time the data changes
    */
   public getObservable(query: any, apolloQueryOptions: IApolloQueryOptions = {}) {
 
     return Observable.create(async (observer: Observer<ApolloQueryResult<any>>) => {
       Logger.debug(query.loc.source.body)
 
-      // we query directly to get the current state
+      // queryPromise sends a query and featches the results
       const queryPromise: Promise<ApolloQueryResult<{[key: string]: object[]}>> = this.apolloClient.query(
         { query, ...apolloQueryOptions })
 
+      // subscriptionQuery subscribes to get notified of updates to the query
       const subscriptionQuery = gql`
           subscription ${query}
         `
+      // subscribe
       const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({ query: subscriptionQuery })
+      // convert the zenObservable returned by appolloclient to an rx.js.Observable
       const subscriptionObservable = Observable.create((obs: Observer<any>) => {
           const subscription = zenObservable.subscribe(obs)
           return () => subscription.unsubscribe()
         })
 
+      // concatenate the two queries: first the simple fetch result, then the updates from the subscription
       const sub = from(queryPromise)
         .pipe(
           concat(subscriptionObservable)
@@ -299,6 +303,21 @@ export class Arc {
       throw Error(`Cannot get GEN Token because no contract addresses were provided`)
     }
   }
+
+  public approveForStaking(amount: number) {
+    return this.GENToken().approveForStaking(amount)
+  }
+  /*
+   * return the allownace on the GEN conract for spender is GenesisProtocol
+   */
+  public allowance(owner: string): Observable < any > {
+    return this.GENToken().allowances({
+      owner
+    }).pipe(
+      map((rs: object[]) => rs[0])
+    )
+  }
+
   public sendTransaction<T>(
     transaction: any,
     mapToObject: (receipt: web3receipt) => T,

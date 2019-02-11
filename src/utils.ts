@@ -122,12 +122,26 @@ export function concat(a: Uint8Array, b: Uint8Array): Uint8Array {
 type EthereumEvent = any
 
 export function eventId(event: EthereumEvent): string {
-  // console.log(event)
-  // console.log(event.transactionHash)
-  // console.log(event.logIndex)
-  // console.log(concat(web3.utils.hexToBytes(event.transactionHash), event.logIndex as Uint8Array))
-  // console.log(web3.utils.bytesToHex(concat(event.transactionHash, event.logIndex as Uint8Array)))
   const hash = web3.utils.keccak256(concat(event.transactionHash, event.logIndex as Uint8Array))
-  // console.log(hash)
   return hash
+}
+
+/**
+ * construct a where-clause to use in graphql queries
+ * @param  options [description]
+ * @return a string
+ */
+export function whereClause(options: any) {
+  let where = ''
+  for (const key of Object.keys(options)) {
+    let val = options[key]
+    if (typeof(val) === 'string') {
+      if (val.startsWith('0x')) {
+        val = val.toLowerCase()
+      }
+      where += `${key}: "${val as string}"\n`
+    }
+  }
+  return where
+
 }

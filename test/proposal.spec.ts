@@ -111,7 +111,7 @@ describe('Proposal', () => {
 
     // make sure the account has balance
     const contract = await arc.GENToken().mint(arc.web3.eth.defaultAccount, 1008).send()
-    await dao.approveForStaking(1008).send()
+    await arc.approveForStaking(1008).send()
     await proposal.stake(ProposalOutcome.Pass, 1008).send()
 
     // wait until we have the we got the stake update

@@ -61,20 +61,26 @@ describe('Member', () => {
   })
 
   it('Member stakes() works', async () => {
-      const stakerAccount = arc.web3.eth.accounts.wallet[1]
+      const stakerAccount = arc.web3.eth.accounts.wallet[1].address
       const member = new Member(stakerAccount, dao.address, arc)
       const proposal = await createAProposal()
-      arc.web3.eth.defaultAccount = stakerAccount.address
       const stakingToken =  await proposal.stakingToken()
-      await stakingToken.mint(stakerAccount.address, 10000).send()
+      // mint tokens with defaultAccount
+      await stakingToken.mint(stakerAccount, 10000).send()
+      // switch the defaultAccount to a fresh one
+      stakingToken.context.web3.eth.defaultAccount = stakerAccount
       await stakingToken.approveForStaking(1000).send()
+
       await proposal.stake(ProposalOutcome.Pass, 99).send()
       let stakes: Stake[] = []
-      member.stakes().subscribe((next: Stake[]) => stakes = next)
+      member.stakes({ proposal: proposal.id}).subscribe(
+        (next: Stake[]) => { stakes = next }
+      )
       // wait until the proposal has been indexed
       await waitUntilTrue(() => stakes.length > 0)
 
       expect(stakes.length).toBeGreaterThan(0)
+      expect(stakes[0].staker).toEqual(stakerAccount.toLowerCase())
       expect(stakes[0].amount).toEqual(99)
       // clean up after test
       arc.web3.eth.defaultAccount = defaultAccount
