@@ -6,6 +6,7 @@ import { catchError, concat, filter, map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
+import { Token } from './token'
 import { Address } from './types'
 import { createApolloClient, getWeb3Options } from './utils'
 
@@ -21,7 +22,6 @@ export class Arc {
 
   public pendingOperations: Observable<Array<Operation<any>>> = of()
   public apolloClient: ApolloClient<object>
-  // TODO: are there proper Web3 types available?
 
   public ipfs: any
   public web3: any
@@ -46,7 +46,7 @@ export class Arc {
       graphqlWsProvider: this.graphqlWsProvider
     })
 
-    let provider: any
+    let web3provider: any
 
     // check if we have a web3 provider set in the window object (in the browser)
     // cf. https://metamask.github.io/metamask-docs/API_Reference/Ethereum_Provider
@@ -54,13 +54,13 @@ export class Arc {
       (typeof (window as any).ethereum !== 'undefined' || typeof (window as any).web3 !== 'undefined')
     ) {
       // Web3 browser user detected. You can now use the provider.
-      provider = (window as any).ethereum || (window as any).web3.currentProvider
+      web3provider = (window as any).ethereum || (window as any).web3.currentProvider
     } else {
-      provider = Web3.givenProvider || this.web3WsProvider || this.web3HttpProvider
+      web3provider = Web3.givenProvider || this.web3WsProvider || this.web3HttpProvider
     }
 
-    if (provider) {
-      this.web3 = new Web3(provider)
+    if (web3provider) {
+      this.web3 = new Web3(web3provider)
     }
 
     if (!options.contractAddresses) {
@@ -125,6 +125,48 @@ export class Arc {
   }
 
   /**
+   * Given a gql query, will return an observable of query results
+   * @param  query              a gql query object to execute
+   * @param  apolloQueryOptions options to pass on to Apollo, cf ..
+   * @return an Obsevable that will first yield the current result, and yields updates every time the data changes
+   */
+  public getObservable(query: any, apolloQueryOptions: IApolloQueryOptions = {}) {
+
+    return Observable.create(async (observer: Observer<ApolloQueryResult<any>>) => {
+      Logger.debug(query.loc.source.body)
+
+      // queryPromise sends a query and featches the results
+      const queryPromise: Promise<ApolloQueryResult<{[key: string]: object[]}>> = this.apolloClient.query(
+        { query, ...apolloQueryOptions })
+
+      // subscriptionQuery subscribes to get notified of updates to the query
+      const subscriptionQuery = gql`
+          subscription ${query}
+        `
+      // subscribe
+      const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({ query: subscriptionQuery })
+      // convert the zenObservable returned by appolloclient to an rx.js.Observable
+      const subscriptionObservable = Observable.create((obs: Observer<any>) => {
+          const subscription = zenObservable.subscribe(obs)
+          return () => subscription.unsubscribe()
+        })
+
+      // concatenate the two queries: first the simple fetch result, then the updates from the subscription
+      const sub = from(queryPromise)
+        .pipe(
+          concat(subscriptionObservable)
+        )
+        .pipe(
+          catchError((err: Error) => {
+            throw Error(`${err.name}: ${err.message}\n${query.loc.source.body}`)
+          })
+        )
+        .subscribe(observer)
+      return () => sub.unsubscribe()
+    })
+  }
+
+  /**
    * Returns an observable that:
    * - sends a query over http and returns the current list of results
    * - subscribes over a websocket to changes, and returns the updated list
@@ -145,12 +187,12 @@ export class Arc {
    */
   public _getObservableList(
     query: any,
-    itemMap: (o: object) => object = (o) => o,
+    itemMap: (o: object) => object|null = (o) => o,
     apolloQueryOptions: IApolloQueryOptions = {}
   ) {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
     return this.getObservable(query, apolloQueryOptions).pipe(
-      map((r) => {
+      map((r: ApolloQueryResult<any>) => {
         if (!r.data[entity]) { throw Error(`Could not find entity "${entity}" in ${Object.keys(r.data)}`)}
         return r.data[entity]
       }),
@@ -180,30 +222,30 @@ export class Arc {
    */
   public _getObservableListWithFilter(
     query: any,
-    itemMap: (o: object) => object = (o) => o,
+    itemMap: (o: object) => object|null = (o) => o,
     filterFunc: (o: object) => boolean,
     apolloQueryOptions: IApolloQueryOptions = {}
   ) {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
     return this.getObservable(query, apolloQueryOptions).pipe(
-      map((r: any) => {
+      map((r: ApolloQueryResult<object[]>) => {
         if (!r.data[entity]) { throw Error(`Could not find ${entity} in ${r.data}`)}
         return r.data[entity]
       }),
-      filter((rs) => rs.filter(filterFunc)),
+      filter(filterFunc),
       map((rs: object[]) => rs.map(itemMap))
     )
   }
 
   public _getObservableObject(
     query: any,
-    itemMap: (o: object) => object = (o) => o,
+    itemMap: (o: object) => object|null = (o) => o,
     apolloQueryOptions: IApolloQueryOptions = {}
   ) {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
 
     return this.getObservable(query, apolloQueryOptions).pipe(
-      map((r: any) => {
+      map((r: ApolloQueryResult<any>) => {
         if (!r.data) {
           return null
         }
@@ -211,32 +253,6 @@ export class Arc {
       }),
       map(itemMap)
     )
-  }
-
-  public getObservable(query: any, apolloQueryOptions: IApolloQueryOptions = {}) {
-    Logger.debug(query.loc.source.body)
-
-    const subscriptionQuery = gql`
-      subscription ${query}
-    `
-    const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({ query: subscriptionQuery })
-    const subscriptionObservable = Observable.create((observer: Observer<object[]>) => {
-      const subscription = zenObservable.subscribe(observer)
-      return () => subscription.unsubscribe()
-    })
-
-    const queryPromise: Promise<ApolloQueryResult<{[key: string]: object[]}>> = this.apolloClient.query(
-      { query, ...apolloQueryOptions })
-
-    const queryObservable = from(queryPromise).pipe(
-      concat(subscriptionObservable)
-    ).pipe(
-      catchError((err: Error) => {
-        throw Error(`${err.name}: ${err.message}\n${query.loc.source.body}`)
-      })
-    )
-
-    return queryObservable as Observable<any>
   }
 
   public getContract(name: string) {
@@ -259,6 +275,10 @@ export class Arc {
         contractClass = require('@daostack/arc/build/contracts/ContributionReward.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.ContributionReward, opts)
         return contract
+      case 'GEN':
+        contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.DAOToken, opts)
+        return contract
       case 'DAOToken':
         contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.DAOToken, opts)
@@ -274,6 +294,30 @@ export class Arc {
       default:
         throw Error(`Unknown contract: ${name}`)
     }
+  }
+
+  public GENToken() {
+    if (this.contractAddresses) {
+      return new Token(this.contractAddresses.base.DAOToken, this)
+    } else {
+      throw Error(`Cannot get GEN Token because no contract addresses were provided`)
+    }
+  }
+
+  public approveForStaking(amount: number) {
+    return this.GENToken().approveForStaking(amount)
+  }
+  /**
+   * How much GEN the genesisProtocol may spend on behalve of the owner
+   * @param  owner owner for which to check the allowance
+   * @return A number
+   */
+  public allowance(owner: string): Observable < any > {
+    return this.GENToken().allowances({
+      owner
+    }).pipe(
+      map((rs: object[]) => rs[0])
+    )
   }
 
   public sendTransaction<T>(

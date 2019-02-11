@@ -1,3 +1,4 @@
+import { ApolloQueryResult } from 'apollo-client'
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
@@ -6,8 +7,6 @@ import { Address, IStateful } from './types'
 
 export interface IReputationState {
   address: Address
-  name: string
-  symbol: string
   totalSupply: number
 }
 
@@ -29,9 +28,6 @@ export class Reputation implements IStateful<IReputationState> {
       }
       return {
         address: item.address,
-        // TODO: need to get the symbol and name: once https://github.com/daostack/subgraph/issues/36 is resolved
-        name: 'REP',
-        symbol: 'REP',
         totalSupply: item.totalSupply
       }
     }
@@ -49,7 +45,7 @@ export class Reputation implements IStateful<IReputationState> {
       }
     }`
     return this.context.getObservable(query).pipe(
-      map((r) => r.data.reputationHolders),
+      map((r: ApolloQueryResult<any>) => r.data.reputationHolders),
       map((items: any[]) => {
         const item = items.length > 0 && items[0]
         return item.balance !== undefined ? Number(item.balance) : 0

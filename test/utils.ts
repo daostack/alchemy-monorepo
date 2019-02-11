@@ -49,16 +49,6 @@ export async function getOptions(web3: any) {
   }
 }
 
-export async function getWeb3() {
-  const web3 = new Web3(web3HttpProvider)
-  for (const pk of pks) {
-    const account = web3.eth.accounts.privateKeyToAccount(pk)
-    web3.eth.accounts.wallet.add(account)
-  }
-  web3.eth.defaultAccount = web3.eth.accounts.wallet[0].address
-  return web3
-}
-
 export function getArc() {
   const arc = new Arc({
     contractAddresses: getContractAddresses(),
@@ -77,9 +67,10 @@ export function getArc() {
   return arc
 }
 
-// TODO: itnegration this in src.repution.ts
+// TODO: use the Repuation.mint() function here
 export async function mintSomeReputation() {
-  const web3 = await getWeb3()
+  const arc = getArc()
+  const web3 = arc.web3
   const addresses = getContractAddresses()
   const opts = await getOptions(web3)
   const accounts = web3.eth.accounts.wallet
@@ -157,7 +148,7 @@ export async function createAProposal(dao?: DAO) {
   }
 
   // collect the first 4 results of the observable in a a listOfUpdates array
-  const response = await dao.createProposal(options).pipe(take(2)).toPromise()
+  const response = await dao.createProposal(options).send()
   return response.result as Proposal
 
 }

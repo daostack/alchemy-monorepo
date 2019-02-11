@@ -1,6 +1,8 @@
 import { Observable, Observer } from 'rxjs'
+import { take } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Logger } from './logger'
+import { Web3Receipt } from './types'
 
 export enum TransactionState {
   Sent,
@@ -28,7 +30,11 @@ export interface ITransactionUpdate<T> {
 /**
  * An operation is a stream of transaction updates
  */
-export type Operation<T> = Observable<ITransactionUpdate<T>>
+export interface IOperationObservable<T> extends Observable<T> {
+  send: () => Promise<Web3Receipt>
+}
+
+export type Operation<T> = IOperationObservable<ITransactionUpdate<T>>
 
 export type web3receipt = object
 
@@ -108,5 +114,6 @@ export function sendTransaction<T>(
       })
     }
   )
+  observable.send = () => observable.pipe(take(2)).toPromise()
   return observable
 }

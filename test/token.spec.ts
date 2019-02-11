@@ -2,7 +2,9 @@ import { first} from 'rxjs/operators'
 import { Arc, IContractAddresses } from '../src/arc'
 import { Token } from '../src/token'
 import { Address } from '../src/types'
-import { getArc, getContractAddresses, getWeb3 } from './utils'
+import { getArc, getContractAddresses, waitUntilTrue } from './utils'
+
+jest.setTimeout(10000)
 /**
  * Token test
  */
@@ -10,13 +12,11 @@ describe('Token', () => {
   let addresses: IContractAddresses
   let arc: Arc
   let address: Address
-  let web3: any
 
   beforeAll(async () => {
     arc = getArc()
     addresses = getContractAddresses()
     address = addresses.dao.DAOToken
-    web3 = await getWeb3()
   })
 
   it('Token is instantiable', () => {
@@ -50,6 +50,13 @@ describe('Token', () => {
     expect(balanceOf).toEqual(1e21)
   })
 
+  it('mint some new tokens', async () => {
+    const token = new Token(address, arc)
+    const balanceOf = await token.balanceOf('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1')
+      .pipe(first()).toPromise()
+    expect(balanceOf).toEqual(1e21)
+  })
+
   it('see approvals', async () => {
     const token = new Token(address, arc)
     const approvals = await token.approvals('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1')
@@ -57,5 +64,22 @@ describe('Token', () => {
     expect(approvals).toEqual([])
     // todo: this needs a test with some approvals
 
+  })
+
+  it('approveForStaking works and is indexed property', async () => {
+    const token = new Token(arc.getContract('GEN').options.address, arc)
+    const amount = 31415
+    await token.approveForStaking(amount).send()
+    let allowances: any[] = []
+
+    token.allowances({ owner: arc.web3.eth.defaultAccount}).subscribe(
+      (next: any) => allowances = next
+    )
+    await waitUntilTrue(() => allowances.length > 0 && allowances[0].amount >= amount)
+    expect(allowances).toContainEqual({
+      amount,
+      owner: arc.web3.eth.defaultAccount.toLowerCase(),
+      spender: arc.getContract('GenesisProtocol').options.address.toLowerCase()
+    })
   })
 })

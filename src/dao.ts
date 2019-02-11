@@ -1,5 +1,6 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
+import { first, map } from 'rxjs/operators'
 import { Arc } from './arc'
 import { IMemberQueryOptions, Member } from './member'
 import {
@@ -15,6 +16,8 @@ import { Address, ICommonQueryOptions, IStateful } from './types'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 const Web3 = require('web3')
+
+jest.setTimeout(10000)
 
 export interface IDAOState {
   address: Address // address of the avatar
@@ -77,15 +80,26 @@ export class DAO implements IStateful<IDAOState> {
     this.state = this.context._getObservableObject(query, itemMap) as Observable<IDAOState>
   }
 
+  /*
+   * return the nativeReputation of the DAO
+   * @returns an (Observable) that returns a Reputation instance
+   */
+  public nativeReputation(): Observable<Reputation> {
+    return this.state.pipe(first()).pipe(map((r) => r.reputation))
+  }
+
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
-    // TODO: show only members from this DAO
     const query = gql`{
       members (where: { dao: "${this.address}"}){
         id
       }
     }`
-    const itemMap = (item: any): Member => new Member(item.id, this.context)
+    const itemMap = (item: any): Member => new Member(item.id, this.address, this.context)
     return this.context._getObservableList(query, itemMap) as Observable<Member[]>
+  }
+
+  public member(address: Address): Member {
+    return new Member(address, this.address, this.context)
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
@@ -121,7 +135,6 @@ export class DAO implements IStateful<IDAOState> {
   public ethBalance(): Observable<number> {
     return this.context.getBalance(this.address)
   }
-
 }
 
 export interface IDAOQueryOptions extends ICommonQueryOptions {

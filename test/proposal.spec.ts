@@ -1,7 +1,7 @@
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { Proposal, ProposalStage } from '../src/proposal'
-import { getArc,  getWeb3 } from './utils'
+import { IProposalState, Proposal, ProposalOutcome, ProposalStage } from '../src/proposal'
+import { createAProposal, getArc, getTestDAO, waitUntilTrue} from './utils'
 
 const DAOstackMigration = require('@daostack/migration')
 
@@ -10,14 +10,9 @@ const DAOstackMigration = require('@daostack/migration')
  */
 describe('Proposal', () => {
   let arc: Arc
-  let web3: any
-  // let accounts: any
 
   beforeAll(async () => {
     arc = getArc()
-    web3 = await getWeb3()
-    // accounts = web3.eth.accounts.wallet
-    // web3.eth.defaultAccount = accounts[0].address
   })
 
   it('Proposal is instantiable', () => {
@@ -55,6 +50,13 @@ describe('Proposal', () => {
     expect(proposal.dao.address).toBe(dao)
   })
 
+  it('state should be available before the data is indexed', async () => {
+    const proposal = await createAProposal()
+    const proposalState = await proposal.state.pipe(first()).toPromise()
+    // the state is null because the proposal has not been indexed yet
+    expect(proposalState).toEqual(null)
+  })
+
   it('Check proposal state is correct', async () => {
     const { proposalId } = DAOstackMigration.migration('private').test
 
@@ -68,12 +70,14 @@ describe('Proposal', () => {
         boostedAt: 0,
         boostedVotePeriodLimit: 259200,
         boostingThreshold: 0,
+        confidence: 0,
         description: null,
         descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
         ethReward: 10,
         executedAt: null,
         externalTokenReward: 10,
         // id: '0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e',
+        nativeTokenReward: 10,
         preBoostedVotePeriodLimit: 259200,
         proposer: '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1',
         proposingRepReward: 5000000000,
@@ -84,32 +88,69 @@ describe('Proposal', () => {
         stakesAgainst: 100000000000,
         stakesFor: 0,
         title: null,
-        nativeTokenReward: 10,
         url: null,
-        votesAgainst: web3.utils.toWei('1000'),
-        votesFor: web3.utils.toWei('1000'),
+        votesAgainst: 1e+21,
+        votesFor: 1e+21,
         winningOutcome: 'Fail'
     })
   })
 
   it('get proposal rewards', async () => {
+    // TODO: fix this once the subgraph corretly indexes rewards
     const { proposalId } = DAOstackMigration.migration('private').test
     const proposal = new Proposal(proposalId, '', arc)
     const rewards = await proposal.rewards().pipe(first()).toPromise()
     return
-    // TODO: fix this once the subgraph corretly indexes rewards
-    // expect(rewards.length).toBeGreaterThan(0)
-    // console.log(rewards)
-    // const reward = rewards[0]
-    // console.log(reward)
-    //
-    // expect(reward.proposal.id).toBe(proposalId)
   })
 
   it('get proposal stakes', async () => {
-    const { proposalId } = DAOstackMigration.migration('private').test
-    const proposal = new Proposal(proposalId, '', arc)
-    const stakes = await proposal.stakes().pipe(first()).toPromise()
-    expect(stakes.length).toEqual(0)
+    const dao = await getTestDAO()
+    const proposal = await createAProposal()
+    const stakes: any[] = []
+    proposal.stakes().subscribe((next) => stakes.push(next))
+
+    // make sure the account has balance
+    const contract = await arc.GENToken().mint(arc.web3.eth.defaultAccount, 1008).send()
+    await arc.approveForStaking(1008).send()
+    await proposal.stake(ProposalOutcome.Pass, 1008).send()
+
+    // wait until we have the we got the stake update
+    await waitUntilTrue(() => stakes.length > 0 && stakes[stakes.length - 1].length > 0)
+    expect(stakes[0].length).toEqual(0)
+    expect(stakes[stakes.length - 1].length).toEqual(1)
+    const proposalState = await proposal.state.pipe(first()).toPromise()
+    // TODO: uncomment next test when https://github.com/daostack/subgraph/issues/90 is resolved
+    // expect(proposalState.confidence).toEqual(proposalState.stakesFor/proposalState.stakesAgainst)
+  })
+
+  it('state gets all updates', async () => {
+    // TODO: write this test!
+    const states: IProposalState[] = []
+    const proposal = await createAProposal()
+    proposal.state.subscribe(
+      (state: any) => {
+        states.push(state)
+      },
+      (err: any) => {
+        throw err
+      }
+    )
+    // vote for the proposal
+    await proposal.vote(ProposalOutcome.Pass).pipe(first()).toPromise()
+
+    // wait until all transactions are indexed
+    await waitUntilTrue(() => {
+      if (states.length > 2 && states[states.length - 1].votesFor > 0) {
+        return true
+      } else {
+        return false
+      }
+    })
+
+    // we expect our first state to be null
+    // (we just created the proposal and subscribed immediately)
+    expect(states[0]).toEqual(null)
+    expect(states[states.length - 1].votesFor).toBeGreaterThan(0)
+    expect(states[states.length - 1].winningOutcome).toEqual('Pass')
   })
 })

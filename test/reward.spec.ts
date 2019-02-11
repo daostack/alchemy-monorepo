@@ -33,7 +33,7 @@ describe('Reward', () => {
           periodLength: 12,
           periods: 5,
           type: 'ConributionReward'
-    }).pipe(take(2)).toPromise()
+    }).send()
     const proposal = state.result
 
     expect(proposal).toBeDefined()

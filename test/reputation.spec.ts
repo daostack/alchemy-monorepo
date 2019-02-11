@@ -2,7 +2,7 @@ import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
-import { getArc, getContractAddresses, getWeb3 } from './utils'
+import { getArc, getContractAddresses } from './utils'
 /**
  * Reputation test
  */
@@ -11,15 +11,13 @@ describe('Reputation', () => {
   let addresses: any
   let arc: Arc
   let address: Address
-  let web3: any
   let accounts: any
 
   beforeAll(async () => {
     addresses = getContractAddresses()
     address = addresses.dao.Reputation
     arc = getArc()
-    web3 = await getWeb3()
-    accounts = web3.eth.accounts.wallet
+    accounts = arc.web3.eth.accounts.wallet
   })
 
   it('Reputation is instantiable', () => {
@@ -32,10 +30,9 @@ describe('Reputation', () => {
     const reputation = new Reputation(address, arc)
     expect(reputation).toBeInstanceOf(Reputation)
     const state = await reputation.state.pipe(first()).toPromise()
-    expect(Object.keys(state)).toEqual(['address', 'name', 'symbol', 'totalSupply'])
+    expect(Object.keys(state)).toEqual(['address', 'totalSupply'])
     const expected = {
-       address: address.toLowerCase(),
-       symbol: 'REP'
+       address: address.toLowerCase()
     }
     expect(state).toMatchObject(expected)
   })
@@ -55,4 +52,7 @@ describe('Reputation', () => {
     expect(reputationOf).toEqual(1e21)
   })
 
+  it.skip('reputationOf throws a meaningful error if an invalid address is provided', async () => {
+    // write this test
+  })
 })
