@@ -104,9 +104,8 @@ export class Proposal implements IStateful<IProposalState> {
             options.nativeTokenReward || 0,
             options.ethReward || 0,
             options.externalTokenReward || 0,
-            // TODO: what are decent default values for periodLength and periods?
-            options.periodLength || 0,
-            options.periods || 0
+            options.periodLength || 12,
+            options.periods || 5
           ],
           options.externalTokenAddress || nullAddress,
           options.beneficiary
