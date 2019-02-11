@@ -52,11 +52,6 @@ describe('Proposal execute()', () => {
       (error: Error) => { throw error }
     )
     await waitUntilTrue(() => proposalIsIndexed)
-    function getCurrentState(propId: string) {
-        const prop = new  Proposal(propId, dao.address, arc)
-        return prop.state.pipe(first()).toPromise()
-    }
-
     // check the state right after creation
     await waitUntilTrue(() => proposalStates.length > 1)
     expect(proposalStates[1].stage).toEqual(ProposalStage.Queued)
@@ -64,7 +59,7 @@ describe('Proposal execute()', () => {
     // calling execute in this stage has no effect on the stage
     await proposal.execute().send()
     await waitUntilTrue(() => proposalStates.length > 2)
-    proposalState = await getCurrentState(proposalId)
+    proposalState = proposalStates[2]
     expect(proposalStates[2].stage).toEqual(ProposalStage.Queued)
     expect(proposalStates.length).toEqual(3)
 
@@ -76,7 +71,7 @@ describe('Proposal execute()', () => {
 
     // wait until the votes have been counted
     await waitUntilTrue(async () => {
-      proposalState = await getCurrentState(proposalId)
+      proposalState = proposalStates[proposalStates.length - 1]
       return proposalState.votesFor > 0
     })
     expect(proposalState.stage).toEqual(ProposalStage.Queued)
@@ -88,7 +83,7 @@ describe('Proposal execute()', () => {
 
     await proposal.stake(ProposalOutcome.Pass, 200).send()
     await waitUntilTrue(async () => {
-      proposalState = await getCurrentState(proposalId)
+      proposalState = proposalStates[proposalStates.length - 1]
       return proposalState.stakesFor > 0
     })
 

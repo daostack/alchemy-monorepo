@@ -263,8 +263,7 @@ export class Proposal implements IStateful<IProposalState> {
       }
     }
 
-    // TODO: the 'no-cache' statement here is suspicious, check if it is really needed and why
-    this.state = context._getObservableObject(query, itemMap, { fetchPolicy: 'no-cache' }) as Observable<IProposalState>
+    this.state = context._getObservableObject(query, itemMap) as Observable<IProposalState>
   }
 
   /**
@@ -272,14 +271,6 @@ export class Proposal implements IStateful<IProposalState> {
    * @return [description]
    */
   public votingMachine() {
-    // TODO: get the contract not from migration.json but from the proposal itself!
-    // TODO: cf next two lines from alchemy on how to get the votingMacchineAddress
-    // (does not work with new contract versions anymore, though, it seems)
-    // const contributionRewardInstance = this.dao.getContract('ContributionReward')
-    // const result = await contributionRewardInstance.methods.parameters(this.dao.address).call()
-    // const votingMachineAddress = (
-    //   await contributionRewardInstance.methods.getSchemeParameters(daoAvatarAddress)).votingMachineAddress
-    // the graph indexes it at contributionRewardProposal.votingMachine, but not on the proposal entity
     return this.context.getContract('GenesisProtocol')
   }
 
