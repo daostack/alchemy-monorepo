@@ -2,52 +2,92 @@ import { first} from 'rxjs/operators'
 import { Arc, IContractAddresses } from '../src/arc'
 import { DAO } from '../src/dao'
 import { Member } from '../src/member'
-import { getArc, getContractAddresses } from './utils'
+import { Proposal, ProposalOutcome } from '../src/proposal'
+import { Stake } from '../src/stake'
+import { Address } from '../src/types'
+import { Vote } from '../src/vote'
+import { createAProposal, getArc, getContractAddresses, getTestDAO, waitUntilTrue } from './utils'
 
 /**
  * Member test
  */
 describe('Member', () => {
-  let id = '0x07090158a93a8512293f75197c0da4d60d3997596474d141c8610479abe9beab'
 
   let addresses: IContractAddresses
   let arc: Arc
+  let defaultAccount: Address
+  let dao: DAO
 
   beforeAll(async () => {
     addresses = getContractAddresses()
     arc = getArc()
+    dao = await getTestDAO()
+    defaultAccount = arc.web3.eth.defaultAccount
   })
 
   it('Member is instantiable', () => {
-    const member = new Member(id, arc)
+    const member = new Member(defaultAccount, dao.address, arc)
     expect(member).toBeInstanceOf(Member)
   })
 
   it('Member state works', async () => {
-    const member = new Member(id, arc)
+    const member = new Member(defaultAccount, dao.address, arc)
     const memberState = await member.state.pipe(first()).toPromise()
-    expect(memberState.reputation).toEqual(1e21)
-    expect(memberState.tokens).toEqual(1e21)
+    expect(memberState.reputation).toBeGreaterThan(0)
+    expect(memberState.tokens).toBeGreaterThan(0)
     expect(memberState.dao).toBeInstanceOf(DAO)
+    expect(memberState.address).toEqual(defaultAccount)
     expect(memberState.dao.address).toBe(addresses.dao.Avatar.toLowerCase())
   })
 
-  it.skip('Member proposals works', async () => {
-    // TODO: we should evaluate if we want to keep the member object at all
-    id = '0x1cea1e112ec409762ab4795daead616b5a3acf72879303434a87cbcd3a1785b9'
-    const member = new Member(id, arc)
-    const proposals = await member.proposals().pipe(first()).toPromise()
+  it('Member state also works for members that are not in the index', async () => {
+    const someAddress = '0xe74f3c49c162c00ac18b022856e1a4ecc8947c42'
+    const member = new Member(someAddress, dao.address, arc)
+    const memberState = await member.state.pipe(first()).toPromise()
+    expect(memberState.reputation).toEqual(0)
+    expect(memberState.address).toEqual(someAddress)
+  })
+
+  it('Member proposals() works', async () => {
+    const member = new Member(defaultAccount, dao.address, arc)
+    const proposal = await createAProposal()
+    let proposals: Proposal[] = []
+    member.proposals().subscribe((next: Proposal[]) => proposals = next)
+    // wait until the proposal has been indexed
+    await waitUntilTrue(() => proposals.length > 0)
+
     expect(proposals.length).toBeGreaterThan(0)
     expect(proposals[0].id).toBeDefined()
   })
 
-  it.skip('Member votes works', async () => {
-    // TODO: we should evaluate if we want to keep the member object at all
-    id = '0x40163b1a33965a2d41f1c2888cdd2ffec4b5fb25a5071846bfbece19c8e13a81'
-    const member = new Member(id, arc)
-    const votes = await member.votes().pipe(first()).toPromise()
+  it('Member stakes() works', async () => {
+      const stakerAccount = arc.web3.eth.accounts.wallet[1]
+      const member = new Member(stakerAccount, dao.address, arc)
+      const proposal = await createAProposal()
+      arc.web3.eth.defaultAccount = stakerAccount.address
+      const stakingToken =  await proposal.stakingToken()
+      await stakingToken.mint(stakerAccount.address, 10000).send()
+      await stakingToken.approveForStaking(1000).send()
+      await proposal.stake(ProposalOutcome.Pass, 99).send()
+      let stakes: Stake[] = []
+      member.stakes().subscribe((next: Stake[]) => stakes = next)
+      // wait until the proposal has been indexed
+      await waitUntilTrue(() => stakes.length > 0)
+
+      expect(stakes.length).toBeGreaterThan(0)
+      expect(stakes[0].amount).toEqual(99)
+      // clean up after test
+      arc.web3.eth.defaultAccount = defaultAccount
+    })
+
+  it.skip('Member votes() works', async () => {
+    const member = new Member(defaultAccount, dao.address, arc)
+    const proposal = await createAProposal()
+    await proposal.vote(ProposalOutcome.Pass).send()
+    let votes: Vote[] = []
+    member.votes().subscribe((next: Vote[]) => votes = next)
+    await waitUntilTrue(() => votes.length > 0)
     expect(votes.length).toBeGreaterThan(0)
-    const vote = votes[0]
-    expect(vote.proposalId).toBeDefined()
+    expect(votes[0].proposalId).toEqual(proposal.id)
   })
 })

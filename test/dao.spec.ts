@@ -74,13 +74,18 @@ describe('DAO', () => {
     )
   })
 
-  it.skip('dao.members() should work', async () => {
-    // TODO: because we have not setup with proposals, we are only testing if the current state returns the emty list
+  it('dao.members() should work', async () => {
     const dao = await getTestDAO()
     const members = await dao.members().pipe(first()).toPromise()
     expect(typeof members).toEqual(typeof [])
     expect(members.length).toBeGreaterThan(0)
     const member = members[0]
+  })
+
+  it('dao.member() should work', async () => {
+    const dao = await getTestDAO()
+    const member = await dao.member(arc.web3.eth.defaultAccount)
+    expect(typeof member).toEqual(typeof [])
   })
 
   it('dao.ethBalance() should work', async () => {
@@ -101,13 +106,15 @@ describe('DAO', () => {
     const dao = await getTestDAO()
     let approval: any
     dao.allowance(arc.web3.eth.defaultAccount).subscribe(
-      (next: any) => approval = next
+      (next: any) => {
+        console.log(next)
+        approval = next
+      }
     )
 
     await dao.approveForStaking(1001).send()
     await waitUntilTrue(() => {
       if (approval) {
-        // console.log(approval.amount)
         return approval.amount === 1001
       } else {
         return false

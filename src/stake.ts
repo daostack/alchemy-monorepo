@@ -31,12 +31,10 @@ export class Stake implements IStake {
     daoFilter = () => true
 
     for (const key of Object.keys(options)) {
-      if (key === 'dao') {
-        // TODO: next line filters bu DAO, which is a sort of hack we can use if  we need This
-        // before https://github.com/daostack/subgraph/issues/65 is resolved
-        daoFilter = (r: any) => r[0].member.dao.id === options.dao
-      } else if (options[key] !== undefined) {
-        where += `${key}: "${options[key] as string}",\n`
+      if (options.dao) {
+        // TODO: we ignore the options.dao argument while waiting for https://github.com/daostack/subgraph/issues/65
+      } else {
+        where += `${key}: "${options[key] as string}"\n`
       }
     }
 
@@ -58,7 +56,7 @@ export class Stake implements IStake {
     `
     return context._getObservableListWithFilter(
       query,
-      (r: any) => new Stake(r.id, r.staker.id, r.createdAt, r.outcome, r.amount, r.proposal.id),
+      (r: any) => new Stake(r.id, r.staker.id, r.createdAt, r.outcome, Number(r.amount), r.proposal.id),
       daoFilter,
       apolloQueryOptions
     ) as Observable<IStake[]>

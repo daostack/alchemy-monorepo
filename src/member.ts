@@ -28,35 +28,49 @@ export class Member implements IStateful<IMemberState> {
   public state: Observable<IMemberState>
 
   /**
-   * @param id Id of the member
+   * @param address addresssof the member
+   * @param daoAdress addresssof the DAO this member is a member of
    * @param context an instance of Arc
    */
-  constructor(public id: string, public context: Arc) {
+  constructor(public address: Address, public daoAddress: Address, public context: Arc) {
     const query = gql`
       {
-        member (id: "${id}") {
-          id,
-          address,
+        members (
+          where: {
+            address: "${address}"
+            dao: "${daoAddress}"
+          }
+        ) {
+          id
+          address
           dao {
             id
-          },
-          reputation,
-          tokens,
+          }
+          reputation
+          tokens
         }
       }
     `
 
-    const itemMap = (item: any) => {
-      if (item === null) {
-        throw Error(`Could not find a Member with id '${id}'`)
-      }
-
-      return {
-        address: item.address,
-        dao: new DAO(item.dao.id, this.context),
-        id: item.id,
-        reputation: Number(item.reputation),
-        tokens: Number(item.tokens)
+    const itemMap = (items: any) => {
+      if (items.length === 0) {
+        // TODO: we did not find the member, so we know the reputation is 0
+        // however, this account may still posess some tokens, so we shoudl not assume that tokens: 0
+        // Probably best to solve by also adding tokenholders to he member collection in the subgraph
+        return {
+          address,
+          dao: new DAO(daoAddress, this.context),
+          reputation: 0,
+          tokens: 0
+        }
+      } else {
+        const item = items[0]
+        return {
+          address,
+          dao: new DAO(daoAddress, this.context),
+          reputation: Number(item.reputation),
+          tokens: Number(item.tokens)
+        }
       }
     }
 
@@ -64,12 +78,8 @@ export class Member implements IStateful<IMemberState> {
 
   }
 
-  public dao(): Observable<DAO> {
-    return this.state.pipe(
-      map((state) => {
-        return state.dao
-      })
-    )
+  public dao(): DAO {
+    return new DAO(this.daoAddress, this.context)
   }
 
   public rewards(): Observable<Reward[]> {
@@ -77,22 +87,20 @@ export class Member implements IStateful<IMemberState> {
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
-    return this.dao().pipe(
-      switchMap((dao) => {
-        options.proposer = this.id
-        return dao.proposals(options)
-    }))
+    options.proposer = this.address
+    return this.dao().proposals(options)
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
-    throw new Error('not implemented')
-    // const dao = new DAO(this.dao)
-    // return dao.stakes(options)
+    options.staker = this.address
+    return this.dao().stakes(options)
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
-    options.member = this.id
-    return Vote.search(this.context, options)
+    throw new Error('not implemented')
+    // TODO: implementation is pending https://github.com/daostack/subgraph/issues/96
+    // options.voter = this.address
+    // return Vote.search(this.context, options)
   }
 }
 

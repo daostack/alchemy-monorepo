@@ -67,9 +67,10 @@ export function getArc() {
   return arc
 }
 
-// TODO: itnegration this in src.repution.ts
+// TODO: integration this in src.repution.ts
 export async function mintSomeReputation() {
-  const web3 = await getWeb3()
+  const arc = getArc()
+  const web3 = arc.web3
   const addresses = getContractAddresses()
   const opts = await getOptions(web3)
   const accounts = web3.eth.accounts.wallet
