@@ -359,8 +359,7 @@ export class Proposal implements IStateful<IProposalState> {
     const stakeMethod = this.votingMachine().methods.stake(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
-      amount // amount the amount to stake with . if _amount == 0 it will use all staker reputation.
-      // nullAddress
+      amount // the amount of tokens to stake
     )
 
     return this.context.sendTransaction(
