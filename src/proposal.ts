@@ -98,8 +98,7 @@ export class Proposal implements IStateful<IProposalState> {
 
       const transaction = contributionReward.methods.proposeContributionReward(
           options.dao,
-          // TODO: after upgrading arc, use empty string as default value for descriptionHash
-          options.descriptionHash || '0x0000000000000000000000000000000000000000000000000000000000000000',
+          options.descriptionHash || '',
           options.reputationReward || 0,
           [
             options.nativeTokenReward || 0,

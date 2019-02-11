@@ -51,8 +51,8 @@ describe('Stake on a ContributionReward', () => {
     const dao = await getTestDAO()
     const stakingToken =  arc.getContract('GEN')
     const proposal = await createAProposal(dao)
-    await stakingToken.methods.mint(accounts[1].address, '100').send()
-    proposal.context.web3.eth.defaultAccount = accounts[1].address
+    await stakingToken.methods.mint(accounts[2].address, '100').send()
+    proposal.context.web3.eth.defaultAccount = accounts[2].address
     await expect(proposal.stake(ProposalOutcome.Pass, 100).send()).rejects.toThrow(
       /insufficient allowance/i
     )
