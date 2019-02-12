@@ -78,6 +78,7 @@ export class Token implements IStateful<ITokenState> {
       })
     )
   }
+
   /*
    * get a web3 contract instance for this token
    */
@@ -88,8 +89,8 @@ export class Token implements IStateful<ITokenState> {
       throw Error(`Cannot find contract address`)
     }
     return contract
-
   }
+
   public mint(beneficiary: Address, amount: number) {
     const contract = this.getContract()
     const transaction = contract.methods.mint(beneficiary, amount)

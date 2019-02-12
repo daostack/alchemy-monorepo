@@ -1,13 +1,10 @@
 import { ApolloQueryResult } from 'apollo-client'
 import gql from 'graphql-tag'
-import { take } from 'rxjs/operators'
 import { IContractAddresses } from '../src/arc'
 import { DAO } from '../src/dao'
 import Arc from '../src/index'
 import { Proposal } from '../src/proposal'
-import { Address } from '../src/types'
-
-const Web3 = require('web3')
+import { Reputation } from '../src/reputation'
 
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack'
 export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/daostack'
@@ -67,16 +64,12 @@ export function getArc() {
   return arc
 }
 
-// TODO: use the Repuation.mint() function here
 export async function mintSomeReputation() {
   const arc = getArc()
-  const web3 = arc.web3
   const addresses = getContractAddresses()
-  const opts = await getOptions(web3)
-  const accounts = web3.eth.accounts.wallet
-  const Reputation = require('@daostack/arc/build/contracts/Reputation.json')
-  const reputation = new web3.eth.Contract(Reputation.abi, addresses.organs.DemoReputation, opts)
-  await reputation.methods.mint(accounts[1].address, '99').send()
+  const token = new Reputation(addresses.organs.DemoReputation, arc)
+  const accounts = arc.web3.eth.accounts.wallet
+  await token.mint(accounts[1].address, 99).send()
 }
 
 export function mineANewBlock() {
