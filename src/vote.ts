@@ -68,7 +68,7 @@ export class Vote implements IVote {
         } else {
           throw new Error(`Unexpected value for proposalVote.outcome: ${r.outcome}`)
         }
-        return new Vote(r.id, r.voter, r.createdAt, outcome, r.reputation, r.proposal.id,  r.member.dao.id)
+        return new Vote(r.id, r.voter, r.createdAt, outcome, r.reputation, r.proposal.id, '')
       },
       daoFilter,
       apolloQueryOptions

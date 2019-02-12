@@ -277,11 +277,7 @@ export class Arc {
         return contract
       case 'GEN':
         contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.DAOToken, opts)
-        return contract
-      case 'DAOToken':
-        contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.DAOToken, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.GEN, opts)
         return contract
       case 'GenesisProtocol':
         contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
@@ -298,7 +294,7 @@ export class Arc {
 
   public GENToken() {
     if (this.contractAddresses) {
-      return new Token(this.contractAddresses.base.DAOToken, this)
+      return new Token(this.contractAddresses.base.GEN, this)
     } else {
       throw Error(`Cannot get GEN Token because no contract addresses were provided`)
     }
