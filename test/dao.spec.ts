@@ -80,6 +80,8 @@ describe('DAO', () => {
     expect(typeof members).toEqual(typeof [])
     expect(members.length).toBeGreaterThan(0)
     const member = members[0]
+    const memberState = await member.state.pipe(first()).toPromise()
+    expect(memberState.reputation).toBeGreaterThan(0)
   })
 
   it('dao.member() should work', async () => {
