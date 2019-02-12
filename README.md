@@ -11,6 +11,12 @@ A frontend client library for the [DAOstack subgraph](https://github.com/daostac
 1. `npm install --save @daostack/client`
 2. `import Arc from '@daostack/client'`
 
+##
+[overview](./documentation/overview.md)
+[development](./documentation/development.md)
+[example](./documentation/example-session.md)
+[example](./documentation/example-session.md)
+[troubleshooting](./documentation/troubleshooting.md)
 
 ## Developing
 

@@ -90,9 +90,10 @@ export class DAO implements IStateful<IDAOState> {
     const query = gql`{
       members (where: { dao: "${this.address}"}){
         id
+        address
       }
     }`
-    const itemMap = (item: any): Member => new Member(item.id, this.address, this.context)
+    const itemMap = (item: any): Member => new Member(item.address, this.address, this.context)
     return this.context._getObservableList(query, itemMap) as Observable<Member[]>
   }
 
