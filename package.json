@@ -135,7 +135,7 @@
     "js-logger": "^1.6.0",
     "moment": "^2.22.2",
     "node-gyp": "^3.8.0",
-    "rxjs": "^6.3.3",
+    "rxjs": "^6.4.0",
     "subscriptions-transport-ws": "^0.9.15",
     "web3": "1.0.0-beta.37",
     "ws": "^6.1.2"
