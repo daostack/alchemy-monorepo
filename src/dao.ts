@@ -17,8 +17,6 @@ import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 const Web3 = require('web3')
 
-jest.setTimeout(10000)
-
 export interface IDAOState {
   address: Address // address of the avatar
   memberCount: number
