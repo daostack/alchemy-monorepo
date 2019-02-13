@@ -7,7 +7,7 @@ import { DAO } from './dao'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { Token } from './token'
-import { Address } from './types'
+import { Address, Web3Provider } from './types'
 import { createApolloClient, getWeb3Options } from './utils'
 
 const IPFSClient = require('ipfs-http-client')
@@ -16,8 +16,7 @@ const Web3 = require('web3')
 export class Arc {
   public graphqlHttpProvider: string
   public graphqlWsProvider: string
-  public web3HttpProvider: string
-  public web3WsProvider: string
+  public web3Provider: Web3Provider = ''
   public ipfsProvider: string
 
   public pendingOperations: Observable<Array<Operation<any>>> = of()
@@ -30,15 +29,13 @@ export class Arc {
   constructor(options: {
     graphqlHttpProvider: string
     graphqlWsProvider: string
-    web3HttpProvider?: string
+    web3Provider?: Web3Provider
     web3WsProvider?: string
     ipfsProvider?: string
     contractAddresses?: IContractAddresses
   }) {
     this.graphqlHttpProvider = options.graphqlHttpProvider
     this.graphqlWsProvider = options.graphqlWsProvider
-    this.web3HttpProvider = options.web3HttpProvider || ''
-    this.web3WsProvider = options.web3WsProvider || ''
     this.ipfsProvider = options.ipfsProvider || ''
 
     this.apolloClient = createApolloClient({
@@ -48,6 +45,7 @@ export class Arc {
 
     let web3provider: any
 
+    // TODO: this is probably better to handle explicitly in the frontend
     // check if we have a web3 provider set in the window object (in the browser)
     // cf. https://metamask.github.io/metamask-docs/API_Reference/Ethereum_Provider
     if (typeof window !== 'undefined' &&
@@ -56,7 +54,7 @@ export class Arc {
       // Web3 browser user detected. You can now use the provider.
       web3provider = (window as any).ethereum || (window as any).web3.currentProvider
     } else {
-      web3provider = Web3.givenProvider || this.web3WsProvider || this.web3HttpProvider
+      web3provider = Web3.givenProvider || options.web3Provider
     }
 
     if (web3provider) {
