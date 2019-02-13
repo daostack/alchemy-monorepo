@@ -29,8 +29,7 @@ export class Arc {
   constructor(options: {
     graphqlHttpProvider: string
     graphqlWsProvider: string
-    web3Provider?: Web3Provider
-    web3WsProvider?: string
+    web3Provider?: string
     ipfsProvider?: string
     contractAddresses?: IContractAddresses
   }) {

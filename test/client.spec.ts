@@ -86,8 +86,7 @@ describe('apolloClient', () => {
     const arc = new Arc({
       graphqlHttpProvider,
       graphqlWsProvider,
-      web3HttpProvider: 'http://127.0.0.1:8545',
-      web3WsProvider: 'ws://127.0.0.1:8545'
+      web3Provider: 'ws://127.0.0.1:8545'
     })
     const query = gql`{
         reputationMints {
