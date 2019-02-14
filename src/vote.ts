@@ -6,7 +6,7 @@ import { Address, Date, ICommonQueryOptions } from './types'
 
 export interface IVote {
   id: string|undefined
-  voter: string
+  voter: Address
   createdAt: Date | undefined
   outcome: ProposalOutcome
   amount: number // amount of reputation that was voted with
@@ -34,17 +34,10 @@ export class Vote implements IVote {
 
     for (const key of Object.keys(options)) {
       if (key === 'dao') {
-        // TODO: next line filters bu DAO, which is a sort of hack we can use if  we need This
-        // before https://github.com/daostack/subgraph/issues/65 is resolved
-        daoFilter = (r: any) => {
-          if (r.length > 0) {
-            return r[0].member.dao.id === options.dao
-          } else {
-            return false
-          }
-        }
+        // TODO: fix this when https://github.com/daostack/subgraph/issues/65 is resolved
+        throw new Error('cannot filter by "dao" yet')
       } else {
-        where += `${key}: "${options[key] as string}",\n`
+        where += `${key}: "${options[key] as string}"\n`
       }
     }
 
@@ -55,12 +48,7 @@ export class Vote implements IVote {
         }) {
           id
           createdAt
-          member {
-            id
-            dao {
-              id
-            }
-          }
+          voter
           proposal {
             id
           }
@@ -80,7 +68,7 @@ export class Vote implements IVote {
         } else {
           throw new Error(`Unexpected value for proposalVote.outcome: ${r.outcome}`)
         }
-        return new Vote(r.id, r.member.id, r.createdAt, outcome, r.reputation, r.proposal.id,  r.member.dao.id)
+        return new Vote(r.id, r.voter, r.createdAt, outcome, r.reputation, r.proposal.id, '')
       },
       daoFilter,
       apolloQueryOptions
@@ -89,7 +77,7 @@ export class Vote implements IVote {
 
   constructor(
       public id: string|undefined,
-      public voter: string,
+      public voter: Address,
       public createdAt: Date | undefined,
       public outcome: ProposalOutcome,
       public amount: number,

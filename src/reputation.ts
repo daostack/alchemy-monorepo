@@ -3,7 +3,8 @@ import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc } from './arc'
-import { Address, IStateful } from './types'
+import { Address, IStateful, Web3Receipt } from './types'
+import { getWeb3Options } from './utils'
 
 export interface IReputationState {
   address: Address
@@ -52,4 +53,21 @@ export class Reputation implements IStateful<IReputationState> {
       })
     )
   }
+
+  /*
+   * get a web3 contract instance for this token
+   */
+  public getContract() {
+    const opts = getWeb3Options(this.context.web3)
+    const ReputationContractInfo = require('@daostack/arc/build/contracts/Reputation.json')
+    return new this.context.web3.eth.Contract(ReputationContractInfo.abi, this.address, opts)
+  }
+
+  public mint(beneficiary: Address, amount: number) {
+    const contract = this.getContract()
+    const transaction = contract.methods.mint(beneficiary, amount)
+    const mapReceipt = (receipt: Web3Receipt) => receipt
+    return this.context.sendTransaction(transaction, mapReceipt)
+  }
+
 }

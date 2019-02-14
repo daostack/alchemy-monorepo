@@ -40,7 +40,6 @@ describe('apolloClient', () => {
     expect(typeof result.data).toEqual(typeof [])
   })
 
-  // TODO: skipping this test until https://github.com/daostack/subgraph/issues/58 is resolved
   it('handles subscriptions', async () => {
     client = getClient()
     const query = gql`
@@ -72,18 +71,6 @@ describe('apolloClient', () => {
         throw err
       }
     )
-    // TODO: we can do all this more elegantly using the following pattern
-    // but until subscriptions work reliably in graph-node, i cannot be bother to test this
-    // const p = observable
-    //   .pipe(
-    //     take(2),
-    //     reduce((acc: object[], val: object) => {
-    //       console.log(val)
-    //       acc.push(val); return acc
-    //     }, [])
-    //   )
-    // const xx = await p.toPromise()
-
     await mintSomeReputation()
     await mintSomeReputation()
 
@@ -95,13 +82,11 @@ describe('apolloClient', () => {
     subscription.unsubscribe()
   })
 
-  // TODO: skipping this test until https://github.com/daostack/subgraph/issues/58 is resolved
-  it.skip('getObservable works', async () => {
+  it('getObservable works', async () => {
     const arc = new Arc({
       graphqlHttpProvider,
       graphqlWsProvider,
-      web3HttpProvider: 'http://127.0.0.1:8545',
-      web3WsProvider: 'ws://127.0.0.1:8545'
+      web3Provider: 'ws://127.0.0.1:8545'
     })
     const query = gql`{
         reputationMints {

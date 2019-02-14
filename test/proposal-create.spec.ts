@@ -8,8 +8,7 @@ import {
   graphqlHttpProvider,
   graphqlWsProvider,
   waitUntilTrue,
-  web3HttpProvider,
-  web3WsProvider
+  web3Provider
 } from './utils'
 
 Logger.setLevel(Logger.OFF)
@@ -116,8 +115,7 @@ describe('Create a ContributionReward proposal', () => {
       graphqlHttpProvider,
       graphqlWsProvider,
       ipfsProvider: '',
-      web3HttpProvider,
-      web3WsProvider
+      web3Provider
     })
 
     const dao = arcWithoutIPFS.dao('0xnotfound')

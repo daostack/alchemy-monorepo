@@ -4,8 +4,7 @@ const Arc = require('@daostack/client').Arc
 const arc = new Arc({
   graphqlHttpProvider: 'https://url.to.graphql.subgraph/',
   graphqlWsProvider: 'https://url.to.graphql.subgraph.websocket/',
-  web3HttpProvider: 'https://url.to.web3.node/',
-  web3WsProvider: 'ws://url.to.web3.node/',
+  web3Provider: 'ws://url.to.web3.node/',
 })
 
 // get an Observable for list of DAOs
