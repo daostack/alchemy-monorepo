@@ -1,5 +1,6 @@
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
+import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { Logger } from './logger'
@@ -381,7 +382,7 @@ export class Proposal implements IStateful<IProposalState> {
           }
 
           // staker has sufficient balance
-          const defaultAccount = this.context.web3.eth.defaultAccount
+          const defaultAccount = await this.context.getAccount().pipe(first()).toPromise()
           const balance = await stakingToken.getContract().methods.balanceOf(defaultAccount).call()
 
           if (Number(balance) < amount) {

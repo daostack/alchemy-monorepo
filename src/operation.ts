@@ -1,5 +1,5 @@
 import { Observable, Observer } from 'rxjs'
-import { take } from 'rxjs/operators'
+import { first, take } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Logger } from './logger'
 import { Web3Receipt } from './types'
@@ -61,7 +61,7 @@ export function sendTransaction<T>(
     }
 
     const emitter = tx.send({
-      from: context.web3.eth.defaultAccount
+      from: await context.getAccount().pipe(first()).toPromise()
     })
 
     emitter

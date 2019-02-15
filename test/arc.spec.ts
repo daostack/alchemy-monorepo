@@ -1,5 +1,6 @@
 import Arc from '../src/index'
 import { Logger } from '../src/logger'
+import { Address } from '../src/types'
 import { getArc, waitUntilTrue } from './utils'
 
 Logger.setLevel(Logger.OFF)
@@ -39,5 +40,13 @@ describe('Arc ', () => {
       }
     })
     expect(approval.amount).toEqual(1001)
+  })
+
+  it('arc.getAccount() works and is correct', async () => {
+    const arc = await getArc()
+    const addressesObserved: Address[] = []
+    arc.getAccount().subscribe((address) => addressesObserved.push(address))
+    await waitUntilTrue(() => addressesObserved.length > 0)
+    expect(addressesObserved[0]).toEqual(arc.web3.eth.defaultAccount)
   })
 })
