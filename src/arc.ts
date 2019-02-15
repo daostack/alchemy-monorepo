@@ -1,5 +1,6 @@
 import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { Observable as ZenObservable } from 'apollo-link'
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { from, Observable, Observer, of } from 'rxjs'
 import { catchError, concat, filter, map } from 'rxjs/operators'
@@ -99,7 +100,7 @@ export class Arc {
    * @param  address [description]
    * @return         [description]
    */
-  public getBalance(address: Address): Observable < number > {
+  public getBalance(address: Address): Observable <BN> {
     // observe balance on new blocks
     // (note that we are basically doing expensive polling here)
     const balanceObservable = Observable.create((observer: any) => {
@@ -109,7 +110,7 @@ export class Arc {
         } else {
           this.web3.eth.getBalance(address).then((balance: any) => {
             // TODO: we should probably only call next if the balance has changed
-            observer.next(balance)
+            observer.next(new BN(balance))
           })
         }
       })
@@ -297,13 +298,13 @@ export class Arc {
     }
   }
 
-  public approveForStaking(amount: number) {
+  public approveForStaking(amount: BN) {
     return this.GENToken().approveForStaking(amount)
   }
   /**
    * How much GEN the genesisProtocol may spend on behalve of the owner
    * @param  owner owner for which to check the allowance
-   * @return A number
+   * @return A BN
    */
   public allowance(owner: string): Observable < any > {
     return this.GENToken().allowances({

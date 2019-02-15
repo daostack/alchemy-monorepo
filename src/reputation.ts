@@ -1,4 +1,5 @@
 import { ApolloQueryResult } from 'apollo-client'
+import BN = require('bn.js');
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
@@ -35,7 +36,7 @@ export class Reputation implements IStateful<IReputationState> {
     this.state = context._getObservableObject(query, itemMap) as Observable<IReputationState>
   }
 
-  public reputationOf(address: Address): Observable<number> {
+  public reputationOf(address: Address): Observable<BN> {
     const query = gql`{
       reputationHolders (
         where: { address:"${address}",
@@ -49,7 +50,7 @@ export class Reputation implements IStateful<IReputationState> {
       map((r: ApolloQueryResult<any>) => r.data.reputationHolders),
       map((items: any[]) => {
         const item = items.length > 0 && items[0]
-        return item.balance !== undefined ? Number(item.balance) : 0
+        return item.balance !== undefined ? new BN(item.balance) : new BN(0)
       })
     )
   }
@@ -63,7 +64,7 @@ export class Reputation implements IStateful<IReputationState> {
     return new this.context.web3.eth.Contract(ReputationContractInfo.abi, this.address, opts)
   }
 
-  public mint(beneficiary: Address, amount: number) {
+  public mint(beneficiary: Address, amount: BN) {
     const contract = this.getContract()
     const transaction = contract.methods.mint(beneficiary, amount)
     const mapReceipt = (receipt: Web3Receipt) => receipt

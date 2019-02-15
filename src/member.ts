@@ -1,3 +1,4 @@
+import BN = require('bn.js');
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { map, switchMap } from 'rxjs/operators'
@@ -13,9 +14,9 @@ import { IVote, IVoteQueryOptions, Vote } from './vote'
 export interface IMemberState {
   address: Address
   dao: DAO,
-  reputation: number
+  reputation: BN
   // 'tokens' --> balance of address in dao.nativeToken.balanceOf
-  tokens: number
+  tokens: BN
 }
 
 /**
@@ -55,18 +56,18 @@ export class Member implements IStateful<IMemberState> {
         return {
           address,
           dao: new DAO(daoAddress, this.context),
-          reputation: 0,
+          reputation: new BN(0),
           // TODO: we did not find the member, so we do not know how many tokens she holds,
           // cf. https://github.com/daostack/subgraph/issues/97
-          tokens: 0
+          tokens: new BN(0)
         }
       } else {
         const item = items[0]
         return {
           address,
           dao: new DAO(daoAddress, this.context),
-          reputation: Number(item.reputation),
-          tokens: Number(item.tokens)
+          reputation: new BN(item.reputation),
+          tokens: new BN(item.tokens)
         }
       }
     }

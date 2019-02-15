@@ -1,7 +1,8 @@
+import BN = require('bn.js');
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { getArc, getTestDAO, waitUntilTrue } from './utils'
+import { fromWei, getArc, getTestDAO, toWei, waitUntilTrue } from './utils'
 
 /**
  * DAO test
@@ -23,7 +24,7 @@ describe('DAO', () => {
     const dao = await getTestDAO()
     const { token } = await dao.state.pipe(first()).toPromise()
     const balance = await token.balanceOf(dao.address).pipe(first()).toPromise()
-    expect(balance).toEqual(0)
+    expect(fromWei(balance)).toEqual("0")
   })
 
   it('should be possible to get the reputation balance of the DAO', () => {
@@ -81,7 +82,7 @@ describe('DAO', () => {
     expect(members.length).toBeGreaterThan(0)
     const member = members[0]
     const memberState = await member.state.pipe(first()).toPromise()
-    expect(memberState.reputation).toBeGreaterThan(0)
+    expect(Number(fromWei(memberState.reputation))).toBeGreaterThan(0)
   })
 
   it('dao.member() should work', async () => {
@@ -98,10 +99,13 @@ describe('DAO', () => {
       gas: 4000000,
       gasPrice: 100000000000,
       to: dao.address,
-      value: arc.web3.utils.toWei('1', 'ether')
+      value: toWei('1')
     })
     const newBalance = await dao.ethBalance().pipe(first()).toPromise()
-    expect(newBalance - previousBalance).toBe(Number(arc.web3.utils.toWei('1')))
+
+    // TOOD: BN.js sub function is not working, doing weird things, WTF?
+    //      const sub = newBalance.sub(previousBalance)
+    expect(Number(fromWei(newBalance)) - Number(fromWei(previousBalance))).toBe(1)
   })
 
 })

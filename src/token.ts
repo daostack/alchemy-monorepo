@@ -1,4 +1,5 @@
 import { ApolloQueryResult } from 'apollo-client'
+import BN = require('bn.js');
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
 import { map } from 'rxjs/operators'
@@ -10,7 +11,7 @@ export interface ITokenState {
   name: string
   owner: Address
   symbol: string
-  totalSupply: number
+  totalSupply: BN
 }
 
 export interface IApproval {
@@ -19,7 +20,7 @@ export interface IApproval {
   contract: Address
   owner: Address
   spender: Address
-  value: number
+  value: BN
 }
 
 export class Token implements IStateful<ITokenState> {
@@ -48,13 +49,13 @@ export class Token implements IStateful<ITokenState> {
         name: item.name,
         owner: item.owner,
         symbol: item.symbol,
-        totalSupply: item.totalSupply
+        totalSupply: new BN(item.totalSupply)
       }
     }
     this.state = this.context._getObservableObject(query, itemMap) as Observable<ITokenState>
   }
 
-  public balanceOf(address: string): Observable<number> {
+  public balanceOf(address: string): Observable<BN> {
     const query = gql`{
       tokenHolders (
         where: {
@@ -71,9 +72,9 @@ export class Token implements IStateful<ITokenState> {
       map((items: any[]) => {
         const item = items.length > 0 && items[0]
         if (item) {
-          return Number(item.balance)
+          return new BN(item.balance)
         } else {
-          return Number(0)
+          return new BN(0)
         }
       })
     )
@@ -91,14 +92,14 @@ export class Token implements IStateful<ITokenState> {
     return contract
   }
 
-  public mint(beneficiary: Address, amount: number) {
+  public mint(beneficiary: Address, amount: BN) {
     const contract = this.getContract()
     const transaction = contract.methods.mint(beneficiary, amount)
     const mapReceipt = (receipt: Web3Receipt) => receipt
     return this.context.sendTransaction(transaction, mapReceipt)
   }
 
-  public approveForStaking(amount: number) {
+  public approveForStaking(amount: BN) {
     const stakingToken = this.getContract()
     const genesisProtocol = this.context.getContract('GenesisProtocol')
 
@@ -161,13 +162,13 @@ export class Token implements IStateful<ITokenState> {
     const itemMap = (r: any) => {
       if (r.allowances.length > 0) {
         return {
-          amount: Number(r.allowances[0].amount),
+          amount: new BN(r.allowances[0].amount),
           owner: r.address,
           spender: r.allowances[0].spender
         }
       } else {
         return {
-          amount: 0,
+          amount: new BN(0),
           owner: options.owner
           // spender: r.allowances[0].spender
         }

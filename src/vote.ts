@@ -1,3 +1,4 @@
+import BN = require('bn.js');
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
@@ -9,7 +10,7 @@ export interface IVote {
   voter: Address
   createdAt: Date | undefined
   outcome: ProposalOutcome
-  amount: number // amount of reputation that was voted with
+  amount: BN // amount of reputation that was voted with
   proposalId: string
   dao: Address
 }
@@ -82,7 +83,7 @@ export class Vote implements IVote {
       public voter: Address,
       public createdAt: Date | undefined,
       public outcome: ProposalOutcome,
-      public amount: number,
+      public amount: BN,
       public proposalId: string,
       public dao: Address
   ) {}

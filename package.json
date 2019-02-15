@@ -128,6 +128,7 @@
     "apollo-link-http": "^1.5.7",
     "apollo-link-ws": "^1.0.10",
     "axios": "^0.18.0",
+    "bn.js": "^4.11.6",
     "graphql": "^14.0.2",
     "graphql-tag": "^2.10.0",
     "ipfs-http-client": "^29.0.1",

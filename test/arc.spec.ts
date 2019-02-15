@@ -1,8 +1,10 @@
 import Arc from '../src/index'
 import { Logger } from '../src/logger'
-import { getArc, waitUntilTrue } from './utils'
+import { fromWei, getArc, toWei, waitUntilTrue } from './utils'
 
 Logger.setLevel(Logger.OFF)
+jest.setTimeout(10000)
+
 /**
  * Arc test
  */
@@ -30,14 +32,14 @@ describe('Arc ', () => {
         approval = next
       }
     )
-    await arc.approveForStaking(1001).send()
+    await arc.approveForStaking(toWei("1001")).send()
     await waitUntilTrue(() => {
       if (approval) {
-        return approval.amount === 1001
+        return fromWei(approval.amount) === "1001"
       } else {
         return false
       }
     })
-    expect(approval.amount).toEqual(1001)
+    expect(fromWei(approval.amount)).toEqual("1001")
   })
 })

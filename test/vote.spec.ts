@@ -2,7 +2,9 @@ import { first, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { ProposalOutcome} from '../src/proposal'
 import { Vote } from '../src/vote'
-import { createAProposal, getArc, getTestDAO, waitUntilTrue } from './utils'
+import { createAProposal, getArc, getTestDAO, toWei, waitUntilTrue } from './utils'
+
+jest.setTimeout(10000)
 
 /**
  * Stake test
@@ -21,7 +23,7 @@ describe('Stake', () => {
       '0x124votes',
       0,
       ProposalOutcome.Fail,
-      3e18,
+      toWei("100"),
       '0x12445proposalId',
       '0x12445daoAddress'
     )

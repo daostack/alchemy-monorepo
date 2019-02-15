@@ -2,7 +2,7 @@ import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
-import { getArc, getContractAddresses } from './utils'
+import { fromWei, getArc, getContractAddresses } from './utils'
 /**
  * Reputation test
  */
@@ -49,7 +49,7 @@ describe('Reputation', () => {
     const reputation = new Reputation(address, arc)
     const reputationOf = await reputation.reputationOf(accounts[2].address)
       .pipe(first()).toPromise()
-    expect(reputationOf).toEqual(1e21)
+    expect(fromWei(reputationOf)).toEqual("1000")
   })
 
   it.skip('reputationOf throws a meaningful error if an invalid address is provided', async () => {
