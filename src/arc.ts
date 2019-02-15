@@ -8,7 +8,7 @@ import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { Token } from './token'
 import { Address, Web3Provider } from './types'
-import { createApolloClient, getWeb3Options } from './utils'
+import { createApolloClient, getWeb3Options, isAddress } from './utils'
 
 const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
@@ -77,6 +77,7 @@ export class Arc {
    * @return an instance of a DAO
    */
   public dao(address: Address): DAO {
+    isAddress(address)
     return new DAO(address, this)
   }
 

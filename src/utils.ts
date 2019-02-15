@@ -6,8 +6,10 @@ import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 import fetch from 'isomorphic-fetch'
 import * as WebSocket from 'isomorphic-ws'
+import { Logger } from './logger'
+import { Address } from './types'
 
-const web3 = require('web3')
+const Web3 = require('web3')
 
 export function createApolloClient(options: {
   graphqlHttpProvider: string
@@ -84,7 +86,7 @@ export const nullAddress = '0x0000000000000000000000000000000000000000'
 
 export async function getOptionsFromChain(web3Instance: any) {
   if (web3Instance.eth.defaultAccount === null) {
-    throw Error('No default account specified: please set web3.eth.defaultAccount')
+    Logger.warn(`No defaultAccount was set -- cannot send transaction`)
   }
   const block = await web3Instance.eth.getBlock('latest')
   return {
@@ -95,7 +97,7 @@ export async function getOptionsFromChain(web3Instance: any) {
 
 export function getWeb3Options(web3Instance: any) {
   if (!web3Instance.eth.defaultAccount) {
-    throw Error(`No defaultAccount was set -- cannot send transaction`)
+    Logger.warn(`No defaultAccount was set -- cannot send transaction`)
   }
   return {
     from: web3Instance.eth.defaultAccount,
@@ -122,7 +124,7 @@ export function concat(a: Uint8Array, b: Uint8Array): Uint8Array {
 type EthereumEvent = any
 
 export function eventId(event: EthereumEvent): string {
-  const hash = web3.utils.keccak256(concat(event.transactionHash, event.logIndex as Uint8Array))
+  const hash = Web3.utils.keccak256(concat(event.transactionHash, event.logIndex as Uint8Array))
   return hash
 }
 
@@ -144,4 +146,10 @@ export function whereClause(options: any) {
   }
   return where
 
+}
+
+export function isAddress(address: Address) {
+  if (!Web3.utils.isAddress(address)) {
+    throw new Error(`Not a valid address: ${address}`)
+  }
 }
