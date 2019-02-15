@@ -48,7 +48,9 @@ export class Vote implements IVote {
         }) {
           id
           createdAt
-          voter
+          member {
+            id
+          }
           proposal {
             id
           }
