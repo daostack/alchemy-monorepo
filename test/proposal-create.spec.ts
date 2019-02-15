@@ -118,7 +118,7 @@ describe('Create a ContributionReward proposal', () => {
       web3Provider
     })
 
-    const dao = arcWithoutIPFS.dao('0xnotfound')
+    const dao = arcWithoutIPFS.dao('0xe74f3c49c162c00ac18b022856e1a4ecc8947c42')
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       description: 'Just eat them',
