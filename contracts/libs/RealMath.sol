@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.5.4;
 
 /**
  * RealMath: fixed-point math library, based on fractional and integer parts.
