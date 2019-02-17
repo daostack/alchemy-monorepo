@@ -93,8 +93,8 @@ Migrate base contracts and an example DAO
 
 Commands:
   daostack-migrate             Migrate base contracts and an example DAO                                             [default]
-  daostack-migrate base        Migrate an example DAO
-  daostack-migrate dao         Migrate base contracts
+  daostack-migrate base        Migrate base contracts
+  daostack-migrate dao         Migrate an example DAO
   daostack-migrate completion  generate bash completion script
 
 Options:
