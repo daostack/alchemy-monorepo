@@ -8,6 +8,10 @@ source .env
 echo "Installing NPM modules..."
 npm install
 npm ci
+# recompiling contracts
+echo "Recompiling contracts..."
+npm explore @daostack/arc -- npm i
+npm explore @daostack/arc -- npm run build
 # generate abis
 echo "Generating abis..."
 npm run generate-abis

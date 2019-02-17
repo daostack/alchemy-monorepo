@@ -167,7 +167,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   ]
 
   spinner.start('Setting DAO schemes...')
-  tx = await daoCreator.methods.setSchemes(Avatar, schemes, params, permissions).send()
+  tx = await daoCreator.methods.setSchemes(Avatar, schemes, params, permissions, 'metaData').send()
   await logTx(tx, 'DAO schemes set.')
 
   const avatar = new web3.eth.Contract(require('@daostack/arc/build/contracts/Avatar.json').abi, Avatar, opts)

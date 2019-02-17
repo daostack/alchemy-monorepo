@@ -59,7 +59,7 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
     }
   ]
 
-  await setSchemes(schemes, avatarAddress)
+  await setSchemes(schemes, avatarAddress, 'metaData')
 
   const [PASS, FAIL] = [1, 2]
 
@@ -276,7 +276,7 @@ async function setGenesisProtocolParams () {
   return gpParamsHash
 }
 
-async function setSchemes (schemes, avatarAddress) {
+async function setSchemes (schemes, avatarAddress, metadata) {
   this.spinner.start('Registering Schemes to DAO...')
 
   const {
@@ -295,7 +295,8 @@ async function setSchemes (schemes, avatarAddress) {
     avatarAddress,
     schemes.map(({ address }) => address),
     schemes.map(({ params }) => params),
-    schemes.map(({ permissions }) => permissions)
+    schemes.map(({ permissions }) => permissions),
+    metadata
   ).send()
 
   await this.logTx(tx, 'Dao Creator Set Schemes.')
