@@ -2,9 +2,7 @@ pragma solidity ^0.5.2;
 
 /**
  * RealMath: fixed-point math library, based on fractional and integer parts.
- * Using uint256 as real216x40, which isn't in Solidity yet.
- * 40 fractional bits gets us down to 1E-12 precision, while still letting us
- * go up to galaxy scale counting in meters.
+ * Using uint256 as real248x8, which isn't in Solidity yet.
  * Internally uses the wider uint256 for some math.
  *
  * Note that for addition, subtraction, and mod (%), you should just use the
@@ -23,7 +21,7 @@ library RealMath {
     /**
      * How many fractional bits are there?
      */
-    uint256 constant private REAL_FBITS = 40;
+    uint256 constant private REAL_FBITS = 8;
 
     /**
      * What's the first non-fractional bit
@@ -53,13 +51,13 @@ library RealMath {
         }
 
         // Return the final result.
-        return uint216(realResult / REAL_ONE);
+        return realResult;
     }
 
     /**
      * Create a real from a rational fraction.
      */
-    function fraction(uint216 numerator, uint216 denominator) internal pure returns (uint256) {
+    function fraction(uint248 numerator, uint248 denominator) internal pure returns (uint256) {
         return div(uint256(numerator) * REAL_ONE, uint256(denominator) * REAL_ONE);
     }
 
@@ -69,7 +67,7 @@ library RealMath {
     function mul(uint256 realA, uint256 realB) private pure returns (uint256) {
         // When multiplying fixed point in x.y and z.w formats we get (x+z).(y+w) format.
         // So we just have to clip off the extra REAL_FBITS fractional bits.
-        return uint256((uint256(realA) * uint256(realB)) >> REAL_FBITS);
+        return ((realA * realB) >> REAL_FBITS);
     }
 
     /**

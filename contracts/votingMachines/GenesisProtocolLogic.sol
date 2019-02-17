@@ -15,9 +15,9 @@ import "openzeppelin-solidity/contracts/utils/Address.sol";
  * @title GenesisProtocol implementation -an organization's voting machine scheme.
  */
 contract GenesisProtocolLogic is IntVoteInterface {
-    using SafeMath for uint;
-    using Math for uint;
-    using RealMath for uint216;
+    using SafeMath for uint256;
+    using Math for uint256;
+    using RealMath for uint248;
     using RealMath for uint256;
     using Address for address;
 
@@ -117,6 +117,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
     event StateChange(bytes32 indexed _proposalId, ProposalState _proposalState);
     event GPExecuteProposal(bytes32 indexed _proposalId, ExecutionState _executionState);
     event ExpirationCallBounty(bytes32 indexed _proposalId, address indexed _beneficiary, uint256 _amount);
+    event ConfidenceLevelChange(bytes32 indexed _proposalId, uint256 _confidenceThreshold);
 
     mapping(bytes32=>Parameters) public parameters;  // A mapping from hashes to parameters
     mapping(bytes32=>Proposal) public proposals; // Mapping from the ID of the proposal to the proposal itself.
@@ -284,7 +285,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
             queuedVotePeriodLimit: _params[1],
             boostedVotePeriodLimit: _params[2],
             preBoostedVotePeriodLimit: _params[3],
-            thresholdConst:uint216(_params[4]).fraction(uint216(1000)),
+            thresholdConst:uint248(_params[4]).fraction(uint248(1000)),
             limitExponentValue:limitExponent,
             quietEndingPeriod: _params[5],
             proposingRepReward: _params[6],
@@ -432,7 +433,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
      * This threshold is dynamically set and it depend on the number of boosted proposal.
      * @param _organizationId the organization identifier
      * @param _paramsHash the organization parameters hash
-     * @return uint256 organization's score threshold.
+     * @return uint256 organization's score threshold as real number.
      */
     function threshold(bytes32 _paramsHash, bytes32 _organizationId) public view returns(uint256) {
         uint256 power = orgBoostedProposalsCnt[_organizationId];
@@ -550,6 +551,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
                         proposal.state = ProposalState.Queued;
                     } else if (proposal.confidenceThreshold > proposalScore) {
                         proposal.confidenceThreshold = confidenceThreshold;
+                        emit ConfidenceLevelChange(_proposalId, confidenceThreshold);
                     }
                 }
             }
@@ -715,12 +717,12 @@ contract GenesisProtocolLogic is IntVoteInterface {
      * @dev _score return the proposal score (Confidence level)
      * For dual choice proposal S = (S+)/(S-)
      * @param _proposalId the ID of the proposal
-     * @return uint256 proposal score.
+     * @return uint256 proposal score as real number.
      */
     function _score(bytes32 _proposalId) internal view returns(uint256) {
         Proposal storage proposal = proposals[_proposalId];
         //proposal.stakes[NO] cannot be zero as the dao downstake > 0 for each proposal.
-        return proposal.stakes[YES]/proposal.stakes[NO];
+        return uint248(proposal.stakes[YES]).fraction(uint248(proposal.stakes[NO]));
     }
 
     /**
