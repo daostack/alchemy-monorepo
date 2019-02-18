@@ -299,6 +299,40 @@ export class Arc {
     }
   }
 
+  public getAccount(): Observable<Address> {
+    // this complex logic is to get the correct account both from the Web3 as well as from the Metamaask provider
+    // Polling is Evil!
+    // cf. https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#ear-listening-for-selected-account-changes
+    return Observable.create((observer: any) => {
+      const interval = 1000 /// poll once a second
+      let account: any
+      let prevAccount: any
+      const web3 = this.web3
+      if (web3.eth.accounts[0]) {
+        observer.next(web3.eth.accounts[0].address)
+        prevAccount = web3.eth.accounts[0].address
+      } else if (web3.eth.defaultAccount ) {
+        observer.next(web3.eth.defaultAccount)
+        prevAccount = web3.eth.defaultAccount
+      }
+      const timeout = setInterval(() => {
+        web3.eth.getAccounts().then((accounts: any) => {
+          if (accounts) {
+            account = accounts[0]
+          } else if (web3.eth.accounts) {
+            account = web3.eth.accounts[0].address
+          }
+          if (prevAccount !== account && account) {
+            web3.eth.defaultAccount = account
+            observer.next(account)
+            prevAccount = account
+          }
+        })
+      }, interval)
+      return() => clearTimeout(timeout)
+    })
+  }
+
   public approveForStaking(amount: number) {
     return this.GENToken().approveForStaking(amount)
   }

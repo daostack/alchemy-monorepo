@@ -2,8 +2,11 @@ import { ApolloClient } from 'apollo-client'
 import gql from 'graphql-tag'
 import { Observable, Observer } from 'rxjs'
 import { Arc } from '../src/arc'
+import { Logger } from '../src/logger'
 import { createApolloClient } from '../src/utils'
 import { graphqlHttpProvider, graphqlWsProvider, mintSomeReputation, waitUntilTrue } from './utils'
+
+Logger.setLevel(Logger.OFF)
 
 function getClient() {
   const apolloClient = createApolloClient({
