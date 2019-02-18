@@ -6,7 +6,9 @@ import { Proposal, ProposalOutcome } from '../src/proposal'
 import { Stake } from '../src/stake'
 import { Address } from '../src/types'
 import { Vote } from '../src/vote'
-import { createAProposal, getArc, getContractAddresses, getTestDAO, waitUntilTrue } from './utils'
+import { createAProposal, getArc, getContractAddresses, getTestDAO, fromWei, toWei, waitUntilTrue } from './utils'
+
+jest.setTimeout(10000)
 
 /**
  * Member test
@@ -33,8 +35,8 @@ describe('Member', () => {
   it('Member state works', async () => {
     const member = new Member(defaultAccount, dao.address, arc)
     const memberState = await member.state.pipe(first()).toPromise()
-    expect(memberState.reputation).toBeGreaterThan(0)
-    expect(memberState.tokens).toBeGreaterThan(0)
+    expect(Number(fromWei(memberState.reputation))).toBeGreaterThan(0)
+    expect(Number(fromWei(memberState.tokens))).toBeGreaterThan(0)
     expect(memberState.dao).toBeInstanceOf(DAO)
     expect(memberState.address).toEqual(defaultAccount)
     expect(memberState.dao.address).toBe(addresses.dao.Avatar.toLowerCase())
@@ -44,7 +46,7 @@ describe('Member', () => {
     const someAddress = '0xe74f3c49c162c00ac18b022856e1a4ecc8947c42'
     const member = new Member(someAddress, dao.address, arc)
     const memberState = await member.state.pipe(first()).toPromise()
-    expect(memberState.reputation).toEqual(0)
+    expect(fromWei(memberState.reputation)).toEqual("0")
     expect(memberState.address).toEqual(someAddress)
   })
 
@@ -66,12 +68,12 @@ describe('Member', () => {
       const proposal = await createAProposal()
       const stakingToken =  await proposal.stakingToken()
       // mint tokens with defaultAccount
-      await stakingToken.mint(stakerAccount, 10000).send()
+      await stakingToken.mint(stakerAccount, toWei("10000")).send()
       // switch the defaultAccount to a fresh one
       stakingToken.context.web3.eth.defaultAccount = stakerAccount
-      await stakingToken.approveForStaking(1000).send()
+      await stakingToken.approveForStaking(toWei("1000")).send()
 
-      await proposal.stake(ProposalOutcome.Pass, 99).send()
+      await proposal.stake(ProposalOutcome.Pass, toWei("99")).send()
       let stakes: Stake[] = []
       member.stakes({ proposal: proposal.id}).subscribe(
         (next: Stake[]) => { stakes = next }
@@ -81,7 +83,7 @@ describe('Member', () => {
 
       expect(stakes.length).toBeGreaterThan(0)
       expect(stakes[0].staker).toEqual(stakerAccount.toLowerCase())
-      expect(stakes[0].amount).toEqual(99)
+      expect(fromWei(stakes[0].amount)).toEqual("99")
       // clean up after test
       arc.web3.eth.defaultAccount = defaultAccount
     })

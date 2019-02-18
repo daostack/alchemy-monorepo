@@ -1,7 +1,10 @@
+import BN = require('bn.js');
 import { first, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IProposalState, Proposal, ProposalOutcome, ProposalStage } from '../src/proposal'
-import { createAProposal, getArc, getTestDAO, mineANewBlock, waitUntilTrue } from './utils'
+import { createAProposal, fromWei, getArc, getTestDAO, mineANewBlock, toWei, waitUntilTrue } from './utils'
+
+jest.setTimeout(10000)
 
 describe('Proposal execute()', () => {
   let arc: Arc
@@ -13,17 +16,18 @@ describe('Proposal execute()', () => {
   it('runs correctly through the stages', async () => {
 
     const dao = await getTestDAO()
+    const arc = await getArc()
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const accounts = arc.web3.eth.accounts.wallet
     const options = {
       beneficiary,
-      ethReward: 4,
+      ethReward: toWei("4"),
       externalTokenAddress: undefined,
-      externalTokenReward: 3,
-      nativeTokenReward: 2,
+      externalTokenReward: toWei("3"),
+      nativeTokenReward: toWei("2"),
       periodLength: 12,
       periods: 5,
-      reputationReward: 1,
+      reputationReward: toWei("1"),
       type: 'ContributionReward'
     }
     const response = await dao.createProposal(options).send()
@@ -72,23 +76,23 @@ describe('Proposal execute()', () => {
     // wait until the votes have been counted
     await waitUntilTrue(async () => {
       proposalState = proposalStates[proposalStates.length - 1]
-      return proposalState.votesFor > 0
+      return proposalState.votesFor.gt(new BN(0))
     })
     expect(proposalState.stage).toEqual(ProposalStage.Queued)
-    expect(proposalState.votesFor).toBeGreaterThan(0)
-    expect(proposalState.votesAgainst).toEqual(0)
+    expect(Number(fromWei(proposalState.votesFor))).toBeGreaterThan(0)
+    expect(fromWei(proposalState.votesAgainst)).toEqual("0")
 
-    await proposal.stakingToken().mint(accounts[0].address, 1000).send()
-    await proposal.stakingToken().approveForStaking(1000).send()
+    await proposal.stakingToken().mint(accounts[0].address, toWei("1000")).send()
+    await proposal.stakingToken().approveForStaking(toWei("1000")).send()
 
-    await proposal.stake(ProposalOutcome.Pass, 200).send()
+    await proposal.stake(ProposalOutcome.Pass, toWei("200")).send()
     await waitUntilTrue(async () => {
       proposalState = proposalStates[proposalStates.length - 1]
-      return proposalState.stakesFor > 0
+      return proposalState.stakesFor.gt(new BN(0))
     })
 
-    expect(proposalState.stakesFor).toBeGreaterThan(0)
-    expect(proposalState.stage).toEqual(ProposalStage.Queued)
+    expect(Number(fromWei(proposalState.stakesFor))).toBeGreaterThan(0)
+    expect(proposalState.stage).toEqual(ProposalStage.PreBoosted)
     return
 
   }, 10000)

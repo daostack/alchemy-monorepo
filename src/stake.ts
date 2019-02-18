@@ -1,3 +1,4 @@
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
@@ -10,7 +11,7 @@ export interface IStake {
   staker: Address
   createdAt: Date | undefined
   outcome: ProposalOutcome
-  amount: number // amount staked
+  amount: BN // amount staked
   proposalId: string
   // dao: Address
 }
@@ -48,7 +49,7 @@ export class Stake implements IStake {
     `
     return context._getObservableList(
       query,
-      (r: any) => new Stake(r.id, r.staker, r.createdAt, r.outcome, Number(r.amount), r.proposal.id),
+      (r: any) => new Stake(r.id, r.staker, r.createdAt, r.outcome, r.amount, r.proposal.id),
       apolloQueryOptions
     ) as Observable<IStake[]>
   }
@@ -58,7 +59,7 @@ export class Stake implements IStake {
       public staker: string,
       public createdAt: Date | undefined,
       public outcome: ProposalOutcome,
-      public amount: number,
+      public amount: BN,
       public proposalId: string
       // public dao: Address
   ) {

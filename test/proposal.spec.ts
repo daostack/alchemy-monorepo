@@ -1,9 +1,12 @@
+import BN = require('bn.js');
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IProposalState, Proposal, ProposalOutcome, ProposalStage } from '../src/proposal'
-import { createAProposal, getArc, getTestDAO, waitUntilTrue} from './utils'
+import { createAProposal, fromWei, getArc, getTestDAO, toWei, waitUntilTrue} from './utils'
 
 const DAOstackMigration = require('@daostack/migration')
+
+jest.setTimeout(10000)
 
 /**
  * Proposal test
@@ -51,6 +54,7 @@ describe('Proposal', () => {
   })
 
   it('state should be available before the data is indexed', async () => {
+    //TODO: state should **not** be available?
     const proposal = await createAProposal()
     const proposalState = await proposal.state.pipe(first()).toPromise()
     // the state is null because the proposal has not been indexed yet
@@ -65,6 +69,18 @@ describe('Proposal', () => {
     expect(proposal).toBeInstanceOf(Proposal)
     delete proposalState.dao
     delete proposalState.createdAt
+
+    // TODO: these amounts seem odd, I guess not using WEI when proposal created?
+    expect(fromWei(proposalState.nativeTokenReward)).toEqual("0.00000000000000001")
+    expect(fromWei(proposalState.stakesAgainst)).toEqual("0.0000001")
+    expect(fromWei(proposalState.stakesFor)).toEqual("0")
+    expect(fromWei(proposalState.reputationReward)).toEqual("0.00000000000000001")
+    expect(fromWei(proposalState.ethReward)).toEqual("0.00000000000000001")
+    expect(fromWei(proposalState.externalTokenReward)).toEqual("0.00000000000000001")
+    expect(fromWei(proposalState.votesFor)).toEqual("1000")
+    expect(fromWei(proposalState.votesAgainst)).toEqual("1000")
+    expect(fromWei(proposalState.proposingRepReward)).toEqual("0.000000005")
+
     expect(proposalState).toMatchObject({
         beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
         boostedAt: 0,
@@ -73,24 +89,15 @@ describe('Proposal', () => {
         confidence: 0,
         description: null,
         descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
-        ethReward: 10,
         executedAt: null,
-        externalTokenReward: 10,
         // id: '0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e',
-        nativeTokenReward: 10,
         preBoostedVotePeriodLimit: 259200,
         proposer: '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1',
-        proposingRepReward: 5000000000,
         quietEndingPeriodBeganAt: null,
-        reputationReward: 10,
         resolvedAt: null,
         stage: ProposalStage.Queued,
-        stakesAgainst: 100000000000,
-        stakesFor: 0,
         title: null,
         url: null,
-        votesAgainst: 1e+21,
-        votesFor: 1e+21,
         winningOutcome: 'Fail'
     })
   })
@@ -110,9 +117,10 @@ describe('Proposal', () => {
     proposal.stakes().subscribe((next) => stakes.push(next))
 
     // make sure the account has balance
-    const contract = await arc.GENToken().mint(arc.web3.eth.defaultAccount, 1008).send()
-    await arc.approveForStaking(1008).send()
-    await proposal.stake(ProposalOutcome.Pass, 1008).send()
+    const stakeAmount = toWei("1008");
+    const contract = await arc.GENToken().mint(arc.web3.eth.defaultAccount, stakeAmount).send()
+    await arc.approveForStaking(stakeAmount).send()
+    await proposal.stake(ProposalOutcome.Pass, stakeAmount).send()
 
     // wait until we have the we got the stake update
     await waitUntilTrue(() => stakes.length > 0 && stakes[stakes.length - 1].length > 0)
@@ -140,7 +148,7 @@ describe('Proposal', () => {
 
     // wait until all transactions are indexed
     await waitUntilTrue(() => {
-      if (states.length > 2 && states[states.length - 1].votesFor > 0) {
+      if (states.length > 2 && states[states.length - 1].votesFor.gt(new BN(0))) {
         return true
       } else {
         return false
@@ -149,8 +157,7 @@ describe('Proposal', () => {
 
     // we expect our first state to be null
     // (we just created the proposal and subscribed immediately)
-    expect(states[0]).toEqual(null)
-    expect(states[states.length - 1].votesFor).toBeGreaterThan(0)
+    expect(Number(fromWei(states[states.length - 1].votesFor))).toBeGreaterThan(0)
     expect(states[states.length - 1].winningOutcome).toEqual('Pass')
   })
 })

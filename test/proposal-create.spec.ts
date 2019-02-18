@@ -1,12 +1,15 @@
+import BN = require('bn.js');
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Logger } from '../src/logger'
 import { Proposal, ProposalStage } from '../src/proposal'
 import {
+  fromWei,
   getArc,
   getTestDAO,
   graphqlHttpProvider,
   graphqlWsProvider,
+  toWei,
   waitUntilTrue,
   web3Provider
 } from './utils'
@@ -29,12 +32,13 @@ describe('Create a ContributionReward proposal', () => {
     const dao = await getTestDAO()
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
-      ethReward: 300,
+      ethReward: toWei("300"),
       externalTokenAddress: undefined,
-      externalTokenReward: 0,
-      nativeTokenReward: 1,
+      externalTokenReward: toWei("0"),
+      nativeTokenReward: toWei("1"),
       periodLength: 12,
       periods: 5,
+      reputationReward: toWei("10"),
       type: 'ContributionReward'
     }
 
@@ -52,18 +56,20 @@ describe('Create a ContributionReward proposal', () => {
     expect(proposal.id).toBeDefined()
     const proposalState = await proposal.state.pipe(first()).toPromise()
 
+    expect(fromWei(proposalState.externalTokenReward)).toEqual("0")
+    expect(fromWei(proposalState.ethReward)).toEqual("300")
+    expect(fromWei(proposalState.nativeTokenReward)).toEqual("1")
+    expect(fromWei(proposalState.reputationReward)).toEqual("10")
+    expect(fromWei(proposalState.stakesAgainst)).toEqual("0.0000001") // TODO: why this amount?
+    expect(fromWei(proposalState.stakesFor)).toEqual("0")
+
     expect(proposalState).toMatchObject({
       beneficiary: options.beneficiary,
-      ethReward: options.ethReward,
       executedAt: null,
-      externalTokenReward: 0,
       proposer: dao.context.web3.eth.defaultAccount.toLowerCase(),
       quietEndingPeriodBeganAt: null,
-      reputationReward: 0,
       resolvedAt: null,
       stage: ProposalStage.Queued,
-      stakesAgainst: 100000000000,
-      stakesFor: 0
     })
     expect(proposalState.dao.address).toEqual(dao.address)
 
@@ -74,10 +80,10 @@ describe('Create a ContributionReward proposal', () => {
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       description: 'Just eat them',
-      ethReward: 300,
+      ethReward: toWei("300"),
       externalTokenAddress: undefined,
-      externalTokenReward: 0,
-      nativeTokenReward: 1,
+      externalTokenReward: toWei("0"),
+      nativeTokenReward: toWei("1"),
       periodLength: 12,
       periods: 5,
       title: 'A modest proposal',
@@ -122,9 +128,9 @@ describe('Create a ContributionReward proposal', () => {
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       description: 'Just eat them',
-      ethReward: 300,
+      ethReward: toWei("300"),
       externalTokenAddress: undefined,
-      nativeTokenReward: 1,
+      nativeTokenReward: toWei("1"),
       periodLength: 12,
       periods: 5,
       title: 'A modest proposal',

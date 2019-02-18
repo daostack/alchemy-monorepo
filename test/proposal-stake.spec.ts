@@ -2,7 +2,9 @@ import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Proposal, ProposalOutcome } from '../src/proposal'
 import { Stake } from '../src/stake'
-import { createAProposal, getArc, getTestDAO, waitUntilTrue } from './utils'
+import { createAProposal, fromWei, getArc, getTestDAO, toWei, waitUntilTrue } from './utils'
+
+jest.setTimeout(10000)
 
 describe('Stake on a ContributionReward', () => {
   let arc: Arc
@@ -25,10 +27,10 @@ describe('Stake on a ContributionReward', () => {
 
     // apporve the spend, for staking
     const defaultAccount = web3.eth.defaultAccount
-    await stakingToken.mint(defaultAccount, 10000).send()
-    await stakingToken.approveForStaking(100).send()
+    await stakingToken.mint(defaultAccount, toWei("10000")).send()
+    await stakingToken.approveForStaking(toWei("100")).send()
 
-    const stake = await proposal.stake(ProposalOutcome.Pass, 100).send()
+    const stake = await proposal.stake(ProposalOutcome.Pass, toWei("100")).send()
 
     expect(stake.result).toMatchObject({
       outcome : ProposalOutcome.Pass
@@ -51,9 +53,9 @@ describe('Stake on a ContributionReward', () => {
     const dao = await getTestDAO()
     const stakingToken =  arc.getContract('GEN')
     const proposal = await createAProposal(dao)
-    await stakingToken.methods.mint(accounts[2].address, '100').send()
+    await stakingToken.methods.mint(accounts[2].address, toWei('100')).send()
     proposal.context.web3.eth.defaultAccount = accounts[2].address
-    await expect(proposal.stake(ProposalOutcome.Pass, 100).send()).rejects.toThrow(
+    await expect(proposal.stake(ProposalOutcome.Pass, toWei("100")).send()).rejects.toThrow(
       /insufficient allowance/i
     )
 
@@ -63,7 +65,7 @@ describe('Stake on a ContributionReward', () => {
     const dao = await getTestDAO()
     const proposal = await createAProposal(dao)
     proposal.context.web3.eth.defaultAccount = accounts[4].address
-    await expect(proposal.stake(ProposalOutcome.Pass, 10000000).send()).rejects.toThrow(
+    await expect(proposal.stake(ProposalOutcome.Pass, toWei("10000000")).send()).rejects.toThrow(
       /insufficient balance/i
     )
   })
@@ -75,7 +77,7 @@ describe('Stake on a ContributionReward', () => {
       '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, arc
     )
     proposal.context.web3.eth.defaultAccount = accounts[2].address
-    await expect(proposal.stake(ProposalOutcome.Pass, 10000000).send()).rejects.toThrow(
+    await expect(proposal.stake(ProposalOutcome.Pass, toWei("10000000")).send()).rejects.toThrow(
       /unknown proposal/i
     )
   })

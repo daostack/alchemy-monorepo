@@ -1,3 +1,4 @@
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
 import { first } from 'rxjs/operators'
@@ -37,25 +38,25 @@ export interface IProposalState {
   createdAt: Date
   dao: DAO
   description?: string
-  ethReward: number
+  ethReward: BN
   executedAt: Date
-  externalTokenReward: number
+  externalTokenReward: BN
   descriptionHash?: string
-  nativeTokenReward: number
+  nativeTokenReward: BN
   preBoostedVotePeriodLimit: number
   proposer: Address
-  proposingRepReward: number
+  proposingRepReward: BN
   quietEndingPeriodBeganAt: Date
-  reputationReward: number
+  reputationReward: BN
   resolvedAt: Date
   stage: ProposalStage
-  stakesFor: number
-  stakesAgainst: number
-  totalRepWhenExecuted: number
+  stakesFor: BN
+  stakesAgainst: BN
+  totalRepWhenExecuted: BN
   title?: string
   url?: string
-  votesFor: number
-  votesAgainst: number
+  votesFor: BN
+  votesAgainst: BN
   winningOutcome: ProposalOutcome
 }
 
@@ -244,25 +245,25 @@ export class Proposal implements IStateful<IProposalState> {
         dao: new DAO(item.dao.id, this.context),
         description: item.description,
         descriptionHash: item.descriptionHash,
-        ethReward: Number(item.ethReward),
+        ethReward: new BN(item.ethReward),
         executedAt: item.executedAt,
-        externalTokenReward: Number(item.externalTokenReward),
+        externalTokenReward: new BN(item.externalTokenReward),
         id: item.id,
-        nativeTokenReward: Number(item.nativeTokenReward),
+        nativeTokenReward: new BN(item.nativeTokenReward),
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposer: item.proposer,
-        proposingRepReward: Number(item.proposingRepReward),
+        proposingRepReward: new BN(item.proposingRepReward),
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
-        reputationReward: Number(item.reputationReward),
+        reputationReward: new BN(item.reputationReward),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : null,
         stage: proposalStage,
-        stakesAgainst: Number(item.stakesAgainst),
-        stakesFor: Number(item.stakesFor),
+        stakesAgainst: new BN(item.stakesAgainst),
+        stakesFor: new BN(item.stakesFor),
         title: item.title,
         totalRepWhenExecuted: Number(item.totalRepWhenExecuted),
         url: item.url,
-        votesAgainst: Number(item.votesAgainst),
-        votesFor: Number(item.votesFor),
+        votesAgainst: new BN(item.votesAgainst),
+        votesFor: new BN(item.votesFor),
         winningOutcome: item.winningOutcome
       }
     }
@@ -345,7 +346,7 @@ export class Proposal implements IStateful<IProposalState> {
     return Stake.search(this.context, options)
   }
 
-  public stake(outcome: ProposalOutcome, amount: number ): Operation<Stake> {
+  public stake(outcome: ProposalOutcome, amount: BN ): Operation<Stake> {
     const stakeMethod = this.votingMachine().methods.stake(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
@@ -383,19 +384,21 @@ export class Proposal implements IStateful<IProposalState> {
 
           // staker has sufficient balance
           const defaultAccount = await this.context.getAccount().pipe(first()).toPromise()
-          const balance = await stakingToken.getContract().methods.balanceOf(defaultAccount).call()
-
-          if (Number(balance) < amount) {
-            const msg = `Staker ${defaultAccount} has insufficient balance to stake ${amount} (balance is ${balance})`
+          const balance = new BN(await stakingToken.getContract().methods.balanceOf(defaultAccount).call())
+          const amountBN = new BN(amount)
+          if (balance.lt(amountBN)) {
+            const msg = `Staker ${defaultAccount} has insufficient balance to stake ${amount.toString()}
+              (balance is ${balance.toString()})`
             return new Error(msg)
           }
 
           // staker has approved the token spend
-          const allowance = await stakingToken.getContract().methods.allowance(
+          const allowance = new BN(await stakingToken.getContract().methods.allowance(
             defaultAccount, this.votingMachine().options.address
-          ).call()
-          if (Number(allowance) < amount) {
-            return new Error(`Staker has insufficient allowance to stake ${amount} (allowance is ${allowance})`)
+          ).call())
+          if (allowance.lt(amountBN)) {
+            return new Error(`Staker has insufficient allowance to stake ${amount.toString()}
+              (allowance is ${allowance.toString()})`)
           }
         }
         // if we have found no known error, we return the original error
@@ -451,14 +454,14 @@ export interface IProposalCreateOptions {
   dao?: Address
   description?: string
   descriptionHash?: string
-  nativeTokenReward?: number
-  reputationReward?: number
-  ethReward?: number
-  externalTokenReward?: number
+  nativeTokenReward?: BN
+  reputationReward?: BN
+  ethReward?: BN
+  externalTokenReward?: BN
   externalTokenAddress?: Address
   periodLength?: number
   periods?: any
   title?: string
   type?: string
   url?: string
-  }
+}

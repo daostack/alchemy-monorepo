@@ -4,12 +4,21 @@ import { split } from 'apollo-link'
 import { HttpLink } from 'apollo-link-http'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
+import BN = require('bn.js')
 import fetch from 'isomorphic-fetch'
 import * as WebSocket from 'isomorphic-ws'
 import { Logger } from './logger'
 import { Address } from './types'
 
 const Web3 = require('web3')
+
+export function fromWei(amount: BN): string {
+  return Web3.utils.fromWei(amount, 'ether')
+}
+
+export function toWei(amount: string | number): BN {
+  return Web3.utils.toWei(amount.toString(), 'ether')
+}
 
 export function createApolloClient(options: {
   graphqlHttpProvider: string

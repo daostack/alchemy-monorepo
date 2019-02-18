@@ -1,3 +1,4 @@
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { first, map } from 'rxjs/operators'
@@ -22,16 +23,16 @@ export interface IDAOState {
   memberCount: number
   name: string
   reputation: Reputation
-  reputationTotalSupply: number,
+  reputationTotalSupply: BN,
   token: Token,
-  tokenBalance: number,
+  tokenBalance: BN,
   tokenName: string,
   tokenSymbol: string,
-  tokenTotalSupply: number,
+  tokenTotalSupply: BN,
   externalTokenAddress: Address,
-  externalTokenBalance: number
+  externalTokenBalance: BN
   externalTokenSymbol: string,
-  ethBalance: number
+  ethBalance: BN
 }
 
 export class DAO implements IStateful<IDAOState> {
@@ -58,10 +59,10 @@ export class DAO implements IStateful<IDAOState> {
       return {
         address: item.id,
         // TODO: get Eth balance, cf https://github.com/daostack/subgraph/issues/62
-        ethBalance: 314159265359,
+        ethBalance: new BN(100),
         externalTokenAddress: '',
         // TODO: get external token balance, cf. https://github.com/daostack/subgraph/issues/62
-        externalTokenBalance: 314159265359,
+        externalTokenBalance: new BN(100),
         externalTokenSymbol: '',
         memberCount: Number(item.membersCount),
         name: item.name,
@@ -69,7 +70,7 @@ export class DAO implements IStateful<IDAOState> {
         reputationTotalSupply: item.nativeReputation.totalSupply,
         token: new Token(item.nativeToken.id, context),
         // TODO: get external token balance, cf. https://github.com/daostack/subgraph/issues/62
-        tokenBalance: 314159265359,
+        tokenBalance: new BN(100),
         tokenName: item.nativeToken.name,
         tokenSymbol: item.nativeToken.symbol,
         tokenTotalSupply: item.nativeToken.totalSupply
@@ -131,7 +132,7 @@ export class DAO implements IStateful<IDAOState> {
     return Stake.search(this.context, options)
   }
 
-  public ethBalance(): Observable<number> {
+  public ethBalance(): Observable<BN> {
     return this.context.getBalance(this.address)
   }
 }

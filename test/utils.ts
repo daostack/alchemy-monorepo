@@ -1,10 +1,12 @@
 import { ApolloQueryResult } from 'apollo-client'
+import BN = require('bn.js');
 import gql from 'graphql-tag'
 import { IContractAddresses } from '../src/arc'
 import { DAO } from '../src/dao'
 import Arc from '../src/index'
 import { Proposal } from '../src/proposal'
 import { Reputation } from '../src/reputation'
+const web3 = require('web3')
 
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack'
 export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/daostack'
@@ -26,6 +28,14 @@ const pks = [
   '0x646f1ce2fdad0e6deeeb5c7e8e5543bdde65e86029e2fd9fc169899c440a7913', // 3
   '0xb0057716d5917badaf911b193b12b910811c1497b5bada8d7711f758981c3773' // 9
 ]
+
+export function fromWei(amount: BN): string {
+  return web3.utils.fromWei(amount, "ether");
+}
+
+export function toWei(amount: string | number): BN {
+  return web3.utils.toWei(amount.toString(), "ether");
+}
 
 export function getContractAddresses(): IContractAddresses {
   const path = '@daostack/subgraph/migration.json'
@@ -67,7 +77,7 @@ export async function mintSomeReputation() {
   const addresses = getContractAddresses()
   const token = new Reputation(addresses.organs.DemoReputation, arc)
   const accounts = arc.web3.eth.accounts.wallet
-  await token.mint(accounts[1].address, 99).send()
+  await token.mint(accounts[1].address, toWei("99")).send()
 }
 
 export function mineANewBlock() {
@@ -125,15 +135,18 @@ export async function createAProposal(dao?: DAO) {
   if (!dao) {
     dao = await getTestDAO()
   }
+  const arc = await getArc()
+
   const options = {
     beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
-    ethReward: 300,
+    ethReward: toWei("300"),
     externalTokenAddress: undefined,
-    externalTokenReward: 0,
-    nativeTokenReward: 1,
+    externalTokenReward: toWei("0"),
+    nativeTokenReward: toWei("1"),
     periodLength: 12,
     periods: 5,
-    type: 'ConributionReward'
+    reputationReward: toWei("10"),
+    type: 'ContributionReward'
   }
 
   // collect the first 4 results of the observable in a a listOfUpdates array
