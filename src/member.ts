@@ -1,4 +1,4 @@
-import BN = require('bn.js');
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc } from './arc'
