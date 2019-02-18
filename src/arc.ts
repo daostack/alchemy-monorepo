@@ -8,7 +8,7 @@ import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { Token } from './token'
 import { Address, Web3Provider } from './types'
-import { createApolloClient, getWeb3Options } from './utils'
+import { createApolloClient, getWeb3Options, isAddress } from './utils'
 
 const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
@@ -77,6 +77,7 @@ export class Arc {
    * @return an instance of a DAO
    */
   public dao(address: Address): DAO {
+    isAddress(address)
     return new DAO(address, this)
   }
 
@@ -99,11 +100,11 @@ export class Arc {
    * @param  address [description]
    * @return         [description]
    */
-  public getBalance(address: Address): Observable < number > {
+  public getBalance(address: Address): Observable<number> {
     // observe balance on new blocks
     // (note that we are basically doing expensive polling here)
     const balanceObservable = Observable.create((observer: any) => {
-      this.web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
+      const subscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
         if (err) {
           observer.error(err)
         } else {
@@ -113,6 +114,7 @@ export class Arc {
           })
         }
       })
+      return () => subscription.unsubscribe()
     })
     // get the current balance ad start observing new blocks for balace changes
     const queryObservable = from(this.web3.eth.getBalance(address)).pipe(

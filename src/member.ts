@@ -1,6 +1,5 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
-import { map, switchMap } from 'rxjs/operators'
 import { Arc } from './arc'
 import { DAO } from './dao'
 
@@ -8,6 +7,7 @@ import { IProposalQueryOptions, Proposal } from './proposal'
 import { Reward } from './reward'
 import { IStake, IStakeQueryOptions } from './stake'
 import { Address, ICommonQueryOptions, IStateful } from './types'
+import { isAddress } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export interface IMemberState {
@@ -31,6 +31,7 @@ export class Member implements IStateful<IMemberState> {
    * @param context an instance of Arc
    */
   constructor(public address: Address, public daoAddress: Address, public context: Arc) {
+    isAddress(address)
     const query = gql`
       {
         members (

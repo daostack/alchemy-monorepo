@@ -4,7 +4,7 @@ import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Address, IStateful, Web3Receipt } from './types'
-import { getWeb3Options } from './utils'
+import { getWeb3Options, isAddress } from './utils'
 
 export interface IReputationState {
   address: Address
@@ -16,6 +16,7 @@ export class Reputation implements IStateful<IReputationState> {
   public state: Observable<IReputationState>
 
   constructor(public address: Address, public context: Arc) {
+    isAddress(address)
     const query = gql`{
       reputationContract (id: "${address.toLowerCase()}") {
         id,

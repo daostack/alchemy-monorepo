@@ -50,6 +50,7 @@ export interface IProposalState {
   stage: ProposalStage
   stakesFor: number
   stakesAgainst: number
+  totalRepWhenExecuted: number
   title?: string
   url?: string
   votesFor: number
@@ -197,6 +198,7 @@ export class Proposal implements IStateful<IProposalState> {
           }
           stakesFor
           stakesAgainst
+          totalRepWhenExecuted
           title
           url
           votes {
@@ -256,6 +258,7 @@ export class Proposal implements IStateful<IProposalState> {
         stakesAgainst: Number(item.stakesAgainst),
         stakesFor: Number(item.stakesFor),
         title: item.title,
+        totalRepWhenExecuted: Number(item.totalRepWhenExecuted),
         url: item.url,
         votesAgainst: Number(item.votesAgainst),
         votesFor: Number(item.votesFor),
