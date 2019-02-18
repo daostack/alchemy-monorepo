@@ -1,4 +1,4 @@
-import BN = require('bn.js');
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
@@ -49,9 +49,7 @@ export class Vote implements IVote {
         }) {
           id
           createdAt
-          member {
-            id
-          }
+          voter
           proposal {
             id
           }
