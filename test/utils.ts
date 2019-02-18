@@ -87,8 +87,6 @@ export function mineANewBlock() {
 export async function waitUntilTrue(test: () => Promise<boolean> | boolean) {
   return new Promise((resolve) => {
     (async function waitForIt(): Promise<void> {
-    //     cntr += 1
-    //     if (cntr > 1000) { throw new Error((`Waited but got nothing :-()`))}
       if (await test()) { return resolve() }
       setTimeout(waitForIt, 30)
     })()

@@ -9,7 +9,7 @@ import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { Token } from './token'
 import { Address, Web3Provider } from './types'
-import { createApolloClient, getWeb3Options } from './utils'
+import { createApolloClient, getWeb3Options, isAddress } from './utils'
 
 const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
@@ -78,6 +78,7 @@ export class Arc {
    * @return an instance of a DAO
    */
   public dao(address: Address): DAO {
+    isAddress(address)
     return new DAO(address, this)
   }
 
@@ -100,11 +101,11 @@ export class Arc {
    * @param  address [description]
    * @return         [description]
    */
-  public getBalance(address: Address): Observable <BN> {
+  public getBalance(address: Address): Observable<BN> {
     // observe balance on new blocks
     // (note that we are basically doing expensive polling here)
     const balanceObservable = Observable.create((observer: any) => {
-      this.web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
+      const subscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
         if (err) {
           observer.error(err)
         } else {
@@ -114,6 +115,7 @@ export class Arc {
           })
         }
       })
+      return () => subscription.unsubscribe()
     })
     // get the current balance ad start observing new blocks for balace changes
     const queryObservable = from(this.web3.eth.getBalance(address)).pipe(
@@ -296,6 +298,40 @@ export class Arc {
     } else {
       throw Error(`Cannot get GEN Token because no contract addresses were provided`)
     }
+  }
+
+  public getAccount(): Observable<Address> {
+    // this complex logic is to get the correct account both from the Web3 as well as from the Metamaask provider
+    // Polling is Evil!
+    // cf. https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#ear-listening-for-selected-account-changes
+    return Observable.create((observer: any) => {
+      const interval = 1000 /// poll once a second
+      let account: any
+      let prevAccount: any
+      const web3 = this.web3
+      if (web3.eth.accounts[0]) {
+        observer.next(web3.eth.accounts[0].address)
+        prevAccount = web3.eth.accounts[0].address
+      } else if (web3.eth.defaultAccount ) {
+        observer.next(web3.eth.defaultAccount)
+        prevAccount = web3.eth.defaultAccount
+      }
+      const timeout = setInterval(() => {
+        web3.eth.getAccounts().then((accounts: any) => {
+          if (accounts) {
+            account = accounts[0]
+          } else if (web3.eth.accounts) {
+            account = web3.eth.accounts[0].address
+          }
+          if (prevAccount !== account && account) {
+            web3.eth.defaultAccount = account
+            observer.next(account)
+            prevAccount = account
+          }
+        })
+      }, interval)
+      return() => clearTimeout(timeout)
+    })
   }
 
   public approveForStaking(amount: BN) {

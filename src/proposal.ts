@@ -1,6 +1,7 @@
-import BN = require('bn.js');
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
+import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { Logger } from './logger'
@@ -51,6 +52,7 @@ export interface IProposalState {
   stage: ProposalStage
   stakesFor: BN
   stakesAgainst: BN
+  totalRepWhenExecuted: BN
   title?: string
   url?: string
   votesFor: BN
@@ -198,6 +200,7 @@ export class Proposal implements IStateful<IProposalState> {
           }
           stakesFor
           stakesAgainst
+          totalRepWhenExecuted
           title
           url
           votes {
@@ -257,6 +260,7 @@ export class Proposal implements IStateful<IProposalState> {
         stakesAgainst: new BN(item.stakesAgainst),
         stakesFor: new BN(item.stakesFor),
         title: item.title,
+        totalRepWhenExecuted: Number(item.totalRepWhenExecuted),
         url: item.url,
         votesAgainst: new BN(item.votesAgainst),
         votesFor: new BN(item.votesFor),
@@ -379,11 +383,12 @@ export class Proposal implements IStateful<IProposalState> {
           }
 
           // staker has sufficient balance
-          const defaultAccount = this.context.web3.eth.defaultAccount
+          const defaultAccount = await this.context.getAccount().pipe(first()).toPromise()
           const balance = new BN(await stakingToken.getContract().methods.balanceOf(defaultAccount).call())
-          const amountBN = new BN(amount);
+          const amountBN = new BN(amount)
           if (balance.lt(amountBN)) {
-            const msg = `Staker ${defaultAccount} has insufficient balance to stake ${amount.toString()} (balance is ${balance.toString()})`
+            const msg = `Staker ${defaultAccount} has insufficient balance to stake ${amount.toString()}
+              (balance is ${balance.toString()})`
             return new Error(msg)
           }
 
@@ -392,7 +397,8 @@ export class Proposal implements IStateful<IProposalState> {
             defaultAccount, this.votingMachine().options.address
           ).call())
           if (allowance.lt(amountBN)) {
-            return new Error(`Staker has insufficient allowance to stake ${amount.toString()} (allowance is ${allowance.toString()})`)
+            return new Error(`Staker has insufficient allowance to stake ${amount.toString()}
+              (allowance is ${allowance.toString()})`)
           }
         }
         // if we have found no known error, we return the original error
