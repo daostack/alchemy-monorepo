@@ -17,7 +17,7 @@ import "openzeppelin-solidity/contracts/utils/Address.sol";
 contract GenesisProtocolLogic is IntVoteInterface {
     using SafeMath for uint256;
     using Math for uint256;
-    using RealMath for uint248;
+    using RealMath for uint216;
     using RealMath for uint256;
     using Address for address;
 
@@ -285,7 +285,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
             queuedVotePeriodLimit: _params[1],
             boostedVotePeriodLimit: _params[2],
             preBoostedVotePeriodLimit: _params[3],
-            thresholdConst:uint248(_params[4]).fraction(uint248(1000)),
+            thresholdConst:uint216(_params[4]).fraction(uint216(1000)),
             limitExponentValue:limitExponent,
             quietEndingPeriod: _params[5],
             proposingRepReward: _params[6],
@@ -722,7 +722,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
     function _score(bytes32 _proposalId) internal view returns(uint256) {
         Proposal storage proposal = proposals[_proposalId];
         //proposal.stakes[NO] cannot be zero as the dao downstake > 0 for each proposal.
-        return uint248(proposal.stakes[YES]).fraction(uint248(proposal.stakes[NO]));
+        return uint216(proposal.stakes[YES]).fraction(uint216(proposal.stakes[NO]));
     }
 
     /**

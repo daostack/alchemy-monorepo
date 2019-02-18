@@ -2,7 +2,7 @@ pragma solidity ^0.5.4;
 
 /**
  * RealMath: fixed-point math library, based on fractional and integer parts.
- * Using uint256 as real248x8, which isn't in Solidity yet.
+ * Using uint256 as real216x40, which isn't in Solidity yet.
  * Internally uses the wider uint256 for some math.
  *
  * Note that for addition, subtraction, and mod (%), you should just use the
@@ -21,7 +21,7 @@ library RealMath {
     /**
      * How many fractional bits are there?
      */
-    uint256 constant private REAL_FBITS = 8;
+    uint256 constant private REAL_FBITS = 40;
 
     /**
      * What's the first non-fractional bit
@@ -44,10 +44,12 @@ library RealMath {
                 // If the low bit is set, multiply in the (many-times-squared) base
                 realResult = mul(realResult, tempRealBase);
             }
-            // Shift off the low bit
+                // Shift off the low bit
             tempExponent = tempExponent >> 1;
-            // Do the squaring
-            tempRealBase = mul(tempRealBase, tempRealBase);
+            if (tempExponent != 0) {
+                // Do the squaring
+                tempRealBase = mul(tempRealBase, tempRealBase);
+            }
         }
 
         // Return the final result.
@@ -57,7 +59,7 @@ library RealMath {
     /**
      * Create a real from a rational fraction.
      */
-    function fraction(uint248 numerator, uint248 denominator) internal pure returns (uint256) {
+    function fraction(uint216 numerator, uint216 denominator) internal pure returns (uint256) {
         return div(uint256(numerator) * REAL_ONE, uint256(denominator) * REAL_ONE);
     }
 
@@ -67,7 +69,9 @@ library RealMath {
     function mul(uint256 realA, uint256 realB) private pure returns (uint256) {
         // When multiplying fixed point in x.y and z.w formats we get (x+z).(y+w) format.
         // So we just have to clip off the extra REAL_FBITS fractional bits.
-        return ((realA * realB) >> REAL_FBITS);
+        uint256 res = realA * realB;
+        require(res/realA == realB, "RealMath mul overflow");
+        return (res >> REAL_FBITS);
     }
 
     /**

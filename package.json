@@ -70,7 +70,7 @@
     "arc"
   ],
   "engines": {
-    "node": ">=10.14.2"
+    "node": ">=10.15.1"
   },
   "author": "DAOstack (https://www.daostack.io)",
   "license": "GPL-3.0",
