@@ -7,7 +7,7 @@ import Arc from '../src/index'
 import { Proposal } from '../src/proposal'
 import { Reputation } from '../src/reputation'
 
-const web3 = require('web3')
+const Web3 = require('web3')
 
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack'
 export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/daostack'
@@ -31,11 +31,11 @@ const pks = [
 ]
 
 export function fromWei(amount: BN): string {
-  return web3.utils.fromWei(amount, 'ether')
+  return Web3.utils.fromWei(amount, 'ether')
 }
 
 export function toWei(amount: string | number): BN {
-  return web3.utils.toWei(amount.toString(), 'ether')
+  return new BN(Web3.utils.toWei(amount.toString(), 'ether'))
 }
 
 export function getContractAddresses(): IContractAddresses {

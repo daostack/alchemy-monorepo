@@ -53,7 +53,7 @@ describe('Reputation', () => {
     expect(fromWei(reputationOf)).toEqual('1000')
   })
 
-  it.only('mint() works', async () => {
+  it('mint() works', async () => {
     const reputation = new Reputation(addresses.organs.DemoReputation, arc)
     const reputationBefore = new BN(await reputation.contract().methods.balanceOf(accounts[3].address).call())
     await reputation.mint(accounts[3].address, toWei(1)).send()
@@ -63,7 +63,7 @@ describe('Reputation', () => {
 
     const reputationAfter = new BN(await reputation.contract().methods.balanceOf(accounts[3].address).call())
     const difference = reputationAfter.sub(reputationBefore)
-    expect(difference.toString()).toEqual('100000000003003837')
+    expect(difference.toString()).toEqual('1000000000003003837')
 
   })
   it.skip('reputationOf throws a meaningful error if an invalid address is provided', async () => {

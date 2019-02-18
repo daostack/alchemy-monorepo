@@ -1,4 +1,4 @@
-import BN = require('bn.js');
+import BN = require('bn.js')
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IProposalState, Proposal, ProposalOutcome, ProposalStage } from '../src/proposal'
@@ -54,7 +54,7 @@ describe('Proposal', () => {
   })
 
   it('state should be available before the data is indexed', async () => {
-    //TODO: state should **not** be available?
+    // TODO: state should **not** be available?
     const proposal = await createAProposal()
     const proposalState = await proposal.state.pipe(first()).toPromise()
     // the state is null because the proposal has not been indexed yet
@@ -71,15 +71,15 @@ describe('Proposal', () => {
     delete proposalState.createdAt
 
     // TODO: these amounts seem odd, I guess not using WEI when proposal created?
-    expect(fromWei(proposalState.nativeTokenReward)).toEqual("0.00000000000000001")
-    expect(fromWei(proposalState.stakesAgainst)).toEqual("0.0000001")
-    expect(fromWei(proposalState.stakesFor)).toEqual("0")
-    expect(fromWei(proposalState.reputationReward)).toEqual("0.00000000000000001")
-    expect(fromWei(proposalState.ethReward)).toEqual("0.00000000000000001")
-    expect(fromWei(proposalState.externalTokenReward)).toEqual("0.00000000000000001")
-    expect(fromWei(proposalState.votesFor)).toEqual("1000")
-    expect(fromWei(proposalState.votesAgainst)).toEqual("1000")
-    expect(fromWei(proposalState.proposingRepReward)).toEqual("0.000000005")
+    expect(fromWei(proposalState.nativeTokenReward)).toEqual('0.00000000000000001')
+    expect(fromWei(proposalState.stakesAgainst)).toEqual('0.0000001')
+    expect(fromWei(proposalState.stakesFor)).toEqual('0')
+    expect(fromWei(proposalState.reputationReward)).toEqual('0.00000000000000001')
+    expect(fromWei(proposalState.ethReward)).toEqual('0.00000000000000001')
+    expect(fromWei(proposalState.externalTokenReward)).toEqual('0.00000000000000001')
+    expect(fromWei(proposalState.votesFor)).toEqual('1000')
+    expect(fromWei(proposalState.votesAgainst)).toEqual('1000')
+    expect(fromWei(proposalState.proposingRepReward)).toEqual('0.000000005')
 
     expect(proposalState).toMatchObject({
         beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
@@ -117,8 +117,7 @@ describe('Proposal', () => {
     proposal.stakes().subscribe((next) => stakes.push(next))
 
     // make sure the account has balance
-    const stakeAmount = toWei("1008");
-    const contract = await arc.GENToken().mint(arc.web3.eth.defaultAccount, stakeAmount).send()
+    const stakeAmount = toWei('1008')
     await arc.approveForStaking(stakeAmount).send()
     await proposal.stake(ProposalOutcome.Pass, stakeAmount).send()
 

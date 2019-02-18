@@ -94,7 +94,7 @@ export class Token implements IStateful<ITokenState> {
 
   public mint(beneficiary: Address, amount: BN) {
     const contract = this.getContract()
-    const transaction = contract.methods.mint(beneficiary, amount)
+    const transaction = contract.methods.mint(beneficiary, amount.toString())
     const mapReceipt = (receipt: Web3Receipt) => receipt
     return this.context.sendTransaction(transaction, mapReceipt)
   }
@@ -103,7 +103,7 @@ export class Token implements IStateful<ITokenState> {
     const stakingToken = this.getContract()
     const genesisProtocol = this.context.getContract('GenesisProtocol')
 
-    const transaction = stakingToken.methods.approve(genesisProtocol.options.address, amount)
+    const transaction = stakingToken.methods.approve(genesisProtocol.options.address, amount.toString())
 
     const mapReceipt = (receipt: Web3Receipt) => {
       if (Object.keys(receipt.events).length  === 0) {
