@@ -1,11 +1,12 @@
 import { ApolloQueryResult } from 'apollo-client'
-import BN = require('bn.js');
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { IContractAddresses } from '../src/arc'
 import { DAO } from '../src/dao'
 import Arc from '../src/index'
 import { Proposal } from '../src/proposal'
 import { Reputation } from '../src/reputation'
+
 const web3 = require('web3')
 
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack'
@@ -30,11 +31,11 @@ const pks = [
 ]
 
 export function fromWei(amount: BN): string {
-  return web3.utils.fromWei(amount, "ether");
+  return web3.utils.fromWei(amount, 'ether')
 }
 
 export function toWei(amount: string | number): BN {
-  return web3.utils.toWei(amount.toString(), "ether");
+  return web3.utils.toWei(amount.toString(), 'ether')
 }
 
 export function getContractAddresses(): IContractAddresses {
@@ -77,7 +78,7 @@ export async function mintSomeReputation() {
   const addresses = getContractAddresses()
   const token = new Reputation(addresses.organs.DemoReputation, arc)
   const accounts = arc.web3.eth.accounts.wallet
-  await token.mint(accounts[1].address, toWei("99")).send()
+  await token.mint(accounts[1].address, toWei('99')).send()
 }
 
 export function mineANewBlock() {
@@ -139,13 +140,13 @@ export async function createAProposal(dao?: DAO) {
 
   const options = {
     beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
-    ethReward: toWei("300"),
+    ethReward: toWei('300'),
     externalTokenAddress: undefined,
-    externalTokenReward: toWei("0"),
-    nativeTokenReward: toWei("1"),
+    externalTokenReward: toWei('0'),
+    nativeTokenReward: toWei('1'),
     periodLength: 12,
     periods: 5,
-    reputationReward: toWei("10"),
+    reputationReward: toWei('10'),
     type: 'ContributionReward'
   }
 
