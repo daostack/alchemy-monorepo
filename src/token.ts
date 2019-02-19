@@ -5,6 +5,7 @@ import { Observable, of } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Address, Hash, IStateful, Web3Receipt } from './types'
+import { getWeb3Options, isAddress } from './utils'
 
 export interface ITokenState {
   address: Address
@@ -38,6 +39,7 @@ export class Token implements IStateful<ITokenState> {
     if (!address) {
       throw Error(`No address provided - cannot create Token instance`)
     }
+    isAddress(address)
     const query = gql`{
       token(id: "${address.toLowerCase()}") {
         id,
@@ -91,12 +93,14 @@ export class Token implements IStateful<ITokenState> {
    * get a web3 contract instance for this token
    */
   public getContract() {
-    // TODO: use a generic ERC20 Abi here instead of the current quick hack
-    const contract = this.context.getContract('GEN')
-    if (contract.options.address !== this.address) {
-      throw Error(`Cannot find contract address`)
-    }
-    return contract
+    const opts = getWeb3Options(this.context.web3)
+    const ReputationContractInfo = require('@daostack/arc/build/contracts/DAOToken.json')
+    return new this.context.web3.eth.Contract(ReputationContractInfo.abi, this.address, opts)
+    // const contract = this.context.getContract('GEN')
+    // if (contract.options.address !== this.address) {
+    //   throw Error(`Cannot find contract address`)
+    // }
+    // return contract
   }
 
   public mint(beneficiary: Address, amount: BN) {
