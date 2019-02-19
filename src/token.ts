@@ -148,8 +148,6 @@ export class Token implements IStateful<ITokenState> {
       throw Error(`This token is not the GEN token - cannot query for allowances`)
     }
 
-    // TODO: below is a temp hack, and wil not work with the options.spender or withou the options.owner arg!
-    // see for resolution below
     let whereclause = ''
     if (options.owner) {
       whereclause += `owner: "${options.owner.toLowerCase()}"\n`

@@ -54,7 +54,6 @@ describe('Proposal', () => {
   })
 
   it('state should be available before the data is indexed', async () => {
-    // TODO: state should **not** be available?
     const proposal = await createAProposal()
     const proposalState = await proposal.state.pipe(first()).toPromise()
     // the state is null because the proposal has not been indexed yet

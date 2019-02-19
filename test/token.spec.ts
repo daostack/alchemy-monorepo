@@ -65,7 +65,6 @@ describe('Token', () => {
     token.balanceOf(account).subscribe((next) => balances.push(next))
     await token.mint(account, amount).send()
     await waitUntilTrue(() => balances.length > 1)
-    console.log(balances)
     expect(balances[1].sub(balances[0]).toString()).toEqual(amount.toString())
   })
 
