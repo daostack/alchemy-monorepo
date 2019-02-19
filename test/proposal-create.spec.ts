@@ -2,7 +2,7 @@ import BN = require('bn.js');
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Logger } from '../src/logger'
-import { Proposal, ProposalStage } from '../src/proposal'
+import { Proposal, IProposalStage } from '../src/proposal'
 import {
   fromWei,
   getArc,
@@ -69,7 +69,7 @@ describe('Create a ContributionReward proposal', () => {
       proposer: dao.context.web3.eth.defaultAccount.toLowerCase(),
       quietEndingPeriodBeganAt: null,
       resolvedAt: null,
-      stage: ProposalStage.Queued,
+      stage: IProposalStage.Queued,
     })
     expect(proposalState.dao.address).toEqual(dao.address)
 

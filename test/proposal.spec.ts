@@ -1,7 +1,7 @@
 import BN = require('bn.js')
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { IProposalState, Proposal, ProposalOutcome, ProposalStage } from '../src/proposal'
+import { IExecutionState, IProposalStage, IProposalState, Proposal, ProposalOutcome  } from '../src/proposal'
 import { createAProposal, fromWei, getArc, toWei, waitUntilTrue} from './utils'
 
 const DAOstackMigration = require('@daostack/migration')
@@ -37,7 +37,7 @@ describe('Proposal', () => {
   it('dao.proposals() accepts different query arguments', async () => {
     const { Avatar, proposalId } = DAOstackMigration.migration('private').test
     const dao = arc.dao(Avatar.toLowerCase())
-    const proposals = await dao.proposals({ stage: ProposalStage.Queued}).pipe(first()).toPromise()
+    const proposals = await dao.proposals({ stage: IProposalStage.Queued}).pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
     expect(proposals.length).toBeGreaterThan(0)
     expect(proposals[proposals.length - 1].id).toBe(proposalId)
@@ -85,6 +85,7 @@ describe('Proposal', () => {
         boostingThreshold: 0,
         description: null,
         descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
+        executionState: IExecutionState.None,
         executedAt: null,
         externalToken: '0x4bf749ec68270027c5910220ceab30cc284c7ba2',
         // id: '0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e',
@@ -94,7 +95,7 @@ describe('Proposal', () => {
         proposer: '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1',
         quietEndingPeriodBeganAt: null,
         resolvedAt: null,
-        stage: ProposalStage.Queued,
+        stage: IProposalStage.Queued,
         thresholdConst: 2199023255552,
         title: null,
         url: null,

@@ -19,7 +19,7 @@ export enum ProposalOutcome {
   Fail
 }
 
-export enum ProposalStage {
+export enum IProposalStage {
   ExpiredInQueue,
   Executed,
   Queued,
@@ -75,7 +75,7 @@ export interface IProposalState {
   votingMachine: Address
   reputationReward: BN
   resolvedAt: Date
-  stage: ProposalStage
+  stage: IProposalStage
   stakesFor: BN
   stakesAgainst: BN
   totalRepWhenExecuted: BN
@@ -158,7 +158,7 @@ export class Proposal implements IStateful<IProposalState> {
     let where = ''
     for (const key of Object.keys(options)) {
       if (key === 'stage' && options[key] !== undefined) {
-        where += `${key}: ${ProposalStage[options[key] as ProposalStage]},\n`
+        where += `${key}: ${IProposalStage[options[key] as IProposalStage]},\n`
       } else {
         where += `${key}: "${options[key] as string}",`
       }
@@ -267,9 +267,6 @@ export class Proposal implements IStateful<IProposalState> {
         return null
       }
 
-      const proposalStage = ProposalStage[item.stage]
-      const executionState = IExecutionState[item.executionState]
-
       return {
         activationTime: item.activationTime,
         beneficiary: item.beneficiary,
@@ -284,7 +281,7 @@ export class Proposal implements IStateful<IProposalState> {
         descriptionHash: item.descriptionHash,
         ethReward: new BN(item.ethReward),
         executedAt: item.executedAt,
-        executionState: item.executionState,
+        executionState: IExecutionState[item.executionState],
         externalToken: item.externalToken,
         externalTokenReward: new BN(item.externalTokenReward),
         id: item.id,
@@ -302,7 +299,7 @@ export class Proposal implements IStateful<IProposalState> {
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
         reputationReward: new BN(item.reputationReward),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : null,
-        stage: ProposalStage[item.stage],
+        stage: IProposalStage[item.stage],
         stakesAgainst: new BN(item.stakesAgainst),
         stakesFor: new BN(item.stakesFor),
         thresholdConst: Number(item.thresholdConst),
@@ -489,7 +486,7 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
   boosted?: boolean
   proposer?: Address
   proposalId?: string
-  stage?: ProposalStage
+  stage?: IProposalStage
   orderBy?: ProposalQuerySortOptions
   // the options above should be ok for the current alchemy; will add more options as needed
   executedAfter?: Date
