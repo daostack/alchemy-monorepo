@@ -1,8 +1,9 @@
+const BN = require('bn.js')
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
-import { fromWei, getArc, getContractAddresses } from './utils'
+import { fromWei, getArc, getContractAddresses, toWei } from './utils'
 /**
  * Reputation test
  */
@@ -49,9 +50,22 @@ describe('Reputation', () => {
     const reputation = new Reputation(address, arc)
     const reputationOf = await reputation.reputationOf(accounts[2].address)
       .pipe(first()).toPromise()
-    expect(fromWei(reputationOf)).toEqual("1000")
+    expect(fromWei(reputationOf)).toEqual('1000')
   })
 
+  it('mint() works', async () => {
+    const reputation = new Reputation(addresses.organs.DemoReputation, arc)
+    const reputationBefore = new BN(await reputation.contract().methods.balanceOf(accounts[3].address).call())
+    await reputation.mint(accounts[3].address, toWei(1)).send()
+    await reputation.mint(accounts[3].address, new BN('1')).send()
+    await reputation.mint(accounts[3].address, new BN('1e18')).send()
+    await reputation.mint(accounts[3].address, new BN('3000e18')).send()
+
+    const reputationAfter = new BN(await reputation.contract().methods.balanceOf(accounts[3].address).call())
+    const difference = reputationAfter.sub(reputationBefore)
+    expect(difference.toString()).toEqual('1000000000003003837')
+
+  })
   it.skip('reputationOf throws a meaningful error if an invalid address is provided', async () => {
     // write this test
   })

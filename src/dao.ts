@@ -67,7 +67,7 @@ export class DAO implements IStateful<IDAOState> {
         memberCount: Number(item.membersCount),
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, context),
-        reputationTotalSupply: item.nativeReputation.totalSupply,
+        reputationTotalSupply: new BN(item.nativeReputation.totalSupply),
         token: new Token(item.nativeToken.id, context),
         // TODO: get external token balance, cf. https://github.com/daostack/subgraph/issues/62
         tokenBalance: new BN(100),

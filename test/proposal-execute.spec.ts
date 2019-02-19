@@ -1,4 +1,4 @@
-import BN = require('bn.js');
+import BN = require('bn.js')
 import { first, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IProposalState, Proposal, ProposalOutcome, ProposalStage } from '../src/proposal'
@@ -10,37 +10,28 @@ describe('Proposal execute()', () => {
   let arc: Arc
 
   beforeAll(async () => {
-    arc = getArc()
+    arc = await getArc()
   })
 
   it('runs correctly through the stages', async () => {
 
     const dao = await getTestDAO()
-    const arc = await getArc()
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const accounts = arc.web3.eth.accounts.wallet
     const options = {
       beneficiary,
-      ethReward: toWei("4"),
+      ethReward: toWei('4'),
       externalTokenAddress: undefined,
-      externalTokenReward: toWei("3"),
-      nativeTokenReward: toWei("2"),
+      externalTokenReward: toWei('3'),
+      nativeTokenReward: toWei('2'),
       periodLength: 12,
       periods: 5,
-      reputationReward: toWei("1"),
+      reputationReward: toWei('1'),
       type: 'ContributionReward'
     }
     const response = await dao.createProposal(options).send()
     const proposalId = (response.result as any).id
-    // wait for the proposal to be indexed before subscribing to the state
-    // TODO: change this once  https://github.com/daostack/client/issues/78 is resolved
-    // const proposalIsIndexed = async () => {
-    //   // we pass no-cache to make sure we hit the server on each request
-    //   const proposals = await Proposal.search({id: proposalId}, arc, { fetchPolicy: 'no-cache' })
-    //     .pipe(first()).toPromise()
-    //   return proposals.length > 0
-    // }
-    // await waitUntilTrue(proposalIsIndexed)
+
     const proposal = new Proposal(proposalId, dao.address, arc)
 
     let proposalState
@@ -80,12 +71,12 @@ describe('Proposal execute()', () => {
     })
     expect(proposalState.stage).toEqual(ProposalStage.Queued)
     expect(Number(fromWei(proposalState.votesFor))).toBeGreaterThan(0)
-    expect(fromWei(proposalState.votesAgainst)).toEqual("0")
+    expect(fromWei(proposalState.votesAgainst)).toEqual('0')
 
-    await proposal.stakingToken().mint(accounts[0].address, toWei("1000")).send()
-    await proposal.stakingToken().approveForStaking(toWei("1000")).send()
+    await proposal.stakingToken().mint(accounts[0].address, toWei('1000')).send()
+    await proposal.stakingToken().approveForStaking(toWei('1000')).send()
 
-    await proposal.stake(ProposalOutcome.Pass, toWei("200")).send()
+    await proposal.stake(ProposalOutcome.Pass, toWei('200')).send()
     await waitUntilTrue(async () => {
       proposalState = proposalStates[proposalStates.length - 1]
       return proposalState.stakesFor.gt(new BN(0))

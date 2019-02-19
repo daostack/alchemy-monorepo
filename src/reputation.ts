@@ -59,15 +59,15 @@ export class Reputation implements IStateful<IReputationState> {
   /*
    * get a web3 contract instance for this token
    */
-  public getContract() {
+  public contract() {
     const opts = getWeb3Options(this.context.web3)
     const ReputationContractInfo = require('@daostack/arc/build/contracts/Reputation.json')
     return new this.context.web3.eth.Contract(ReputationContractInfo.abi, this.address, opts)
   }
 
   public mint(beneficiary: Address, amount: BN) {
-    const contract = this.getContract()
-    const transaction = contract.methods.mint(beneficiary, amount)
+    const contract = this.contract()
+    const transaction = contract.methods.mint(beneficiary, amount.toString())
     const mapReceipt = (receipt: Web3Receipt) => receipt
     return this.context.sendTransaction(transaction, mapReceipt)
   }

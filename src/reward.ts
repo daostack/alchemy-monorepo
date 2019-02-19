@@ -1,3 +1,4 @@
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable, of } from 'rxjs'
 import { map } from 'rxjs/operators'
@@ -29,7 +30,7 @@ export interface IRewardState {
   reason: RewardReason,
   type: RewardType
   tokenAddress: Address,
-  amount: number,
+  amount: BN,
   redeemed: number
 }
 
@@ -82,7 +83,7 @@ export class Reward implements IStateful<IRewardState> {
 
     const itemMap = (item: any): IRewardState => {
       return {
-        amount: Number(item.amount),
+        amount: item.amount,
         beneficiary: item.member.id,
         createdAt: item.createdAt,
         id: item.id,

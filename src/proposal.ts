@@ -102,13 +102,13 @@ export class Proposal implements IStateful<IProposalState> {
       const transaction = contributionReward.methods.proposeContributionReward(
           options.dao,
           options.descriptionHash || '',
-          options.reputationReward || 0,
+          options.reputationReward && options.reputationReward.toString() || 0,
           [
-            options.nativeTokenReward || 0,
-            options.ethReward || 0,
-            options.externalTokenReward || 0,
+            options.nativeTokenReward && options.nativeTokenReward.toString() || 0,
+            options.ethReward && options.ethReward.toString() || 0,
+            options.externalTokenReward && options.externalTokenReward.toString() || 0,
             options.periodLength || 12,
-            options.periods || 5
+           options.periods || 5
           ],
           options.externalTokenAddress || nullAddress,
           options.beneficiary
@@ -298,7 +298,7 @@ export class Proposal implements IStateful<IProposalState> {
     const voteMethod = votingMachine.methods.vote(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
-      amount, // amount of reputation to vote with . if _amount == 0 it will use all voter reputation.
+      amount.toString(), // amount of reputation to vote with . if _amount == 0 it will use all voter reputation.
       nullAddress
     )
 
@@ -350,7 +350,7 @@ export class Proposal implements IStateful<IProposalState> {
     const stakeMethod = this.votingMachine().methods.stake(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
-      amount // the amount of tokens to stake
+      amount.toString() // the amount of tokens to stake
     )
 
     return this.context.sendTransaction(
