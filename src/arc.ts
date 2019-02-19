@@ -335,7 +335,7 @@ export class Arc {
   }
 
   public approveForStaking(amount: BN) {
-    return this.GENToken().approveForStaking(amount)
+    return this.GENToken().approveForStaking(amount).send()
   }
   /**
    * How much GEN the genesisProtocol may spend on behalve of the owner
