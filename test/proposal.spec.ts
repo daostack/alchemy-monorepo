@@ -2,7 +2,7 @@ import BN = require('bn.js')
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IProposalState, Proposal, ProposalOutcome, ProposalStage } from '../src/proposal'
-import { createAProposal, fromWei, getArc, getTestDAO, toWei, waitUntilTrue} from './utils'
+import { createAProposal, fromWei, getArc, toWei, waitUntilTrue} from './utils'
 
 const DAOstackMigration = require('@daostack/migration')
 
@@ -111,13 +111,12 @@ describe('Proposal', () => {
   })
 
   it('get proposal stakes', async () => {
-    const dao = await getTestDAO()
     const proposal = await createAProposal()
     const stakes: any[] = []
     proposal.stakes().subscribe((next) => stakes.push(next))
 
-    // make sure the account has balance
-    const stakeAmount = toWei('1008')
+    const stakeAmount = toWei('18')
+    await proposal.stakingToken().mint(arc.web3.eth.defaultAccount, stakeAmount).send()
     await arc.approveForStaking(stakeAmount).send()
     await proposal.stake(ProposalOutcome.Pass, stakeAmount).send()
 
