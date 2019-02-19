@@ -66,8 +66,6 @@ describe('Proposal', () => {
     const proposal = new Proposal(proposalId, '', arc)
     const proposalState = await proposal.state.pipe(first()).toPromise()
     expect(proposal).toBeInstanceOf(Proposal)
-    delete proposalState.dao
-    delete proposalState.createdAt
 
     // TODO: these amounts seem odd, I guess not using WEI when proposal created?
     expect(fromWei(proposalState.nativeTokenReward)).toEqual('0.00000000000000001')
@@ -88,12 +86,16 @@ describe('Proposal', () => {
         description: null,
         descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
         executedAt: null,
+        externalToken: '0x4bf749ec68270027c5910220ceab30cc284c7ba2',
         // id: '0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e',
+        periodLength: 0,
+        periods: 1,
         preBoostedVotePeriodLimit: 259200,
         proposer: '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1',
         quietEndingPeriodBeganAt: null,
         resolvedAt: null,
         stage: ProposalStage.Queued,
+        thresholdConst: 2199023255552,
         title: null,
         url: null,
         winningOutcome: 'Fail'
@@ -101,7 +103,7 @@ describe('Proposal', () => {
   })
 
   it('get proposal rewards', async () => {
-    // TODO: fix this once the subgraph corretly indexes rewards
+    // TODO: fix this once the subgraph correctly indexes rewards
     const { proposalId } = DAOstackMigration.migration('private').test
     const proposal = new Proposal(proposalId, '', arc)
     const rewards = await proposal.rewards().pipe(first()).toPromise()
