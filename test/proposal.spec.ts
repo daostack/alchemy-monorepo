@@ -86,7 +86,6 @@ describe('Proposal', () => {
         boostedAt: 0,
         boostedVotePeriodLimit: 259200,
         boostingThreshold: 0,
-        confidence: 0,
         description: null,
         descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
         executedAt: null,

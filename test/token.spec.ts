@@ -78,10 +78,10 @@ describe('Token', () => {
       (next: any) => allowances = next
     )
     await waitUntilTrue(() => allowances.length > 0 && allowances[0].amount.gte(amount))
-    // TODO: this is not working right, sometimes i see the right value, sometimes 800, sometimes 1001, depends on if test run with whole suite or on its own?
-    // expect(fromWei(allowances[0].amount)).toEqual("31415")
-    expect(allowances[0].owner.toLowerCase()).toBe(arc.web3.eth.defaultAccount.toLowerCase())
-    // TODO: this is returning undefined, why?
-    // expect(allowances[0].spender).toBe(arc.getContract('GenesisProtocol').options.address.toLowerCase())
+    expect(allowances[0]).toMatchObject({
+      amount,
+      owner: arc.web3.eth.defaultAccount.toLowerCase(),
+      spender: arc.getContract('GenesisProtocol').options.address.toLowerCase()
+    })
   })
 })

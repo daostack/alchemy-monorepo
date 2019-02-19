@@ -34,7 +34,7 @@ export interface IProposalState {
   boostedAt: Date
   boostingThreshold: number
   boostedVotePeriodLimit: number
-  confidence: number
+  // confidence: number
   createdAt: Date
   dao: DAO
   description?: string
@@ -176,7 +176,6 @@ export class Proposal implements IStateful<IProposalState> {
           activationTime
           boostedAt
           boostedVotePeriodLimit
-          confidence
           createdAt
           dao {
             id
@@ -240,7 +239,7 @@ export class Proposal implements IStateful<IProposalState> {
         boostedAt: Number(item.boostedAt),
         boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
         boostingThreshold: 0, // TODO:
-        confidence: Number(item.confidence),
+        // confidence: Number(item.confidence),
         createdAt: Number(item.createdAt),
         dao: new DAO(item.dao.id, this.context),
         description: item.description,

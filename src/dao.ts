@@ -29,10 +29,11 @@ export interface IDAOState {
   tokenName: string,
   tokenSymbol: string,
   tokenTotalSupply: BN,
-  externalTokenAddress: Address,
-  externalTokenBalance: BN
-  externalTokenSymbol: string,
-  ethBalance: BN
+  externalTokenAddress: Address | undefined,
+  externalTokenBalance: BN | undefined,
+  externalTokenSymbol: string | undefined
+  // TODO: get Eth balance once https://github.com/daostack/subgraph/issues/62 is resolved
+  // ethBalance: BN
 }
 
 export class DAO implements IStateful<IDAOState> {
@@ -58,18 +59,17 @@ export class DAO implements IStateful<IDAOState> {
       }
       return {
         address: item.id,
-        // TODO: get Eth balance, cf https://github.com/daostack/subgraph/issues/62
-        ethBalance: new BN(100),
-        externalTokenAddress: '',
+        // ethBalance: new BN(100),
+        externalTokenAddress: undefined,
         // TODO: get external token balance, cf. https://github.com/daostack/subgraph/issues/62
-        externalTokenBalance: new BN(100),
-        externalTokenSymbol: '',
+        externalTokenBalance: undefined,
+        externalTokenSymbol: undefined,
         memberCount: Number(item.membersCount),
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, context),
         reputationTotalSupply: new BN(item.nativeReputation.totalSupply),
         token: new Token(item.nativeToken.id, context),
-        // TODO: get external token balance, cf. https://github.com/daostack/subgraph/issues/62
+        // TODO: get native token balance, cf. https://github.com/daostack/subgraph/issues/62
         tokenBalance: new BN(100),
         tokenName: item.nativeToken.name,
         tokenSymbol: item.nativeToken.symbol,
