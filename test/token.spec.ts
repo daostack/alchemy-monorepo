@@ -1,3 +1,4 @@
+import BN = require('bn.js')
 import { first} from 'rxjs/operators'
 import { Arc, IContractAddresses } from '../src/arc'
 import { Token } from '../src/token'
@@ -37,9 +38,15 @@ describe('Token', () => {
 
   it('throws a reasonable error if the contract does not exist', async () => {
     expect.assertions(1)
-    const token = new Token('0xFake', arc)
+    const token = new Token('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1', arc)
     await expect(token.state.toPromise()).rejects.toThrow(
-      'Could not find a token contract with address 0xfake'
+      'Could not find a token contract with address 0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1'
+    )
+  })
+
+  it('throws a reasonable error if the constructor gets an invalid address', async () => {
+    await expect(() => new Token('0xinvalid', arc)).toThrow(
+      'Not a valid address: 0xinvalid'
     )
   })
 
@@ -51,12 +58,14 @@ describe('Token', () => {
   })
 
   it('mint some new tokens', async () => {
-    const token = new Token(address, arc)
-    // TODO: why does this fail? cant find token address?
-    //    await token.mint('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1', toWei("10000")).send()
-    const balanceOf = await token.balanceOf('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1')
-      .pipe(first()).toPromise()
-    expect(fromWei(balanceOf)).toEqual('1000')
+    const token = new Token(addresses.organs.DemoDAOToken, arc)
+    const account = '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1'
+    const balances: BN[] = []
+    const amount = new BN('1234')
+    token.balanceOf(account).subscribe((next) => balances.push(next))
+    await token.mint(account, amount).send()
+    await waitUntilTrue(() => balances.length > 1)
+    expect(balances[1].sub(balances[0]).toString()).toEqual(amount.toString())
   })
 
   it('see approvals', async () => {
@@ -78,10 +87,10 @@ describe('Token', () => {
       (next: any) => allowances = next
     )
     await waitUntilTrue(() => allowances.length > 0 && allowances[0].amount.gte(amount))
-    // TODO: this is not working right, sometimes i see the right value, sometimes 800, sometimes 1001, depends on if test run with whole suite or on its own?
-    // expect(fromWei(allowances[0].amount)).toEqual("31415")
-    expect(allowances[0].owner.toLowerCase()).toBe(arc.web3.eth.defaultAccount.toLowerCase())
-    // TODO: this is returning undefined, why?
-    // expect(allowances[0].spender).toBe(arc.getContract('GenesisProtocol').options.address.toLowerCase())
+    expect(allowances[0]).toMatchObject({
+      amount,
+      owner: arc.web3.eth.defaultAccount.toLowerCase(),
+      spender: arc.getContract('GenesisProtocol').options.address.toLowerCase()
+    })
   })
 })

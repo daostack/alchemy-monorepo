@@ -5,6 +5,7 @@ import { Observable, of } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Address, Hash, IStateful, Web3Receipt } from './types'
+import { getWeb3Options, isAddress } from './utils'
 
 export interface ITokenState {
   address: Address
@@ -23,6 +24,13 @@ export interface IApproval {
   value: BN
 }
 
+export interface IAllowance {
+  token: Address
+  owner: Address
+  spender: Address
+  amount: BN
+}
+
 export class Token implements IStateful<ITokenState> {
 
   public state: Observable<ITokenState> = of()
@@ -31,6 +39,7 @@ export class Token implements IStateful<ITokenState> {
     if (!address) {
       throw Error(`No address provided - cannot create Token instance`)
     }
+    isAddress(address)
     const query = gql`{
       token(id: "${address.toLowerCase()}") {
         id,
@@ -84,12 +93,14 @@ export class Token implements IStateful<ITokenState> {
    * get a web3 contract instance for this token
    */
   public getContract() {
-    // TODO: use a generic ERC20 Abi here instead of the current quick hack
-    const contract = this.context.getContract('GEN')
-    if (contract.options.address !== this.address) {
-      throw Error(`Cannot find contract address`)
-    }
-    return contract
+    const opts = getWeb3Options(this.context.web3)
+    const ReputationContractInfo = require('@daostack/arc/build/contracts/DAOToken.json')
+    return new this.context.web3.eth.Contract(ReputationContractInfo.abi, this.address, opts)
+    // const contract = this.context.getContract('GEN')
+    // if (contract.options.address !== this.address) {
+    //   throw Error(`Cannot find contract address`)
+    // }
+    // return contract
   }
 
   public mint(beneficiary: Address, amount: BN) {
@@ -131,75 +142,38 @@ export class Token implements IStateful<ITokenState> {
     return this.context._getObservableList(query)
   }
 
-  public allowances(options: { owner?: Address, spender?: Address}): Observable<any[]> {
+  public allowances(options: { owner?: Address, spender?: Address}): Observable<IAllowance[]> {
     // the allownaces entry tracks the GEN token, so the query only makes sense if the current token is the GEN token
     if (this.address !== this.context.getContract('GEN').options.address) {
-      throw Error(`The current Token is not the GEN token - cannot query for allowances`)
+      throw Error(`This token is not the GEN token - cannot query for allowances`)
     }
 
-    // TODO: below is a temp hack, and wil not work with the options.spender or withou the options.owner arg!
-    // see for resolution below
     let whereclause = ''
     if (options.owner) {
-      whereclause += `address: "${options.owner.toLowerCase()}"\n`
+      whereclause += `owner: "${options.owner.toLowerCase()}"\n`
     }
-    whereclause += `contract: "${this.address.toLowerCase()}"\n`
+    whereclause += `token: "${this.address.toLowerCase()}"\n`
     if (whereclause) {
       whereclause = `(where: { ${whereclause}})`
     }
     const query = gql`{
-      tokenHolders
+      allowances
         ${whereclause}
       {
         id
-        address
-        allowances {
-          spender
-          amount
-        }
+        token
+        owner
+        spender
+        amount
       }
     }`
     const itemMap = (r: any) => {
-      if (r.allowances.length > 0) {
-        return {
-          amount: new BN(r.allowances[0].amount),
-          owner: r.address,
-          spender: r.allowances[0].spender
-        }
-      } else {
-        return {
-          amount: new BN(0),
-          owner: options.owner
-          // spender: r.allowances[0].spender
-        }
+      return {
+        amount: new BN(r.amount),
+        owner: r.owner,
+        spender: r.spender
       }
     }
     return this.context._getObservableList(query, itemMap)
-
-    // TODO: use the code below once https://github.com/daostack/subgraph/issues/55 is resolved
-    // let whereclause = ''
-    // if (options.owner) {
-    //   whereclause += `owner: "${options.owner.toLowerCase()}"\n`
-    // }
-    // if (options.spender) {
-    //   whereclause += `spender: "${options.spender.toLowerCase()}"\n`
-    // }
-    //
-    // if (whereclause) {
-    //   whereclause = `(where: { ${whereclause}})`
-    // }
-    // const query = gql`{
-    //   allowances
-    //   ${whereclause}
-    //   {
-    //     id
-    //     owner {
-    //       id
-    //     }
-    //     spender
-    //     amount
-    //   }
-    // }`
-    // return this.context._getObservableList(query)
   }
 }

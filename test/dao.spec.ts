@@ -1,4 +1,4 @@
-import BN = require('bn.js');
+import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
@@ -24,7 +24,7 @@ describe('DAO', () => {
     const dao = await getTestDAO()
     const { token } = await dao.state.pipe(first()).toPromise()
     const balance = await token.balanceOf(dao.address).pipe(first()).toPromise()
-    expect(fromWei(balance)).toEqual("0")
+    expect(fromWei(balance)).toEqual('0')
   })
 
   it('should be possible to get the reputation balance of the DAO', () => {
@@ -51,7 +51,6 @@ describe('DAO', () => {
     expect(state).toMatchObject(expected)
     expect(Object.keys(state)).toEqual([
       'address',
-      'ethBalance',
       'externalTokenAddress',
       'externalTokenBalance',
       'externalTokenSymbol',

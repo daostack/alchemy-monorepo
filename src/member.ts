@@ -96,10 +96,8 @@ export class Member implements IStateful<IMemberState> {
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
-    throw new Error('not implemented')
-    // TODO: implementation is pending https://github.com/daostack/subgraph/issues/96
-    // options.voter = this.address
-    // return Vote.search(this.context, options)
+    options.voter = this.address
+    return Vote.search(this.context, options)
   }
 }
 

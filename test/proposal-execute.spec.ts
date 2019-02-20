@@ -1,7 +1,7 @@
 import BN = require('bn.js')
 import { first, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { IProposalState, Proposal, ProposalOutcome, ProposalStage } from '../src/proposal'
+import { IProposalState, Proposal, ProposalOutcome, IProposalStage } from '../src/proposal'
 import { createAProposal, fromWei, getArc, getTestDAO, mineANewBlock, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
@@ -49,13 +49,13 @@ describe('Proposal execute()', () => {
     await waitUntilTrue(() => proposalIsIndexed)
     // check the state right after creation
     await waitUntilTrue(() => proposalStates.length > 1)
-    expect(proposalStates[1].stage).toEqual(ProposalStage.Queued)
+    expect(proposalStates[1].stage).toEqual(IProposalStage.Queued)
 
     // calling execute in this stage has no effect on the stage
     await proposal.execute().send()
     await waitUntilTrue(() => proposalStates.length > 2)
     proposalState = proposalStates[2]
-    expect(proposalStates[2].stage).toEqual(ProposalStage.Queued)
+    expect(proposalStates[2].stage).toEqual(IProposalStage.Queued)
     expect(proposalStates.length).toEqual(3)
 
     await proposal.vote(ProposalOutcome.Pass).send()
@@ -69,7 +69,7 @@ describe('Proposal execute()', () => {
       proposalState = proposalStates[proposalStates.length - 1]
       return proposalState.votesFor.gt(new BN(0))
     })
-    expect(proposalState.stage).toEqual(ProposalStage.Queued)
+    expect(proposalState.stage).toEqual(IProposalStage.Queued)
     expect(Number(fromWei(proposalState.votesFor))).toBeGreaterThan(0)
     expect(fromWei(proposalState.votesAgainst)).toEqual('0')
 
@@ -83,7 +83,7 @@ describe('Proposal execute()', () => {
     })
 
     expect(Number(fromWei(proposalState.stakesFor))).toBeGreaterThan(0)
-    expect(proposalState.stage).toEqual(ProposalStage.PreBoosted)
+    expect(proposalState.stage).toEqual(IProposalStage.PreBoosted)
     return
 
   }, 10000)

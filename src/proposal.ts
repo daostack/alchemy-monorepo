@@ -19,7 +19,7 @@ export enum ProposalOutcome {
   Fail
 }
 
-export enum ProposalStage {
+export enum IProposalStage {
   ExpiredInQueue,
   Executed,
   Queued,
@@ -28,28 +28,54 @@ export enum ProposalStage {
   QuietEndingPeriod
 }
 
+export enum IExecutionState {
+  None,
+  QueueBarCrossed,
+  QueueTimeOut,
+  PreBoostedBarCrossed,
+  BoostedTimeOut,
+  BoostedBarCrossed
+}
+
 export interface IProposalState {
+  descriptionHash?: string
+  executionState: IExecutionState
+  paramsHash: string
+  organizationId: string
+  confidenceThreshold: number
+  queuedVoteRequiredPercentage: number
+  queuedVotePeriodLimit: number
+  thresholdConst: number
+  // limitExponentValue: number
+  // minimumDaoBounty: number
+  daoBountyConst: number
+  activationTime: number
+  // voteOnBehalf: Address
+  externalToken: Address
+  periods: number
+  periodLength: number
   id: string
   beneficiary: Address
   boostedAt: Date
   boostingThreshold: number
   boostedVotePeriodLimit: number
-  confidence: number
   createdAt: Date
   dao: DAO
   description?: string
   ethReward: BN
   executedAt: Date
   externalTokenReward: BN
-  descriptionHash?: string
   nativeTokenReward: BN
+  preBoostedAt: Date
   preBoostedVotePeriodLimit: number
   proposer: Address
   proposingRepReward: BN
   quietEndingPeriodBeganAt: Date
+  // votersReputationLossRatio: number
+  votingMachine: Address
   reputationReward: BN
   resolvedAt: Date
-  stage: ProposalStage
+  stage: IProposalStage
   stakesFor: BN
   stakesAgainst: BN
   totalRepWhenExecuted: BN
@@ -132,7 +158,7 @@ export class Proposal implements IStateful<IProposalState> {
     let where = ''
     for (const key of Object.keys(options)) {
       if (key === 'stage' && options[key] !== undefined) {
-        where += `${key}: ${ProposalStage[options[key] as ProposalStage]},\n`
+        where += `${key}: ${IProposalStage[options[key] as IProposalStage]},\n`
       } else {
         where += `${key}: "${options[key] as string}",`
       }
@@ -174,9 +200,10 @@ export class Proposal implements IStateful<IProposalState> {
         proposal(id: "${id}") {
           id
           activationTime
+          beneficiary
           boostedAt
           boostedVotePeriodLimit
-          confidence
+          confidenceThreshold
           createdAt
           dao {
             id
@@ -185,8 +212,18 @@ export class Proposal implements IStateful<IProposalState> {
           description
           descriptionHash
           ethReward
+          externalToken
           externalTokenReward
           executedAt
+          executionState
+          # limitExponentValue
+          minimumDaoBounty
+          organizationId
+          paramsHash
+          periods
+          periodLength
+          preBoostedAt
+          preBoostedVotePeriodLimit
           proposer
           quietEndingPeriodBeganAt
           queuedVotePeriodLimit
@@ -206,19 +243,16 @@ export class Proposal implements IStateful<IProposalState> {
           votes {
             id
           }
+          votingMachine
           votesFor
           votesAgainst
           winningOutcome
-          preBoostedVotePeriodLimit
           thresholdConst
-          limitExponentValue
           quietEndingPeriod
           proposingRepReward
           votersReputationLossRatio
-          minimumDaoBounty
           externalToken
-          voteOnBehalf
-          beneficiary
+          # voteOnBehalf
           reputationReward
           nativeTokenReward
           periods
@@ -233,37 +267,48 @@ export class Proposal implements IStateful<IProposalState> {
         return null
       }
 
-      const proposalStage = ProposalStage[item.stage]
-
       return {
+        activationTime: item.activationTime,
         beneficiary: item.beneficiary,
         boostedAt: Number(item.boostedAt),
         boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
         boostingThreshold: 0, // TODO:
-        confidence: Number(item.confidence),
+        confidenceThreshold: Number(item.confidenceThreshold),
         createdAt: Number(item.createdAt),
         dao: new DAO(item.dao.id, this.context),
+        daoBountyConst: item.daoBountyConst,
         description: item.description,
         descriptionHash: item.descriptionHash,
         ethReward: new BN(item.ethReward),
         executedAt: item.executedAt,
+        executionState: IExecutionState[item.executionState],
+        externalToken: item.externalToken,
         externalTokenReward: new BN(item.externalTokenReward),
         id: item.id,
         nativeTokenReward: new BN(item.nativeTokenReward),
+        organizationId: item.organizationId,
+        paramsHash: item.paramsHash,
+        periodLength: Number(item.periodLength),
+        periods: Number(item.periods),
+        preBoostedAt: Number(item.preBoostedAt),
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposer: item.proposer,
         proposingRepReward: new BN(item.proposingRepReward),
+        queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
+        queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
         reputationReward: new BN(item.reputationReward),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : null,
-        stage: proposalStage,
+        stage: IProposalStage[item.stage],
         stakesAgainst: new BN(item.stakesAgainst),
         stakesFor: new BN(item.stakesFor),
+        thresholdConst: Number(item.thresholdConst),
         title: item.title,
-        totalRepWhenExecuted: Number(item.totalRepWhenExecuted),
+        totalRepWhenExecuted: new BN(item.totalRepWhenExecuted),
         url: item.url,
         votesAgainst: new BN(item.votesAgainst),
         votesFor: new BN(item.votesFor),
+        votingMachine: item.votingMachine,
         winningOutcome: item.winningOutcome
       }
     }
@@ -441,7 +486,7 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
   boosted?: boolean
   proposer?: Address
   proposalId?: string
-  stage?: ProposalStage
+  stage?: IProposalStage
   orderBy?: ProposalQuerySortOptions
   // the options above should be ok for the current alchemy; will add more options as needed
   executedAfter?: Date

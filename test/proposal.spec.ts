@@ -1,7 +1,7 @@
 import BN = require('bn.js')
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { IProposalState, Proposal, ProposalOutcome, ProposalStage } from '../src/proposal'
+import { IExecutionState, IProposalStage, IProposalState, Proposal, ProposalOutcome  } from '../src/proposal'
 import { createAProposal, fromWei, getArc, toWei, waitUntilTrue} from './utils'
 
 const DAOstackMigration = require('@daostack/migration')
@@ -37,7 +37,7 @@ describe('Proposal', () => {
   it('dao.proposals() accepts different query arguments', async () => {
     const { Avatar, proposalId } = DAOstackMigration.migration('private').test
     const dao = arc.dao(Avatar.toLowerCase())
-    const proposals = await dao.proposals({ stage: ProposalStage.Queued}).pipe(first()).toPromise()
+    const proposals = await dao.proposals({ stage: IProposalStage.Queued}).pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
     expect(proposals.length).toBeGreaterThan(0)
     expect(proposals[proposals.length - 1].id).toBe(proposalId)
@@ -54,7 +54,6 @@ describe('Proposal', () => {
   })
 
   it('state should be available before the data is indexed', async () => {
-    // TODO: state should **not** be available?
     const proposal = await createAProposal()
     const proposalState = await proposal.state.pipe(first()).toPromise()
     // the state is null because the proposal has not been indexed yet
@@ -67,8 +66,6 @@ describe('Proposal', () => {
     const proposal = new Proposal(proposalId, '', arc)
     const proposalState = await proposal.state.pipe(first()).toPromise()
     expect(proposal).toBeInstanceOf(Proposal)
-    delete proposalState.dao
-    delete proposalState.createdAt
 
     // TODO: these amounts seem odd, I guess not using WEI when proposal created?
     expect(fromWei(proposalState.nativeTokenReward)).toEqual('0.00000000000000001')
@@ -86,16 +83,20 @@ describe('Proposal', () => {
         boostedAt: 0,
         boostedVotePeriodLimit: 259200,
         boostingThreshold: 0,
-        confidence: 0,
         description: null,
         descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
+        executionState: IExecutionState.None,
         executedAt: null,
+        externalToken: '0x4bf749ec68270027c5910220ceab30cc284c7ba2',
         // id: '0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e',
+        periodLength: 0,
+        periods: 1,
         preBoostedVotePeriodLimit: 259200,
         proposer: '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1',
         quietEndingPeriodBeganAt: null,
         resolvedAt: null,
-        stage: ProposalStage.Queued,
+        stage: IProposalStage.Queued,
+        thresholdConst: 2199023255552,
         title: null,
         url: null,
         winningOutcome: 'Fail'
@@ -103,7 +104,7 @@ describe('Proposal', () => {
   })
 
   it('get proposal rewards', async () => {
-    // TODO: fix this once the subgraph corretly indexes rewards
+    // TODO: fix this once the subgraph correctly indexes rewards
     const { proposalId } = DAOstackMigration.migration('private').test
     const proposal = new Proposal(proposalId, '', arc)
     const rewards = await proposal.rewards().pipe(first()).toPromise()
