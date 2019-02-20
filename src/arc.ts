@@ -346,7 +346,7 @@ export class Arc {
     return this.GENToken().allowances({
       owner
     }).pipe(
-      map((rs: object[]) => rs[0])
+      map((rs: any[]) => new BN(rs[0]))
     )
   }
 
