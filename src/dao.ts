@@ -31,9 +31,10 @@ export interface IDAOState {
   tokenTotalSupply: BN,
   externalTokenAddress: Address | undefined,
   externalTokenBalance: BN | undefined,
-  externalTokenSymbol: string | undefined
+  externalTokenSymbol: string | undefined,
   // TODO: get Eth balance once https://github.com/daostack/subgraph/issues/62 is resolved
   // ethBalance: BN
+  threshold: number
 }
 
 export class DAO implements IStateful<IDAOState> {
@@ -49,7 +50,8 @@ export class DAO implements IStateful<IDAOState> {
         name,
         nativeReputation { id, totalSupply },
         nativeToken { id, name, symbol, totalSupply },
-        membersCount
+        membersCount,
+        threshold
       }
     }`
 
@@ -68,6 +70,7 @@ export class DAO implements IStateful<IDAOState> {
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, context),
         reputationTotalSupply: new BN(item.nativeReputation.totalSupply),
+        threshold: Number(item.threshold),
         token: new Token(item.nativeToken.id, context),
         // TODO: get native token balance, cf. https://github.com/daostack/subgraph/issues/62
         tokenBalance: new BN(100),
