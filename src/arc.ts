@@ -337,16 +337,25 @@ export class Arc {
   public approveForStaking(amount: BN) {
     return this.GENToken().approveForStaking(amount)
   }
+
   /**
    * How much GEN the genesisProtocol may spend on behalve of the owner
    * @param  owner owner for which to check the allowance
-   * @return A BN
+   * @return An allowance { amount: BN, owner: string, spender: string }
    */
   public allowance(owner: string): Observable < any > {
+    const itemMap = (rs: any[]) => {
+      return rs.length > 0 ? {
+        amount: new BN(rs[0].amount),
+        owner: rs[0].owner,
+        spender: rs[0].spender
+      } : undefined;
+    }
+
     return this.GENToken().allowances({
       owner
     }).pipe(
-      map((rs: any[]) => new BN(rs[0]))
+      map(itemMap)
     )
   }
 
