@@ -66,10 +66,10 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
   const proposalId = await submitProposal({
     avatarAddress: avatarAddress,
     descHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
-    rep: 10,
-    tokens: 10,
-    eth: 10,
-    external: 10,
+    rep: web3.utils.toWei('10'),
+    tokens: web3.utils.toWei('10'),
+    eth: web3.utils.toWei('10'),
+    external: web3.utils.toWei('10'),
     periodLength: 0,
     periods: 1,
     beneficiary: accounts[1].address,
@@ -238,14 +238,14 @@ async function setGenesisProtocolParams () {
   )
 
   const gpParams = {
-    boostedVotePeriodLimit: 259200,
+    boostedVotePeriodLimit: 600,
     daoBountyConst: 75,
     minimumDaoBountyGWei: 100,
-    queuedVotePeriodLimit: 1814400,
+    queuedVotePeriodLimit: 600,
     queuedVoteRequiredPercentage: 50,
-    preBoostedVotePeriodLimit: 259200,
+    preBoostedVotePeriodLimit: 600,
     proposingRepRewardGwei: 5,
-    quietEndingPeriod: 86400,
+    quietEndingPeriod: 300,
     thresholdConst: 2000,
     voteOnBehalf: '0x0000000000000000000000000000000000000000',
     votersReputationLossRatio: 1
