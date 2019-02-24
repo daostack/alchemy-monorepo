@@ -349,7 +349,7 @@ export class Arc {
         amount: new BN(rs[0].amount),
         owner: rs[0].owner,
         spender: rs[0].spender
-      } : undefined;
+      } : undefined
     }
 
     return this.GENToken().allowances({
