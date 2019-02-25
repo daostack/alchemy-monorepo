@@ -34,12 +34,7 @@ export class Vote implements IVote {
     daoFilter = () => true
 
     for (const key of Object.keys(options)) {
-      if (key === 'dao') {
-        // TODO: fix this when https://github.com/daostack/subgraph/issues/65 is resolved
-        throw new Error('cannot filter by "dao" yet')
-      } else {
-        where += `${key}: "${options[key] as string}"\n`
-      }
+      where += `${key}: "${options[key] as string}"\n`
     }
 
     const query = gql`
