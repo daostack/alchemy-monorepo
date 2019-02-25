@@ -1,6 +1,6 @@
 {
   "name": "@daostack/client",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -82,7 +82,7 @@
   "devDependencies": {
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
-    "@daostack/migration": "0.0.1-rc.11-v1",
+    "@daostack/migration": "0.0.1-rc.11-v2",
     "@types/graphql": "^14.0.3",
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/jest": "^23.3.2",
