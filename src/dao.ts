@@ -45,11 +45,15 @@ export class DAO implements IStateful<IDAOState> {
     const query = gql`{
       dao(id: "${this.address}") {
         id
-        name,
-        nativeReputation { id, totalSupply },
-        nativeToken { id, name, symbol, totalSupply },
-        membersCount,
+        name
+        nativeReputation { id, totalSupply }
+        nativeToken { id, name, symbol, totalSupply }
+        membersCount
         threshold
+        members (where: {address:"${this.address}"}) {
+         tokens
+         reputation
+        }
       }
     }`
 
@@ -59,7 +63,6 @@ export class DAO implements IStateful<IDAOState> {
       }
       return {
         address: item.id,
-        // ethBalance: new BN(100),
         externalTokenAddress: undefined,
         // TODO: get external token balance, cf. https://github.com/daostack/subgraph/issues/62
         externalTokenBalance: undefined,
@@ -70,8 +73,7 @@ export class DAO implements IStateful<IDAOState> {
         reputationTotalSupply: new BN(item.nativeReputation.totalSupply),
         threshold: Number(item.threshold),
         token: new Token(item.nativeToken.id, context),
-        // TODO: get native token balance, cf. https://github.com/daostack/subgraph/issues/62
-        tokenBalance: new BN(100),
+        tokenBalance: new BN(item.members[0].tokens || 0),
         tokenName: item.nativeToken.name,
         tokenSymbol: item.nativeToken.symbol,
         tokenTotalSupply: item.nativeToken.totalSupply
@@ -90,7 +92,10 @@ export class DAO implements IStateful<IDAOState> {
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
     const query = gql`{
-      members (where: { dao: "${this.address}"}){
+      members (where: {
+        dao: "${this.address}"
+        address_not: "${this.address}"
+      }){
         id
         address
       }

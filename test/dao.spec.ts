@@ -46,7 +46,8 @@ describe('DAO', () => {
     const expected = {
        address: dao.address,
        memberCount: 6,
-       name: 'Genesis Test'
+       name: 'Genesis Test',
+       tokenBalance: new BN('0')
     }
     expect(state).toMatchObject(expected)
     expect(Object.keys(state)).toEqual([
@@ -79,7 +80,7 @@ describe('DAO', () => {
     const dao = await getTestDAO()
     const members = await dao.members().pipe(first()).toPromise()
     expect(typeof members).toEqual(typeof [])
-    expect(members.length).toBeGreaterThan(0)
+    expect(members.length).toEqual(6)
     const member = members[0]
     const memberState = await member.state.pipe(first()).toPromise()
     expect(Number(fromWei(memberState.reputation))).toBeGreaterThan(0)
