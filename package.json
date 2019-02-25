@@ -1,6 +1,6 @@
 {
   "name": "@daostack/migration",
-  "version": "0.0.1-rc.11-v1",
+  "version": "0.0.1-rc.11-v2",
   "description": "A repo for handling DAOstack contract migrations",
   "main": "index.js",
   "bin": {
