@@ -44,36 +44,37 @@ export interface IProposalState {
   boostedVotePeriodLimit: number
   confidenceThreshold: number
   createdAt: Date
+  dao: DAO
   daoBountyConst: number
   descriptionHash?: string
-  executionState: IExecutionState
-  paramsHash: string
-  organizationId: string
-  queuedVoteRequiredPercentage: number
-  queuedVotePeriodLimit: number
-  thresholdConst: number
-  externalToken: Address
-  periods: number
-  periodLength: number
-  id: string
-  dao: DAO
   description?: string
   ethReward: BN
   executedAt: Date
   externalTokenReward: BN
+  executionState: IExecutionState
+  expiresInQueueAt: Date
+  externalToken: Address
+  id: string
   nativeTokenReward: BN
+  organizationId: string
+  periods: number
+  periodLength: number
+  paramsHash: string
   preBoostedAt: Date
   preBoostedVotePeriodLimit: number
   proposer: Address
   proposingRepReward: BN
+  queuedVoteRequiredPercentage: number
+  queuedVotePeriodLimit: number
   quietEndingPeriodBeganAt: Date
   reputationReward: BN
   resolvedAt: Date|null
   stage: IProposalStage
   stakesFor: BN
   stakesAgainst: BN
-  totalRepWhenExecuted: BN
+  thresholdConst: number
   title?: string
+  totalRepWhenExecuted: BN
   url?: string
   votesFor: BN
   votesAgainst: BN
@@ -224,6 +225,7 @@ export class Proposal implements IStateful<IProposalState> {
           descriptionHash
           executedAt
           executionState
+          expiresInQueueAt
           gpRewards {
             id
           }
@@ -267,7 +269,7 @@ export class Proposal implements IStateful<IProposalState> {
       }
 
       return {
-        activationTime: item.activationTime,
+        activationTime: Number(item.activationTime),
         beneficiary: item.contributionReward.beneficiary,
         boostedAt: Number(item.boostedAt),
         boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
@@ -280,6 +282,7 @@ export class Proposal implements IStateful<IProposalState> {
         ethReward: new BN(item.contributionReward.ethReward),
         executedAt: item.executedAt,
         executionState: IExecutionState[item.executionState] as any,
+        expiresInQueueAt: Number(item.expiresInQueueAt),
         externalToken: item.contributionReward.externalToken,
         externalTokenReward: new BN(item.contributionReward.externalTokenReward),
         id: item.id,
