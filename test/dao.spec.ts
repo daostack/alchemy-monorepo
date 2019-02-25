@@ -58,6 +58,7 @@ describe('DAO', () => {
       'name',
       'reputation',
       'reputationTotalSupply',
+      'threshold',
       'token',
       'tokenBalance',
       'tokenName',

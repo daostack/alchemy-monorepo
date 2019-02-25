@@ -158,7 +158,13 @@ export class Proposal implements IStateful<IProposalState> {
     let where = ''
     for (const key of Object.keys(options)) {
       if (key === 'stage' && options[key] !== undefined) {
-        where += `${key}: ${IProposalStage[options[key] as IProposalStage]},\n`
+        where += `stage: ${IProposalStage[options[key] as IProposalStage]},\n`
+      } else if (key === 'stage_in' && Array.isArray(options[key])) {
+        const stageValues = options[key].map((stage: number) => IProposalStage[stage as IProposalStage])
+        where += `stage_in: [${stageValues.join(',')}],\n`
+      } else if (Array.isArray(options[key])) {
+        // Support for operators like _in
+        where += `${key}: ["${options[key] as string}]",`
       } else {
         where += `${key}: "${options[key] as string}",`
       }
