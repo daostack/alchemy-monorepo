@@ -36,12 +36,13 @@ export interface IDAOState {
 }
 
 export class DAO implements IStateful<IDAOState> {
-  public state: Observable<IDAOState>
 
   constructor(public address: Address, public context: Arc) {
-
     this.address = address.toLowerCase()
+    this.context = context
+  }
 
+  public state(): Observable<IDAOState> {
     const query = gql`{
       dao(id: "${this.address}") {
         id
@@ -69,17 +70,17 @@ export class DAO implements IStateful<IDAOState> {
         externalTokenSymbol: undefined,
         memberCount: Number(item.membersCount),
         name: item.name,
-        reputation: new Reputation(item.nativeReputation.id, context),
+        reputation: new Reputation(item.nativeReputation.id, this.context),
         reputationTotalSupply: new BN(item.nativeReputation.totalSupply),
         threshold: Number(item.threshold),
-        token: new Token(item.nativeToken.id, context),
+        token: new Token(item.nativeToken.id, this.context),
         tokenBalance: new BN(item.members[0].tokens || 0),
         tokenName: item.nativeToken.name,
         tokenSymbol: item.nativeToken.symbol,
         tokenTotalSupply: item.nativeToken.totalSupply
       }
     }
-    this.state = this.context._getObservableObject(query, itemMap) as Observable<IDAOState>
+    return this.context._getObservableObject(query, itemMap) as Observable<IDAOState>
   }
 
   /*
@@ -87,7 +88,7 @@ export class DAO implements IStateful<IDAOState> {
    * @returns an (Observable) that returns a Reputation instance
    */
   public nativeReputation(): Observable<Reputation> {
-    return this.state.pipe(first()).pipe(map((r) => r.reputation))
+    return this.state().pipe(first()).pipe(map((r) => r.reputation))
   }
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {

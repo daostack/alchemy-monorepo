@@ -28,7 +28,7 @@ describe('Token', () => {
 
   it('get the token state', async () => {
     const token = new Token(address, arc)
-    const state = await token.state.pipe(first()).toPromise()
+    const state = await token.state().pipe(first()).toPromise()
     expect(Object.keys(state)).toEqual(['address', 'name', 'owner', 'symbol', 'totalSupply'])
     const expected = {
        address: address.toLowerCase()
@@ -39,7 +39,7 @@ describe('Token', () => {
   it('throws a reasonable error if the contract does not exist', async () => {
     expect.assertions(1)
     const token = new Token('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1', arc)
-    await expect(token.state.toPromise()).rejects.toThrow(
+    await expect(token.state().toPromise()).rejects.toThrow(
       'Could not find a token contract with address 0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1'
     )
   })

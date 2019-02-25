@@ -50,8 +50,8 @@ describe('Vote on a ContributionReward', () => {
     }
     await waitUntilTrue(voteIsIndexed)
 
-    const proposalState = await proposal.state.pipe(first()).toPromise()
-    const proposalState2 = await (new Proposal(proposal.id, dao.address, arc)).state.pipe(first()).toPromise()
+    const proposalState = await proposal.state().pipe(first()).toPromise()
+    const proposalState2 = await (new Proposal(proposal.id, dao.address, arc)).state().pipe(first()).toPromise()
 
     expect(proposalState).toEqual(proposalState2)
     expect(proposalState).toEqual('xxx')

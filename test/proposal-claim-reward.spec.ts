@@ -13,14 +13,14 @@ describe('Claim rewards', () => {
   it.skip('works ', async () => {
     const dao = await getTestDAO()
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
-    const ethReward = toWei("300")
+    const ethReward = toWei('300')
     const prevethBalance = await arc.web3.eth.getBalance(beneficiary)
     const options = {
       beneficiary,
       ethReward,
       externalTokenAddress: undefined,
-      externalTokenReward: toWei("0"),
-      nativeTokenReward: toWei("1"),
+      externalTokenReward: toWei('0'),
+      nativeTokenReward: toWei('1'),
       periodLength: 12,
       periods: 5,
       type: 'ContributionReward'

@@ -30,7 +30,7 @@ describe('Reputation', () => {
   it('get the reputation state', async () => {
     const reputation = new Reputation(address, arc)
     expect(reputation).toBeInstanceOf(Reputation)
-    const state = await reputation.state.pipe(first()).toPromise()
+    const state = await reputation.state().pipe(first()).toPromise()
     expect(Object.keys(state)).toEqual(['address', 'totalSupply'])
     const expected = {
        address: address.toLowerCase()
@@ -41,7 +41,7 @@ describe('Reputation', () => {
   it('throws a reasonable error if the contract does not exist', async () => {
     expect.assertions(1)
     const reputation = new Reputation('0xe74f3c49c162c00ac18b022856e1a4ecc8947c42', arc)
-    await expect(reputation.state.toPromise()).rejects.toThrow(
+    await expect(reputation.state().toPromise()).rejects.toThrow(
       'Could not find a reputation contract with address 0xe74f3c49c162c00ac18b022856e1a4ecc8947c42'
     )
   })

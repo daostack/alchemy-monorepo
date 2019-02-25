@@ -14,12 +14,12 @@ export interface IReputationState {
 
 export class Reputation implements IStateful<IReputationState> {
 
-  public state: Observable<IReputationState>
-
   constructor(public address: Address, public context: Arc) {
     isAddress(address)
+  }
+  public state(): Observable<IReputationState> {
     const query = gql`{
-      reputationContract (id: "${address.toLowerCase()}") {
+      reputationContract (id: "${this.address.toLowerCase()}") {
         id,
         address,
         totalSupply
@@ -27,14 +27,14 @@ export class Reputation implements IStateful<IReputationState> {
     }`
     const itemMap = (item: any): IReputationState => {
       if (item === null) {
-        throw Error(`Could not find a reputation contract with address ${address.toLowerCase()}`)
+        throw Error(`Could not find a reputation contract with address ${this.address.toLowerCase()}`)
       }
       return {
         address: item.address,
         totalSupply: item.totalSupply
       }
     }
-    this.state = context._getObservableObject(query, itemMap) as Observable<IReputationState>
+    return this.context._getObservableObject(query, itemMap) as Observable<IReputationState>
   }
 
   public reputationOf(address: Address): Observable<BN> {

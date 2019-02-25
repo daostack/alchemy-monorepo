@@ -24,7 +24,6 @@ export interface IMemberState {
  */
 
 export class Member implements IStateful<IMemberState> {
-  public state: Observable<IMemberState>
 
   /**
    * @param address addresssof the member
@@ -33,12 +32,16 @@ export class Member implements IStateful<IMemberState> {
    */
   constructor(public address: Address, public daoAddress: Address, public context: Arc) {
     isAddress(address)
+    isAddress(daoAddress)
+  }
+
+  public state(): Observable<IMemberState> {
     const query = gql`
       {
         members (
           where: {
-            address: "${address}"
-            dao: "${daoAddress}"
+            address: "${this.address}"
+            dao: "${this.daoAddress}"
           }
         ) {
           id
@@ -55,8 +58,8 @@ export class Member implements IStateful<IMemberState> {
     const itemMap = (items: any) => {
       if (items.length === 0) {
         return {
-          address,
-          dao: new DAO(daoAddress, this.context),
+          address: this.address,
+          dao: new DAO(this.daoAddress, this.context),
           reputation: new BN(0),
           // TODO: we did not find the member, so we do not know how many tokens she holds,
           // cf. https://github.com/daostack/subgraph/issues/97
@@ -65,15 +68,15 @@ export class Member implements IStateful<IMemberState> {
       } else {
         const item = items[0]
         return {
-          address,
-          dao: new DAO(daoAddress, this.context),
+          address: this.address,
+          dao: new DAO(this.daoAddress, this.context),
           reputation: new BN(item.reputation),
           tokens: new BN(item.tokens)
         }
       }
     }
 
-    this.state = context._getObservableObject(query, itemMap) as Observable<IMemberState>
+    return this.context._getObservableObject(query, itemMap) as Observable<IMemberState>
 
   }
 

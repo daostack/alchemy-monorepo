@@ -109,12 +109,13 @@ export class Reward implements IStateful<IRewardState> {
     return context._getObservableList(query, itemMap) as Observable<IRewardState[]>
   }
 
-  public state: Observable<IRewardState> = of()
-
   constructor(public id: string, public context: Arc) {
     this.id = id
     this.context = context
-    this.state = Reward.search(this.context, {id: this.id}).pipe(
+  }
+
+  public state(): Observable<IRewardState> {
+    return Reward.search(this.context, {id: this.id}).pipe(
       map((rewards) => {
         if (rewards.length === 0) {
           throw Error(`No reward with id ${this.id} found`)

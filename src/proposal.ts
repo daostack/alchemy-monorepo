@@ -188,7 +188,6 @@ export class Proposal implements IStateful<IProposalState> {
   /**
    * `state` is an observable of the proposal state
    */
-  public state: Observable<IProposalState> = of()
   public context: Arc
   public dao: DAO
 
@@ -196,10 +195,12 @@ export class Proposal implements IStateful<IProposalState> {
     this.id = id
     this.context = context
     this.dao = new DAO(daoAddress, context)
+  }
 
+  public state(): Observable<IProposalState> {
     const query = gql`
       {
-        proposal(id: "${id}") {
+        proposal(id: "${this.id}") {
           id
           activationTime
           boostedAt
@@ -314,7 +315,7 @@ export class Proposal implements IStateful<IProposalState> {
       }
     }
 
-    this.state = context._getObservableObject(query, itemMap) as Observable<IProposalState>
+    return this.context._getObservableObject(query, itemMap) as Observable<IProposalState>
   }
 
   /**
@@ -325,7 +326,7 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.getContract('GenesisProtocol')
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
+  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
     options.proposal = this.id
     return Vote.search(this.context, options)
   }
@@ -337,7 +338,7 @@ export class Proposal implements IStateful<IProposalState> {
    *  all the sender's rep will be used
    * @return  an observable Operation<Vote>
    */
-  public vote(outcome: ProposalOutcome, amount: number = 0): Operation<Vote|null> {
+  public vote(outcome: ProposalOutcome, amount: number = 0): Operation < Vote | null > {
 
     const votingMachine = this.votingMachine()
 
@@ -387,12 +388,12 @@ export class Proposal implements IStateful<IProposalState> {
     return new Token(this.context.getContract('GEN').options.address, this.context)
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
+  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
     options.proposal = this.id
     return Stake.search(this.context, options)
   }
 
-  public stake(outcome: ProposalOutcome, amount: BN ): Operation<Stake> {
+  public stake(outcome: ProposalOutcome, amount: BN ): Operation < Stake > {
     const stakeMethod = this.votingMachine().methods.stake(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
@@ -453,17 +454,17 @@ export class Proposal implements IStateful<IProposalState> {
     )
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
+  public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
     options.proposal = this.id
     return Reward.search(this.context, options)
   }
 
-  public claimRewards(account: Address): Operation<boolean> {
+  public claimRewards(account: Address): Operation < boolean > {
     const transaction = this.votingMachine().methods.redeem(this.id, account)
     return this.context.sendTransaction(transaction, () => true)
   }
 
-  public execute(): Operation<any> {
+  public execute(): Operation < any > {
     const transaction = this.votingMachine().methods.execute(this.id)
     const map = (receipt: any) => {
       if (Object.keys(receipt.events).length  === 0) {

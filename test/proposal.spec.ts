@@ -38,7 +38,7 @@ describe('Proposal', () => {
     const l1 = await Proposal.search({expiresInQueueAt_gt: 0}, arc).pipe(first()).toPromise()
     expect(l1.length).toBeGreaterThan(0)
 
-    const expiryDate = (await l1[0].state.pipe(first()).toPromise()).expiresInQueueAt
+    const expiryDate = (await l1[0].state().pipe(first()).toPromise()).expiresInQueueAt
     const l2 = await Proposal.search({expiresInQueueAt_gt: expiryDate}, arc).pipe(first()).toPromise()
     expect(l2.length).toBeLessThan(l1.length)
 
@@ -65,7 +65,7 @@ describe('Proposal', () => {
 
   it('state should be available before the data is indexed', async () => {
     const proposal = await createAProposal()
-    const proposalState = await proposal.state.pipe(first()).toPromise()
+    const proposalState = await proposal.state().pipe(first()).toPromise()
     // the state is null because the proposal has not been indexed yet
     expect(proposalState).toEqual(null)
   })
@@ -74,7 +74,7 @@ describe('Proposal', () => {
     const { proposalId } = DAOstackMigration.migration('private').test
 
     const proposal = new Proposal(proposalId, '', arc)
-    const proposalState = await proposal.state.pipe(first()).toPromise()
+    const proposalState = await proposal.state().pipe(first()).toPromise()
     expect(proposal).toBeInstanceOf(Proposal)
 
     // TODO: these amounts seem odd, I guess not using WEI when proposal created?
@@ -138,7 +138,7 @@ describe('Proposal', () => {
     // TODO: write this test!
     const states: IProposalState[] = []
     const proposal = await createAProposal()
-    proposal.state.subscribe(
+    proposal.state().subscribe(
       (state: any) => {
         states.push(state)
       },

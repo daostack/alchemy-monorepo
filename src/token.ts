@@ -33,15 +33,16 @@ export interface IAllowance {
 
 export class Token implements IStateful<ITokenState> {
 
-  public state: Observable<ITokenState> = of()
-
   constructor(public address: Address, public context: Arc) {
     if (!address) {
       throw Error(`No address provided - cannot create Token instance`)
     }
     isAddress(address)
+  }
+
+  public state(): Observable<ITokenState> {
     const query = gql`{
-      token(id: "${address.toLowerCase()}") {
+      token(id: "${this.address.toLowerCase()}") {
         id,
         name,
         symbol,
@@ -51,7 +52,7 @@ export class Token implements IStateful<ITokenState> {
 
     const itemMap = (item: any): ITokenState => {
       if (item === null) {
-        throw Error(`Could not find a token contract with address ${address.toLowerCase()}`)
+        throw Error(`Could not find a token contract with address ${this.address.toLowerCase()}`)
       }
       return {
         address: item.id,
@@ -61,7 +62,7 @@ export class Token implements IStateful<ITokenState> {
         totalSupply: new BN(item.totalSupply)
       }
     }
-    this.state = this.context._getObservableObject(query, itemMap) as Observable<ITokenState>
+    return this.context._getObservableObject(query, itemMap) as Observable<ITokenState>
   }
 
   public balanceOf(address: string): Observable<BN> {
