@@ -14,7 +14,7 @@ describe('Claim rewards', () => {
     const dao = await getTestDAO()
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const ethReward = toWei("300")
-    const prevEthBalance = await arc.web3.eth.getBalance(beneficiary)
+    const prevethBalance = await arc.web3.eth.getBalance(beneficiary)
     const options = {
       beneficiary,
       ethReward,
@@ -30,8 +30,8 @@ describe('Claim rewards', () => {
     const proposal = response.result as Proposal
 
     await proposal.claimRewards(beneficiary).send()
-    const newEthBalance = await arc.web3.eth.getBalance(beneficiary)
-    expect(fromWei(newEthBalance.sub(prevEthBalance))).toEqual('whatever-the-rewards are')
+    const newethBalance = await arc.web3.eth.getBalance(beneficiary)
+    expect(fromWei(newethBalance.sub(prevethBalance))).toEqual('whatever-the-rewards are')
   })
 
 })

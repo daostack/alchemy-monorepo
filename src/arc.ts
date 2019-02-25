@@ -101,7 +101,7 @@ export class Arc {
    * @param  address [description]
    * @return         [description]
    */
-  public getBalance(address: Address): Observable<BN> {
+  public ethBalance(address: Address): Observable<BN> {
     // observe balance on new blocks
     // (note that we are basically doing expensive polling here)
     const balanceObservable = Observable.create((observer: any) => {

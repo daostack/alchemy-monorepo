@@ -139,7 +139,7 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public ethBalance(): Observable<BN> {
-    return this.context.getBalance(this.address)
+    return this.context.ethBalance(this.address)
   }
 }
 
