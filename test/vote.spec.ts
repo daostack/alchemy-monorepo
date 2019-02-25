@@ -23,7 +23,7 @@ describe('Stake', () => {
       '0x124votes',
       0,
       ProposalOutcome.Fail,
-      toWei("100"),
+      toWei('100'),
       '0x12445proposalId',
       '0x12445daoAddress'
     )

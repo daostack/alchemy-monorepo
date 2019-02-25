@@ -32,26 +32,29 @@ export interface IDAOState {
   externalTokenAddress: Address | undefined,
   externalTokenBalance: BN | undefined,
   externalTokenSymbol: string | undefined,
-  // TODO: get Eth balance once https://github.com/daostack/subgraph/issues/62 is resolved
-  // ethBalance: BN
   threshold: number
 }
 
 export class DAO implements IStateful<IDAOState> {
-  public state: Observable<IDAOState>
 
   constructor(public address: Address, public context: Arc) {
-
     this.address = address.toLowerCase()
+    this.context = context
+  }
 
+  public state(): Observable<IDAOState> {
     const query = gql`{
       dao(id: "${this.address}") {
         id
-        name,
-        nativeReputation { id, totalSupply },
-        nativeToken { id, name, symbol, totalSupply },
-        membersCount,
+        name
+        nativeReputation { id, totalSupply }
+        nativeToken { id, name, symbol, totalSupply }
+        membersCount
         threshold
+        members (where: {address:"${this.address}"}) {
+         tokens
+         reputation
+        }
       }
     }`
 
@@ -61,25 +64,23 @@ export class DAO implements IStateful<IDAOState> {
       }
       return {
         address: item.id,
-        // ethBalance: new BN(100),
         externalTokenAddress: undefined,
         // TODO: get external token balance, cf. https://github.com/daostack/subgraph/issues/62
         externalTokenBalance: undefined,
         externalTokenSymbol: undefined,
         memberCount: Number(item.membersCount),
         name: item.name,
-        reputation: new Reputation(item.nativeReputation.id, context),
+        reputation: new Reputation(item.nativeReputation.id, this.context),
         reputationTotalSupply: new BN(item.nativeReputation.totalSupply),
         threshold: Number(item.threshold),
-        token: new Token(item.nativeToken.id, context),
-        // TODO: get native token balance, cf. https://github.com/daostack/subgraph/issues/62
-        tokenBalance: new BN(100),
+        token: new Token(item.nativeToken.id, this.context),
+        tokenBalance: new BN(item.members[0].tokens || 0),
         tokenName: item.nativeToken.name,
         tokenSymbol: item.nativeToken.symbol,
         tokenTotalSupply: item.nativeToken.totalSupply
       }
     }
-    this.state = this.context._getObservableObject(query, itemMap) as Observable<IDAOState>
+    return this.context._getObservableObject(query, itemMap) as Observable<IDAOState>
   }
 
   /*
@@ -87,12 +88,15 @@ export class DAO implements IStateful<IDAOState> {
    * @returns an (Observable) that returns a Reputation instance
    */
   public nativeReputation(): Observable<Reputation> {
-    return this.state.pipe(first()).pipe(map((r) => r.reputation))
+    return this.state().pipe(first()).pipe(map((r) => r.reputation))
   }
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
     const query = gql`{
-      members (where: { dao: "${this.address}"}){
+      members (where: {
+        dao: "${this.address}"
+        address_not: "${this.address}"
+      }){
         id
         address
       }
@@ -136,7 +140,7 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public ethBalance(): Observable<BN> {
-    return this.context.getBalance(this.address)
+    return this.context.ethBalance(this.address)
   }
 }
 

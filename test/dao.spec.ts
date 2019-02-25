@@ -22,13 +22,13 @@ describe('DAO', () => {
 
   it('should be possible to get the token balance of the DAO', async () => {
     const dao = await getTestDAO()
-    const { token } = await dao.state.pipe(first()).toPromise()
+    const { token } = await dao.state().pipe(first()).toPromise()
     const balance = await token.balanceOf(dao.address).pipe(first()).toPromise()
     expect(fromWei(balance)).toEqual('0')
   })
 
   it('should be possible to get the reputation balance of the DAO', () => {
-    // const { reputation } = await dao.state.toPromise()
+    // const { reputation } = await dao.state().toPromise()
     // const balance = await reputation.balanceOf(address).toPromise()
   })
 
@@ -42,11 +42,12 @@ describe('DAO', () => {
   it('get the dao state', async () => {
     const dao = await getTestDAO()
     expect(dao).toBeInstanceOf(DAO)
-    const state = await dao.state.pipe(first()).toPromise()
+    const state = await dao.state().pipe(first()).toPromise()
     const expected = {
        address: dao.address,
        memberCount: 6,
-       name: 'Genesis Test'
+       name: 'Genesis Test',
+       tokenBalance: new BN('0')
     }
     expect(state).toMatchObject(expected)
     expect(Object.keys(state)).toEqual([
@@ -70,7 +71,7 @@ describe('DAO', () => {
   it('throws a reasonable error if the contract does not exist', async () => {
     expect.assertions(1)
     const reputation = new DAO('0xfake', arc)
-    await expect(reputation.state.toPromise()).rejects.toThrow(
+    await expect(reputation.state().toPromise()).rejects.toThrow(
       'Could not find a DAO with address 0xfake'
     )
   })
@@ -79,9 +80,9 @@ describe('DAO', () => {
     const dao = await getTestDAO()
     const members = await dao.members().pipe(first()).toPromise()
     expect(typeof members).toEqual(typeof [])
-    expect(members.length).toBeGreaterThan(0)
+    expect(members.length).toEqual(6)
     const member = members[0]
-    const memberState = await member.state.pipe(first()).toPromise()
+    const memberState = await member.state().pipe(first()).toPromise()
     expect(Number(fromWei(memberState.reputation))).toBeGreaterThan(0)
   })
 

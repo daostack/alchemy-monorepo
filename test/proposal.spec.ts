@@ -34,6 +34,16 @@ describe('Proposal', () => {
     expect(proposalsList[proposalsList.length - 1].id).toBe(proposalId)
   })
 
+  it('proposal.search() accepts expiresInQueueAt argument', async () => {
+    const l1 = await Proposal.search({expiresInQueueAt_gt: 0}, arc).pipe(first()).toPromise()
+    expect(l1.length).toBeGreaterThan(0)
+
+    const expiryDate = (await l1[0].state().pipe(first()).toPromise()).expiresInQueueAt
+    const l2 = await Proposal.search({expiresInQueueAt_gt: expiryDate}, arc).pipe(first()).toPromise()
+    expect(l2.length).toBeLessThan(l1.length)
+
+  })
+
   it('dao.proposals() accepts different query arguments', async () => {
     const { Avatar, proposalId } = DAOstackMigration.migration('private').test
     const dao = arc.dao(Avatar.toLowerCase())
@@ -55,7 +65,7 @@ describe('Proposal', () => {
 
   it('state should be available before the data is indexed', async () => {
     const proposal = await createAProposal()
-    const proposalState = await proposal.state.pipe(first()).toPromise()
+    const proposalState = await proposal.state().pipe(first()).toPromise()
     // the state is null because the proposal has not been indexed yet
     expect(proposalState).toEqual(null)
   })
@@ -64,7 +74,7 @@ describe('Proposal', () => {
     const { proposalId } = DAOstackMigration.migration('private').test
 
     const proposal = new Proposal(proposalId, '', arc)
-    const proposalState = await proposal.state.pipe(first()).toPromise()
+    const proposalState = await proposal.state().pipe(first()).toPromise()
     expect(proposal).toBeInstanceOf(Proposal)
 
     // TODO: these amounts seem odd, I guess not using WEI when proposal created?
@@ -82,13 +92,11 @@ describe('Proposal', () => {
         beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
         boostedAt: 0,
         boostedVotePeriodLimit: 259200,
-        boostingThreshold: 0,
         description: null,
         descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
-        executionState: IExecutionState.None,
         executedAt: null,
+        executionState: IExecutionState.None,
         externalToken: '0x4bf749ec68270027c5910220ceab30cc284c7ba2',
-        // id: '0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e',
         periodLength: 0,
         periods: 1,
         preBoostedVotePeriodLimit: 259200,
@@ -104,11 +112,10 @@ describe('Proposal', () => {
   })
 
   it('get proposal rewards', async () => {
-    // TODO: fix this once the subgraph correctly indexes rewards
     const { proposalId } = DAOstackMigration.migration('private').test
     const proposal = new Proposal(proposalId, '', arc)
     const rewards = await proposal.rewards().pipe(first()).toPromise()
-    return
+    expect(rewards.length).toBeGreaterThan(0)
   })
 
   it('get proposal stakes', async () => {
@@ -125,16 +132,13 @@ describe('Proposal', () => {
     await waitUntilTrue(() => stakes.length > 0 && stakes[stakes.length - 1].length > 0)
     expect(stakes[0].length).toEqual(0)
     expect(stakes[stakes.length - 1].length).toEqual(1)
-    const proposalState = await proposal.state.pipe(first()).toPromise()
-    // TODO: uncomment next test when https://github.com/daostack/subgraph/issues/90 is resolved
-    // expect(proposalState.confidence).toEqual(proposalState.stakesFor/proposalState.stakesAgainst)
   })
 
   it('state gets all updates', async () => {
     // TODO: write this test!
     const states: IProposalState[] = []
     const proposal = await createAProposal()
-    proposal.state.subscribe(
+    proposal.state().subscribe(
       (state: any) => {
         states.push(state)
       },

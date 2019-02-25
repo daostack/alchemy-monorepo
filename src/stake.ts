@@ -28,9 +28,6 @@ export class Stake implements IStake {
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable <IStake[]> {
 
-    // TODO: we ignore the options.dao argument while waiting for https://github.com/daostack/subgraph/issues/65
-    options.dao = undefined
-
     const query = gql`
       {
         proposalStakes (where: {
