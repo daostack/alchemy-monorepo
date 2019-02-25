@@ -91,7 +91,7 @@ describe('Proposal', () => {
     expect(proposalState).toMatchObject({
         beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
         boostedAt: 0,
-        boostedVotePeriodLimit: 259200,
+        boostedVotePeriodLimit: 600,
         description: null,
         descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
         executedAt: null,
@@ -99,7 +99,7 @@ describe('Proposal', () => {
         externalToken: '0x4bf749ec68270027c5910220ceab30cc284c7ba2',
         periodLength: 0,
         periods: 1,
-        preBoostedVotePeriodLimit: 259200,
+        preBoostedVotePeriodLimit: 600,
         proposer: '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1',
         quietEndingPeriodBeganAt: null,
         resolvedAt: null,
