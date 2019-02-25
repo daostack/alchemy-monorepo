@@ -78,12 +78,12 @@ describe('Proposal', () => {
     expect(proposal).toBeInstanceOf(Proposal)
 
     // TODO: these amounts seem odd, I guess not using WEI when proposal created?
-    expect(fromWei(proposalState.nativeTokenReward)).toEqual('0.00000000000000001')
+    expect(fromWei(proposalState.nativeTokenReward)).toEqual('10')
     expect(fromWei(proposalState.stakesAgainst)).toEqual('0.0000001')
     expect(fromWei(proposalState.stakesFor)).toEqual('0')
-    expect(fromWei(proposalState.reputationReward)).toEqual('0.00000000000000001')
-    expect(fromWei(proposalState.ethReward)).toEqual('0.00000000000000001')
-    expect(fromWei(proposalState.externalTokenReward)).toEqual('0.00000000000000001')
+    expect(fromWei(proposalState.reputationReward)).toEqual('10')
+    expect(fromWei(proposalState.ethReward)).toEqual('10')
+    expect(fromWei(proposalState.externalTokenReward)).toEqual('10')
     expect(fromWei(proposalState.votesFor)).toEqual('1000')
     expect(fromWei(proposalState.votesAgainst)).toEqual('1000')
     expect(fromWei(proposalState.proposingRepReward)).toEqual('0.000000005')
