@@ -25,14 +25,14 @@ describe('Reward', () => {
     // create a proposal with some rewards
     const dao = await getTestDAO()
     const state = await dao.createProposal({
-          beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
-          ethReward: toWei("300"),
-          externalTokenAddress: undefined,
-          externalTokenReward: toWei("0"),
-          nativeTokenReward: toWei("1"),
-          periodLength: 12,
-          periods: 5,
-          type: 'ContributionReward'
+      beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+      ethReward: toWei('300'),
+      externalTokenAddress: undefined,
+      externalTokenReward: toWei('0'),
+      nativeTokenReward: toWei('1'),
+      periodLength: 12,
+      periods: 5,
+      type: 'ContributionReward'
     }).send()
     const proposal = state.result
 
@@ -43,8 +43,8 @@ describe('Reward', () => {
       let result
       result = await Reward.search(arc, {})
         .pipe(first()).toPromise()
-      expect(result).toEqual([])
-
+      expect(result.length).toBeGreaterThan(0)
+    //
       result = await Reward.search(arc, {proposal: proposal.id})
         .pipe(first()).toPromise()
       expect(result).toEqual([])

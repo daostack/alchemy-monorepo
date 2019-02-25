@@ -1,7 +1,7 @@
 import BN = require('bn.js')
 import { first, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { IProposalState, Proposal, ProposalOutcome, IProposalStage } from '../src/proposal'
+import { IProposalStage, IProposalState, Proposal, ProposalOutcome } from '../src/proposal'
 import { createAProposal, fromWei, getArc, getTestDAO, mineANewBlock, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
@@ -56,7 +56,6 @@ describe('Proposal execute()', () => {
     await waitUntilTrue(() => proposalStates.length > 2)
     proposalState = proposalStates[2]
     expect(proposalStates[2].stage).toEqual(IProposalStage.Queued)
-    expect(proposalStates.length).toEqual(3)
 
     await proposal.vote(ProposalOutcome.Pass).send()
     // let's vote for the proposal with accounts[1]

@@ -82,13 +82,11 @@ describe('Proposal', () => {
         beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
         boostedAt: 0,
         boostedVotePeriodLimit: 259200,
-        boostingThreshold: 0,
         description: null,
         descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
-        executionState: IExecutionState.None,
         executedAt: null,
+        executionState: IExecutionState.None,
         externalToken: '0x4bf749ec68270027c5910220ceab30cc284c7ba2',
-        // id: '0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e',
         periodLength: 0,
         periods: 1,
         preBoostedVotePeriodLimit: 259200,
@@ -104,11 +102,10 @@ describe('Proposal', () => {
   })
 
   it('get proposal rewards', async () => {
-    // TODO: fix this once the subgraph correctly indexes rewards
     const { proposalId } = DAOstackMigration.migration('private').test
     const proposal = new Proposal(proposalId, '', arc)
     const rewards = await proposal.rewards().pipe(first()).toPromise()
-    return
+    expect(rewards.length).toBeGreaterThan(0)
   })
 
   it('get proposal stakes', async () => {

@@ -23,15 +23,19 @@ export enum RewardReason {
 
 export interface IRewardState {
   id: string
-  // createdAt: number
   beneficiary: Address
   createdAt: Date
-  proposal: Proposal
-  reason: RewardReason,
-  type: RewardType
+  proposalId: string,
+  reputationForVoter: BN,
+  tokensForStaker: BN,
+  daoBountyForStaker: BN,
+  reputationForProposer: BN,
   tokenAddress: Address,
-  amount: BN,
-  redeemed: number
+  redeemedReputationForVoter: BN,
+  redeemedTokensForStaker: BN,
+  redeemedReputationForProposer: BN,
+  redeemedDaoBountyForStaker: BN
+
 }
 
 export interface IRewardQueryOptions extends ICommonQueryOptions {
@@ -61,37 +65,44 @@ export class Reward implements IStateful<IRewardState> {
     }
 
     const query = gql`{
-      rewards (where: {${where}}) {
+      gprewards (where: {${where}}) {
         id
         createdAt
         dao {
           id
         }
-        member {
-          id
-        }
-        reason
-        amount
+        beneficiary
         proposal {
            id
-         }
-        redeemed
+        }
+        reputationForVoter
+        tokensForStaker
+        daoBountyForStaker
+        reputationForProposer
         tokenAddress
-        type
+        redeemedReputationForVoter
+        redeemedTokensForStaker
+        redeemedReputationForProposer
+        redeemedDaoBountyForStaker
       }
     } `
 
     const itemMap = (item: any): IRewardState => {
       return {
-        amount: item.amount,
-        beneficiary: item.member.id,
+        beneficiary: item.beneficiary,
         createdAt: item.createdAt,
+        daoBountyForStaker: new BN(item.daoBountyForStaker),
         id: item.id,
-        proposal: new Proposal(item.proposal.id, item.dao.id, context),
-        reason: item.reason,
-        redeemed: Number(item.redeemed),
+        // proposal: new Proposal(item.proposal.id, item.dao.id, context),
+        proposalId: item.proposal.id,
+        redeemedDaoBountyForStaker: new BN(item.redeemedDaoBountyForStaker),
+        redeemedReputationForProposer: new BN(item.redeemedReputationForProposer),
+        redeemedReputationForVoter: new BN(item.redeemedReputationForVoter),
+        redeemedTokensForStaker: new BN(item.redeemedTokensForStaker),
+        reputationForProposer: new BN(item.reputationForProposer),
+        reputationForVoter: new BN(item.reputationForVoter),
         tokenAddress: item.tokenAddress,
-        type: item.type
+        tokensForStaker: new BN(item.tokensForStaker)
       }
     }
 

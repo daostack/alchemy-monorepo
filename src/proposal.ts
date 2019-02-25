@@ -38,28 +38,24 @@ export enum IExecutionState {
 }
 
 export interface IProposalState {
+  activationTime: number
+  beneficiary: Address
+  boostedAt: Date
+  boostedVotePeriodLimit: number
+  confidenceThreshold: number
+  createdAt: Date
+  daoBountyConst: number
   descriptionHash?: string
   executionState: IExecutionState
   paramsHash: string
   organizationId: string
-  confidenceThreshold: number
   queuedVoteRequiredPercentage: number
   queuedVotePeriodLimit: number
   thresholdConst: number
-  // limitExponentValue: number
-  // minimumDaoBounty: number
-  daoBountyConst: number
-  activationTime: number
-  // voteOnBehalf: Address
   externalToken: Address
   periods: number
   periodLength: number
   id: string
-  beneficiary: Address
-  boostedAt: Date
-  boostingThreshold: number
-  boostedVotePeriodLimit: number
-  createdAt: Date
   dao: DAO
   description?: string
   ethReward: BN
@@ -71,10 +67,8 @@ export interface IProposalState {
   proposer: Address
   proposingRepReward: BN
   quietEndingPeriodBeganAt: Date
-  // votersReputationLossRatio: number
-  votingMachine: Address
   reputationReward: BN
-  resolvedAt: Date
+  resolvedAt: Date|null
   stage: IProposalStage
   stakesFor: BN
   stakesAgainst: BN
@@ -83,6 +77,7 @@ export interface IProposalState {
   url?: string
   votesFor: BN
   votesAgainst: BN
+  votingMachine: Address
   winningOutcome: ProposalOutcome
 }
 
@@ -206,10 +201,20 @@ export class Proposal implements IStateful<IProposalState> {
         proposal(id: "${id}") {
           id
           activationTime
-          beneficiary
           boostedAt
           boostedVotePeriodLimit
           confidenceThreshold
+          contributionReward {
+            beneficiary
+            ethReward
+            externalToken
+            externalTokenReward
+            externalToken
+            nativeTokenReward
+            periods
+            periodLength
+            reputationReward
+          }
           createdAt
           dao {
             id
@@ -217,57 +222,45 @@ export class Proposal implements IStateful<IProposalState> {
           daoBountyConst
           description
           descriptionHash
-          ethReward
-          externalToken
-          externalTokenReward
           executedAt
           executionState
-          # limitExponentValue
+          gpRewards {
+            id
+          }
           minimumDaoBounty
           organizationId
           paramsHash
-          periods
-          periodLength
           preBoostedAt
           preBoostedVotePeriodLimit
           proposer
+          proposingRepReward
+          quietEndingPeriod
           quietEndingPeriodBeganAt
           queuedVotePeriodLimit
           queuedVoteRequiredPercentage
-          rewards {
-            id
-          }
           stage
           stakes {
             id
           }
           stakesFor
           stakesAgainst
+          thresholdConst
           totalRepWhenExecuted
           title
           url
           votes {
             id
           }
-          votingMachine
-          votesFor
           votesAgainst
-          winningOutcome
-          thresholdConst
-          quietEndingPeriod
-          proposingRepReward
+          votesFor
           votersReputationLossRatio
-          externalToken
-          # voteOnBehalf
-          reputationReward
-          nativeTokenReward
-          periods
-          periodLength
+          votingMachine
+          winningOutcome
         }
       }
     `
 
-    const itemMap = (item: any) => {
+    const itemMap = (item: any): IProposalState|null => {
       if (item === null) {
         // no proposal was found - we return null
         return null
@@ -275,27 +268,26 @@ export class Proposal implements IStateful<IProposalState> {
 
       return {
         activationTime: item.activationTime,
-        beneficiary: item.beneficiary,
+        beneficiary: item.contributionReward.beneficiary,
         boostedAt: Number(item.boostedAt),
         boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
-        boostingThreshold: 0, // TODO:
         confidenceThreshold: Number(item.confidenceThreshold),
         createdAt: Number(item.createdAt),
         dao: new DAO(item.dao.id, this.context),
         daoBountyConst: item.daoBountyConst,
         description: item.description,
         descriptionHash: item.descriptionHash,
-        ethReward: new BN(item.ethReward),
+        ethReward: new BN(item.contributionReward.ethReward),
         executedAt: item.executedAt,
-        executionState: IExecutionState[item.executionState],
-        externalToken: item.externalToken,
-        externalTokenReward: new BN(item.externalTokenReward),
+        executionState: IExecutionState[item.executionState] as any,
+        externalToken: item.contributionReward.externalToken,
+        externalTokenReward: new BN(item.contributionReward.externalTokenReward),
         id: item.id,
-        nativeTokenReward: new BN(item.nativeTokenReward),
+        nativeTokenReward: new BN(item.contributionReward.nativeTokenReward),
         organizationId: item.organizationId,
         paramsHash: item.paramsHash,
-        periodLength: Number(item.periodLength),
-        periods: Number(item.periods),
+        periodLength: Number(item.contributionReward.periodLength),
+        periods: Number(item.contributionReward.periods),
         preBoostedAt: Number(item.preBoostedAt),
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposer: item.proposer,
@@ -303,9 +295,9 @@ export class Proposal implements IStateful<IProposalState> {
         queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
         queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
-        reputationReward: new BN(item.reputationReward),
+        reputationReward: new BN(item.contributionReward.reputationReward),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : null,
-        stage: IProposalStage[item.stage],
+        stage: IProposalStage[item.stage] as any,
         stakesAgainst: new BN(item.stakesAgainst),
         stakesFor: new BN(item.stakesFor),
         thresholdConst: Number(item.thresholdConst),

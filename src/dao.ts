@@ -32,8 +32,6 @@ export interface IDAOState {
   externalTokenAddress: Address | undefined,
   externalTokenBalance: BN | undefined,
   externalTokenSymbol: string | undefined,
-  // TODO: get Eth balance once https://github.com/daostack/subgraph/issues/62 is resolved
-  // ethBalance: BN
   threshold: number
 }
 
