@@ -34,6 +34,16 @@ describe('Proposal', () => {
     expect(proposalsList[proposalsList.length - 1].id).toBe(proposalId)
   })
 
+  it('proposal.search() accepts expiresInQueueAt argument', async () => {
+    const l1 = await Proposal.search({expiresInQueueAt_gt: 0}, arc).pipe(first()).toPromise()
+    expect(l1.length).toBeGreaterThan(0)
+
+    const expiryDate = (await l1[0].state.pipe(first()).toPromise()).expiresInQueueAt
+    const l2 = await Proposal.search({expiresInQueueAt_gt: expiryDate}, arc).pipe(first()).toPromise()
+    expect(l2.length).toBeLessThan(l1.length)
+
+  })
+
   it('dao.proposals() accepts different query arguments', async () => {
     const { Avatar, proposalId } = DAOstackMigration.migration('private').test
     const dao = arc.dao(Avatar.toLowerCase())
