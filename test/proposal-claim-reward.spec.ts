@@ -1,7 +1,7 @@
-import { take } from 'rxjs/operators'
+import BN = require('bn.js')
 import { Arc } from '../src/arc'
 import { Proposal } from '../src/proposal'
-import { fromWei, getArc, getTestDAO, toWei } from './utils'
+import { createAProposal, getArc, getTestDAO, toWei } from './utils'
 
 describe('Claim rewards', () => {
   let arc: Arc
@@ -10,11 +10,11 @@ describe('Claim rewards', () => {
     arc = getArc()
   })
 
-  it.skip('works ', async () => {
+  it('works ', async () => {
     const dao = await getTestDAO()
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const ethReward = toWei('300')
-    const prevethBalance = await arc.web3.eth.getBalance(beneficiary)
+    const prevethBalance = new BN(await arc.web3.eth.getBalance(beneficiary))
     const options = {
       beneficiary,
       ethReward,
@@ -30,8 +30,16 @@ describe('Claim rewards', () => {
     const proposal = response.result as Proposal
 
     await proposal.claimRewards(beneficiary).send()
-    const newethBalance = await arc.web3.eth.getBalance(beneficiary)
-    expect(fromWei(newethBalance.sub(prevethBalance))).toEqual('whatever-the-rewards are')
+    const newethBalance = new BN(await arc.web3.eth.getBalance(beneficiary))
+    // no rewards were claimable yet
+    expect(newethBalance.sub(prevethBalance).toNumber()).toEqual(0)
+
+    // TODO: continue this test with an actually executed proposal
+
+  })
+  it('claimRewards should also work without providing a "beneficiary" argument', async () => {
+    const proposal: Proposal = await createAProposal()
+    await proposal.claimRewards().send()
   })
 
 })

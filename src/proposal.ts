@@ -1,6 +1,6 @@
 import BN = require('bn.js')
 import gql from 'graphql-tag'
-import { Observable, of } from 'rxjs'
+import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
@@ -326,7 +326,11 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.getContract('GenesisProtocol')
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
+  public redeemerContract() {
+    return this.context.getContract('Redeemer')
+  }
+
+  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
     options.proposal = this.id
     return Vote.search(this.context, options)
   }
@@ -338,7 +342,7 @@ export class Proposal implements IStateful<IProposalState> {
    *  all the sender's rep will be used
    * @return  an observable Operation<Vote>
    */
-  public vote(outcome: ProposalOutcome, amount: number = 0): Operation < Vote | null > {
+  public vote(outcome: ProposalOutcome, amount: number = 0): Operation<Vote|null> {
 
     const votingMachine = this.votingMachine()
 
@@ -388,12 +392,12 @@ export class Proposal implements IStateful<IProposalState> {
     return new Token(this.context.getContract('GEN').options.address, this.context)
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
+  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
     options.proposal = this.id
     return Stake.search(this.context, options)
   }
 
-  public stake(outcome: ProposalOutcome, amount: BN ): Operation < Stake > {
+  public stake(outcome: ProposalOutcome, amount: BN ): Operation<Stake> {
     const stakeMethod = this.votingMachine().methods.stake(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
@@ -454,17 +458,32 @@ export class Proposal implements IStateful<IProposalState> {
     )
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
+  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
     options.proposal = this.id
     return Reward.search(this.context, options)
   }
 
-  public claimRewards(account: Address): Operation < boolean > {
-    const transaction = this.votingMachine().methods.redeem(this.id, account)
+  /**
+   * [claimRewards description] Execute the proposal and distribute the rewards
+   * to the beneficiary.
+   * This uses the Redeemer.sol helper contract
+   * @param  beneficiary Addresss of the beneficiary, optional, defaults to the defaultAccount
+   * @return  an Operation
+   */
+  public claimRewards(beneficiary?: Address): Operation<boolean> {
+    // const transaction = this.votingMachine().methods.redeem(this.id, account)
+    if (!beneficiary) {
+      beneficiary = this.context.web3.eth.defaultAccount
+    }
+    const transaction = this.redeemerContract().methods.redeem(
+      this.id,
+      this.dao.address,
+      beneficiary
+    )
     return this.context.sendTransaction(transaction, () => true)
   }
 
-  public execute(): Operation < any > {
+  public execute(): Operation<any> {
     const transaction = this.votingMachine().methods.execute(this.id)
     const map = (receipt: any) => {
       if (Object.keys(receipt.events).length  === 0) {
