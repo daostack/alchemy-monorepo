@@ -68,6 +68,17 @@ describe('Token', () => {
     expect(balances[1].sub(balances[0]).toString()).toEqual(amount.toString())
   })
 
+  it('balanceOf GEN token also works', async () => {
+    const token = arc.GENToken()
+    const account = '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1'
+    const balances: BN[] = []
+    const amount = new BN('1234')
+    token.balanceOf(account).subscribe((next) => balances.push(next))
+    await token.mint(account, amount).send()
+    await waitUntilTrue(() => balances.length > 1)
+    expect(balances[1].sub(balances[0]).toString()).toEqual(amount.toString())
+  })
+
   it('see approvals', async () => {
     const token = new Token(address, arc)
     const approvals = await token.approvals('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1')

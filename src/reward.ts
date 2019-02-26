@@ -1,25 +1,9 @@
 import BN = require('bn.js')
 import gql from 'graphql-tag'
-import { Observable, of } from 'rxjs'
+import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc } from './arc'
-import { Proposal } from './proposal'
 import { Address, ICommonQueryOptions, IStateful } from './types'
-
-export enum RewardType {
-  Reputation,
-  Token,
-  ETH,
-  External
-}
-
-export enum RewardReason {
-  Contribution,
-  Proposer,
-  Voter,
-  Staker,
-  Bounty
-}
 
 export interface IRewardState {
   id: string
