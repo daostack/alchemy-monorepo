@@ -2,7 +2,7 @@ import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { ProposalOutcome} from '../src/proposal'
 import { Stake } from '../src/stake'
-import { getArc } from './utils'
+import { getArc, toWei } from './utils'
 
 /**
  * Stake test
@@ -16,7 +16,7 @@ describe('Stake', () => {
   })
 
   it('Stake is instantiable', () => {
-    const stake = new Stake('0x1234id', '0x124staker', new Date(), ProposalOutcome.Fail, 3e18, '0x12445proposalId')
+    const stake = new Stake('0x1234id', '0x124staker', new Date(), ProposalOutcome.Fail, toWei("300"), '0x12445proposalId')
     expect(stake).toBeInstanceOf(Stake)
   })
 

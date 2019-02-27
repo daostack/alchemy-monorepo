@@ -1,23 +1,25 @@
+import { ApolloQueryResult } from 'apollo-client'
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc } from './arc'
-import { Address, IStateful } from './types'
+import { Address, IStateful, Web3Receipt } from './types'
+import { getWeb3Options, isAddress } from './utils'
 
 export interface IReputationState {
   address: Address
-  name: string
-  symbol: string
   totalSupply: number
 }
 
 export class Reputation implements IStateful<IReputationState> {
 
-  public state: Observable<IReputationState>
-
   constructor(public address: Address, public context: Arc) {
+    isAddress(address)
+  }
+  public state(): Observable<IReputationState> {
     const query = gql`{
-      reputationContract (id: "${address.toLowerCase()}") {
+      reputationContract (id: "${this.address.toLowerCase()}") {
         id,
         address,
         totalSupply
@@ -25,20 +27,17 @@ export class Reputation implements IStateful<IReputationState> {
     }`
     const itemMap = (item: any): IReputationState => {
       if (item === null) {
-        throw Error(`Could not find a reputation contract with address ${address.toLowerCase()}`)
+        throw Error(`Could not find a reputation contract with address ${this.address.toLowerCase()}`)
       }
       return {
         address: item.address,
-        // TODO: need to get the symbol and name: once https://github.com/daostack/subgraph/issues/36 is resolved
-        name: 'REP',
-        symbol: 'REP',
         totalSupply: item.totalSupply
       }
     }
-    this.state = context._getObservableObject(query, itemMap) as Observable<IReputationState>
+    return this.context._getObservableObject(query, itemMap) as Observable<IReputationState>
   }
 
-  public reputationOf(address: Address): Observable<number> {
+  public reputationOf(address: Address): Observable<BN> {
     const query = gql`{
       reputationHolders (
         where: { address:"${address}",
@@ -49,11 +48,28 @@ export class Reputation implements IStateful<IReputationState> {
       }
     }`
     return this.context.getObservable(query).pipe(
-      map((r) => r.data.reputationHolders),
+      map((r: ApolloQueryResult<any>) => r.data.reputationHolders),
       map((items: any[]) => {
         const item = items.length > 0 && items[0]
-        return item.balance !== undefined ? Number(item.balance) : 0
+        return item.balance !== undefined ? new BN(item.balance) : new BN(0)
       })
     )
   }
+
+  /*
+   * get a web3 contract instance for this token
+   */
+  public contract() {
+    const opts = getWeb3Options(this.context.web3)
+    const ReputationContractInfo = require('@daostack/arc/build/contracts/Reputation.json')
+    return new this.context.web3.eth.Contract(ReputationContractInfo.abi, this.address, opts)
+  }
+
+  public mint(beneficiary: Address, amount: BN) {
+    const contract = this.contract()
+    const transaction = contract.methods.mint(beneficiary, amount.toString())
+    const mapReceipt = (receipt: Web3Receipt) => receipt
+    return this.context.sendTransaction(transaction, mapReceipt)
+  }
+
 }

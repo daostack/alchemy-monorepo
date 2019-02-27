@@ -1,3 +1,4 @@
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
@@ -5,11 +6,11 @@ import { ProposalOutcome } from './proposal'
 import { Address, Date, ICommonQueryOptions } from './types'
 
 export interface IVote {
-  id: string
-  voter: string
+  id: string|undefined
+  voter: Address
   createdAt: Date | undefined
   outcome: ProposalOutcome
-  amount: number // amount of reputation that was voted with
+  amount: BN // amount of reputation that was voted with
   proposalId: string
   dao: Address
 }
@@ -33,19 +34,7 @@ export class Vote implements IVote {
     daoFilter = () => true
 
     for (const key of Object.keys(options)) {
-      if (key === 'dao') {
-        // TODO: next line filters bu DAO, which is a sort of hack we can use if  we need This
-        // before https://github.com/daostack/subgraph/issues/65 is resolved
-        daoFilter = (r: any) => {
-          if (r.length > 0) {
-            return r[0].member.dao.id === options.dao
-          } else {
-            return false
-          }
-        }
-      } else {
-        where += `${key}: "${options[key] as string}",\n`
-      }
+      where += `${key}: "${options[key] as string}"\n`
     }
 
     const query = gql`
@@ -55,12 +44,7 @@ export class Vote implements IVote {
         }) {
           id
           createdAt
-          member {
-            id
-            dao {
-              id
-            }
-          }
+          voter
           proposal {
             id
           }
@@ -80,7 +64,7 @@ export class Vote implements IVote {
         } else {
           throw new Error(`Unexpected value for proposalVote.outcome: ${r.outcome}`)
         }
-        return new Vote(r.id, r.member.id, r.createdAt, outcome, r.reputation, r.proposal.id,  r.member.dao.id)
+        return new Vote(r.id, r.voter, r.createdAt, outcome, r.reputation, r.proposal.id, '')
       },
       daoFilter,
       apolloQueryOptions
@@ -88,11 +72,11 @@ export class Vote implements IVote {
   }
 
   constructor(
-      public id: string,
-      public voter: string,
+      public id: string|undefined,
+      public voter: Address,
       public createdAt: Date | undefined,
       public outcome: ProposalOutcome,
-      public amount: number,
+      public amount: BN,
       public proposalId: string,
       public dao: Address
   ) {}

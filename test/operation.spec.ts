@@ -1,50 +1,41 @@
-import { reduce, take } from 'rxjs/operators'
-import { Arc } from '../src/arc'
-import { DAO } from '../src/dao'
 import { ITransactionUpdate, TransactionState } from '../src/operation'
 import { Proposal } from '../src/proposal'
-import { getArc, mineANewBlock } from './utils'
+import { getArc, getTestDAO, mineANewBlock, toWei, waitUntilTrue } from './utils'
+
+jest.setTimeout(10000)
 
 describe('Operation', () => {
-  let arc: Arc
-  let web3: any
-  let accounts: any
-
-  beforeAll(async () => {
-    arc = getArc()
-    web3 = arc.web3
-    accounts = web3.eth.accounts.wallet
-    web3.eth.defaultAccount = accounts[0].address
-  })
 
   it('returns the correct sequence of states', async () => {
-    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
+    const dao = await getTestDAO()
+    const arc = await getArc()
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
-      ethReward: 300,
+      ethReward: toWei("300"),
       externalTokenAddress: undefined,
-      externalTokenReward: 0,
-      nativeTokenReward: 1,
+      externalTokenReward: toWei("0"),
+      nativeTokenReward: toWei("1"),
       periodLength: 12,
       periods: 5,
       type: 'ConributionReward'
     }
 
     // collect the first 4 results of the observable in a a listOfUpdates array
-    const promises: Array<Promise<any>> = []
-    const listOfUpdates = await dao.createProposal(options)
-      .pipe(
-        take(4),
-        reduce((acc: Array<ITransactionUpdate<Proposal>> , val: ITransactionUpdate<Proposal>) => {
-          // mine a new block so we will receive a new confirmation
-          promises.push(mineANewBlock())
-          acc.push(val); return acc
-        }, [])
-      )
-      .toPromise()
+    const listOfUpdates: Array<ITransactionUpdate<Proposal>> = []
+    dao.createProposal(options).subscribe(
+      (next) => { listOfUpdates.push(next) }
+    )
+
+    // wait for the transaction to be mined
+    // (we expect first a 'transaction sent' update, then the 0 confirmation)
+    await waitUntilTrue(() => listOfUpdates.length === 2)
 
     // wait for all blocks mined in the reduce step
-    await Promise.all(promises)
+    for (let i = 0; i < 4; i++) {
+      await mineANewBlock()
+    }
+    // wait forl all pdates
+    await waitUntilTrue(() => listOfUpdates.length > 3)
 
     // the first returned value is expected to be the "sent" (i.e. not mined yet)
     expect(listOfUpdates[0]).toMatchObject({

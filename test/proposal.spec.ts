@@ -1,23 +1,21 @@
+import BN = require('bn.js')
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { Proposal, ProposalStage } from '../src/proposal'
-import { getArc,  getWeb3 } from './utils'
+import { IExecutionState, IProposalStage, IProposalState, Proposal, ProposalOutcome  } from '../src/proposal'
+import { createAProposal, fromWei, getArc, toWei, waitUntilTrue} from './utils'
 
 const DAOstackMigration = require('@daostack/migration')
+
+jest.setTimeout(10000)
 
 /**
  * Proposal test
  */
 describe('Proposal', () => {
   let arc: Arc
-  let web3: any
-  // let accounts: any
 
   beforeAll(async () => {
     arc = getArc()
-    web3 = await getWeb3()
-    // accounts = web3.eth.accounts.wallet
-    // web3.eth.defaultAccount = accounts[0].address
   })
 
   it('Proposal is instantiable', () => {
@@ -36,10 +34,20 @@ describe('Proposal', () => {
     expect(proposalsList[proposalsList.length - 1].id).toBe(proposalId)
   })
 
+  it('proposal.search() accepts expiresInQueueAt argument', async () => {
+    const l1 = await Proposal.search({expiresInQueueAt_gt: 0}, arc).pipe(first()).toPromise()
+    expect(l1.length).toBeGreaterThan(0)
+
+    const expiryDate = (await l1[0].state().pipe(first()).toPromise()).expiresInQueueAt
+    const l2 = await Proposal.search({expiresInQueueAt_gt: expiryDate}, arc).pipe(first()).toPromise()
+    expect(l2.length).toBeLessThan(l1.length)
+
+  })
+
   it('dao.proposals() accepts different query arguments', async () => {
     const { Avatar, proposalId } = DAOstackMigration.migration('private').test
     const dao = arc.dao(Avatar.toLowerCase())
-    const proposals = await dao.proposals({ stage: ProposalStage.Open}).pipe(first()).toPromise()
+    const proposals = await dao.proposals({ stage: IProposalStage.Queued}).pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
     expect(proposals.length).toBeGreaterThan(0)
     expect(proposals[proposals.length - 1].id).toBe(proposalId)
@@ -55,72 +63,104 @@ describe('Proposal', () => {
     expect(proposal.dao.address).toBe(dao)
   })
 
+  it('state should be available before the data is indexed', async () => {
+    const proposal = await createAProposal()
+    const proposalState = await proposal.state().pipe(first()).toPromise()
+    // the state is null because the proposal has not been indexed yet
+    expect(proposalState).toEqual(null)
+  })
+
   it('Check proposal state is correct', async () => {
     const { proposalId } = DAOstackMigration.migration('private').test
 
     const proposal = new Proposal(proposalId, '', arc)
-    const proposalState = await proposal.state.pipe(first()).toPromise()
+    const proposalState = await proposal.state().pipe(first()).toPromise()
     expect(proposal).toBeInstanceOf(Proposal)
-    delete proposalState.dao
-    delete proposalState.createdAt
+
+    // TODO: these amounts seem odd, I guess not using WEI when proposal created?
+    expect(fromWei(proposalState.nativeTokenReward)).toEqual('0.00000000000000001')
+    expect(fromWei(proposalState.stakesAgainst)).toEqual('0.0000001')
+    expect(fromWei(proposalState.stakesFor)).toEqual('0')
+    expect(fromWei(proposalState.reputationReward)).toEqual('0.00000000000000001')
+    expect(fromWei(proposalState.ethReward)).toEqual('0.00000000000000001')
+    expect(fromWei(proposalState.externalTokenReward)).toEqual('0.00000000000000001')
+    expect(fromWei(proposalState.votesFor)).toEqual('1000')
+    expect(fromWei(proposalState.votesAgainst)).toEqual('1000')
+    expect(fromWei(proposalState.proposingRepReward)).toEqual('0.000000005')
+
     expect(proposalState).toMatchObject({
         beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
         boostedAt: 0,
         boostedVotePeriodLimit: 259200,
-        boostingThreshold: 0,
         description: null,
         descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
-        ethReward: 10,
         executedAt: null,
-        externalTokenReward: 10,
-        // id: '0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e',
+        executionState: IExecutionState.None,
+        externalToken: '0x4bf749ec68270027c5910220ceab30cc284c7ba2',
+        periodLength: 0,
+        periods: 1,
         preBoostedVotePeriodLimit: 259200,
         proposer: '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1',
-        proposingRepReward: 5000000000,
         quietEndingPeriodBeganAt: null,
-        reputationReward: 10,
         resolvedAt: null,
-        stage: ProposalStage.Open,
-        stakesAgainst: 0,
-        stakesFor: 0,
+        stage: IProposalStage.Queued,
+        thresholdConst: 2199023255552,
         title: null,
-        nativeTokenReward: 10,
         url: null,
-        votesAgainst: web3.utils.toWei('1000'),
-        votesFor: web3.utils.toWei('1000'),
         winningOutcome: 'Fail'
     })
-  })
-
-  it('get proposal votes', async () => {
-    const { Avatar, proposalId } = DAOstackMigration.migration('private').test
-
-    const proposal = new Proposal(proposalId, '', arc)
-    const votes = await proposal.votes().pipe(first()).toPromise()
-    expect(votes.length).toBeGreaterThan(0)
-    const vote = votes[0]
-    expect(vote.proposalId).toBe(proposalId)
-    expect(vote.dao).toBe(Avatar.toLowerCase())
   })
 
   it('get proposal rewards', async () => {
     const { proposalId } = DAOstackMigration.migration('private').test
     const proposal = new Proposal(proposalId, '', arc)
     const rewards = await proposal.rewards().pipe(first()).toPromise()
-    return
-    // TODO: fix this once the subgraph corretly indexes rewards
-    // expect(rewards.length).toBeGreaterThan(0)
-    // console.log(rewards)
-    // const reward = rewards[0]
-    // console.log(reward)
-    //
-    // expect(reward.proposal.id).toBe(proposalId)
+    expect(rewards.length).toBeGreaterThan(0)
   })
 
   it('get proposal stakes', async () => {
-    const { proposalId } = DAOstackMigration.migration('private').test
-    const proposal = new Proposal(proposalId, '', arc)
-    const stakes = await proposal.stakes().pipe(first()).toPromise()
-    expect(stakes.length).toEqual(0)
+    const proposal = await createAProposal()
+    const stakes: any[] = []
+    proposal.stakes().subscribe((next) => stakes.push(next))
+
+    const stakeAmount = toWei('18')
+    await proposal.stakingToken().mint(arc.web3.eth.defaultAccount, stakeAmount).send()
+    await arc.approveForStaking(stakeAmount).send()
+    await proposal.stake(ProposalOutcome.Pass, stakeAmount).send()
+
+    // wait until we have the we got the stake update
+    await waitUntilTrue(() => stakes.length > 0 && stakes[stakes.length - 1].length > 0)
+    expect(stakes[0].length).toEqual(0)
+    expect(stakes[stakes.length - 1].length).toEqual(1)
+  })
+
+  it('state gets all updates', async () => {
+    // TODO: write this test!
+    const states: IProposalState[] = []
+    const proposal = await createAProposal()
+    proposal.state().subscribe(
+      (state: any) => {
+        states.push(state)
+      },
+      (err: any) => {
+        throw err
+      }
+    )
+    // vote for the proposal
+    await proposal.vote(ProposalOutcome.Pass).pipe(first()).toPromise()
+
+    // wait until all transactions are indexed
+    await waitUntilTrue(() => {
+      if (states.length > 2 && states[states.length - 1].votesFor.gt(new BN(0))) {
+        return true
+      } else {
+        return false
+      }
+    })
+
+    // we expect our first state to be null
+    // (we just created the proposal and subscribed immediately)
+    expect(Number(fromWei(states[states.length - 1].votesFor))).toBeGreaterThan(0)
+    expect(states[states.length - 1].winningOutcome).toEqual('Pass')
   })
 })

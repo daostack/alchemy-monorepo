@@ -1,5 +1,8 @@
 import { Observable, Observer } from 'rxjs'
+import { first, take } from 'rxjs/operators'
+import { Arc } from './arc'
 import { Logger } from './logger'
+import { Web3Receipt } from './types'
 
 export enum TransactionState {
   Sent,
@@ -27,9 +30,13 @@ export interface ITransactionUpdate<T> {
 /**
  * An operation is a stream of transaction updates
  */
-export type Operation<T> = Observable<ITransactionUpdate<T>>
+export interface IOperationObservable<T> extends Observable<T> {
+  send: () => Promise<Web3Receipt>
+}
 
-type web3receipt = object
+export type Operation<T> = IOperationObservable<ITransactionUpdate<T>>
+
+export type web3receipt = object
 
 /**
  * send a transaction to the ethereumblockchain, and return a observable of ITransactionUpdatessend
@@ -40,8 +47,9 @@ type web3receipt = object
 export function sendTransaction<T>(
   transaction: any,
   map: (receipt: web3receipt) => T,
-  errorHandler: (error: Error) => Promise<Error> | Error = (error) => error
-): Operation < T > {
+  errorHandler: (error: Error) => Promise<Error> | Error = (error) => error,
+  context: Arc
+): Operation<T> {
   const observable = Observable.create(async (observer: Observer<ITransactionUpdate<T>>) => {
     let transactionHash: string
     let result: any
@@ -52,7 +60,9 @@ export function sendTransaction<T>(
       tx = transaction
     }
 
-    const emitter = tx.send()
+    const emitter = tx.send({
+      from: await context.getAccount().pipe(first()).toPromise()
+    })
 
     emitter
       .once('transactionHash', (hash: string) => {
@@ -104,5 +114,6 @@ export function sendTransaction<T>(
       })
     }
   )
+  observable.send = () => observable.pipe(take(2)).toPromise()
   return observable
 }

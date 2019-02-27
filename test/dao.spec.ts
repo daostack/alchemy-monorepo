@@ -1,21 +1,17 @@
+import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { getArc, getTestDAO, getWeb3 } from './utils'
+import { fromWei, getArc, getTestDAO, toWei, waitUntilTrue } from './utils'
 
 /**
  * DAO test
  */
 describe('DAO', () => {
   let arc: Arc
-  let web3: any
-  let accounts: any
 
   beforeAll(async () => {
     arc = getArc()
-    web3 = await getWeb3()
-    accounts = web3.eth.accounts.wallet
-    web3.eth.defaultAccount = accounts[0].address
 })
 
   it('DAO is instantiable', () => {
@@ -26,13 +22,13 @@ describe('DAO', () => {
 
   it('should be possible to get the token balance of the DAO', async () => {
     const dao = await getTestDAO()
-    const { token } = await dao.state.pipe(first()).toPromise()
+    const { token } = await dao.state().pipe(first()).toPromise()
     const balance = await token.balanceOf(dao.address).pipe(first()).toPromise()
-    expect(balance).toEqual(0)
+    expect(fromWei(balance)).toEqual('0')
   })
 
   it('should be possible to get the reputation balance of the DAO', () => {
-    // const { reputation } = await dao.state.toPromise()
+    // const { reputation } = await dao.state().toPromise()
     // const balance = await reputation.balanceOf(address).toPromise()
   })
 
@@ -46,16 +42,16 @@ describe('DAO', () => {
   it('get the dao state', async () => {
     const dao = await getTestDAO()
     expect(dao).toBeInstanceOf(DAO)
-    const state = await dao.state.pipe(first()).toPromise()
+    const state = await dao.state().pipe(first()).toPromise()
     const expected = {
        address: dao.address,
        memberCount: 6,
-       name: 'Genesis Test'
+       name: 'Genesis Test',
+       tokenBalance: new BN('0')
     }
     expect(state).toMatchObject(expected)
     expect(Object.keys(state)).toEqual([
       'address',
-      'ethBalance',
       'externalTokenAddress',
       'externalTokenBalance',
       'externalTokenSymbol',
@@ -63,6 +59,7 @@ describe('DAO', () => {
       'name',
       'reputation',
       'reputationTotalSupply',
+      'threshold',
       'token',
       'tokenBalance',
       'tokenName',
@@ -74,32 +71,42 @@ describe('DAO', () => {
   it('throws a reasonable error if the contract does not exist', async () => {
     expect.assertions(1)
     const reputation = new DAO('0xfake', arc)
-    await expect(reputation.state.toPromise()).rejects.toThrow(
+    await expect(reputation.state().toPromise()).rejects.toThrow(
       'Could not find a DAO with address 0xfake'
     )
   })
 
-  it.skip('dao.members() should work', async () => {
-    // TODO: because we have not setup with proposals, we are only testing if the current state returns the emty list
+  it('dao.members() should work', async () => {
     const dao = await getTestDAO()
     const members = await dao.members().pipe(first()).toPromise()
     expect(typeof members).toEqual(typeof [])
-    expect(members.length).toBeGreaterThan(0)
+    expect(members.length).toEqual(6)
     const member = members[0]
+    const memberState = await member.state().pipe(first()).toPromise()
+    expect(Number(fromWei(memberState.reputation))).toBeGreaterThan(0)
+  })
+
+  it('dao.member() should work', async () => {
+    const dao = await getTestDAO()
+    const member = await dao.member(arc.web3.eth.defaultAccount)
+    expect(typeof member).toEqual(typeof [])
   })
 
   it('dao.ethBalance() should work', async () => {
     const dao = await getTestDAO()
     const previousBalance = await dao.ethBalance().pipe(first()).toPromise()
-    await web3.eth.sendTransaction({
-      from: web3.eth.defaultAccount,
+    await arc.web3.eth.sendTransaction({
+      from: arc.web3.eth.defaultAccount,
       gas: 4000000,
       gasPrice: 100000000000,
       to: dao.address,
-      value: web3.utils.toWei('1', 'ether')
+      value: toWei('1')
     })
     const newBalance = await dao.ethBalance().pipe(first()).toPromise()
-    expect(newBalance - previousBalance).toBe(Number(web3.utils.toWei('1')))
+
+    // TOOD: BN.js sub function is not working, doing weird things, WTF?
+    //      const sub = newBalance.sub(previousBalance)
+    expect(Number(fromWei(newBalance)) - Number(fromWei(previousBalance))).toBe(1)
   })
 
 })

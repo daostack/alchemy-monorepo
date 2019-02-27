@@ -1,6 +1,6 @@
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
-import { map, switchMap } from 'rxjs/operators'
 import { Arc } from './arc'
 import { DAO } from './dao'
 
@@ -8,16 +8,15 @@ import { IProposalQueryOptions, Proposal } from './proposal'
 import { Reward } from './reward'
 import { IStake, IStakeQueryOptions } from './stake'
 import { Address, ICommonQueryOptions, IStateful } from './types'
+import { isAddress } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export interface IMemberState {
   address: Address
   dao: DAO,
-  // TODO: include ETH balance
-  // eth: number
-  reputation: number
+  reputation: BN
   // 'tokens' --> balance of address in dao.nativeToken.balanceOf
-  tokens: number
+  tokens: BN
 }
 
 /**
@@ -25,51 +24,64 @@ export interface IMemberState {
  */
 
 export class Member implements IStateful<IMemberState> {
-  public state: Observable<IMemberState>
 
   /**
-   * @param id Id of the member
+   * @param address addresssof the member
+   * @param daoAdress addresssof the DAO this member is a member of
    * @param context an instance of Arc
    */
-  constructor(public id: string, public context: Arc) {
+  constructor(public address: Address, public daoAddress: Address, public context: Arc) {
+    isAddress(address)
+    isAddress(daoAddress)
+  }
+
+  public state(): Observable<IMemberState> {
     const query = gql`
       {
-        member (id: "${id}") {
-          id,
-          address,
+        members (
+          where: {
+            address: "${this.address}"
+            dao: "${this.daoAddress}"
+          }
+        ) {
+          id
+          address
           dao {
             id
-          },
-          reputation,
-          tokens,
+          }
+          reputation
+          tokens
         }
       }
     `
 
-    const itemMap = (item: any) => {
-      if (item === null) {
-        throw Error(`Could not find a Member with id '${id}'`)
-      }
-
-      return {
-        address: item.address,
-        dao: new DAO(item.dao.id, this.context),
-        id: item.id,
-        reputation: Number(item.reputation),
-        tokens: Number(item.tokens)
+    const itemMap = (items: any) => {
+      if (items.length === 0) {
+        return {
+          address: this.address,
+          dao: new DAO(this.daoAddress, this.context),
+          reputation: new BN(0),
+          // TODO: we did not find the member, so we do not know how many tokens she holds,
+          // cf. https://github.com/daostack/subgraph/issues/97
+          tokens: new BN(0)
+        }
+      } else {
+        const item = items[0]
+        return {
+          address: this.address,
+          dao: new DAO(this.daoAddress, this.context),
+          reputation: new BN(item.reputation),
+          tokens: new BN(item.tokens)
+        }
       }
     }
 
-    this.state = context._getObservableObject(query, itemMap) as Observable<IMemberState>
+    return this.context._getObservableObject(query, itemMap) as Observable<IMemberState>
 
   }
 
-  public dao(): Observable<DAO> {
-    return this.state.pipe(
-      map((state) => {
-        return state.dao
-      })
-    )
+  public dao(): DAO {
+    return new DAO(this.daoAddress, this.context)
   }
 
   public rewards(): Observable<Reward[]> {
@@ -77,21 +89,17 @@ export class Member implements IStateful<IMemberState> {
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
-    return this.dao().pipe(
-      switchMap((dao) => {
-        options.proposer = this.id
-        return dao.proposals(options)
-    }))
+    options.proposer = this.address
+    return this.dao().proposals(options)
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
-    throw new Error('not implemented')
-    // const dao = new DAO(this.dao)
-    // return dao.stakes(options)
+    options.staker = this.address
+    return this.dao().stakes(options)
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
-    options.member = this.id
+    options.voter = this.address
     return Vote.search(this.context, options)
   }
 }

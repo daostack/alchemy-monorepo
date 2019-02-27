@@ -1,8 +1,20 @@
-import { first, take } from 'rxjs/operators'
+import BN = require('bn.js')
+import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { DAO } from '../src/dao'
-import { Proposal, ProposalStage } from '../src/proposal'
-import { getArc, mineANewBlock, waitUntilTrue } from './utils'
+import { Logger } from '../src/logger'
+import { IProposalStage, Proposal } from '../src/proposal'
+import {
+  fromWei,
+  getArc,
+  getTestDAO,
+  graphqlHttpProvider,
+  graphqlWsProvider,
+  toWei,
+  waitUntilTrue,
+  web3Provider
+} from './utils'
+
+Logger.setLevel(Logger.OFF)
 
 describe('Create a ContributionReward proposal', () => {
   let arc: Arc
@@ -17,19 +29,20 @@ describe('Create a ContributionReward proposal', () => {
   })
 
   it('is properly indexed', async () => {
-    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
+    const dao = await getTestDAO()
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
-      ethReward: 300,
+      ethReward: toWei('300'),
       externalTokenAddress: undefined,
-      externalTokenReward: 0,
-      nativeTokenReward: 1,
+      externalTokenReward: toWei('0'),
+      nativeTokenReward: toWei('1'),
       periodLength: 12,
       periods: 5,
+      reputationReward: toWei('10'),
       type: 'ContributionReward'
     }
 
-    const response = await dao.createProposal(options).pipe(take(2)).toPromise()
+    const response = await dao.createProposal(options).send()
     const proposal = response.result as Proposal
     let proposals: Proposal[] = []
     const proposalIsIndexed = async () => {
@@ -41,36 +54,36 @@ describe('Create a ContributionReward proposal', () => {
     await waitUntilTrue(proposalIsIndexed)
 
     expect(proposal.id).toBeDefined()
-    // TODO: if we use the existing "proposal" and get its state, I get an "proposal
-    // with this id does not exist". How is that possible?
-    const proposal2 = new Proposal(proposal.id, proposal.dao.address, arc)
-    const proposalState = await proposal2.state.pipe(first()).toPromise()
+    const proposalState = await proposal.state().pipe(first()).toPromise()
+
+    expect(fromWei(proposalState.externalTokenReward)).toEqual('0')
+    expect(fromWei(proposalState.ethReward)).toEqual('300')
+    expect(fromWei(proposalState.nativeTokenReward)).toEqual('1')
+    expect(fromWei(proposalState.reputationReward)).toEqual('10')
+    expect(fromWei(proposalState.stakesAgainst)).toEqual('0.0000001') // TODO: why this amount?
+    expect(fromWei(proposalState.stakesFor)).toEqual('0')
 
     expect(proposalState).toMatchObject({
       beneficiary: options.beneficiary,
-      ethReward: options.ethReward,
       executedAt: null,
-      externalTokenReward: 0,
       proposer: dao.context.web3.eth.defaultAccount.toLowerCase(),
       quietEndingPeriodBeganAt: null,
-      reputationReward: 0,
       resolvedAt: null,
-      stage: ProposalStage.Open,
-      stakesAgainst: 0,
-      stakesFor: 0
+      stage: IProposalStage.Queued
     })
     expect(proposalState.dao.address).toEqual(dao.address)
 
   })
+
   it('saves title etc on ipfs', async () => {
-    const dao = new DAO(arc.contractAddresses.dao.Avatar, arc)
+    const dao = await getTestDAO()
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       description: 'Just eat them',
-      ethReward: 300,
+      ethReward: toWei('300'),
       externalTokenAddress: undefined,
-      externalTokenReward: 0,
-      nativeTokenReward: 1,
+      externalTokenReward: toWei('0'),
+      nativeTokenReward: toWei('1'),
       periodLength: 12,
       periods: 5,
       title: 'A modest proposal',
@@ -78,7 +91,7 @@ describe('Create a ContributionReward proposal', () => {
       url: 'http://swift.org/modest'
     }
 
-    const response = await dao.createProposal(options).pipe(take(2)).toPromise()
+    const response = await dao.createProposal(options).send()
     const proposal = response.result as Proposal
     let proposals: Proposal[] = []
     const proposalIsIndexed = async () => {
@@ -89,7 +102,7 @@ describe('Create a ContributionReward proposal', () => {
     }
     await waitUntilTrue(proposalIsIndexed)
     const proposal2 = new Proposal(proposal.id, proposal.dao.address, arc)
-    const proposalState = await proposal2.state.pipe(first()).toPromise()
+    const proposalState = await proposal2.state().pipe(first()).toPromise()
     expect(proposalState.descriptionHash).toEqual('QmRg47CGnf8KgqTZheTejowoxt4SvfZFqi7KGzr2g163uL')
 
     // get the data
@@ -102,5 +115,31 @@ describe('Create a ContributionReward proposal', () => {
       url: options.url
     })
 
+  })
+  it('handles the fact that the ipfs url is not set elegantly', async () => {
+    const arcWithoutIPFS = new Arc({
+      graphqlHttpProvider,
+      graphqlWsProvider,
+      ipfsProvider: '',
+      web3Provider
+    })
+
+    const dao = arcWithoutIPFS.dao('0xe74f3c49c162c00ac18b022856e1a4ecc8947c42')
+    const options = {
+      beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+      description: 'Just eat them',
+      ethReward: toWei('300'),
+      externalTokenAddress: undefined,
+      nativeTokenReward: toWei('1'),
+      periodLength: 12,
+      periods: 5,
+      title: 'A modest proposal',
+      type: 'ContributionReward',
+      url: 'http://swift.org/modest'
+    }
+
+    expect(() => dao.createProposal(options)).toThrowError(
+      /no ipfsProvider set/i
+    )
   })
 })
