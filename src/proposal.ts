@@ -411,8 +411,8 @@ export class Proposal implements IStateful<IProposalState> {
 }
 
 enum ProposalQuerySortOptions {
-  resolvesAt = 'resolvesAt'
-  // 'resolvesAt' should be ok for the current alchemy; will add more options as needed.
+  resolvesAt = 'resolvesAt',
+  preBoostedAt = 'preBoostedAt'
 }
 
 export interface IProposalQueryOptions extends ICommonQueryOptions {
