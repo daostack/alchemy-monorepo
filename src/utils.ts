@@ -109,8 +109,8 @@ export function getWeb3Options(web3Instance: any) {
     Logger.warn(`No defaultAccount was set -- cannot send transaction`)
   }
   return {
-    from: web3Instance.eth.defaultAccount
-    // gas: 6800000
+    from: web3Instance.eth.defaultAccount,
+    gas: 6000000
   }
 }
 
