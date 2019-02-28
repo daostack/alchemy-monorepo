@@ -16,3 +16,5 @@ export interface ICommonQueryOptions {
   orderBy?: string
   orderDirection?: 'ASC' | 'DESC'
 }
+
+export type IPFSProvider = string| { host: string, protocol?: string, port?: string, apiPath?: string}

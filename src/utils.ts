@@ -110,7 +110,7 @@ export function getWeb3Options(web3Instance: any) {
   }
   return {
     from: web3Instance.eth.defaultAccount,
-    gas: 7900000
+    gas: 6000000
   }
 }
 

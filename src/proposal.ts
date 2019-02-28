@@ -145,7 +145,6 @@ export class Proposal implements IStateful<IProposalState> {
 
     return context.sendTransaction(createTransaction, map)
   }
-
   public static search(
     options: IProposalQueryOptions,
     context: Arc,

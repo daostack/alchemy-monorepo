@@ -8,7 +8,7 @@ import { DAO } from './dao'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { Token } from './token'
-import { Address, Web3Provider } from './types'
+import { Address, IPFSProvider, Web3Provider } from './types'
 import { createApolloClient, getWeb3Options, isAddress } from './utils'
 
 const IPFSClient = require('ipfs-http-client')
@@ -18,7 +18,7 @@ export class Arc {
   public graphqlHttpProvider: string
   public graphqlWsProvider: string
   public web3Provider: Web3Provider = ''
-  public ipfsProvider: string
+  public ipfsProvider: IPFSProvider
 
   public pendingOperations: Observable<Array<Operation<any>>> = of()
   public apolloClient: ApolloClient<object>
@@ -31,7 +31,7 @@ export class Arc {
     graphqlHttpProvider: string
     graphqlWsProvider: string
     web3Provider?: string
-    ipfsProvider?: string
+    ipfsProvider?: IPFSProvider
     contractAddresses?: IContractAddresses
   }) {
     this.graphqlHttpProvider = options.graphqlHttpProvider

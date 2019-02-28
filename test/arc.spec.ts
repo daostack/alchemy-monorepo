@@ -14,6 +14,11 @@ describe('Arc ', () => {
     const arc = new Arc({
       graphqlHttpProvider: 'https://graphql.provider',
       graphqlWsProvider: 'https://graphql.provider',
+      ipfsProvider: {
+        host: 'localhost',
+        port: '5001',
+        protocol: 'https'
+      },
       web3Provider: 'wss://web3.provider'
     })
     expect(arc).toBeInstanceOf(Arc)
