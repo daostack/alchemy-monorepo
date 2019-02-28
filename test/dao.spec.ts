@@ -95,6 +95,7 @@ describe('DAO', () => {
   it('dao.ethBalance() should work', async () => {
     const dao = await getTestDAO()
     const previousBalance = await dao.ethBalance().pipe(first()).toPromise()
+
     await arc.web3.eth.sendTransaction({
       from: arc.web3.eth.defaultAccount,
       gas: 4000000,
@@ -104,9 +105,7 @@ describe('DAO', () => {
     })
     const newBalance = await dao.ethBalance().pipe(first()).toPromise()
 
-    // TOOD: BN.js sub function is not working, doing weird things, WTF?
-    //      const sub = newBalance.sub(previousBalance)
-    expect(Number(fromWei(newBalance)) - Number(fromWei(previousBalance))).toBe(1)
+    expect(Number(fromWei(newBalance.sub(previousBalance)))).toBe(1)
   })
 
 })

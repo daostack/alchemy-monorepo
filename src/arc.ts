@@ -120,8 +120,9 @@ export class Arc {
     // get the current balance ad start observing new blocks for balace changes
     const queryObservable = from(this.web3.eth.getBalance(address)).pipe(
       concat(balanceObservable)
-    )
-    return queryObservable as Observable<any>
+    ).pipe(map((item: any) => new BN(item)))
+
+    return queryObservable as Observable<BN>
   }
 
   /**
