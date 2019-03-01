@@ -23,8 +23,6 @@ script:
   - ./scripts/wait-for-it.sh 127.0.0.1:8000
   - ./scripts/wait-for-it.sh 127.0.0.1:8020
   - sleep 15
-  - echo 'npm run setup-env' && echo -en 'travis_fold:start:script.2\\r'
-  - npm run setup-env
   - echo -en 'travis_fold:end:script.2\\r'
   - npm run lint
   - npm run test

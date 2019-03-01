@@ -60,6 +60,7 @@ describe('Token', () => {
   it('mint some new tokens', async () => {
     const token = new Token(addresses.organs.DemoDAOToken, arc)
     const account = '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1'
+    // check if the currentAccount is the owner of the contract
     const balances: BN[] = []
     const amount = new BN('1234')
     token.balanceOf(account).subscribe((next) => balances.push(next))

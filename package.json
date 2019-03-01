@@ -121,7 +121,7 @@
   },
   "dependencies": {
     "@daostack/arc": "0.0.1-rc.11",
-    "@daostack/subgraph": "git+https://github.com/daostack/subgraph.git#58b1d1ebec2a90add76031f5ab4f69208706a549",
+    "@daostack/subgraph": "git+https://github.com/daostack/subgraph.git#tags/ganache-0.0.1-rc.11-v2-0.0.1-rc.10",
     "apollo-cache-inmemory": "^1.3.11",
     "apollo-client": "^2.4.7",
     "apollo-client-ws": "^2.3.0",
