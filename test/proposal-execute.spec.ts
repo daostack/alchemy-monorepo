@@ -38,7 +38,7 @@ describe('Proposal execute()', () => {
     let proposalIsIndexed: boolean = false
     const proposalStates: IProposalState[] = []
     proposal.state().subscribe(
-      (next) => {
+      (next: any) => {
         if (next) {
           proposalIsIndexed = true
         }
@@ -53,9 +53,6 @@ describe('Proposal execute()', () => {
 
     // calling execute in this stage has no effect on the stage
     await proposal.execute().send()
-    await waitUntilTrue(() => proposalStates.length > 2)
-    proposalState = proposalStates[2]
-    expect(proposalStates[2].stage).toEqual(IProposalStage.Queued)
 
     await proposal.vote(ProposalOutcome.Pass).send()
     // let's vote for the proposal with accounts[1]
@@ -68,6 +65,7 @@ describe('Proposal execute()', () => {
       proposalState = proposalStates[proposalStates.length - 1]
       return proposalState.votesFor.gt(new BN(0))
     })
+    proposalState = proposalStates[proposalStates.length - 1]
     expect(proposalState.stage).toEqual(IProposalStage.Queued)
     expect(Number(fromWei(proposalState.votesFor))).toBeGreaterThan(0)
     expect(fromWei(proposalState.votesAgainst)).toEqual('0')
@@ -80,6 +78,7 @@ describe('Proposal execute()', () => {
       proposalState = proposalStates[proposalStates.length - 1]
       return proposalState.stakesFor.gt(new BN(0))
     })
+    proposalState = proposalStates[proposalStates.length - 1]
 
     expect(Number(fromWei(proposalState.stakesFor))).toBeGreaterThan(0)
     expect(proposalState.stage).toEqual(IProposalStage.PreBoosted)
