@@ -39,7 +39,7 @@ export function toWei(amount: string | number): BN {
 }
 
 export function getContractAddresses(): IContractAddresses {
-  const path = '@daostack/subgraph/migration.json'
+  const path = '@daostack/migration/migration.json'
   const addresses = require(path)
   // const addresses = { base: require(path).private.base, dao: require(path).private.dao }
   if (!addresses || addresses === {}) {
