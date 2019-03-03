@@ -1,5 +1,7 @@
 [![npm (scoped)](https://img.shields.io/npm/v/@daostack/migration.svg)](https://www.npmjs.com/package/@daostack/migration)
 [![Docker Pulls](https://img.shields.io/docker/pulls/daostack/migration.svg)](https://hub.docker.com/r/daostack/migration/)
+[![Build Status](https://travis-ci.com/daostack/migration.svg?token=aXt9zApRNkfx8zDMypWx&branch=master)](https://travis-ci.com/daostack/migration)
+
 
 # DAOstack Migration
 
