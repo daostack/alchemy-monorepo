@@ -77,6 +77,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
         uint[3] times; //times[0] - submittedTime
                        //times[1] - boostedPhaseTime
                        //times[2] -preBoostedPhaseTime;
+        bool daoRedeemItsWinnings;
         //      vote      reputation
         mapping(uint256   =>  uint256    ) votes;
         //      vote      reputation
@@ -208,22 +209,20 @@ contract GenesisProtocolLogic is IntVoteInterface {
         proposal.totalStakes = proposal.daoBountyRemain;
         proposals[proposalId] = proposal;
         proposals[proposalId].stakes[NO] = proposal.daoBountyRemain;//dao downstake on the proposal
-        Staker storage staker = proposals[proposalId].stakers[organizations[proposal.organizationId]];
-        staker.vote = NO;
-        staker.amount = proposal.daoBountyRemain;
 
         emit NewProposal(proposalId, organizations[proposal.organizationId], NUM_OF_CHOICES, _proposer, _paramsHash);
         return proposalId;
     }
 
     /**
-      * @dev executeBoosted try to execute a boosted proposal if it is expired
+      * @dev executeBoosted try to execute a boosted or QuietEndingPeriod proposal if it is expired
       * @param _proposalId the id of the proposal
       * @return uint256 expirationCallBounty the bounty amount for the expiration call
      */
     function executeBoosted(bytes32 _proposalId) external returns(uint256 expirationCallBounty) {
         Proposal storage proposal = proposals[_proposalId];
-        require(proposal.state == ProposalState.Boosted);
+        require(proposal.state == ProposalState.Boosted || proposal.state == ProposalState.QuietEndingPeriod,
+        "proposal state in not Boosted nor QuietEndingPeriod");
         require(_execute(_proposalId), "proposal need to expire");
         uint256 expirationCallBountyPercentage =
         // solhint-disable-next-line not-rely-on-time
@@ -324,27 +323,37 @@ contract GenesisProtocolLogic is IntVoteInterface {
         lostReputation = (lostReputation.mul(params.votersReputationLossRatio))/100;
         //as staker
         Staker storage staker = proposal.stakers[_beneficiary];
+        uint256 totalStakes = proposal.stakes[NO].add(proposal.stakes[YES]);
+        uint256 totalWinningStakes = proposal.stakes[proposal.winningVote];
+
         if (staker.amount > 0) {
+            uint256 totalStakesLeftAfterCallBounty =
+            totalStakes.sub(proposal.expirationCallBountyPercentage.mul(proposal.stakes[YES]).div(100));
             if (proposal.state == ProposalState.ExpiredInQueue) {
                 //Stakes of a proposal that expires in Queue are sent back to stakers
                 rewards[0] = staker.amount;
             } else if (staker.vote == proposal.winningVote) {
-                uint256 totalWinningStakes = proposal.stakes[proposal.winningVote];
-                uint256 totalStakes = proposal.stakes[YES].add(proposal.stakes[NO]);
                 if (staker.vote == YES) {
-                    uint256 _totalStakes =
-                    ((totalStakes.mul(100 - proposal.expirationCallBountyPercentage))/100) - proposal.daoBounty;
-                    rewards[0] = (staker.amount.mul(_totalStakes))/totalWinningStakes;
-                } else {
-                    rewards[0] = (staker.amount.mul(totalStakes))/totalWinningStakes;
-                    if (organizations[proposal.organizationId] == _beneficiary) {
-                          //dao redeem it reward
-                        rewards[0] = rewards[0].sub(proposal.daoBounty);
+                    if (proposal.daoBounty < totalStakesLeftAfterCallBounty) {
+                        uint256 _totalStakes = totalStakesLeftAfterCallBounty.sub(proposal.daoBounty);
+                        rewards[0] = (staker.amount.mul(_totalStakes))/totalWinningStakes;
                     }
+                } else {
+                    rewards[0] = (staker.amount.mul(totalStakesLeftAfterCallBounty))/totalWinningStakes;
                 }
             }
             staker.amount = 0;
         }
+            //dao redeem its winnings
+        if (proposal.daoRedeemItsWinnings == false &&
+            _beneficiary == organizations[proposal.organizationId] &&
+            proposal.state != ProposalState.ExpiredInQueue &&
+            proposal.winningVote == NO) {
+            rewards[0] =
+            rewards[0].add((proposal.daoBounty.mul(totalStakes))/totalWinningStakes).sub(proposal.daoBounty);
+            proposal.daoRedeemItsWinnings = true;
+        }
+
         //as voter
         Voter storage voter = proposal.voters[_beneficiary];
         if ((voter.reputation != 0) && (voter.preBoosted)) {
@@ -352,9 +361,8 @@ contract GenesisProtocolLogic is IntVoteInterface {
               //give back reputation for the voter
                 rewards[1] = ((voter.reputation.mul(params.votersReputationLossRatio))/100);
             } else if (proposal.winningVote == voter.vote) {
-                uint256 preBoostedVotes = proposal.preBoostedVotes[YES].add(proposal.preBoostedVotes[NO]);
                 rewards[1] = ((voter.reputation.mul(params.votersReputationLossRatio))/100)
-                .add((voter.reputation.mul(lostReputation))/preBoostedVotes);
+                .add((voter.reputation.mul(lostReputation))/proposal.preBoostedVotes[proposal.winningVote]);
             }
             voter.reputation = 0;
         }
