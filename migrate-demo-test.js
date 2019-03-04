@@ -1,3 +1,4 @@
+const utils = require('./utils.js')
 async function assignGlobalVariables (web3, spinner, opts, logTx, base) {
   this.web3 = web3
   this.spinner = spinner
@@ -30,15 +31,35 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
     this.web3.eth.accounts.wallet.add(this.web3.eth.accounts.privateKeyToAccount(
       '0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c'
     ))
+    this.web3.eth.accounts.wallet.add(this.web3.eth.accounts.privateKeyToAccount(
+      '0x646f1ce2fdad0e6deeeb5c7e8e5543bdde65e86029e2fd9fc169899c440a7913'
+    ))
     accounts = this.web3.eth.accounts.wallet
+  }
+
+  const {
+    GenesisProtocol,
+    GEN
+  } = this.base
+
+  const GENToken = await new this.web3.eth.Contract(
+    require('@daostack/arc/build/contracts/DAOToken.json').abi,
+    GEN,
+    this.opts
+  )
+
+  for (let i = 0; i < accounts.length; i++) {
+    await GENToken.methods.mint(accounts[i].address, this.web3.utils.toWei('1000')).send()
+    await GENToken.methods.approve(GenesisProtocol, this.web3.utils.toWei('1000')).send({ from: accounts[i].address })
   }
 
   const externalTokenAddress = await migrateExternalToken()
 
+  const randomName = utils.generateRnadomName()
   const [orgName, tokenName, tokenSymbol, founders, tokenDist, repDist, cap] = [
-    'Genesis Test',
-    'Genesis Test',
-    'GDT',
+    randomName,
+    randomName + ' Token',
+    randomName[0] + randomName.split(' ')[0] + 'T',
     migrationParams.founders.map(({ address }) => address),
     migrationParams.founders.map(({ tokens }) => web3.utils.toWei(tokens.toString())),
     migrationParams.founders.map(({ reputation }) => web3.utils.toWei(reputation.toString())),
@@ -77,32 +98,13 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
 
   await setSchemes(schemes, avatarAddress, 'metaData')
 
-  const [PASS, FAIL] = [1, 2]
-
-  const proposalId = await submitProposal({
-    avatarAddress: avatarAddress,
-    descHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
-    rep: web3.utils.toWei('10'),
-    tokens: web3.utils.toWei('10'),
-    eth: web3.utils.toWei('10'),
-    external: web3.utils.toWei('10'),
-    periodLength: 0,
-    periods: 1,
-    beneficiary: accounts[1].address,
-    externalTokenAddress: externalTokenAddress
-  })
-
-  await voteOnProposal({
-    proposalId: proposalId,
-    outcome: FAIL,
-    voter: accounts[2].address
-  })
-
-  await voteOnProposal({
-    proposalId: proposalId,
-    outcome: PASS,
-    voter: accounts[1].address
-  })
+  const {
+    gsProposalId,
+    queuedProposalId,
+    preBoostedProposalId,
+    boostedProposalId,
+    executedProposalId
+  } = await submitDemoProposals(accounts, web3, avatarAddress, externalTokenAddress, ActionMock)
 
   const avatar = new this.web3.eth.Contract(
     require('@daostack/arc/build/contracts/Avatar.json').abi,
@@ -147,7 +149,11 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
       DAOToken,
       Reputation,
       ActionMock,
-      proposalId
+      gsProposalId,
+      queuedProposalId,
+      preBoostedProposalId,
+      boostedProposalId,
+      executedProposalId
     },
     organs: {
       DemoAvatar: DemoAvatar.options.address,
@@ -204,6 +210,149 @@ async function migrateDemoDao (orgName, tokenName, tokenSymbol, founders, tokenD
   await this.logTx(tx, 'Created new organization.')
 
   return avatarAddress
+}
+
+async function submitDemoProposals (accounts, web3, avatarAddress, externalTokenAddress, actionMockAddress) {
+  const [PASS, FAIL] = [1, 2]
+  const actionMock = await new this.web3.eth.Contract(
+    require('@daostack/arc/build/contracts/ActionMock.json').abi,
+    actionMockAddress,
+    this.opts
+  )
+  let callData = await actionMock.methods.test2(avatarAddress).encodeABI()
+  let gsProposalId = await submitGSProposal({
+    avatarAddress: avatarAddress,
+    callData,
+    descHash: '0x000000000000000000000000000000000000000000000000000000000000abcd'
+  })
+
+  // QUEUED PROPOSAL //
+  let queuedProposalId = await submitProposal({
+    avatarAddress: avatarAddress,
+    descHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
+    rep: web3.utils.toWei('10'),
+    tokens: web3.utils.toWei('10'),
+    eth: web3.utils.toWei('10'),
+    external: web3.utils.toWei('10'),
+    periodLength: 0,
+    periods: 1,
+    beneficiary: accounts[1].address,
+    externalTokenAddress: externalTokenAddress
+  })
+
+  await voteOnProposal({
+    proposalId: queuedProposalId,
+    outcome: FAIL,
+    voter: accounts[2].address
+  })
+
+  await voteOnProposal({
+    proposalId: queuedProposalId,
+    outcome: PASS,
+    voter: accounts[1].address
+  })
+
+  // PRE BOOSTED PROPOSAL //
+  let preBoostedProposalId = await submitProposal({
+    avatarAddress: avatarAddress,
+    descHash: '0x000000000000000000000000000000000000000000000000000000000000efgh',
+    rep: web3.utils.toWei('10'),
+    tokens: web3.utils.toWei('10'),
+    eth: web3.utils.toWei('10'),
+    external: web3.utils.toWei('10'),
+    periodLength: 0,
+    periods: 1,
+    beneficiary: accounts[1].address,
+    externalTokenAddress: externalTokenAddress
+  })
+
+  await stakeOnProposal({
+    proposalId: preBoostedProposalId,
+    outcome: PASS,
+    staker: accounts[1].address,
+    amount: this.web3.utils.toWei('1000')
+  })
+
+  // BOOSTED PROPOSAL //
+  let boostedProposalId = await submitProposal({
+    avatarAddress: avatarAddress,
+    descHash: '0x000000000000000000000000000000000000000000000000000000000000ijkl',
+    rep: web3.utils.toWei('10'),
+    tokens: web3.utils.toWei('10'),
+    eth: web3.utils.toWei('10'),
+    external: web3.utils.toWei('10'),
+    periodLength: 0,
+    periods: 1,
+    beneficiary: accounts[1].address,
+    externalTokenAddress: externalTokenAddress
+  })
+
+  await stakeOnProposal({
+    proposalId: boostedProposalId,
+    outcome: PASS,
+    staker: accounts[2].address,
+    amount: this.web3.utils.toWei('1000')
+  })
+
+  await voteOnProposal({
+    proposalId: boostedProposalId,
+    outcome: PASS,
+    voter: accounts[1].address
+  })
+
+  await increaseTime(259300, web3)
+
+  await voteOnProposal({
+    proposalId: boostedProposalId,
+    outcome: PASS,
+    voter: accounts[0].address
+  })
+
+  // EXECUTED PROPOSAL //
+  let executedProposalId = await submitProposal({
+    avatarAddress: avatarAddress,
+    descHash: '0x000000000000000000000000000000000000000000000000000000000000ijkl',
+    rep: web3.utils.toWei('10'),
+    tokens: web3.utils.toWei('10'),
+    eth: web3.utils.toWei('10'),
+    external: web3.utils.toWei('10'),
+    periodLength: 0,
+    periods: 1,
+    beneficiary: accounts[1].address,
+    externalTokenAddress: externalTokenAddress
+  })
+
+  await voteOnProposal({
+    proposalId: executedProposalId,
+    outcome: PASS,
+    voter: accounts[0].address
+  })
+
+  await voteOnProposal({
+    proposalId: executedProposalId,
+    outcome: PASS,
+    voter: accounts[1].address
+  })
+
+  await voteOnProposal({
+    proposalId: executedProposalId,
+    outcome: PASS,
+    voter: accounts[2].address
+  })
+
+  await voteOnProposal({
+    proposalId: executedProposalId,
+    outcome: PASS,
+    voter: accounts[3].address
+  })
+
+  return {
+    gsProposalId,
+    queuedProposalId,
+    preBoostedProposalId,
+    boostedProposalId,
+    executedProposalId
+  }
 }
 
 async function migrateActionMock () {
@@ -394,6 +543,37 @@ async function setSchemes (schemes, avatarAddress, metadata) {
 
   await this.logTx(tx, 'Dao Creator Set Schemes.')
 }
+async function submitGSProposal ({
+  avatarAddress,
+  callData,
+  descHash
+}) {
+  this.spinner.start('Submitting a new Proposal...')
+
+  const {
+    GenericScheme
+  } = this.base
+
+  let tx
+
+  const genericScheme = new this.web3.eth.Contract(
+    require('@daostack/arc/build/contracts/GenericScheme.json').abi,
+    GenericScheme,
+    this.opts
+  )
+
+  const prop = genericScheme.methods.proposeCall(
+    avatarAddress,
+    callData,
+    descHash
+  )
+
+  const proposalId = await prop.call()
+  tx = await prop.send()
+  await this.logTx(tx, 'Submit new Proposal.')
+
+  return proposalId
+}
 
 async function submitProposal ({
   avatarAddress,
@@ -457,6 +637,52 @@ async function voteOnProposal ({ proposalId, outcome, voter }) {
     .send({ from: voter })
 
   await this.logTx(tx, 'Voted on Proposal.')
+}
+
+async function stakeOnProposal ({ proposalId, outcome, staker, amount }) {
+  this.spinner.start('Staking on proposal...')
+
+  const {
+    GenesisProtocol
+  } = this.base
+
+  let tx
+
+  const genesisProtocol = new this.web3.eth.Contract(
+    require('@daostack/arc/build/contracts/GenesisProtocol.json').abi,
+    GenesisProtocol,
+    this.opts
+  )
+
+  tx = await genesisProtocol.methods
+    .stake(proposalId, outcome, amount)
+    .send({ from: staker })
+
+  await this.logTx(tx, 'Staked on Proposal.')
+}
+
+async function increaseTime (duration, web3) {
+  const id = await Date.now()
+  web3.providers.HttpProvider.prototype.sendAsync = web3.providers.HttpProvider.prototype.send
+
+  return new Promise((resolve, reject) => {
+    web3.currentProvider.sendAsync({
+      jsonrpc: '2.0',
+      method: 'evm_increaseTime',
+      params: [duration],
+      id
+    }, (err1) => {
+      if (err1) { return reject(err1) }
+
+      web3.currentProvider.sendAsync({
+        jsonrpc: '2.0',
+        method: 'evm_mine',
+        id: id + 1
+      }, (err2, res) => {
+        return err2 ? reject(err2) : resolve(res)
+      })
+    })
+  })
 }
 
 module.exports = migrateDemoTest

@@ -1,3 +1,4 @@
+const utils = require('./utils.js')
 async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logTx, previousMigration: { base } }) {
   if (!(await confirm('About to migrate new DAO. Continue?'))) {
     return
@@ -59,10 +60,11 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     opts
   )
 
+  const randomName = utils.generateRnadomName()
   const [orgName, tokenName, tokenSymbol, founderAddresses, tokenDist, repDist, uController, cap] = [
-    'Genesis Test',
-    'Genesis Test',
-    'GDT',
+    randomName,
+    randomName + ' Token',
+    randomName[0] + randomName.split(' ')[0] + 'T',
     migrationParams.founders.map(({ address }) => address),
     migrationParams.founders.map(({ tokens }) => web3.utils.toWei(tokens.toString())),
     migrationParams.founders.map(({ reputation }) => web3.utils.toWei(reputation.toString())),

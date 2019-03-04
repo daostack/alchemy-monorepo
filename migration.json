@@ -20,23 +20,27 @@
       "GenericScheme": "0x0E696947A06550DEf604e82C26fd9E493e576337"
     },
     "dao": {
-      "name": "Genesis Test",
+      "name": "Withering Bushes",
       "Avatar": "0xcB4e66eCA663FDB61818d52A152601cA6aFEf74F",
       "DAOToken": "0x79183957Be84C0F4dA451E534d5bA5BA3FB9c696",
       "Reputation": "0x0d370B0974454D7b0E0E3b4512c0735A6489A71A"
     },
     "test": {
-      "name": "Genesis Test",
+      "name": "Comely Woodworkers",
       "Avatar": "0x46D6cDC1dc33A3bf63bb2e654E5622173365eD6a",
       "DAOToken": "0xa255f99FC6de5cBe98dAd2673c11809C707F31f8",
       "Reputation": "0x47d818D758b266372C0a2e3715eAA2cBb4863c3e",
-      "ActionMock": "0x86072CbFF48dA3C1F01824a6761A03F105BCC697",
-      "proposalId": "0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e"
+      "ActionMock": "0x5b9b42d6e4B2e4Bf8d42Eba32D46918e10899B66",
+      "gsProposalId": "0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e",
+      "queuedProposalId": "0x4ac34545c4c5ab097a5ced43e2cc14cb2ecbc9fc65dc77531d22a82c074d55a7",
+      "preBoostedProposalId": "0xde1ab25ccae1b07e6ac78045c6b1dc400273f96469a4879e62eb9d3e2203bfcd",
+      "boostedProposalId": "0xb05514045d89957c1d43071dbe9cda72cefbe6a443f4dae72dd318e8727222c5",
+      "executedProposalId": "0x6ea3e97e88db3e01d6928e9902556c3a92bfeb3be62de247dbd3d5af43fb6c31"
     },
     "organs": {
-      "DemoAvatar": "0xEC5d4F247aF81A843612eb1371CBCfa88b762119",
-      "DemoDAOToken": "0x5b9b42d6e4B2e4Bf8d42Eba32D46918e10899B66",
-      "DemoReputation": "0xaf5C4C6C7920B4883bC6252e9d9B8fE27187Cf68"
+      "DemoAvatar": "0x4cFB3F70BF6a80397C2e634e5bDd85BC0bb189EE",
+      "DemoDAOToken": "0xdAA71FBBA28C946258DD3d5FcC9001401f72270F",
+      "DemoReputation": "0xf19A2A01B70519f67ADb309a994Ec8c69A967E8b"
     }
   },
   "kovan": {
