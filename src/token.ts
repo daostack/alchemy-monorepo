@@ -93,26 +93,21 @@ export class Token implements IStateful<ITokenState> {
   /*
    * get a web3 contract instance for this token
    */
-  public getContract() {
+  public contract() {
     const opts = getWeb3Options(this.context.web3)
     const ReputationContractInfo = require('@daostack/arc/build/contracts/DAOToken.json')
     return new this.context.web3.eth.Contract(ReputationContractInfo.abi, this.address, opts)
-    // const contract = this.context.getContract('GEN')
-    // if (contract.options.address !== this.address) {
-    //   throw Error(`Cannot find contract address`)
-    // }
-    // return contract
   }
 
   public mint(beneficiary: Address, amount: BN) {
-    const contract = this.getContract()
+    const contract = this.contract()
     const transaction = contract.methods.mint(beneficiary, amount.toString())
     const mapReceipt = (receipt: Web3Receipt) => receipt
     return this.context.sendTransaction(transaction, mapReceipt)
   }
 
   public approveForStaking(amount: BN) {
-    const stakingToken = this.getContract()
+    const stakingToken = this.contract()
     const genesisProtocol = this.context.getContract('GenesisProtocol')
 
     const transaction = stakingToken.methods.approve(genesisProtocol.options.address, amount.toString())

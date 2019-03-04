@@ -448,7 +448,7 @@ export class Proposal implements IStateful<IProposalState> {
 
           // staker has sufficient balance
           const defaultAccount = await this.context.getAccount().pipe(first()).toPromise()
-          const balance = new BN(await stakingToken.getContract().methods.balanceOf(defaultAccount).call())
+          const balance = new BN(await stakingToken.contract().methods.balanceOf(defaultAccount).call())
           const amountBN = new BN(amount)
           if (balance.lt(amountBN)) {
             const msg = `Staker ${defaultAccount} has insufficient balance to stake ${amount.toString()}
@@ -457,7 +457,7 @@ export class Proposal implements IStateful<IProposalState> {
           }
 
           // staker has approved the token spend
-          const allowance = new BN(await stakingToken.getContract().methods.allowance(
+          const allowance = new BN(await stakingToken.contract().methods.allowance(
             defaultAccount, this.votingMachine().options.address
           ).call())
           if (allowance.lt(amountBN)) {
