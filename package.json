@@ -1,6 +1,6 @@
 {
   "name": "@daostack/migration",
-  "version": "0.0.1-rc.11-v3",
+  "version": "0.0.1-rc.12-v0",
   "description": "A repo for handling DAOstack contract migrations",
   "main": "index.js",
   "bin": {
@@ -36,24 +36,24 @@
   },
   "homepage": "https://github.com/daostack/migration#readme",
   "dependencies": {
-    "@daostack/arc": "0.0.1-rc.11",
+    "@daostack/arc": "0.0.1-rc.12",
     "ethereumjs-wallet": "^0.6.3",
-    "ganache-cli": "^6.2.5",
+    "ganache-cli": "^6.4.1",
     "hdwallet-accounts": "0.0.1",
-    "inquirer": "^6.2.0",
+    "inquirer": "^6.2.2",
     "mkdirp": "^0.5.1",
-    "moment": "^2.22.2",
-    "ora": "^3.0.0",
+    "moment": "^2.24.0",
+    "ora": "^3.2.0",
     "prompt-confirm": "^2.0.4",
-    "rimraf": "^2.6.2",
+    "rimraf": "^2.6.3",
     "web3": "1.0.0-beta.37",
     "yargs": "^12.0.2"
   },
   "devDependencies": {
-    "eslint": "^5.11.0",
+    "eslint": "^5.15.1",
     "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0"
   }

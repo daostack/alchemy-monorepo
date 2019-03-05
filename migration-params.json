@@ -8,14 +8,14 @@
       "votePerc": 50
     },
     "GenesisProtocol": {
-      "boostedVotePeriodLimit": 259200,
-      "daoBountyConst": 75,
+      "boostedVotePeriodLimit": 600,
+      "daoBountyConst": 10,
       "minimumDaoBountyGWei": 100,
-      "queuedVotePeriodLimit": 1814400,
+      "queuedVotePeriodLimit": 1800,
       "queuedVoteRequiredPercentage": 50,
-      "preBoostedVotePeriodLimit": 259200,
+      "preBoostedVotePeriodLimit": 600,
       "proposingRepRewardGwei": 5,
-      "quietEndingPeriod": 86400,
+      "quietEndingPeriod": 300,
       "thresholdConst": 2000,
       "voteOnBehalf": "0x0000000000000000000000000000000000000000",
       "votersReputationLossRatio": 1
