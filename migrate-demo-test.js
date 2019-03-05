@@ -481,9 +481,9 @@ async function setGenesisProtocolParams () {
 
   const gpParams = {
     boostedVotePeriodLimit: 600,
-    daoBountyConst: 75,
+    daoBountyConst: 10,
     minimumDaoBountyGWei: 100,
-    queuedVotePeriodLimit: 600,
+    queuedVotePeriodLimit: 1800,
     queuedVoteRequiredPercentage: 50,
     preBoostedVotePeriodLimit: 600,
     proposingRepRewardGwei: 5,

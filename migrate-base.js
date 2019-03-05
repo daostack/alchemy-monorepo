@@ -41,7 +41,9 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
     const deployContract = contract.deploy({
       data: bytecode,
       arguments: args
-    }).send()
+    }).send({
+      from: web3.eth.defaultAccount
+    })
     const tx = await new Promise(resolve => deployContract.on('receipt', resolve))
     const c = await deployContract
     await logTx(tx, `${c.options.address} => ${contractName}`)
