@@ -131,6 +131,8 @@ export class Proposal implements IStateful<IProposalState> {
         Logger.debug('Saving data on IPFS...')
         const ipfsResponse = await context.ipfs.add(Buffer.from(JSON.stringify(ipfsDataToSave)))
         options.descriptionHash = ipfsResponse[0].path
+        // pin the file
+        await context.ipfs.pin.add(options.descriptionHash)
         Logger.debug(`Data saved successfully as ${options.descriptionHash}`)
       }
 
