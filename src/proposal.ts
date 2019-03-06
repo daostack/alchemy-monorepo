@@ -181,6 +181,9 @@ export class Proposal implements IStateful<IProposalState> {
       }
     }
 
+    // TODO: we only manage contributionReward proposals
+    where += `contributionReward_not: null`
+
     const query = gql`
       {
         proposals(where: {

@@ -25,13 +25,13 @@ describe('Proposal', () => {
   })
 
   it('get list of proposals', async () => {
-    const { Avatar, proposalId } = DAOstackMigration.migration('private').test
+    const { Avatar, queuedProposalId } = DAOstackMigration.migration('private').test
     const dao = arc.dao(Avatar.toLowerCase())
     const proposals = dao.proposals()
     const proposalsList = await proposals.pipe(first()).toPromise()
     expect(typeof proposalsList).toBe('object')
     expect(proposalsList.length).toBeGreaterThan(0)
-    expect(proposalsList[proposalsList.length - 1].id).toBe(proposalId)
+    expect(proposalsList[proposalsList.length - 1].id).toBe(queuedProposalId)
   })
 
   it('proposal.search() accepts expiresInQueueAt argument', async () => {
@@ -45,19 +45,19 @@ describe('Proposal', () => {
   })
 
   it('dao.proposals() accepts different query arguments', async () => {
-    const { Avatar, proposalId } = DAOstackMigration.migration('private').test
+    const { Avatar, queuedProposalId } = DAOstackMigration.migration('private').test
     const dao = arc.dao(Avatar.toLowerCase())
     const proposals = await dao.proposals({ stage: IProposalStage.Queued}).pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
     expect(proposals.length).toBeGreaterThan(0)
-    expect(proposals[proposals.length - 1].id).toBe(proposalId)
+    expect(proposals[proposals.length - 1].id).toBe(queuedProposalId)
   })
 
   it('get proposal dao', async () => {
-    const { Avatar, proposalId } = DAOstackMigration.migration('private').test
+    const { Avatar, queuedProposalId } = DAOstackMigration.migration('private').test
 
     const dao = arc.dao(Avatar.toLowerCase()).address
-    const proposal = new Proposal(proposalId, dao, arc)
+    const proposal = new Proposal(queuedProposalId, dao, arc)
     // const proposalDao = await proposal.dao.pipe(first()).toPromise()
     expect(proposal).toBeInstanceOf(Proposal)
     expect(proposal.dao.address).toBe(dao)
@@ -71,9 +71,9 @@ describe('Proposal', () => {
   })
 
   it('Check proposal state is correct', async () => {
-    const { proposalId } = DAOstackMigration.migration('private').test
+    const { queuedProposalId } = DAOstackMigration.migration('private').test
 
-    const proposal = new Proposal(proposalId, '', arc)
+    const proposal = new Proposal(queuedProposalId, '', arc)
     const proposalState = await proposal.state().pipe(first()).toPromise()
     expect(proposal).toBeInstanceOf(Proposal)
 
@@ -96,7 +96,7 @@ describe('Proposal', () => {
         descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
         executedAt: null,
         executionState: IExecutionState.None,
-        externalToken: '0x4bf749ec68270027c5910220ceab30cc284c7ba2',
+        externalToken: '0xff6049b87215476abf744eaa3a476cbad46fb1ca',
         periodLength: 0,
         periods: 1,
         preBoostedVotePeriodLimit: 600,
@@ -112,8 +112,8 @@ describe('Proposal', () => {
   })
 
   it('get proposal rewards', async () => {
-    const { proposalId } = DAOstackMigration.migration('private').test
-    const proposal = new Proposal(proposalId, '', arc)
+    const { queuedProposalId } = DAOstackMigration.migration('private').test
+    const proposal = new Proposal(queuedProposalId, '', arc)
     const rewards = await proposal.rewards().pipe(first()).toPromise()
     expect(rewards.length).toBeGreaterThan(0)
   })
@@ -128,7 +128,7 @@ describe('Proposal', () => {
     await arc.approveForStaking(stakeAmount).send()
     await proposal.stake(ProposalOutcome.Pass, stakeAmount).send()
 
-    // wait until we have the we got the stake update
+    // wait until we have the we received the stake update
     await waitUntilTrue(() => stakes.length > 0 && stakes[stakes.length - 1].length > 0)
     expect(stakes[0].length).toEqual(0)
     expect(stakes[stakes.length - 1].length).toEqual(1)
