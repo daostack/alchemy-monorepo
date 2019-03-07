@@ -46,7 +46,6 @@ describe('DAO', () => {
     const expected = {
        address: dao.address,
        memberCount: 6,
-       name: 'Genesis Test',
        tokenBalance: new BN('0')
     }
     expect(state).toMatchObject(expected)
