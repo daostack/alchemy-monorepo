@@ -64,7 +64,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   const [orgName, tokenName, tokenSymbol, founderAddresses, tokenDist, repDist, uController, cap] = [
     randomName,
     randomName + ' Token',
-    randomName[0] + randomName.split(' ')[0] + 'T',
+    randomName[0] + randomName.split(' ')[1][0] + 'T',
     migrationParams.founders.map(({ address }) => address),
     migrationParams.founders.map(({ tokens }) => web3.utils.toWei(tokens.toString())),
     migrationParams.founders.map(({ reputation }) => web3.utils.toWei(reputation.toString())),
@@ -136,7 +136,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       migrationParams.GenesisProtocol.votersReputationLossRatio,
       web3.utils.toWei(migrationParams.GenesisProtocol.minimumDaoBountyGWei.toString(), 'gwei'),
       migrationParams.GenesisProtocol.daoBountyConst,
-      0 // activationTime
+      migrationParams.GenesisProtocol.activationTime
     ],
     migrationParams.GenesisProtocol.voteOnBehalf
   )

@@ -18,7 +18,8 @@
       "quietEndingPeriod": 300,
       "thresholdConst": 2000,
       "voteOnBehalf": "0x0000000000000000000000000000000000000000",
-      "votersReputationLossRatio": 1
+      "votersReputationLossRatio": 1,
+      "activationTime": 0
     },
     "founders": [
       {
