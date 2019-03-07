@@ -33,6 +33,9 @@ npm run migrate -- --gasPrice 30 --provider $mainnet_provider --private-key $mai
 # set version
 echo "Setting version..."
 node set-version.js
+# update npm package lock
+echo "Updating package-lock..."
+npm install
 # commit addresses
 echo "Commiting changes..."
 git add -A && git commit -m "release $(cat package.json | jq -r '.version')"
