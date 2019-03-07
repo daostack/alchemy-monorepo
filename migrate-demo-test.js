@@ -59,7 +59,7 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
   const [orgName, tokenName, tokenSymbol, founders, tokenDist, repDist, cap] = [
     randomName,
     randomName + ' Token',
-    randomName[0] + randomName.split(' ')[0] + 'T',
+    randomName[0] + randomName.split(' ')[1][0] + 'T',
     migrationParams.founders.map(({ address }) => address),
     migrationParams.founders.map(({ tokens }) => web3.utils.toWei(tokens.toString())),
     migrationParams.founders.map(({ reputation }) => web3.utils.toWei(reputation.toString())),
@@ -490,7 +490,8 @@ async function setGenesisProtocolParams () {
     quietEndingPeriod: 300,
     thresholdConst: 2000,
     voteOnBehalf: '0x0000000000000000000000000000000000000000',
-    votersReputationLossRatio: 1
+    votersReputationLossRatio: 1,
+    activationTime: 0
   }
 
   const gpSetParams = genesisProtocol.methods.setParameters(
@@ -505,7 +506,7 @@ async function setGenesisProtocolParams () {
       gpParams.votersReputationLossRatio,
       this.web3.utils.toWei(gpParams.minimumDaoBountyGWei.toString(), 'gwei'),
       gpParams.daoBountyConst,
-      0 // activationTime
+      gpParams.activationTime
     ],
     gpParams.voteOnBehalf
   )

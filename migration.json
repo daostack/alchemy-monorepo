@@ -20,13 +20,13 @@
       "GenericScheme": "0x0E696947A06550DEf604e82C26fd9E493e576337"
     },
     "dao": {
-      "name": "Spasmodic Chair",
+      "name": "Bilious Hot air balloon",
       "Avatar": "0xcB4e66eCA663FDB61818d52A152601cA6aFEf74F",
       "DAOToken": "0x79183957Be84C0F4dA451E534d5bA5BA3FB9c696",
       "Reputation": "0x0d370B0974454D7b0E0E3b4512c0735A6489A71A"
     },
     "test": {
-      "name": "Defamatory Laser",
+      "name": "Mordant Teacher",
       "Avatar": "0x46D6cDC1dc33A3bf63bb2e654E5622173365eD6a",
       "DAOToken": "0xa255f99FC6de5cBe98dAd2673c11809C707F31f8",
       "Reputation": "0x47d818D758b266372C0a2e3715eAA2cBb4863c3e",
@@ -64,10 +64,10 @@
       "GenericScheme": "0x131Ed4263bc88Be39dCa50D5F7Ea25cEF9342b92"
     },
     "dao": {
-      "name": "Withering Make-up artist",
-      "Avatar": "0xe0E499AABac5F3051493F49517D1D73AcA8FBC00",
-      "DAOToken": "0x4EC64Fd52598390BC59b670BF8Ae7E5cA973fB51",
-      "Reputation": "0xfD5b8DAD06C72815D767b1936217529bf40d1Fb1"
+      "name": "Propitious Plumber",
+      "Avatar": "0xa9d36F61Cfba2Ee5A42a5C921AfAA5CE87fFfa14",
+      "DAOToken": "0xEF98e86798AffeeE6a484139568d696EB36a3355",
+      "Reputation": "0x9eE705D1852B4Dd02BC166Fc9ff43c15d2F9bBA2"
     }
   },
   "rinkeby": {
@@ -91,10 +91,10 @@
       "GenericScheme": "0x9777130bAc261B3882444622841AEBCDA93834bA"
     },
     "dao": {
-      "name": "Crapulous Stick figures",
-      "Avatar": "0x4E7757dd4F95De17e4405494446Ea0B60C7E4619",
-      "DAOToken": "0xF2422B6dBae5Cdb094bA35E536880d35E7FDE795",
-      "Reputation": "0xD464D3F582eb4FF4Af463506306fA684a1f7575d"
+      "name": "Sclerotic Unicorn",
+      "Avatar": "0x4540C0fCFaa97a04080B673C725b95a741d8c594",
+      "DAOToken": "0xBeA662a627237A18077f97FF7109E127bcbA74b0",
+      "Reputation": "0x69CBCCEe820336162B92fCE8365b614c1311Dc4B"
     }
   },
   "main": {
