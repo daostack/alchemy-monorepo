@@ -25,8 +25,8 @@ export interface IVoteQueryOptions extends ICommonQueryOptions {
 export class Vote implements IVote {
 
   public static search(
-    context: Arc,
     options: IVoteQueryOptions = {},
+    context: Arc,
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable <IVote[]> {
     let where = ''
@@ -34,6 +34,9 @@ export class Vote implements IVote {
     daoFilter = () => true
 
     for (const key of Object.keys(options)) {
+      if (key === 'voter') {
+        options[key] = (options[key] as string).toLowerCase()
+      }
       where += `${key}: "${options[key] as string}"\n`
     }
 

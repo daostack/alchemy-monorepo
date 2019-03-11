@@ -98,18 +98,6 @@ export class Proposal implements IStateful<IProposalState> {
 
     let ipfsDataToSave: object = {}
 
-    // TODO: remove next lines when https://github.com/daostack/subgraph/issues/131 is resolved
-    if (!options.title) {
-      options.title = '[no title]'
-    }
-    if (!options.url) {
-      options.url = '[no url]'
-    }
-    if (!options.description) {
-      options.description = '[no description]'
-    }
-    // END OF HACK
-
     if (options.title || options.url || options.description) {
       if (!context.ipfsProvider) {
         throw Error(`No ipfsProvider set on Arc instance - cannot save data on IPFS`)
@@ -168,16 +156,22 @@ export class Proposal implements IStateful<IProposalState> {
     let where = ''
     for (const key of Object.keys(options)) {
       if (key === 'stage' && options[key] !== undefined) {
-        where += `stage: "${IProposalStage[options[key] as IProposalStage]}",\n`
+        where += `stage: "${IProposalStage[options[key] as IProposalStage]}"\n`
       } else if (key === 'stage_in' && Array.isArray(options[key])) {
         const stageValues = options[key].map((stage: number) => '"' + IProposalStage[stage as IProposalStage] + '"')
-        where += `stage_in: [${stageValues.join(',')}],\n`
+        where += `stage_in: [${stageValues.join(',')}]\n`
       } else if (Array.isArray(options[key])) {
         // Support for operators like _in
         const values = options[key].map((value: number) => '"' + value + '"')
-        where += `${key}: [${values.join(',')}],\n`
+        where += `${key}: [${values.join(',')}]\n`
       } else {
-        where += `${key}: "${options[key] as string}",\n`
+
+        if (key === 'proposer' || key === 'beneficiary' || key === 'dao') {
+          where += `${key}: "${(options[key] as string).toLowerCase()}"\n`
+        } else {
+          where += `${key}: "${options[key] as string}"\n`
+
+        }
       }
     }
 
@@ -350,7 +344,7 @@ export class Proposal implements IStateful<IProposalState> {
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
     options.proposal = this.id
-    return Vote.search(this.context, options)
+    return Vote.search(options, this.context)
   }
 
   /**
@@ -412,7 +406,7 @@ export class Proposal implements IStateful<IProposalState> {
 
   public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
     options.proposal = this.id
-    return Stake.search(this.context, options)
+    return Stake.search(options, this.context)
   }
 
   public stake(outcome: ProposalOutcome, amount: BN ): Operation<Stake> {
@@ -478,7 +472,7 @@ export class Proposal implements IStateful<IProposalState> {
 
   public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
     options.proposal = this.id
-    return Reward.search(this.context, options)
+    return Reward.search(options, this.context)
   }
 
   /**
