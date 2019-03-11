@@ -41,11 +41,15 @@ export class Reward implements IStateful<IRewardState> {
    * @param  options the query options, cf. IRewardQueryOptions
    * @return         an observable of IRewardState objects
    */
-  public static search(context: Arc, options: IRewardQueryOptions): Observable<IRewardState[]> {
+  public static search(options: IRewardQueryOptions, context: Arc): Observable<IRewardState[]> {
     let where = ''
     for (const key of Object.keys(options)) {
-      if (where !== '') { where += ',\n'}
-      where += `${key}: "${options[key] as string}"`
+      if (options[key] !== undefined) {
+        if (key === 'beneficiary') {
+          options[key] = options[key].toLowerCase()
+        }
+        where += `${key}: "${options[key] as string}"\n`
+      }
     }
 
     const query = gql`{
@@ -99,7 +103,7 @@ export class Reward implements IStateful<IRewardState> {
   }
 
   public state(): Observable<IRewardState> {
-    return Reward.search(this.context, {id: this.id}).pipe(
+    return Reward.search({id: this.id}, this.context).pipe(
       map((rewards) => {
         if (rewards.length === 0) {
           throw Error(`No reward with id ${this.id} found`)

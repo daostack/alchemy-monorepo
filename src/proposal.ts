@@ -178,7 +178,7 @@ export class Proposal implements IStateful<IProposalState> {
         where += `${key}: [${values.join(',')}]\n`
       } else {
 
-        if (key === 'proposer') {
+        if (key === 'proposer' || key === 'beneficiary' || key === 'dao') {
           where += `${key}: "${(options[key] as string).toLowerCase()}"\n`
         } else {
           where += `${key}: "${options[key] as string}"\n`
@@ -356,7 +356,7 @@ export class Proposal implements IStateful<IProposalState> {
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
     options.proposal = this.id
-    return Vote.search(this.context, options)
+    return Vote.search(options, this.context)
   }
 
   /**
@@ -484,7 +484,7 @@ export class Proposal implements IStateful<IProposalState> {
 
   public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
     options.proposal = this.id
-    return Reward.search(this.context, options)
+    return Reward.search(options, this.context)
   }
 
   /**

@@ -61,6 +61,16 @@ describe('Proposal', () => {
     result = await Proposal.search({proposer: arc.web3.utils.toChecksumAddress(proposer), id: queuedProposalId}, arc)
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
+
+    result = await Proposal
+      .search({beneficiary: arc.web3.utils.toChecksumAddress(proposalState.beneficiary), id: queuedProposalId}, arc)
+      .pipe(first()).toPromise()
+    expect(result.length).toEqual(1)
+
+    result = await Proposal
+      .search({dao: arc.web3.utils.toChecksumAddress(proposalState.dao.address), id: queuedProposalId}, arc)
+      .pipe(first()).toPromise()
+    expect(result.length).toEqual(1)
   })
 
   it('dao.proposals() accepts different query arguments', async () => {
