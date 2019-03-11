@@ -55,7 +55,6 @@ export class Stake implements IStake {
         }
       }
     `
-    console.log('---------------------------------------')
     return context._getObservableList(
       query,
       (r: any) => new Stake(r.id, r.staker, r.createdAt, r.outcome, r.amount, r.proposal.id),
