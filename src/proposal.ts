@@ -418,7 +418,7 @@ export class Proposal implements IStateful<IProposalState> {
 
   public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
     options.proposal = this.id
-    return Stake.search(this.context, options)
+    return Stake.search(options, this.context)
   }
 
   public stake(outcome: ProposalOutcome, amount: BN ): Operation<Stake> {

@@ -4,7 +4,6 @@ import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { ProposalOutcome} from './proposal'
 import { Address, ICommonQueryOptions } from './types'
-import { whereClause } from './utils'
 
 export interface IStake {
   id: string|undefined
@@ -17,21 +16,33 @@ export interface IStake {
 }
 
 export interface IStakeQueryOptions extends ICommonQueryOptions {
-  proposalId?: string
-  [key: string]: any
+  proposal?: string
+  staker?: Address
+  createdAt?: number
+  [id: string]: any
 }
 
 export class Stake implements IStake {
   public static search(
-    context: Arc,
     options: IStakeQueryOptions = {},
+    context: Arc,
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable <IStake[]> {
+
+    let where = ''
+    for (const key of Object.keys(options)) {
+      if (options[key] !== undefined) {
+        if (key === 'staker') {
+          options[key] = (options[key] as string).toLowerCase()
+        }
+        where += `${key}: "${options[key] as string}"\n`
+      }
+    }
 
     const query = gql`
       {
         proposalStakes (where: {
-          ${whereClause(options)}
+          ${where}
         }) {
           id
           createdAt
@@ -44,6 +55,7 @@ export class Stake implements IStake {
         }
       }
     `
+    console.log('---------------------------------------')
     return context._getObservableList(
       query,
       (r: any) => new Stake(r.id, r.staker, r.createdAt, r.outcome, r.amount, r.proposal.id),

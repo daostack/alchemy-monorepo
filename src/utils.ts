@@ -137,26 +137,6 @@ export function eventId(event: EthereumEvent): string {
   return hash
 }
 
-/**
- * construct a where-clause to use in graphql queries
- * @param  options [description]
- * @return a string
- */
-export function whereClause(options: any) {
-  let where = ''
-  for (const key of Object.keys(options)) {
-    let val = options[key]
-    if (typeof(val) === 'string') {
-      if (val.startsWith('0x')) {
-        val = val.toLowerCase()
-      }
-      where += `${key}: "${val as string}"\n`
-    }
-  }
-  return where
-
-}
-
 export function isAddress(address: Address) {
   if (!Web3.utils.isAddress(address)) {
     throw new Error(`Not a valid address: ${address}`)
