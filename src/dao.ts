@@ -31,8 +31,7 @@ export interface IDAOState {
   tokenTotalSupply: BN,
   externalTokenAddress: Address | undefined,
   externalTokenBalance: BN | undefined,
-  externalTokenSymbol: string | undefined,
-  threshold: number
+  externalTokenSymbol: string | undefined
 }
 
 export class DAO implements IStateful<IDAOState> {
@@ -50,7 +49,6 @@ export class DAO implements IStateful<IDAOState> {
         nativeReputation { id, totalSupply }
         nativeToken { id, name, symbol, totalSupply }
         membersCount
-        threshold
         members (where: {address:"${this.address}"}) {
          tokens
          reputation
@@ -72,7 +70,6 @@ export class DAO implements IStateful<IDAOState> {
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, this.context),
         reputationTotalSupply: new BN(item.nativeReputation.totalSupply),
-        threshold: Number(item.threshold),
         token: new Token(item.nativeToken.id, this.context),
         tokenBalance: new BN(item.members[0].tokens || 0),
         tokenName: item.nativeToken.name,
