@@ -98,18 +98,6 @@ export class Proposal implements IStateful<IProposalState> {
 
     let ipfsDataToSave: object = {}
 
-    // TODO: remove next lines when https://github.com/daostack/subgraph/issues/131 is resolved
-    if (!options.title) {
-      options.title = '[no title]'
-    }
-    if (!options.url) {
-      options.url = '[no url]'
-    }
-    if (!options.description) {
-      options.description = '[no description]'
-    }
-    // END OF HACK
-
     if (options.title || options.url || options.description) {
       if (!context.ipfsProvider) {
         throw Error(`No ipfsProvider set on Arc instance - cannot save data on IPFS`)
