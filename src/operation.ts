@@ -14,11 +14,11 @@ export enum TransactionState {
  */
 export interface ITransactionUpdate<T> {
   state: TransactionState
+  transactionHash: string
+  receipt?: object
   /**
    *  number of confirmations
    */
-  transactionHash: string
-  receipt?: object
   confirmations?: number
   /**
    * Parsed return value from the method call
@@ -40,6 +40,15 @@ export type web3receipt = object
 
 /**
  * send a transaction to the ethereumblockchain, and return a observable of ITransactionUpdatessend
+ * for example:
+ *  sendTransaction(.....).subscribe((txUpdate) => {
+ *    if (txUpdate.state === 'sent' ) { notify("your transaction has been sent, waitin'for it to be mnied") }
+ *    if (txUpdate.state === 'mined'} {
+ *      notify("your transaction has been mined! It was confirmed ${txUpdate.confirmations} times"}
+ *      // and we also ahve the txUpdate.receipt and the txUpdate.result to do stuff with
+ *    }
+ *  })
+ *
  * @parameter transaction A web3 transaction, or an (async) function that returns a transaction
  * @parameter map A function that takes the receipt of the transaction and returns an object
  * @return An observable with ITransactionUpdate instnces

@@ -40,7 +40,7 @@ describe('Stake on a ContributionReward', () => {
 
     const stakeIsIndexed = async () => {
       // we pass no-cache to make sure we hit the server on each request
-      stakes = await Stake.search(arc, {proposal: proposal.id}, { fetchPolicy: 'no-cache' })
+      stakes = await Stake.search({proposal: proposal.id}, arc, { fetchPolicy: 'no-cache' })
         .pipe(first()).toPromise()
       return stakes.length > 0
     }

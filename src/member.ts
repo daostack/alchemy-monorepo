@@ -100,7 +100,7 @@ export class Member implements IStateful<IMemberState> {
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
     options.voter = this.address
-    return Vote.search(this.context, options)
+    return Vote.search( options, this.context)
   }
 }
 
