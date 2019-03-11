@@ -44,6 +44,25 @@ describe('Proposal', () => {
 
   })
 
+  it('proposal.search ignores case in address', async () => {
+    const { queuedProposalId } = DAOstackMigration.migration('private').test
+    const proposal = new Proposal(queuedProposalId, '', arc)
+    const proposalState = await proposal.state().pipe(first()).toPromise()
+    const proposer = proposalState.proposer
+    let result
+
+    result = await Proposal.search({proposer, id: queuedProposalId}, arc).pipe(first()).toPromise()
+    expect(result.length).toEqual(1)
+
+    result = await Proposal.search({proposer: proposer.toUpperCase(), id: queuedProposalId}, arc)
+      .pipe(first()).toPromise()
+    expect(result.length).toEqual(1)
+
+    result = await Proposal.search({proposer: arc.web3.utils.toChecksumAddress(proposer), id: queuedProposalId}, arc)
+      .pipe(first()).toPromise()
+    expect(result.length).toEqual(1)
+  })
+
   it('dao.proposals() accepts different query arguments', async () => {
     const { Avatar, queuedProposalId } = DAOstackMigration.migration('private').test
     const dao = arc.dao(Avatar.toLowerCase())
