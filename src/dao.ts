@@ -126,17 +126,17 @@ export class DAO implements IStateful<IDAOState> {
 
   public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
     options.dao = this.address
-    return Reward.search(this.context, options)
+    return Reward.search(options, this.context)
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
     options.dao = this.address
-    return Vote.search(this.context, options)
+    return Vote.search(options, this.context)
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
     options.dao = this.address
-    return Stake.search(this.context, options)
+    return Stake.search(options, this.context)
   }
 
   public ethBalance(): Observable<BN> {
