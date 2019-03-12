@@ -4,6 +4,7 @@ import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Address, ICommonQueryOptions, IStateful } from './types'
+import { isAddress } from './utils'
 
 export interface IRewardState {
   id: string
@@ -46,6 +47,7 @@ export class Reward implements IStateful<IRewardState> {
     for (const key of Object.keys(options)) {
       if (options[key] !== undefined) {
         if (key === 'beneficiary') {
+          isAddress(options[key])
           options[key] = options[key].toLowerCase()
         }
         where += `${key}: "${options[key] as string}"\n`
