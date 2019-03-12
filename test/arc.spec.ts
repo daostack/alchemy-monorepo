@@ -1,3 +1,4 @@
+import BN = require('bn.js')
 import Arc from '../src/index'
 import { Logger } from '../src/logger'
 import { Address } from '../src/types'
@@ -55,5 +56,45 @@ describe('Arc ', () => {
     arc.getAccount().subscribe((address) => addressesObserved.push(address))
     await waitUntilTrue(() => addressesObserved.length > 0)
     expect(addressesObserved[0]).toEqual(arc.web3.eth.defaultAccount)
+  })
+
+  it.only('arc.ethBalance() works', async () => {
+    const arc = await getArc()
+    // observe two balances
+    const balances1: BN[] = []
+    const balances2: BN[] = []
+    const address1 = arc.web3.eth.accounts.wallet[1].address
+    const address2 = arc.web3.eth.accounts.wallet[2].address
+
+    arc.ethBalance(address1).subscribe((balance) => {
+      balances1.push(balance)
+    })
+    arc.ethBalance(address2).subscribe((balance) => {
+      balances2.push(balance)
+    })
+
+    // send some ether to the test accounts
+    const amount1 = new BN('123456')
+    await arc.web3.eth.sendTransaction({
+      gas: 4000000,
+      gasPrice: 100000000000,
+      to: address1,
+      value: amount1
+    })
+    const amount2 = new BN('456677')
+    await arc.web3.eth.sendTransaction({
+      gas: 4000000,
+      gasPrice: 100000000000,
+      to: address2,
+      value: amount2
+    })
+
+    await waitUntilTrue(() => balances1.length > 1)
+    await waitUntilTrue(() => balances2.length > 1)
+
+    expect(balances1.length).toEqual(2)
+    expect(balances2.length).toEqual(2)
+    expect(balances1[1].sub(balances1[0]).toString()).toEqual(amount1.toString())
+    expect(balances2[1].sub(balances2[0]).toString()).toEqual(amount2.toString())
   })
 })

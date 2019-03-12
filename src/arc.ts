@@ -104,23 +104,27 @@ export class Arc {
   public ethBalance(address: Address): Observable<BN> {
     // observe balance on new blocks
     // (note that we are basically doing expensive polling here)
+    let prevBalance: number
     const balanceObservable = Observable.create((observer: any) => {
       const subscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
         if (err) {
           observer.error(err)
         } else {
           this.web3.eth.getBalance(address).then((balance: any) => {
-            // TODO: we should probably only call next if the balance has changed
-            observer.next(new BN(balance))
+            if (balance !== prevBalance) {
+              observer.next(new BN(balance))
+              prevBalance = balance
+            }
           })
         }
       })
       return () => subscription.unsubscribe()
     })
     // get the current balance ad start observing new blocks for balace changes
-    const queryObservable = from(this.web3.eth.getBalance(address)).pipe(
-      concat(balanceObservable)
-    ).pipe(map((item: any) => new BN(item)))
+    const queryObservable = from(
+      this.web3.eth.getBalance(address).then((balance: number) => prevBalance = balance))
+      .pipe(concat(balanceObservable))
+      .pipe(map((item: any) => new BN(item)))
 
     return queryObservable as Observable<BN>
   }
