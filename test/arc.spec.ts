@@ -58,7 +58,7 @@ describe('Arc ', () => {
     expect(addressesObserved[0]).toEqual(arc.web3.eth.defaultAccount)
   })
 
-  it.only('arc.ethBalance() works', async () => {
+  it('arc.ethBalance() works', async () => {
     const arc = await getArc()
     // observe two balances
     const balances1: BN[] = []
