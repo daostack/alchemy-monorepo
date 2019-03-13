@@ -110,17 +110,18 @@ export class Arc {
       lastBalance: undefined
     }
 
-    const balanceObservable = Observable.create((observer: any) => {
+    const balanceObservable = Observable.create((observer: Observer<BN>) => {
       // console.log(`create observer for account ${address}`)
-      this.observedAccounts[address].observer = observer
 
       // get the current balance and return it
-      this.web3.eth.getBalance(address).then(
-        (balance: number) => {
-          observer.next(new BN(balance))
-          this.observedAccounts[address].lastBalance = balance
+      const observedAccount = address
+      this.web3.eth.getBalance(address).then((currentBalance: number) => {
+        observer.next(new BN(currentBalance))
+        this.observedAccounts[address] = {
+          lastBalance: currentBalance,
+          observer
         }
-      )
+      })
       // set up the blockheadersubscription if it does not exist yet
       if (!this.blockHeaderSubscription) {
         this.blockHeaderSubscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
@@ -141,8 +142,8 @@ export class Arc {
       }
       // unsubscribe
       return () => {
-        // this.observedAccounts[address].observer.unsubscribe()
-        delete this.observedAccounts[address]
+        console.log(`unsubscribing of ${observedAccount}`)
+        delete this.observedAccounts[observedAccount]
         if (Object.keys(this.observedAccounts).length === 0 && this.blockHeaderSubscription) {
           this.blockHeaderSubscription.unsubscribe()
           this.blockHeaderSubscription = undefined
