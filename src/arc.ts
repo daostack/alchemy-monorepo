@@ -2,7 +2,7 @@ import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { Observable as ZenObservable } from 'apollo-link'
 import BN = require('bn.js')
 import gql from 'graphql-tag'
-import { from, Observable, Observer, of } from 'rxjs'
+import { from, Observable, Observer, of, Subscription } from 'rxjs'
 import { catchError, concat, filter, map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { Logger } from './logger'
@@ -26,6 +26,10 @@ export class Arc {
   public ipfs: any
   public web3: any
   public contractAddresses: IContractAddresses | undefined
+
+  // accounts obseved by ethBalance
+  public blockHeaderSubscription: Subscription|undefined = undefined
+  public observedAccounts: { [address: string]: {observer?: Observer<BN>, lastBalance?: number}}  = {}
 
   constructor(options: {
     graphqlHttpProvider: string
@@ -95,32 +99,59 @@ export class Arc {
       (r: any) => new DAO(r.id, this)
     ) as Observable<DAO[]>
   }
-
   /**
    * getBalance returns an observer with a stream of ETH balances
    * @param  address [description]
    * @return         [description]
    */
   public ethBalance(address: Address): Observable<BN> {
-    // observe balance on new blocks
-    // (note that we are basically doing expensive polling here)
-    const balanceObservable = Observable.create((observer: any) => {
-      const subscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
-        if (err) {
-          observer.error(err)
-        } else {
-          this.web3.eth.getBalance(address).then((balance: any) => {
-            // TODO: we should probably only call next if the balance has changed
-            observer.next(new BN(balance))
-          })
+
+    this.observedAccounts[address] = {
+      lastBalance: undefined
+    }
+
+    const balanceObservable = Observable.create((observer: Observer<BN>) => {
+      // console.log(`create observer for account ${address}`)
+
+      // get the current balance and return it
+      const observedAccount = address
+      this.web3.eth.getBalance(address).then((currentBalance: number) => {
+        observer.next(new BN(currentBalance))
+        this.observedAccounts[address] = {
+          lastBalance: currentBalance,
+          observer
         }
       })
-      return () => subscription.unsubscribe()
+      // set up the blockheadersubscription if it does not exist yet
+      if (!this.blockHeaderSubscription) {
+        this.blockHeaderSubscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
+          if (err) {
+            observer.error(err)
+          } else {
+            Object.keys(this.observedAccounts).forEach((addr) => {
+              const accInfo = this.observedAccounts[addr]
+              this.web3.eth.getBalance(addr).then((balance: any) => {
+                if (balance !== accInfo.lastBalance) {
+                  (accInfo.observer as Observer<BN>).next(new BN(balance))
+                  accInfo.lastBalance = balance
+                }
+              })
+            })
+          }
+        })
+      }
+      // unsubscribe
+      return () => {
+        console.log(`unsubscribing of ${observedAccount}`)
+        delete this.observedAccounts[observedAccount]
+        if (Object.keys(this.observedAccounts).length === 0 && this.blockHeaderSubscription) {
+          this.blockHeaderSubscription.unsubscribe()
+          this.blockHeaderSubscription = undefined
+        }
+      }
     })
-    // get the current balance ad start observing new blocks for balace changes
-    const queryObservable = from(this.web3.eth.getBalance(address)).pipe(
-      concat(balanceObservable)
-    ).pipe(map((item: any) => new BN(item)))
+    const queryObservable = balanceObservable
+      .pipe(map((item: any) => new BN(item)))
 
     return queryObservable as Observable<BN>
   }
@@ -188,7 +219,7 @@ export class Arc {
    */
   public _getObservableList(
     query: any,
-    itemMap: (o: object) => object|null = (o) => o,
+    itemMap: (o: object) => object | null = (o) => o,
     apolloQueryOptions: IApolloQueryOptions = {}
   ) {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
@@ -223,7 +254,7 @@ export class Arc {
    */
   public _getObservableListWithFilter(
     query: any,
-    itemMap: (o: object) => object|null = (o) => o,
+    itemMap: (o: object) => object | null = (o) => o,
     filterFunc: (o: object) => boolean,
     apolloQueryOptions: IApolloQueryOptions = {}
   ) {
@@ -240,7 +271,7 @@ export class Arc {
 
   public _getObservableObject(
     query: any,
-    itemMap: (o: object) => object|null = (o) => o,
+    itemMap: (o: object) => object | null = (o) => o,
     apolloQueryOptions: IApolloQueryOptions = {}
   ) {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
@@ -305,7 +336,7 @@ export class Arc {
     }
   }
 
-  public getAccount(): Observable<Address> {
+  public getAccount(): Observable < Address > {
     // this complex logic is to get the correct account both from the Web3 as well as from the Metamaask provider
     // Polling is Evil!
     // cf. https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#ear-listening-for-selected-account-changes

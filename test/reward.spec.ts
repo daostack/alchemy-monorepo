@@ -58,5 +58,9 @@ describe('Reward', () => {
         .pipe(first()).toPromise()
     expect(result.length).toBeGreaterThan(0)
 
+    expect(() => Reward.search({beneficiary: null}, arc)).toThrowError(
+      /not a valid address/i
+    )
+
   })
 })
