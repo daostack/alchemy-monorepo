@@ -66,10 +66,10 @@ describe('Arc ', () => {
     const address1 = arc.web3.eth.accounts.wallet[1].address
     const address2 = arc.web3.eth.accounts.wallet[2].address
 
-    arc.ethBalance(address1).subscribe((balance) => {
+    const subscription1 = arc.ethBalance(address1).subscribe((balance) => {
       balances1.push(balance)
     })
-    arc.ethBalance(address2).subscribe((balance) => {
+    const subscription2 = arc.ethBalance(address2).subscribe((balance) => {
       balances2.push(balance)
     })
 
@@ -96,5 +96,11 @@ describe('Arc ', () => {
     expect(balances2.length).toEqual(2)
     expect(balances1[1].sub(balances1[0]).toString()).toEqual(amount1.toString())
     expect(balances2[1].sub(balances2[0]).toString()).toEqual(amount2.toString())
+    subscription2.unsubscribe()
+    expect(Object.keys(arc.observedAccounts)).toEqual([address1])
+    subscription1.unsubscribe()
+    expect(Object.keys(arc.observedAccounts)).toEqual([])
+    expect(arc.blockHeaderSubscription).toEqual(undefined)
+
   })
 })
