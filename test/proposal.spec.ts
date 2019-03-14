@@ -1,9 +1,8 @@
 import BN = require('bn.js')
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { IExecutionState, IProposalStage, IProposalState, Proposal, ProposalOutcome  } from '../src/proposal'
+import { IExecutionState, IProposalOutcome, IProposalStage, IProposalState, Proposal  } from '../src/proposal'
 import { createAProposal, fromWei, getArc, toWei, waitUntilTrue} from './utils'
-
 const DAOstackMigration = require('@daostack/migration')
 
 jest.setTimeout(10000)
@@ -131,7 +130,7 @@ describe('Proposal', () => {
         thresholdConst: 2199023255552,
         title: null,
         url: null,
-        winningOutcome: 'Fail'
+        winningOutcome: IProposalOutcome.Fail
     })
   })
 
@@ -150,7 +149,7 @@ describe('Proposal', () => {
     const stakeAmount = toWei('18')
     await proposal.stakingToken().mint(arc.web3.eth.defaultAccount, stakeAmount).send()
     await arc.approveForStaking(stakeAmount).send()
-    await proposal.stake(ProposalOutcome.Pass, stakeAmount).send()
+    await proposal.stake(IProposalOutcome.Pass, stakeAmount).send()
 
     // wait until we have the we received the stake update
     await waitUntilTrue(() => stakes.length > 0 && stakes[stakes.length - 1].length > 0)
@@ -171,7 +170,7 @@ describe('Proposal', () => {
       }
     )
     // vote for the proposal
-    await proposal.vote(ProposalOutcome.Pass).pipe(first()).toPromise()
+    await proposal.vote(IProposalOutcome.Pass).pipe(first()).toPromise()
 
     // wait until all transactions are indexed
     await waitUntilTrue(() => {
@@ -185,6 +184,6 @@ describe('Proposal', () => {
     // we expect our first state to be null
     // (we just created the proposal and subscribed immediately)
     expect(Number(fromWei(states[states.length - 1].votesFor))).toBeGreaterThan(0)
-    expect(states[states.length - 1].winningOutcome).toEqual('Pass')
+    expect(states[states.length - 1].winningOutcome).toEqual(IProposalOutcome.Pass)
   })
 })

@@ -142,7 +142,6 @@ export class Arc {
       }
       // unsubscribe
       return () => {
-        console.log(`unsubscribing of ${observedAccount}`)
         delete this.observedAccounts[observedAccount]
         if (Object.keys(this.observedAccounts).length === 0 && this.blockHeaderSubscription) {
           this.blockHeaderSubscription.unsubscribe()

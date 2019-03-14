@@ -2,7 +2,7 @@ import { first} from 'rxjs/operators'
 import { Arc, IContractAddresses } from '../src/arc'
 import { DAO } from '../src/dao'
 import { Member } from '../src/member'
-import { Proposal, ProposalOutcome } from '../src/proposal'
+import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Stake } from '../src/stake'
 import { Address } from '../src/types'
 import { Vote } from '../src/vote'
@@ -73,7 +73,7 @@ describe('Member', () => {
       stakingToken.context.web3.eth.defaultAccount = stakerAccount
       await stakingToken.approveForStaking(toWei('1000')).send()
 
-      await proposal.stake(ProposalOutcome.Pass, toWei('99')).send()
+      await proposal.stake(IProposalOutcome.Pass, toWei('99')).send()
       let stakes: Stake[] = []
       member.stakes({ proposal: proposal.id}).subscribe(
         (next: Stake[]) => { stakes = next }
@@ -91,7 +91,7 @@ describe('Member', () => {
   it.skip('Member votes() works', async () => {
     const member = new Member(defaultAccount, dao.address, arc)
     const proposal = await createAProposal()
-    await proposal.vote(ProposalOutcome.Pass).send()
+    await proposal.vote(IProposalOutcome.Pass).send()
     let votes: Vote[] = []
     member.votes().subscribe((next: Vote[]) => votes = next)
     await waitUntilTrue(() => votes.length > 0)

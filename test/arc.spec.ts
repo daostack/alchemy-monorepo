@@ -66,8 +66,6 @@ describe('Arc ', () => {
     const address1 = arc.web3.eth.accounts.wallet[1].address
     const address2 = arc.web3.eth.accounts.wallet[2].address
 
-    console.log( `address1: ${address1}`)
-    console.log( `address2l ${address2}`)
     const subscription1 = arc.ethBalance(address1).subscribe((balance) => {
       balances1.push(balance)
     })

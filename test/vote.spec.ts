@@ -1,6 +1,6 @@
-import { first, take } from 'rxjs/operators'
+import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { ProposalOutcome} from '../src/proposal'
+import { IProposalOutcome} from '../src/proposal'
 import { Vote } from '../src/vote'
 import { createAProposal, getArc, getTestDAO, toWei, waitUntilTrue } from './utils'
 
@@ -22,7 +22,7 @@ describe('Stake', () => {
       '0x1234id',
       '0x124votes',
       0,
-      ProposalOutcome.Fail,
+      IProposalOutcome.Fail,
       toWei('100'),
       '0x12445proposalId',
       '0x12445daoAddress'
@@ -36,7 +36,7 @@ describe('Stake', () => {
     const dao = await getTestDAO()
     const proposal = await createAProposal(dao)
     // let's have a vote
-    await proposal.vote(ProposalOutcome.Pass).send()
+    await proposal.vote(IProposalOutcome.Pass).send()
 
     const voteIsIndexed = async () => {
       // we pass no-cache to make sure we hit the server on each request
@@ -47,7 +47,7 @@ describe('Stake', () => {
     await waitUntilTrue(voteIsIndexed)
     if (result) {
       expect(result.length).toEqual(1)
-      expect(result[0].outcome).toEqual(ProposalOutcome.Pass)
+      expect(result[0].outcome).toEqual(IProposalOutcome.Pass)
     }
     const vote = result[0]
 

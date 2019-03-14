@@ -2,14 +2,14 @@ import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
-import { ProposalOutcome} from './proposal'
+import { IProposalOutcome} from './proposal'
 import { Address, ICommonQueryOptions } from './types'
 
 export interface IStake {
   id: string|undefined
   staker: Address
   createdAt: Date | undefined
-  outcome: ProposalOutcome
+  outcome: IProposalOutcome
   amount: BN // amount staked
   proposalId: string
   // dao: Address
@@ -66,7 +66,7 @@ export class Stake implements IStake {
       public id: string|undefined,
       public staker: string,
       public createdAt: Date | undefined,
-      public outcome: ProposalOutcome,
+      public outcome: IProposalOutcome,
       public amount: BN,
       public proposalId: string
       // public dao: Address
