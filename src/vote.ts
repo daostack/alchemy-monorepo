@@ -2,14 +2,14 @@ import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
-import { ProposalOutcome } from './proposal'
+import { IProposalOutcome } from './proposal'
 import { Address, Date, ICommonQueryOptions } from './types'
 
 export interface IVote {
   id: string|undefined
   voter: Address
   createdAt: Date | undefined
-  outcome: ProposalOutcome
+  outcome: IProposalOutcome
   amount: BN // amount of reputation that was voted with
   proposalId: string
   dao: Address
@@ -59,11 +59,11 @@ export class Vote implements IVote {
     return context._getObservableListWithFilter(
       query,
       (r: any) => {
-        let outcome: ProposalOutcome = ProposalOutcome.Pass
+        let outcome: IProposalOutcome = IProposalOutcome.Pass
         if (r.outcome === 'Pass') {
-          outcome = ProposalOutcome.Pass
+          outcome = IProposalOutcome.Pass
         } else if (r.outcome === 'Fail') {
-          outcome = ProposalOutcome.Fail
+          outcome = IProposalOutcome.Fail
         } else {
           throw new Error(`Unexpected value for proposalVote.outcome: ${r.outcome}`)
         }
@@ -78,7 +78,7 @@ export class Vote implements IVote {
       public id: string|undefined,
       public voter: Address,
       public createdAt: Date | undefined,
-      public outcome: ProposalOutcome,
+      public outcome: IProposalOutcome,
       public amount: BN,
       public proposalId: string,
       public dao: Address

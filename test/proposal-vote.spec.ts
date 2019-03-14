@@ -1,7 +1,7 @@
-import { first, take } from 'rxjs/operators'
+import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { Proposal, ProposalOutcome } from '../src/proposal'
+import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Vote } from '../src/vote'
 import { createAProposal, getArc, getTestDAO, waitUntilTrue } from './utils'
 
@@ -16,9 +16,9 @@ describe('Vote on a ContributionReward', () => {
 
   it.skip('works and gets indexed', async () => {
     const proposal = await createAProposal()
-    const voteResponse = await proposal.vote(ProposalOutcome.Pass).send()
+    const voteResponse = await proposal.vote(IProposalOutcome.Pass).send()
     expect(voteResponse.result).toMatchObject({
-      outcome : ProposalOutcome.Pass
+      outcome : IProposalOutcome.Pass
     })
 
     let votes: Vote[] = []
@@ -39,7 +39,7 @@ describe('Vote on a ContributionReward', () => {
 
   it.skip('vote gets correctly indexed on the proposal entity', async () => {
     const proposal = await createAProposal()
-    await proposal.vote(ProposalOutcome.Pass).send()
+    await proposal.vote(IProposalOutcome.Pass).send()
 
     let votes: Vote[] = []
     const voteIsIndexed = async () => {
@@ -63,7 +63,7 @@ describe('Vote on a ContributionReward', () => {
       '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, arc
     )
     proposal.context.web3.eth.defaultAccount = arc.web3.eth.accounts.wallet[2].address
-    await expect(proposal.vote(ProposalOutcome.Pass).send()).rejects.toThrow(
+    await expect(proposal.vote(IProposalOutcome.Pass).send()).rejects.toThrow(
       /unknown proposal/i
     )
   })
