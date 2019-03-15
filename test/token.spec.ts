@@ -63,7 +63,7 @@ describe('Token', () => {
     // check if the currentAccount is the owner of the contract
     const balances: BN[] = []
     const amount = new BN('1234')
-    token.balanceOf(account).subscribe((next) => balances.push(next))
+    token.balanceOf(account).subscribe((next: BN) => balances.push(next))
     await token.mint(account, amount).send()
     await waitUntilTrue(() => balances.length > 1)
     expect(balances[1].sub(balances[0]).toString()).toEqual(amount.toString())
@@ -74,7 +74,7 @@ describe('Token', () => {
     const account = '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1'
     const balances: BN[] = []
     const amount = new BN('1234')
-    token.balanceOf(account).subscribe((next) => balances.push(next))
+    token.balanceOf(account).subscribe((next: BN) => balances.push(next))
     await token.mint(account, amount).send()
     await waitUntilTrue(() => balances.length > 1)
     expect(balances[1].sub(balances[0]).toString()).toEqual(amount.toString())
