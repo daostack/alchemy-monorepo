@@ -78,7 +78,6 @@ describe('Proposal', () => {
 
   it('get list of redeemable proposals for a user', async () => {
     const { Avatar, executedProposalId } = DAOstackMigration.migration('private').test
-    console.log(executedProposalId)
     const dao = arc.dao(Avatar.toLowerCase())
     // check if the executedProposalId indeed has the correct state
     const proposal = dao.proposal(executedProposalId)
