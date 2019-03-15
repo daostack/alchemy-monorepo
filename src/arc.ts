@@ -110,14 +110,21 @@ export class Arc {
       // console.log(`create observer for account ${address}`)
 
       // get the current balance and return it
-      const observedAccount = address
+      console.log(`observing account ${address}`)
       this.observedAccounts[address] = {
+        lastBalance: undefined,
         observer
       }
 
       this.web3.eth.getBalance(address).then((currentBalance: number) => {
-        observer.next(new BN(currentBalance))
-        this.observedAccounts[address].lastBalance = currentBalance
+        console.log(`got balance for address ${address}`)
+        const accInfo = this.observedAccounts[address]
+        if (accInfo) {
+          // in theory it is possible that the client unsubscribed before reaching this callback
+
+          accInfo.observer.next(new BN(currentBalance))
+          accInfo.lastBalance = currentBalance
+        }
       })
       // set up the blockheadersubscription if it does not exist yet
       if (!this.blockHeaderSubscription) {
@@ -139,7 +146,7 @@ export class Arc {
       }
       // unsubscribe
       return () => {
-        delete this.observedAccounts[observedAccount]
+        delete this.observedAccounts[address]
         if (Object.keys(this.observedAccounts).length === 0 && this.blockHeaderSubscription) {
           this.blockHeaderSubscription.unsubscribe()
           this.blockHeaderSubscription = undefined
