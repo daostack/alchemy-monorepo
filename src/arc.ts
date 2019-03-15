@@ -29,7 +29,7 @@ export class Arc {
 
   // accounts obseved by ethBalance
   public blockHeaderSubscription: Subscription|undefined = undefined
-  public observedAccounts: { [address: string]: {observer?: Observer<BN>, lastBalance?: number}}  = {}
+  public observedAccounts: { [address: string]: {observer: Observer<BN>, lastBalance?: number}}  = {}
 
   constructor(options: {
     graphqlHttpProvider: string
@@ -106,38 +106,35 @@ export class Arc {
    */
   public ethBalance(address: Address): Observable<BN> {
 
-    this.observedAccounts[address] = {
-      lastBalance: undefined
-    }
-
-    const balanceObservable = Observable.create((observer: Observer<BN>) => {
+    const observable = Observable.create((observer: Observer<BN>) => {
       // console.log(`create observer for account ${address}`)
 
       // get the current balance and return it
       const observedAccount = address
+      this.observedAccounts[address] = {
+        observer
+      }
+
       this.web3.eth.getBalance(address).then((currentBalance: number) => {
         observer.next(new BN(currentBalance))
-        this.observedAccounts[address] = {
-          lastBalance: currentBalance,
-          observer
-        }
+        this.observedAccounts[address].lastBalance = currentBalance
       })
       // set up the blockheadersubscription if it does not exist yet
       if (!this.blockHeaderSubscription) {
         this.blockHeaderSubscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
-          if (err) {
-            observer.error(err)
-          } else {
-            Object.keys(this.observedAccounts).forEach((addr) => {
-              const accInfo = this.observedAccounts[addr]
+          Object.keys(this.observedAccounts).forEach((addr) => {
+            const accInfo = this.observedAccounts[addr]
+            if (err) {
+              accInfo.observer.error(err)
+            } else {
               this.web3.eth.getBalance(addr).then((balance: any) => {
                 if (balance !== accInfo.lastBalance) {
-                  (accInfo.observer as Observer<BN>).next(new BN(balance))
+                  accInfo.observer.next(new BN(balance))
                   accInfo.lastBalance = balance
                 }
               })
-            })
-          }
+            }
+          })
         })
       }
       // unsubscribe
@@ -149,10 +146,9 @@ export class Arc {
         }
       }
     })
-    const queryObservable = balanceObservable
-      .pipe(map((item: any) => new BN(item)))
 
-    return queryObservable as Observable<BN>
+    return observable
+      .pipe(map((item: any) => new BN(item)))
   }
 
   /**
