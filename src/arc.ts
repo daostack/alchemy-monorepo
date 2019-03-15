@@ -107,17 +107,13 @@ export class Arc {
   public ethBalance(address: Address): Observable<BN> {
 
     const observable = Observable.create((observer: Observer<BN>) => {
-      // console.log(`create observer for account ${address}`)
-
       // get the current balance and return it
-      console.log(`observing account ${address}`)
       this.observedAccounts[address] = {
         lastBalance: undefined,
         observer
       }
 
       this.web3.eth.getBalance(address).then((currentBalance: number) => {
-        console.log(`got balance for address ${address}`)
         const accInfo = this.observedAccounts[address]
         if (accInfo) {
           // in theory it is possible that the client unsubscribed before reaching this callback

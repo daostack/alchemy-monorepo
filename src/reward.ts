@@ -16,10 +16,10 @@ export interface IRewardState {
   daoBountyForStaker: BN,
   reputationForProposer: BN,
   tokenAddress: Address,
-  redeemedReputationForVoter: BN,
-  redeemedTokensForStaker: BN,
-  redeemedReputationForProposer: BN,
-  redeemedDaoBountyForStaker: BN
+  reputationForVoterRedeemedAt: BN,
+  tokensForStakerRedeemedAt: BN,
+  reputationForProposerRedeemedAt: BN,
+  daoBountyForStakerRedeemedAt: BN
 
 }
 
@@ -70,10 +70,10 @@ export class Reward implements IStateful<IRewardState> {
         daoBountyForStaker
         reputationForProposer
         tokenAddress
-        redeemedReputationForVoter
-        redeemedTokensForStaker
-        redeemedReputationForProposer
-        redeemedDaoBountyForStaker
+        reputationForVoterRedeemedAt
+        tokensForStakerRedeemedAt
+        reputationForProposerRedeemedAt
+        daoBountyForStakerRedeemedAt
       }
     } `
 
@@ -85,10 +85,10 @@ export class Reward implements IStateful<IRewardState> {
         id: item.id,
         // proposal: new Proposal(item.proposal.id, item.dao.id, context),
         proposalId: item.proposal.id,
-        redeemedDaoBountyForStaker: new BN(item.redeemedDaoBountyForStaker),
-        redeemedReputationForProposer: new BN(item.redeemedReputationForProposer),
-        redeemedReputationForVoter: new BN(item.redeemedReputationForVoter),
-        redeemedTokensForStaker: new BN(item.redeemedTokensForStaker),
+        daoBountyForStakerRedeemedAt: new BN(item.daoBountyForStakerRedeemedAt),
+        reputationForProposerRedeemedAt: new BN(item.reputationForProposerRedeemedAt),
+        reputationForVoterRedeemedAt: new BN(item.reputationForVoterRedeemedAt),
+        tokensForStakerRedeemedAt: new BN(item.tokensForStakerRedeemedAt),
         reputationForProposer: new BN(item.reputationForProposer),
         reputationForVoter: new BN(item.reputationForVoter),
         tokenAddress: item.tokenAddress,
