@@ -37,7 +37,7 @@ describe('Proposal execute()', () => {
     let proposalIsIndexed: boolean = false
     const proposalStates: IProposalState[] = []
     proposal.state().subscribe(
-      (next: any) => {
+      (next: IProposalState) => {
         if (next) {
           proposalIsIndexed = true
         }

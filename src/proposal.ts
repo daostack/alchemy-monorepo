@@ -38,6 +38,7 @@ export enum IExecutionState {
 }
 
 export interface IProposalState {
+  accountsWithUnclaimedRewards: Address[],
   activationTime: number
   beneficiary: Address
   boostedAt: Date
@@ -215,6 +216,7 @@ export class Proposal implements IStateful<IProposalState> {
       {
         proposal(id: "${this.id}") {
           id
+          accountsWithUnclaimedRewards
           activationTime
           boostedAt
           boostedVotePeriodLimit
@@ -283,6 +285,7 @@ export class Proposal implements IStateful<IProposalState> {
       }
 
       return {
+        accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
         activationTime: Number(item.activationTime),
         beneficiary: item.contributionReward.beneficiary,
         boostedAt: Number(item.boostedAt),
