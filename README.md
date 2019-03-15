@@ -54,4 +54,3 @@ npm run setup-env
 
  - `npm run build`: Generate bundles and typings, create docs
  - `npm run lint`: Lints code
- - `npm run commit`: Commit using conventional commit style ([husky](https://github.com/typicode/husky) will tell you to use it if you haven't :wink:)
