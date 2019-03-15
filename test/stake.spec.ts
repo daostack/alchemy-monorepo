@@ -45,6 +45,7 @@ describe('Stake', () => {
     result = await Stake.search({proposal: proposal.id}, arc)
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
+    expect(result[0].outcome).toEqual(IProposalOutcome.Pass)
 
     result = await Stake
       .search({staker: stake.staker, proposal: proposal.id}, arc)
