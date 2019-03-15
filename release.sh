@@ -1,6 +1,5 @@
 #!/bin/bash
 echo "Creating a new release"
-npm ci
 package_version=$(cat package.json | jq -r '.version')
 echo "publish to npm"
 npm publish
