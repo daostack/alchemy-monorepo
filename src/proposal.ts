@@ -78,6 +78,7 @@ export interface IProposalState {
   url?: string
   votesFor: BN
   votesAgainst: BN
+  votesCount: number
   votingMachine: Address
   winningOutcome: IProposalOutcome
 }
@@ -321,6 +322,7 @@ export class Proposal implements IStateful<IProposalState> {
         totalRepWhenExecuted: new BN(item.totalRepWhenExecuted),
         url: item.url,
         votesAgainst: new BN(item.votesAgainst),
+        votesCount: item.votes.length,
         votesFor: new BN(item.votesFor),
         votingMachine: item.votingMachine,
         winningOutcome: IProposalOutcome[item.winningOutcome] as any
