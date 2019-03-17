@@ -55,9 +55,20 @@ export class Stake implements IStake {
         }
       }
     `
+
     return context._getObservableList(
       query,
-      (r: any) => new Stake(r.id, r.staker, r.createdAt, r.outcome, r.amount, r.proposal.id),
+      (r: any) => {
+        let outcome: IProposalOutcome = IProposalOutcome.Pass
+        if (r.outcome === 'Pass') {
+          outcome = IProposalOutcome.Pass
+        } else if (r.outcome === 'Fail') {
+          outcome = IProposalOutcome.Fail
+        } else {
+          throw new Error(`Unexpected value for proposalStakes.outcome: ${r.outcome}`)
+        }
+        return new Stake(r.id, r.staker, r.createdAt, outcome, r.amount, r.proposal.id)
+      },
       apolloQueryOptions
     ) as Observable<IStake[]>
   }
