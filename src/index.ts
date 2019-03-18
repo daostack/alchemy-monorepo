@@ -3,6 +3,7 @@ export { Arc }
 export default Arc
 export { DAO, IDAOState } from './dao'
 export { Member, IMemberState } from './member'
+export { ITransactionUpdate, ITransactionState } from './operation'
 export { IExecutionState, Proposal, IProposalState, IProposalOutcome, IProposalStage } from './proposal'
 export { Reputation, IReputationState } from './reputation'
 export { IRewardState, Reward } from './reward'
