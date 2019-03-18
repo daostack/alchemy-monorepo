@@ -10,7 +10,6 @@ import { Operation, sendTransaction, web3receipt } from './operation'
 import { Token } from './token'
 import { Address, IPFSProvider, Web3Provider } from './types'
 import { createApolloClient, getWeb3Options, isAddress } from './utils'
-
 const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
 
@@ -164,6 +163,11 @@ export class Arc {
 
     return Observable.create(async (observer: Observer<ApolloQueryResult<any>>) => {
       Logger.debug(query.loc.source.body)
+
+      if (!apolloQueryOptions.fetchPolicy) {
+        // apolloQueryOptions.fetchPolicy = 'cache-and-network'
+        apolloQueryOptions.fetchPolicy = 'network-only'
+      }
 
       // queryPromise sends a query and featches the results
       const queryPromise: Promise<ApolloQueryResult<{[key: string]: object[]}>> = this.apolloClient.query(
