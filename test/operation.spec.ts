@@ -1,4 +1,4 @@
-import { ITransactionUpdate, TransactionState } from '../src/operation'
+import { ITransactionUpdate, ITransactionState } from '../src/operation'
 import { Proposal } from '../src/proposal'
 import { getArc, getTestDAO, mineANewBlock, toWei, waitUntilTrue } from './utils'
 
@@ -39,11 +39,11 @@ describe('Operation', () => {
 
     // the first returned value is expected to be the "sent" (i.e. not mined yet)
     expect(listOfUpdates[0]).toMatchObject({
-      state: TransactionState.Sent
+      state: ITransactionState.Sent
     })
     expect(listOfUpdates[1]).toMatchObject({
       confirmations: 0,
-      state: TransactionState.Mined
+      state: ITransactionState.Mined
     })
     expect(listOfUpdates[1].result).toBeDefined()
     expect(listOfUpdates[1].receipt).toBeDefined()
@@ -53,13 +53,13 @@ describe('Operation', () => {
 
     expect(listOfUpdates[2]).toMatchObject({
       confirmations: 1,
-      state: TransactionState.Mined
+      state: ITransactionState.Mined
     })
     expect(listOfUpdates[3]).toMatchObject({
       confirmations: 2,
       receipt: listOfUpdates[1].receipt,
       // result: listOfUpdates[1].result,
-      state: TransactionState.Mined,
+      state: ITransactionState.Mined,
       transactionHash: listOfUpdates[1].transactionHash
     })
 

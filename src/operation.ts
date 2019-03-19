@@ -4,7 +4,7 @@ import { Arc } from './arc'
 import { Logger } from './logger'
 import { Web3Receipt } from './types'
 
-export enum TransactionState {
+export enum ITransactionState {
   Sent,
   Mined
 }
@@ -13,7 +13,7 @@ export enum TransactionState {
  * A transaction update is a snapshot of the state of a transaction at a particular time.
  */
 export interface ITransactionUpdate<T> {
-  state: TransactionState
+  state: ITransactionState
   transactionHash: string
   receipt?: object
   /**
@@ -78,7 +78,7 @@ export function sendTransaction<T>(
         Logger.debug('Sending transaction..')
         transactionHash = hash
         observer.next({
-          state: TransactionState.Sent,
+          state: ITransactionState.Sent,
           transactionHash
         })
       })
@@ -93,7 +93,7 @@ export function sendTransaction<T>(
           confirmations: 0,
           receipt,
           result,
-          state: TransactionState.Mined,
+          state: ITransactionState.Mined,
           transactionHash
         })
       })
@@ -110,7 +110,7 @@ export function sendTransaction<T>(
           confirmations: confNumber,
           receipt,
           result,
-          state: TransactionState.Mined,
+          state: ITransactionState.Mined,
           transactionHash
         })
         if (confNumber > 23) {

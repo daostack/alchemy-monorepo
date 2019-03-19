@@ -1,6 +1,6 @@
 {
   "name": "@daostack/client",
-  "version": "0.0.40",
+  "version": "0.0.42",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -28,11 +28,6 @@
     "prebuild": "rimraf dist",
     "quality": "npm run test:prod",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
-    "semantic-release": "semantic-release",
-    "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
-    "setup-env": "npm run subgraph:deploy",
-    "subgraph:deploy": "npm explore @daostack/subgraph -- npm install && npm explore @daostack/subgraph -- npm run deploy",
-    "subgraph:test": "npm explore @daostack/subgraph -- npm run migrate:development && npm explore @daostack/subgraph -- npm run deploy && npm run test Subscription",
     "test": "jest --runInBand --forceExit",
     "test:watch": "jest --watch",
     "tslint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'"
