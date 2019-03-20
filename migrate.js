@@ -116,7 +116,7 @@ const wrapCommand = fn => async options => {
     spinner,
     confirm,
     opts,
-    migrationParams: { ...params.default, ...params[network] },
+    migrationParams: { ...params, ...params[network] },
     logTx,
     previousMigration: { ...existingFile[network] }
   })

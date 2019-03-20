@@ -1,57 +1,69 @@
 {
-  "default": {
-    "ContributionReward": {
-      "orgNativeTokenFeeGWei": 0
+  "ContributionReward": {
+    "orgNativeTokenFeeGWei": 0
+  },
+  "GenericScheme": {
+    "targetContract": "0x0000000000000000000000000000000000000000"
+  },
+  "SchemeRegistrar": {
+  },
+  "GlobalConstraintRegistrar": {
+  },
+  "UpgradeScheme": {
+  },
+  "GenesisProtocol": {
+    "boostedVotePeriodLimit": 600,
+    "daoBountyConst": 10,
+    "minimumDaoBountyGWei": 100,
+    "queuedVotePeriodLimit": 1800,
+    "queuedVoteRequiredPercentage": 50,
+    "preBoostedVotePeriodLimit": 600,
+    "proposingRepRewardGwei": 5,
+    "quietEndingPeriod": 300,
+    "thresholdConst": 2000,
+    "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+    "votersReputationLossRatio": 1,
+    "activationTime": 0
+  },
+  "schemes": {
+    "ContributionReward": true,
+    "GenericScheme": false,
+    "SchemeRegistrar": true,
+    "GlobalConstraintRegistrar": true,
+    "UpgradeScheme": true
+  },
+  "unregisterOwner": true,
+  "useUController": false,
+  "founders": [
+    {
+      "address": "0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1",
+      "tokens": 1000,
+      "reputation": 1000
     },
-    "AbsoluteVote": {
-      "voteOnBehalf": "0x0000000000000000000000000000000000000000",
-      "votePerc": 50
+    {
+      "address": "0xffcf8fdee72ac11b5c542428b35eef5769c409f0",
+      "tokens": 1000,
+      "reputation": 1000
     },
-    "GenesisProtocol": {
-      "boostedVotePeriodLimit": 600,
-      "daoBountyConst": 10,
-      "minimumDaoBountyGWei": 100,
-      "queuedVotePeriodLimit": 1800,
-      "queuedVoteRequiredPercentage": 50,
-      "preBoostedVotePeriodLimit": 600,
-      "proposingRepRewardGwei": 5,
-      "quietEndingPeriod": 300,
-      "thresholdConst": 2000,
-      "voteOnBehalf": "0x0000000000000000000000000000000000000000",
-      "votersReputationLossRatio": 1,
-      "activationTime": 0
+    {
+      "address": "0x22d491bde2303f2f43325b2108d26f1eaba1e32b",
+      "tokens": 1000,
+      "reputation": 1000
     },
-    "founders": [
-      {
-        "address": "0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1",
-        "tokens": 1000,
-        "reputation": 1000
-      },
-      {
-        "address": "0xffcf8fdee72ac11b5c542428b35eef5769c409f0",
-        "tokens": 1000,
-        "reputation": 1000
-      },
-      {
-        "address": "0x22d491bde2303f2f43325b2108d26f1eaba1e32b",
-        "tokens": 1000,
-        "reputation": 1000
-      },
-      {
-        "address": "0xe11ba2b4d45eaed5996cd0823791e0c93114882d",
-        "tokens": 1000,
-        "reputation": 1000
-      },
-      {
-        "address": "0xd03ea8624c8c5987235048901fb614fdca89b117",
-        "tokens": 1000,
-        "reputation": 1000
-      },
-      {
-        "address": "0x95ced938f7991cd0dfcb48f0a06a40fa1af46ebc",
-        "tokens": 1000,
-        "reputation": 1000
-      }
-    ]
-  }
+    {
+      "address": "0xe11ba2b4d45eaed5996cd0823791e0c93114882d",
+      "tokens": 1000,
+      "reputation": 1000
+    },
+    {
+      "address": "0xd03ea8624c8c5987235048901fb614fdca89b117",
+      "tokens": 1000,
+      "reputation": 1000
+    },
+    {
+      "address": "0x95ced938f7991cd0dfcb48f0a06a40fa1af46ebc",
+      "tokens": 1000,
+      "reputation": 1000
+    }
+  ]
 }

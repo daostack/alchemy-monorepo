@@ -20,17 +20,18 @@
       "GenericScheme": "0x0E696947A06550DEf604e82C26fd9E493e576337"
     },
     "dao": {
-      "name": "Invidious Opera singer",
-      "Avatar": "0xcB4e66eCA663FDB61818d52A152601cA6aFEf74F",
-      "DAOToken": "0x79183957Be84C0F4dA451E534d5bA5BA3FB9c696",
-      "Reputation": "0x0d370B0974454D7b0E0E3b4512c0735A6489A71A"
+      "name": "Intransigent Unicorn",
+      "Avatar": "0x6eD79Aa1c71FD7BdBC515EfdA3Bd4e26394435cC",
+      "DAOToken": "0xDb56f2e9369E0D7bD191099125a3f6C370F8ed15",
+      "Reputation": "0xA94B7f0465E98609391C623d0560C5720a3f2D33",
+      "Controller": "0x2D8BE6BF0baA74e0A907016679CaE9190e80dD0A"
     },
     "test": {
-      "name": "Obtuse Laser",
-      "Avatar": "0x46D6cDC1dc33A3bf63bb2e654E5622173365eD6a",
-      "DAOToken": "0xa255f99FC6de5cBe98dAd2673c11809C707F31f8",
-      "Reputation": "0x47d818D758b266372C0a2e3715eAA2cBb4863c3e",
-      "ActionMock": "0x5b9b42d6e4B2e4Bf8d42Eba32D46918e10899B66",
+      "name": "Cerulean Inker",
+      "Avatar": "0xcB4e66eCA663FDB61818d52A152601cA6aFEf74F",
+      "DAOToken": "0x79183957Be84C0F4dA451E534d5bA5BA3FB9c696",
+      "Reputation": "0x0d370B0974454D7b0E0E3b4512c0735A6489A71A",
+      "ActionMock": "0x4cFB3F70BF6a80397C2e634e5bDd85BC0bb189EE",
       "gsProposalId": "0xc31f2952787d52a41a2b2afd8844c6e295f1bed932a3a433542d4c420965028e",
       "queuedProposalId": "0x4ac34545c4c5ab097a5ced43e2cc14cb2ecbc9fc65dc77531d22a82c074d55a7",
       "preBoostedProposalId": "0xde1ab25ccae1b07e6ac78045c6b1dc400273f96469a4879e62eb9d3e2203bfcd",
@@ -38,9 +39,15 @@
       "executedProposalId": "0x6ea3e97e88db3e01d6928e9902556c3a92bfeb3be62de247dbd3d5af43fb6c31"
     },
     "organs": {
-      "DemoAvatar": "0x4cFB3F70BF6a80397C2e634e5bDd85BC0bb189EE",
-      "DemoDAOToken": "0xdAA71FBBA28C946258DD3d5FcC9001401f72270F",
-      "DemoReputation": "0xf19A2A01B70519f67ADb309a994Ec8c69A967E8b"
+      "DemoAvatar": "0x2c5f3c004878923f55A2a255F89Fe29393177509",
+      "DemoDAOToken": "0x7231ECd1355a60251eE56Bf81f987969fc9bAe29",
+      "DemoReputation": "0x3acc15dE35aaB8A94B7D2426E27c887541e4DE6c"
+    },
+    "orgName": {
+      "name": "The DAO",
+      "Avatar": "0x5b9b42d6e4B2e4Bf8d42Eba32D46918e10899B66",
+      "DAOToken": "0x2D8BE6BF0baA74e0A907016679CaE9190e80dD0A",
+      "Reputation": "0x970e8f18ebfEa0B08810f33a5A40438b9530FBCF"
     }
   },
   "kovan": {
