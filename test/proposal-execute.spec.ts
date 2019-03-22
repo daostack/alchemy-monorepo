@@ -103,8 +103,8 @@ describe('Proposal execute()', () => {
     // daoBalance
     const daoState = await dao.state().pipe(first()).toPromise()
     const repTotalSupply = daoState.reputationTotalSupply
-    const daoBalance = await dao.ethBalance().pipe(first()).toPromise()
-    expect(daoBalance).toEqual(new BN(0))
+    // const daoBalance = await dao.ethBalance().pipe(first()).toPromise()
+    // expect(daoBalance).toEqual(new BN(0))
 
     const proposalStates: IProposalState[] = []
 
