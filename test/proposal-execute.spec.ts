@@ -86,7 +86,7 @@ describe('Proposal execute()', () => {
 
   }, 10000)
 
-  itskip('throws a meaningful error if the proposal does not exist', async () => {
+  it.skip('throws a meaningful error if the proposal does not exist', async () => {
     const dao = await getTestDAO()
     // a non-existing proposal
     const proposal = new Proposal(
@@ -141,8 +141,12 @@ describe('Proposal execute()', () => {
     })
     expect(Number(lastState().votesFor.toString())).toBeGreaterThan(Number(repTotalSupply.div(new BN(2)).toString()))
 
+    /// with the last (winning) vote, the proposal is already executed
     await expect(proposal.execute().send()).rejects.toThrow(
       /already executed/i
     )
+
+    // check the state
+    expect(lastState().stage).toEqual(IProposalStage.Executed)
   })
 })
