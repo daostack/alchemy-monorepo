@@ -20,14 +20,14 @@
       "GenericScheme": "0x0E696947A06550DEf604e82C26fd9E493e576337"
     },
     "dao": {
-      "name": "Intransigent Unicorn",
+      "name": "Friable Sea barnacles",
       "Avatar": "0x6eD79Aa1c71FD7BdBC515EfdA3Bd4e26394435cC",
       "DAOToken": "0xDb56f2e9369E0D7bD191099125a3f6C370F8ed15",
       "Reputation": "0xA94B7f0465E98609391C623d0560C5720a3f2D33",
       "Controller": "0x2D8BE6BF0baA74e0A907016679CaE9190e80dD0A"
     },
     "test": {
-      "name": "Cerulean Inker",
+      "name": "Jocular Senor",
       "Avatar": "0xcB4e66eCA663FDB61818d52A152601cA6aFEf74F",
       "DAOToken": "0x79183957Be84C0F4dA451E534d5bA5BA3FB9c696",
       "Reputation": "0x0d370B0974454D7b0E0E3b4512c0735A6489A71A",
@@ -98,10 +98,11 @@
       "GenericScheme": "0x9777130bAc261B3882444622841AEBCDA93834bA"
     },
     "dao": {
-      "name": "Sclerotic Unicorn",
-      "Avatar": "0x4540C0fCFaa97a04080B673C725b95a741d8c594",
-      "DAOToken": "0xBeA662a627237A18077f97FF7109E127bcbA74b0",
-      "Reputation": "0x69CBCCEe820336162B92fCE8365b614c1311Dc4B"
+      "name": "Meretricious Inker",
+      "Avatar": "0xe570dB6859C9EcF02161B907a57Ea577843f6CFe",
+      "DAOToken": "0x95Ac943E7D44206Fb8CA323199C9B5800AEA671C",
+      "Reputation": "0xF2e8eb85dc624829028ce68a4BB8718ed0717f51",
+      "Controller": "0x87Ef982e4CF9F7542D9180970Cb394f6d732132C"
     }
   },
   "main": {
