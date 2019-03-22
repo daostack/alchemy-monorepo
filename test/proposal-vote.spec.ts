@@ -3,7 +3,7 @@ import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Vote } from '../src/vote'
-import { createAProposal, newArc, getTestDAO, waitUntilTrue } from './utils'
+import { createAProposal, getTestDAO, newArc, waitUntilTrue } from './utils'
 
 describe('Vote on a ContributionReward', () => {
   let arc: Arc
