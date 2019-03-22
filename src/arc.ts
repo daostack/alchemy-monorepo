@@ -381,6 +381,7 @@ export class Arc {
     this.web3.eth.accounts.wallet[0] = address
     this.web3.eth.defaultAccount = address
   }
+
   public approveForStaking(amount: BN) {
     return this.GENToken().approveForStaking(amount)
   }
@@ -413,6 +414,7 @@ export class Arc {
   ) {
     return sendTransaction(transaction, mapToObject, errorHandler, this)
   }
+
   public sendQuery(query: any) {
     const queryPromise = this.apolloClient.query({ query })
     return queryPromise

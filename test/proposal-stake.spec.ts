@@ -19,7 +19,7 @@ describe('Stake on a ContributionReward', () => {
     web3.eth.defaultAccount = accounts[0].address
   })
 
-  it('works and gets indexed', async () => {
+  it.skip('works and gets indexed', async () => {
     const dao = await getTestDAO()
 
     const proposal = await createAProposal(dao)
@@ -28,7 +28,7 @@ describe('Stake on a ContributionReward', () => {
     // const defaultAccount = web3.eth.defaultAccount
     // await stakingToken.mint(defaultAccount, toWei('10000')).send()
 
-    // apporve the spend, for staking
+    // approve the spend, for staking
     await stakingToken.approveForStaking(toWei('100')).send()
 
     const stake = await proposal.stake(IProposalOutcome.Pass, new BN(100)).send()
