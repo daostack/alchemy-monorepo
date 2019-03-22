@@ -169,10 +169,6 @@ export class Arc {
         apolloQueryOptions.fetchPolicy = 'network-only'
       }
 
-      // queryPromise sends a query and featches the results
-      // const queryPromise: Promise<ApolloQueryResult<{[key: string]: object[]}>> = this.apolloClient.query(
-      //   { query, ...apolloQueryOptions })
-
       // subscriptionQuery subscribes to get notified of updates to the query
       const subscriptionQuery = gql`
           subscription ${query}
@@ -183,80 +179,24 @@ export class Arc {
         query: subscriptionQuery
        })
       zenObservable.subscribe((next: any) => {
-          console.log(`Sub got update: ${next}`)
           this.apolloClient.writeQuery({
             data: next.data,
             query
           })
-      /* do nothing */
       })
-      // convert the zenObservable returned by  appolloclient to an rx.js.Observable
-      // const subscriptionObservable = Observable.create((obs: Observer<any>) => {
-      //     const subscription = zenObservable.subscribe(obs)
-      //     return () => subscription.unsubscribe()
-      //   })
 
       const sub = zenToRxjsObservable(
         // this.apolloClient.watchQuery({query, fetchPolicy: 'cache-and-network'})
         this.apolloClient.watchQuery({
-          fetchPolicy: 'cache-first',
+          fetchPolicy: 'cache-and-network',
           fetchResults: true,
           query
         })
       )
         .pipe(
           filter((r: ApolloQueryResult<any>) => {
-
-            console.log(`watchQuery got update:`, r)
             return !r.loading
           }), // filter empty results
-          catchError((err: Error) => {
-            throw Error(`${err.name}: ${err.message}\n${query.loc.source.body}`)
-          })
-        )
-        .subscribe(observer)
-      return () => sub.unsubscribe()
-    })
-  }
-
-  /**
-   * Given a gql query, will return an observable of query results
-   * @param  query              a gql query object to execute
-   * @param  apolloQueryOptions options to pass on to Apollo, cf ..
-   * @return an Obsevable that will first yield the current result, and yields updates every time the data changes
-   */
-  public getObservableOld(query: any, apolloQueryOptions: IApolloQueryOptions = {}) {
-
-    return Observable.create(async (observer: Observer<ApolloQueryResult<any>>) => {
-      Logger.debug(query.loc.source.body)
-
-      if (!apolloQueryOptions.fetchPolicy) {
-        // apolloQueryOptions.fetchPolicy = 'cache-and-network'
-        apolloQueryOptions.fetchPolicy = 'network-only'
-      }
-
-      // queryPromise sends a query and featches the results
-      const queryPromise: Promise<ApolloQueryResult<{[key: string]: object[]}>> = this.apolloClient.query(
-        { query, ...apolloQueryOptions })
-
-      // subscriptionQuery subscribes to get notified of updates to the query
-      const subscriptionQuery = gql`
-          subscription ${query}
-        `
-      // subscribe
-      const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({ query: subscriptionQuery })
-      // convert the zenObservable returned by appolloclient to an rx.js.Observable
-      const subscriptionObservable = Observable.create((obs: Observer<any>) => {
-          const subscription = zenObservable.subscribe(obs)
-          return () => subscription.unsubscribe()
-        })
-
-      // concatenate the two queries: first the simple fetch result, then the updates from the subscription
-      const sub = from(queryPromise)
-        .pipe(
-          concat(subscriptionObservable)
-        )
-        .pipe(
           catchError((err: Error) => {
             throw Error(`${err.name}: ${err.message}\n${query.loc.source.body}`)
           })

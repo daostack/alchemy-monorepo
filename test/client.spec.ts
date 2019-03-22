@@ -107,8 +107,6 @@ describe('apolloClient', () => {
     const subscription = observable.subscribe(
       (eventData: any) => {
         // Do something on receipt of the event
-        console.log(eventData)
-        console.log(returnedData.length)
         returnedData.push(eventData.data)
       },
       (err: any) => {
