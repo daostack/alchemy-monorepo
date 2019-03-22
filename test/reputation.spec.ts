@@ -68,7 +68,7 @@ describe('Reputation', () => {
   })
   it('mint() throws a meaningful error if the sender is not the contract owner', async () => {
     const reputation = new Reputation(addresses.test.Reputation, arc)
-    expect(reputation.mint(accounts[3].address, toWei(1)).send()).rejects.toThrow(
+    await expect(reputation.mint(accounts[3].address, toWei(1)).send()).rejects.toThrow(
       /is not the owner/i
     )
   })
