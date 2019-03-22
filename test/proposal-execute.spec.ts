@@ -97,7 +97,7 @@ describe('Proposal execute()', () => {
     )
   })
 
-  it('throws a meaningful error if the proposal proposal is already executed', async () => {
+  it('execute a proposal by voting only', async () => {
     const dao = await getTestDAO()
     arc = dao.context
     // daoBalance
