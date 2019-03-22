@@ -9,7 +9,7 @@ import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { Token } from './token'
 import { Address, IPFSProvider, Web3Provider } from './types'
-import { createApolloClient, getWeb3Options, isAddress } from './utils'
+import { createApolloClient, getWeb3Options, isAddress, zenToRxjsObservable } from './utils'
 const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
 
@@ -170,6 +170,68 @@ export class Arc {
       }
 
       // queryPromise sends a query and featches the results
+      // const queryPromise: Promise<ApolloQueryResult<{[key: string]: object[]}>> = this.apolloClient.query(
+      //   { query, ...apolloQueryOptions })
+
+      // subscriptionQuery subscribes to get notified of updates to the query
+      const subscriptionQuery = gql`
+          subscription ${query}
+        `
+      // subscribe
+      const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({
+        fetchPolicy: 'network-only',
+        query: subscriptionQuery
+       })
+      zenObservable.subscribe((next: any) => {
+          console.log(`Sub got update: ${next}`)
+      /* do nothing */
+      })
+      // convert the zenObservable returned by  appolloclient to an rx.js.Observable
+      // const subscriptionObservable = Observable.create((obs: Observer<any>) => {
+      //     const subscription = zenObservable.subscribe(obs)
+      //     return () => subscription.unsubscribe()
+      //   })
+
+      const sub = zenToRxjsObservable(
+        // this.apolloClient.watchQuery({query, fetchPolicy: 'cache-and-network'})
+        this.apolloClient.watchQuery({
+          fetchPolicy: 'cache-first',
+          fetchResults: true,
+          query
+        })
+      )
+        .pipe(
+          filter((r: ApolloQueryResult<any>) => {
+
+            console.log(`watchQuery got update:`, r)
+            return !r.loading
+          }), // filter empty results
+          catchError((err: Error) => {
+            throw Error(`${err.name}: ${err.message}\n${query.loc.source.body}`)
+          })
+        )
+        .subscribe(observer)
+      return () => sub.unsubscribe()
+    })
+  }
+
+  /**
+   * Given a gql query, will return an observable of query results
+   * @param  query              a gql query object to execute
+   * @param  apolloQueryOptions options to pass on to Apollo, cf ..
+   * @return an Obsevable that will first yield the current result, and yields updates every time the data changes
+   */
+  public getObservableOld(query: any, apolloQueryOptions: IApolloQueryOptions = {}) {
+
+    return Observable.create(async (observer: Observer<ApolloQueryResult<any>>) => {
+      Logger.debug(query.loc.source.body)
+
+      if (!apolloQueryOptions.fetchPolicy) {
+        // apolloQueryOptions.fetchPolicy = 'cache-and-network'
+        apolloQueryOptions.fetchPolicy = 'network-only'
+      }
+
+      // queryPromise sends a query and featches the results
       const queryPromise: Promise<ApolloQueryResult<{[key: string]: object[]}>> = this.apolloClient.query(
         { query, ...apolloQueryOptions })
 
@@ -227,7 +289,9 @@ export class Arc {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
     return this.getObservable(query, apolloQueryOptions).pipe(
       map((r: ApolloQueryResult<any>) => {
-        if (!r.data[entity]) { throw Error(`Could not find entity "${entity}" in ${Object.keys(r.data)}`)}
+        if (!r.data[entity]) {
+          throw Error(`Could not find entity "${entity}" in ${Object.keys(r.data)}`)
+        }
         return r.data[entity]
       }),
       map((rs: object[]) => rs.map(itemMap))
