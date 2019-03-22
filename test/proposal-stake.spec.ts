@@ -16,10 +16,9 @@ describe('Stake on a ContributionReward', () => {
     arc = newArc()
     web3 = arc.web3
     accounts = web3.eth.accounts.wallet
-    web3.eth.defaultAccount = accounts[0].address
   })
 
-  it.skip('works and gets indexed', async () => {
+  it('works and gets indexed', async () => {
     const dao = await getTestDAO()
 
     const proposal = await createAProposal(dao)
