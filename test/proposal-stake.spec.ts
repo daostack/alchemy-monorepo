@@ -1,3 +1,4 @@
+import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IProposalOutcome, Proposal } from '../src/proposal'
@@ -29,7 +30,7 @@ describe('Stake on a ContributionReward', () => {
     // await stakingToken.mint(defaultAccount, toWei('10000')).send()
     await stakingToken.approveForStaking(toWei('100')).send()
 
-    const stake = await proposal.stake(IProposalOutcome.Pass, toWei('100')).send()
+    const stake = await proposal.stake(IProposalOutcome.Pass, new BN(100)).send()
 
     expect(stake.result).toMatchObject({
       outcome : IProposalOutcome.Pass
