@@ -184,6 +184,10 @@ export class Arc {
        })
       zenObservable.subscribe((next: any) => {
           console.log(`Sub got update: ${next}`)
+          this.apolloClient.writeQuery({
+            data: next.data,
+            query
+          })
       /* do nothing */
       })
       // convert the zenObservable returned by  appolloclient to an rx.js.Observable
