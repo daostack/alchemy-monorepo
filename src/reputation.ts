@@ -38,6 +38,7 @@ export class Reputation implements IStateful<IReputationState> {
   }
 
   public reputationOf(address: Address): Observable<BN> {
+    isAddress(address)
     const query = gql`{
       reputationHolders (
         where: { address:"${address}",
@@ -69,7 +70,15 @@ export class Reputation implements IStateful<IReputationState> {
     const contract = this.contract()
     const transaction = contract.methods.mint(beneficiary, amount.toString())
     const mapReceipt = (receipt: Web3Receipt) => receipt
-    return this.context.sendTransaction(transaction, mapReceipt)
+    const sender = this.context.web3.eth.accounts.wallet[0].address
+    const errHandler = async (err: Error) => {
+      const owner = contract.methods.owner().call()
+      if (owner.toLowercase() !== sender.toLowerCase()) {
+        throw Error(`Minting failed: sender ${sender} is not the owner of the contract (which is ${owner})`)
+      }
+      throw err
+    }
+    return this.context.sendTransaction(transaction, mapReceipt, errHandler)
   }
 
 }

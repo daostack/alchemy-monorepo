@@ -27,6 +27,8 @@ const pks = [
   '0x6cbed15c793ce57650b9877cf6fa156fbef513c4e6134f022a85b1ffdd59b2a1', // 1
   '0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c', // 2
   '0x646f1ce2fdad0e6deeeb5c7e8e5543bdde65e86029e2fd9fc169899c440a7913', // 3
+  '0xadd53f9a7e588d003326d1cbf9e4a43c061aadd9bc938c843a79e7b4fd2ad743', // 4
+  '0x395df67f0c2d2d9fe1ad08d1bc8b6627011959b79c53d7dd6a3536a33ab8a4fd', // 5
   '0xb0057716d5917badaf911b193b12b910811c1497b5bada8d7711f758981c3773' // 9
 ]
 
@@ -56,7 +58,7 @@ export async function getOptions(web3: any) {
   }
 }
 
-export function getArc() {
+export function newArc() {
   const arc = new Arc({
     contractAddresses: getContractAddresses(),
     graphqlHttpProvider,
@@ -74,7 +76,7 @@ export function getArc() {
 }
 
 export async function mintSomeReputation() {
-  const arc = getArc()
+  const arc = newArc()
   const addresses = getContractAddresses()
   const token = new Reputation(addresses.organs.DemoReputation, arc)
   const accounts = arc.web3.eth.accounts.wallet
@@ -95,7 +97,7 @@ export async function waitUntilTrue(test: () => Promise<boolean> | boolean) {
 }
 
 export async function getContractAddressesFromSubgraph(): Promise<{ daos: any }> {
-  const arc = getArc()
+  const arc = newArc()
   const query = gql`
         {
               daos { id
@@ -124,7 +126,7 @@ export async function getContractAddressesFromSubgraph(): Promise<{ daos: any }>
 export async function getTestDAO() {
   // we have two indexed daos with the same name, but one has 6 members, and that is the one
   // we are using for testing
-  const arc = await getArc()
+  const arc = await newArc()
   if (arc.contractAddresses) {
     return arc.dao(arc.contractAddresses.dao.Avatar)
   } else {
@@ -132,13 +134,12 @@ export async function getTestDAO() {
   }
 }
 
-export async function createAProposal(dao?: DAO) {
+export async function createAProposal(dao?: DAO, options: any = {}) {
   if (!dao) {
     dao = await getTestDAO()
   }
-  const arc = await getArc()
 
-  const options = {
+  options = {
     beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
     ethReward: toWei('300'),
     externalTokenAddress: undefined,
@@ -147,10 +148,10 @@ export async function createAProposal(dao?: DAO) {
     periodLength: 12,
     periods: 5,
     reputationReward: toWei('10'),
-    type: 'ContributionReward'
+    type: 'ContributionReward',
+    ...options
   }
 
-  // collect the first 4 results of the observable in a a listOfUpdates array
   const response = await dao.createProposal(options).send()
   return response.result as Proposal
 

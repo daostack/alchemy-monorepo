@@ -3,14 +3,14 @@ import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Vote } from '../src/vote'
-import { createAProposal, getArc, getTestDAO, waitUntilTrue } from './utils'
+import { createAProposal, newArc, getTestDAO, waitUntilTrue } from './utils'
 
 describe('Vote on a ContributionReward', () => {
   let arc: Arc
   let dao: DAO
 
   beforeAll(async () => {
-    arc = getArc()
+    arc = newArc()
     dao = await getTestDAO()
   })
 

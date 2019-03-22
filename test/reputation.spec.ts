@@ -3,7 +3,7 @@ import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
-import { fromWei, getArc, getContractAddresses, toWei } from './utils'
+import { fromWei, newArc, getContractAddresses, toWei } from './utils'
 /**
  * Reputation test
  */
@@ -17,7 +17,7 @@ describe('Reputation', () => {
   beforeAll(async () => {
     addresses = getContractAddresses()
     address = addresses.dao.Reputation
-    arc = getArc()
+    arc = newArc()
     accounts = arc.web3.eth.accounts.wallet
   })
 
@@ -65,6 +65,12 @@ describe('Reputation', () => {
     const difference = reputationAfter.sub(reputationBefore)
     expect(difference.toString()).toEqual('1000000000003003837')
 
+  })
+  it('mint() throws a meaningful error if the sender is not the contract owner', async () => {
+    const reputation = new Reputation(addresses.test.Reputation, arc)
+    expect(reputation.mint(accounts[3].address, toWei(1)).send()).rejects.toThrow(
+      /is not the owner/i
+    )
   })
   it.skip('reputationOf throws a meaningful error if an invalid address is provided', async () => {
     // write this test

@@ -289,6 +289,11 @@ export class Arc {
     )
   }
 
+  /**
+   * get a web3 contract instance for the deployed contract with the given name
+   * @param  name [description]
+   * @return a web3 Contract instance
+   */
   public getContract(name: string) {
     // TODO: we are taking the default contracts from the migration repo and assume
     // that they are the ones used by the current DAO. This assumption is only valid
@@ -338,7 +343,7 @@ export class Arc {
     }
   }
 
-  public getAccount(): Observable < Address > {
+  public getAccount(): Observable<Address> {
     // this complex logic is to get the correct account both from the Web3 as well as from the Metamaask provider
     // Polling is Evil!
     // cf. https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#ear-listening-for-selected-account-changes
@@ -372,6 +377,10 @@ export class Arc {
     })
   }
 
+  public setAccount(address: Address) {
+    this.web3.eth.accounts.wallet[0] = address
+    this.web3.eth.defaultAccount = address
+  }
   public approveForStaking(amount: BN) {
     return this.GENToken().approveForStaking(amount)
   }

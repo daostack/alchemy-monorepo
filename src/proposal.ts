@@ -370,39 +370,37 @@ export class Proposal implements IStateful<IProposalState> {
       nullAddress
     )
 
-    return this.context.sendTransaction(
-      voteMethod,
-      (receipt: any) => {
-        const event = receipt.events.VoteProposal
-        if (!event) {
-          // no vote was cast
-          return null
-        }
-        const voteId = undefined
-
-        return new Vote(
-          voteId,
-          event.returnValues._voter,
-          // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
-          0, // createdAt -
-          outcome,
-          event.returnValues._reputation, // amount
-          this.id, // proposalID
-          this.dao.address
-        )
-      },
-      async (error: Error) => { // errorHandler
-        if (error.message.match(/revert/)) {
-          const proposal = this
-          const prop = await votingMachine.methods.proposals(proposal.id).call()
-          if (prop.proposer === nullAddress ) {
-            return new Error(`Unknown proposal with id ${proposal.id}`)
-          }
-        }
-        // if we have found no known error, we return the original error
-        return error
+    const map = (receipt: any) => {
+      const event = receipt.events.VoteProposal
+      if (!event) {
+        // no vote was cast
+        return null
       }
-    )
+      const voteId = undefined
+
+      return new Vote(
+        voteId,
+        event.returnValues._voter,
+        // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
+        0, // createdAt -
+        outcome,
+        event.returnValues._reputation, // amount
+        this.id, // proposalID
+        this.dao.address
+      )
+    }
+    const errorHandler = async (error: Error) => {
+      if (error.message.match(/revert/)) {
+        const proposal = this
+        const prop = await votingMachine.methods.proposals(proposal.id).call()
+        if (prop.proposer === nullAddress ) {
+          return new Error(`Unknown proposal with id ${proposal.id}`)
+        }
+      }
+      // if we have found no known error, we return the original error
+      return error
+    }
+    return this.context.sendTransaction(voteMethod, map, errorHandler)
   }
 
   public stakingToken() {
@@ -421,9 +419,7 @@ export class Proposal implements IStateful<IProposalState> {
       amount.toString() // the amount of tokens to stake
     )
 
-    return this.context.sendTransaction(
-      stakeMethod,
-      (receipt: any) => { // map extracts Stake instance from receipt
+    const map = (receipt: any) => { // map extracts Stake instance from receipt
         const event = receipt.events.Stake
         if (!event) {
           // for some reason, a transaction was mined but no error was raised before
@@ -440,39 +436,40 @@ export class Proposal implements IStateful<IProposalState> {
           event.returnValues._reputation, // amount
           this.id // proposalID
         )
-      },
-      async (error: Error) => { // errorHandler
-        if (error.message.match(/revert/)) {
-          const proposal = this
-          const stakingToken = this.stakingToken()
-          const prop = await this.votingMachine().methods.proposals(proposal.id).call()
-          if (prop.proposer === nullAddress ) {
-            return new Error(`Unknown proposal with id ${proposal.id}`)
-          }
+    }
 
-          // staker has sufficient balance
-          const defaultAccount = await this.context.getAccount().pipe(first()).toPromise()
-          const balance = new BN(await stakingToken.contract().methods.balanceOf(defaultAccount).call())
-          const amountBN = new BN(amount)
-          if (balance.lt(amountBN)) {
-            const msg = `Staker ${defaultAccount} has insufficient balance to stake ${amount.toString()}
-              (balance is ${balance.toString()})`
-            return new Error(msg)
-          }
-
-          // staker has approved the token spend
-          const allowance = new BN(await stakingToken.contract().methods.allowance(
-            defaultAccount, this.votingMachine().options.address
-          ).call())
-          if (allowance.lt(amountBN)) {
-            return new Error(`Staker has insufficient allowance to stake ${amount.toString()}
-              (allowance is ${allowance.toString()})`)
-          }
+    const errorHandler =  async (error: Error) => {
+      if (error.message.match(/revert/)) {
+        const proposal = this
+        const stakingToken = this.stakingToken()
+        const prop = await this.votingMachine().methods.proposals(proposal.id).call()
+        if (prop.proposer === nullAddress ) {
+          return new Error(`Unknown proposal with id ${proposal.id}`)
         }
-        // if we have found no known error, we return the original error
-        return error
+
+        // staker has sufficient balance
+        const defaultAccount = await this.context.getAccount().pipe(first()).toPromise()
+        const balance = new BN(await stakingToken.contract().methods.balanceOf(defaultAccount).call())
+        const amountBN = new BN(amount)
+        if (balance.lt(amountBN)) {
+          const msg = `Staker ${defaultAccount} has insufficient balance to stake ${amount.toString()}
+            (balance is ${balance.toString()})`
+          return new Error(msg)
+        }
+
+        // staker has approved the token spend
+        const allowance = new BN(await stakingToken.contract().methods.allowance(
+          defaultAccount, this.votingMachine().options.address
+        ).call())
+        if (allowance.lt(amountBN)) {
+          return new Error(`Staker has insufficient allowance to stake ${amount.toString()}
+            (allowance is ${allowance.toString()})`)
+        }
       }
-    )
+      // if we have found no known error, we return the original error
+      return error
+    }
+    return this.context.sendTransaction(stakeMethod, map, errorHandler)
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
@@ -504,13 +501,38 @@ export class Proposal implements IStateful<IProposalState> {
     const transaction = this.votingMachine().methods.execute(this.id)
     const map = (receipt: any) => {
       if (Object.keys(receipt.events).length  === 0) {
-        // this does not mean that anything failed,
+        // this does not mean that anything failed
         return receipt
       } else {
         return receipt
       }
     }
-    return this.context.sendTransaction(transaction, map)
+    const errorHandler = async (err: Error) => {
+      let msg: string = ''
+      const contributionReward = this.context.getContract('ContributionReward')
+      const proposalDataOnChain = await contributionReward.methods
+        .organizationsProposals(this.dao.address, this.id).call()
+
+      // requirement from ContributionReward.sol
+      // require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0);
+      if (Number(proposalDataOnChain.executionTime) !== 0) {
+        msg = `proposal already executed`
+      }
+
+      // requirement from ContributionReward.sol
+      // require(organizationsProposals[address(proposal.avatar)][_proposalId].beneficiary != address(0));
+      if (proposalDataOnChain.beneficiary === nullAddress) {
+        msg = `beneficiary is ${nullAddress}`
+      }
+
+      if (msg) {
+        return Error(`Proposal execution failed: ${msg}`)
+      } else {
+        return err
+      }
+
+    }
+    return this.context.sendTransaction(transaction, map, errorHandler)
   }
 }
 

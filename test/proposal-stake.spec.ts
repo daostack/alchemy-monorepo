@@ -2,7 +2,7 @@ import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Stake } from '../src/stake'
-import { createAProposal, getArc, getTestDAO, toWei, waitUntilTrue } from './utils'
+import { createAProposal, newArc, getTestDAO, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
@@ -12,7 +12,7 @@ describe('Stake on a ContributionReward', () => {
   let accounts: any
 
   beforeAll(async () => {
-    arc = getArc()
+    arc = newArc()
     web3 = arc.web3
     accounts = web3.eth.accounts.wallet
     web3.eth.defaultAccount = accounts[0].address
