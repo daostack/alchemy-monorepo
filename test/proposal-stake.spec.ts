@@ -25,8 +25,8 @@ describe('Stake on a ContributionReward', () => {
     const stakingToken =  await proposal.stakingToken()
 
     // apporve the spend, for staking
-    const defaultAccount = web3.eth.defaultAccount
-    await stakingToken.mint(defaultAccount, toWei('10000')).send()
+    // const defaultAccount = web3.eth.defaultAccount
+    // await stakingToken.mint(defaultAccount, toWei('10000')).send()
     await stakingToken.approveForStaking(toWei('100')).send()
 
     const stake = await proposal.stake(IProposalOutcome.Pass, toWei('100')).send()
