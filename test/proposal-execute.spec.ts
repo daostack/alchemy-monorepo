@@ -119,6 +119,8 @@ describe('Proposal execute()', () => {
     expect(proposalStates[proposalStates.length - 1].stage).toEqual(IProposalStage.Queued)
     // this execution will not change the state, because the quorum is not met
     await proposal.execute().send()
+    expect(lastState().stage).toEqual(IProposalStage.Queued)
+    expect(lastState().executedAt).toEqual(null)
 
     proposal.context.web3.eth.accounts.defaultAccount = accounts[0]
     await proposal.vote(IProposalOutcome.Pass).send()
@@ -136,6 +138,7 @@ describe('Proposal execute()', () => {
 
     arc.setAccount(accounts[0].address)
 
+    // wait until all votes have been counted
     await waitUntilTrue(() => {
       return lastState().votesCount === 4
     })
@@ -148,5 +151,6 @@ describe('Proposal execute()', () => {
 
     // check the state
     expect(lastState().stage).toEqual(IProposalStage.Executed)
+    expect(lastState().executedAt).not.toEqual(null)
   })
 })
