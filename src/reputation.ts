@@ -39,6 +39,7 @@ export class Reputation implements IStateful<IReputationState> {
 
   public reputationOf(address: Address): Observable<BN> {
     isAddress(address)
+
     const query = gql`{
       reputationHolders (
         where: { address:"${address}",
@@ -74,9 +75,9 @@ export class Reputation implements IStateful<IReputationState> {
     const errHandler = async (err: Error) => {
       const owner = await contract.methods.owner().call()
       if (owner.toLowerCase() !== sender.toLowerCase()) {
-        throw Error(`Minting failed: sender ${sender} is not the owner of the contract (which is ${owner})`)
+        return Error(`Minting failed: sender ${sender} is not the owner of the contract (which is ${owner})`)
       }
-      throw err
+      return err
     }
     return this.context.sendTransaction(transaction, mapReceipt, errHandler)
   }

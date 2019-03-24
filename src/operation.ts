@@ -120,7 +120,13 @@ export function sendTransaction<T>(
         }
       })
       .on('error', async (error: Error) => {
-        observer.error(await errorHandler(error))
+        let errToReturn: Error
+        try {
+          errToReturn = await errorHandler(error)
+        } catch (err) {
+          errToReturn = err
+        }
+        observer.error(errToReturn)
       })
     }
   )
