@@ -14,7 +14,7 @@ describe('Vote on a ContributionReward', () => {
     dao = await getTestDAO()
   })
 
-  it.skip('works and gets indexed', async () => {
+  it('works and gets indexed', async () => {
     const proposal = await createAProposal()
     const voteResponse = await proposal.vote(IProposalOutcome.Pass).send()
     expect(voteResponse.result).toMatchObject({
@@ -33,11 +33,12 @@ describe('Vote on a ContributionReward', () => {
 
     expect(votes.length).toEqual(1)
     const vote = votes[0]
-    expect(vote.proposalId).toBe(proposal.id)
+    expect(vote.proposalId).toEqual(proposal.id)
     expect(vote.dao).toEqual(dao.address)
+    expect(vote).toEqual(dao.address)
   })
 
-  it.skip('vote gets correctly indexed on the proposal entity', async () => {
+  it('vote gets correctly indexed on the proposal entity', async () => {
     const proposal = await createAProposal()
     await proposal.vote(IProposalOutcome.Pass).send()
 
@@ -69,9 +70,6 @@ describe('Vote on a ContributionReward', () => {
   })
 
   it.skip('handles the case of voting without reputation nicely', () => {
-    // TODO: write this test!
-  })
-  it.skip('can vote with accounts[1]', () => {
     // TODO: write this test!
   })
 })

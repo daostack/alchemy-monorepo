@@ -521,7 +521,9 @@ export class Proposal implements IStateful<IProposalState> {
 
       // requirement from ContributionReward.sol
       // require(organizationsProposals[address(proposal.avatar)][_proposalId].beneficiary != address(0));
-      if (proposalDataOnChain.beneficiary === nullAddress) {
+      if (proposalDataOnChain.periodLength === '0' && proposalDataOnChain.numberOfPeriods === '0') {
+        msg = `A proposal with id ${this.id} does not exist`
+      } else if (proposalDataOnChain.beneficiary === nullAddress) {
         msg = `beneficiary is ${nullAddress}`
       }
 
