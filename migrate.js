@@ -29,7 +29,8 @@ const defaults = {
   provider: 'http://localhost:8545',
   // this is the private key used by ganache when running with `--deterministic`
   privateKey: '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d',
-  output: './migration.json',
+  prevmigration: path.normalize(path.join(__dirname, './migration.json')),
+  output: path.normalize(path.join(__dirname, './migration.json')),
   params: JSON.parse(fs.readFileSync(path.join(__dirname, 'migration-params.json')))
 }
 
@@ -37,7 +38,7 @@ const defaults = {
  * A wrapper function that performs tasks common to all migration commands.
  */
 const wrapCommand = fn => async options => {
-  let { quiet, force, provider, gasPrice, privateKey, mnemonic, output, params } = { ...defaults, ...options }
+  let { quiet, force, provider, gasPrice, privateKey, mnemonic, prevmigration, output, params } = { ...defaults, ...options }
   const emptySpinner = new Proxy({}, { get: () => () => { } }) // spinner that does nothing
   const spinner = quiet ? emptySpinner : ora()
 
@@ -103,9 +104,9 @@ const wrapCommand = fn => async options => {
 
   // check for an existing migration
   let existingFile
-  if (fs.existsSync(output)) {
-    spinner.info(`Found an existing previous migration file (${output})`)
-    existingFile = JSON.parse(fs.readFileSync(output, 'utf-8'))
+  if (fs.existsSync(prevmigration)) {
+    spinner.info(`Found an existing previous migration file (${prevmigration})`)
+    existingFile = JSON.parse(fs.readFileSync(prevmigration, 'utf-8'))
   } else {
     existingFile = {}
   }
@@ -135,11 +136,9 @@ const wrapCommand = fn => async options => {
 
   // write results to file
   const results = { ...existingFile, [network]: { ...existingFile[network], ...result } }
-  if (JSON.stringify(results) !== JSON.stringify(existingFile)) {
-    fs.writeFileSync(output, JSON.stringify(results, undefined, 2), 'utf-8')
 
-    spinner.succeed(`Wrote results to ${output}.`)
-  }
+  fs.writeFileSync(output, JSON.stringify(results, undefined, 2), 'utf-8')
+  spinner.succeed(`Wrote results to ${output}.`)
 
   return result
 }
@@ -169,6 +168,12 @@ function cli () {
       describe: 'disable confirmation messages',
       type: 'boolean',
       default: defaults.force
+    })
+    .option('prev-migration', {
+      alias: 'r',
+      type: 'string',
+      describe: 'filepath to previous migration results',
+      default: defaults.prevmigration
     })
     .option('output', {
       alias: 'o',

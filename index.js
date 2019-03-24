@@ -6,7 +6,7 @@ const defaults = {
   seed: 'TestRPC is awesome!' // default ganache-cli mnemonic (https://github.com/trufflesuite/ganache-cli/blob/develop/cli.js#L45)
 }
 
-const migration = require('./migration.json')
+const migration = require(path.normalize(path.join(__dirname, './migration.json')))
 module.exports = {
   Ganache: {
     server: opts => Ganache.server({ ...defaults, ...opts }),

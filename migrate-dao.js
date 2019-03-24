@@ -179,7 +179,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   tx = await genesisProtocolSetParams.send()
   await logTx(tx, 'GenesisProtocol parameters set.')
 
-  if (migrationParams.schemes.registerScheme) {
+  if (migrationParams.schemes.RegisterScheme) {
     spinner.start('Setting Scheme Registrar parameters...')
     const schemeRegistrarSetParams = schemeRegistrar.methods.setParameters(
       migrationParams.SchemeRegistrar.voteRegisterParams == null ? genesisProtocolParams : migrationParams.SchemeRegistrar.voteRegisterParams,
@@ -193,7 +193,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     await logTx(tx, 'Scheme Registrar successfully added to DAO.')
   }
 
-  if (migrationParams.schemes.contributionReward) {
+  if (migrationParams.schemes.ContributionReward) {
     spinner.start('Setting Contribution Reward parameters...')
     const contributionRewardSetParams = contributionReward.methods.setParameters(
       web3.utils.toWei(migrationParams.ContributionReward.orgNativeTokenFeeGWei.toString(), 'gwei'),
@@ -207,7 +207,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     await logTx(tx, 'Contribution Reward successfully added to DAO.')
   }
 
-  if (migrationParams.schemes.genericScheme) {
+  if (migrationParams.schemes.GenericScheme) {
     spinner.start('Setting Generic Scheme parameters...')
     const genericSchemeSetParams = genericScheme.methods.setParameters(
       genesisProtocolParams,
@@ -221,7 +221,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     await logTx(tx, 'Generic Scheme successfully added to DAO.')
   }
 
-  if (migrationParams.schemes.globalConstraintRegistrar) {
+  if (migrationParams.schemes.GlobalConstraintRegistrar) {
     spinner.start('Setting Global Constraint Registrar parameters...')
     const globalConstraintRegistrarSetParams = globalConstraintRegistrar.methods.setParameters(
       migrationParams.GlobalConstraintRegistrar.voteParams == null ? genesisProtocolParams : migrationParams.GlobalConstraintRegistrar.voteParams,
@@ -234,7 +234,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     await logTx(tx, 'Global Constraints Registrar successfully added to DAO.')
   }
 
-  if (migrationParams.schemes.upgradeScheme) {
+  if (migrationParams.schemes.UpgradeScheme) {
     spinner.start('Setting Upgrade Scheme parameters...')
     const upgradeSchemeSetParams = upgradeScheme.methods.setParameters(
       migrationParams.UpgradeScheme.voteParams == null ? genesisProtocolParams : migrationParams.UpgradeScheme.voteParams,
@@ -247,11 +247,20 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     await logTx(tx, 'Upgrade Scheme successfully added to DAO.')
   }
 
-  if (migrationParams.unregisterOwner) {
+  if (migrationParams.unregisterOwner || migrationParams.unregisterOwner === undefined) {
     tx = await controller.methods.unregisterScheme(web3.eth.defaultAccount, avatar.options.address).send()
     await logTx(tx, 'Revoked deployer access.')
   }
 
+  console.log(
+    {
+      name: orgName,
+      Avatar: avatar.options.address,
+      DAOToken: daoToken.options.address,
+      Reputation: reputation.options.address,
+      Controller
+    }
+  )
   return {
     dao: {
       name: orgName,

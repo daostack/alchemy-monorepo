@@ -90,6 +90,8 @@ DAOstackMigration.cli()
 
 1. `npm install --global @daostack/migration`
 
+_Note: if you encounter an issue which contains this error message `EACCES: permission denied, mkdir` please follow [this guide]( https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally) and try again_
+
 Usage:
 
 ```
