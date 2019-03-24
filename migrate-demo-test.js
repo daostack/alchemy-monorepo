@@ -24,19 +24,6 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
 
   let accounts = this.web3.eth.accounts.wallet
 
-  if (accounts[1] === undefined) {
-    this.web3.eth.accounts.wallet.add(this.web3.eth.accounts.privateKeyToAccount(
-      '0x6cbed15c793ce57650b9877cf6fa156fbef513c4e6134f022a85b1ffdd59b2a1'
-    ))
-    this.web3.eth.accounts.wallet.add(this.web3.eth.accounts.privateKeyToAccount(
-      '0x6370fd033278c143179d81c5526140625662b8daa446c22ee2d73db3707e620c'
-    ))
-    this.web3.eth.accounts.wallet.add(this.web3.eth.accounts.privateKeyToAccount(
-      '0x646f1ce2fdad0e6deeeb5c7e8e5543bdde65e86029e2fd9fc169899c440a7913'
-    ))
-    accounts = this.web3.eth.accounts.wallet
-  }
-
   const {
     GenesisProtocol,
     GEN
@@ -49,7 +36,6 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
   )
 
   for (let i = 0; i < accounts.length; i++) {
-    await GENToken.methods.mint(accounts[i].address, this.web3.utils.toWei('1000')).send()
     await GENToken.methods.approve(GenesisProtocol, this.web3.utils.toWei('1000')).send({ from: accounts[i].address })
   }
 
