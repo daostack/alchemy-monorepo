@@ -143,12 +143,6 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   tx = await avatar.methods.transferOwnership(Controller).send()
   await logTx(tx, 'Finished transferring Avatar to Controller ownership')
 
-  if (migrationParams.useUController) {
-    spinner.start('Register Avatar to UController')
-    tx = await controller.methods.newOrganization(avatar.options.address).send()
-    await logTx(tx, 'Finished registerring Avatar')
-  }
-
   spinner.start('Transfer Reputation to Controller ownership')
   tx = await reputation.methods.transferOwnership(Controller).send()
   await logTx(tx, 'Finished transferring Reputation to Controller ownership')
@@ -156,6 +150,12 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   spinner.start('Transfer DAOToken to Controller ownership')
   tx = await daoToken.methods.transferOwnership(Controller).send()
   await logTx(tx, 'Finished transferring DAOToken to Controller ownership')
+
+  if (migrationParams.useUController) {
+    spinner.start('Register Avatar to UController')
+    tx = await controller.methods.newOrganization(avatar.options.address).send()
+    await logTx(tx, 'Finished registerring Avatar')
+  }
 
   spinner.start('Setting GenesisProtocol parameters...')
   const genesisProtocolSetParams = genesisProtocol.methods.setParameters(

@@ -20,14 +20,14 @@
       "GenericScheme": "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D"
     },
     "dao": {
-      "name": "Parsimonious Wheelwright",
+      "name": "Querulous Salad",
       "Avatar": "0x86072CbFF48dA3C1F01824a6761A03F105BCC697",
       "DAOToken": "0x7C728214be9A0049e6a86f2137ec61030D0AA964",
       "Reputation": "0x5017A545b09ab9a30499DE7F431DF0855bCb7275",
-      "Controller": "0x4bf3A7dFB3b76b5B3E169ACE65f888A4b4FCa5Ee"
+      "Controller": "0xA57B8a5584442B467b4689F1144D269d096A3daF"
     },
     "test": {
-      "name": "Fulsome Dragons",
+      "name": "Wheedling Inker",
       "Avatar": "0xfd02f6E80F5e478C9f862fDb5A9971c1fd099914",
       "DAOToken": "0x5109F62E4e0CA152f5543E59E42dc0360C3aeD25",
       "Reputation": "0x5fD287667AC7D13161648e82dA6e8B8A3C9Bc432",
@@ -99,11 +99,11 @@
       "GenericScheme": "0x5b9D69c82a65ce87A6Ce09Bc370fAe9388E72c3E"
     },
     "dao": {
-      "name": "Meretricious Unicorn",
-      "Avatar": "0xB5e3Ef614b18De5AD8A57B334210C93D334E944E",
-      "DAOToken": "0x7EF4cf87e7Ee0904e85DFA2ee752FA668b53a6f5",
-      "Reputation": "0x9A91e59442012D549913410690e4B8D1690F10Fe",
-      "Controller": "0xc813c489E90a74CF3Fd2499D983Ed3cc1A483ADb"
+      "name": "Heuristic Maintenance",
+      "Avatar": "0xf7507cE89789898611d14904eC903F8549C6C690",
+      "DAOToken": "0x879aA6558305C18a424BCBcE466fb8D3e9e7413f",
+      "Reputation": "0xF39FBF6d2103047a26f41d727D3c73Cd02ED63AA",
+      "Controller": "0x3884019fE6A65A9e877D6F348C5937a9ECfd8A96"
     }
   },
   "main": {
