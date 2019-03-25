@@ -20,14 +20,14 @@
       "GenericScheme": "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D"
     },
     "dao": {
-      "name": "Guileless Leadman",
+      "name": "Tremulous Director",
       "Avatar": "0x86072CbFF48dA3C1F01824a6761A03F105BCC697",
       "DAOToken": "0x7C728214be9A0049e6a86f2137ec61030D0AA964",
       "Reputation": "0x5017A545b09ab9a30499DE7F431DF0855bCb7275",
-      "Controller": "0xA57B8a5584442B467b4689F1144D269d096A3daF"
+      "Controller": "0x4bf3A7dFB3b76b5B3E169ACE65f888A4b4FCa5Ee"
     },
     "test": {
-      "name": "Gustatory Senor",
+      "name": "Concomitant Plant operator",
       "Avatar": "0xfd02f6E80F5e478C9f862fDb5A9971c1fd099914",
       "DAOToken": "0x5109F62E4e0CA152f5543E59E42dc0360C3aeD25",
       "Reputation": "0x5fD287667AC7D13161648e82dA6e8B8A3C9Bc432",
@@ -99,11 +99,11 @@
       "GenericScheme": "0x5b9D69c82a65ce87A6Ce09Bc370fAe9388E72c3E"
     },
     "dao": {
-      "name": "Invidious Ninja",
-      "Avatar": "0x15354e4AA3ee99Bd07bb0B660faBf885c413033E",
-      "DAOToken": "0xf2Afae753c3c69773a8C35239a2a2C7A277d18cC",
-      "Reputation": "0x7A0f18B678565030E70e7309955227c06D7497E2",
-      "Controller": "0x3884019fE6A65A9e877D6F348C5937a9ECfd8A96"
+      "name": "Comely Senor",
+      "Avatar": "0x5601AF6DED5f353696E816510B3f95BA5579608c",
+      "DAOToken": "0xf7f490C714Cd5920eB5de0a060EE2D5962450401",
+      "Reputation": "0x7EcEB28208D941D7008d50A16b44aF4e841648e8",
+      "Controller": "0x2AefBC662152b62E1dF51bAe3A2FE3469763516E"
     }
   },
   "main": {
