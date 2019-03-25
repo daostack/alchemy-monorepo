@@ -371,12 +371,7 @@ async function setContributionRewardParams (gpParamsHash) {
     this.opts
   )
 
-  const crParams = {
-    orgNativeTokenFeeGWei: 0
-  }
-
   const crSetParams = contributionReward.methods.setParameters(
-    this.web3.utils.toWei(crParams.orgNativeTokenFeeGWei.toString(), 'gwei'),
     gpParamsHash,
     GenesisProtocol
   )
@@ -552,6 +547,7 @@ async function submitGSProposal ({
   const prop = genericScheme.methods.proposeCall(
     avatarAddress,
     callData,
+    0,
     descHash
   )
 

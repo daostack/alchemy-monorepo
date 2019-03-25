@@ -1,6 +1,6 @@
 {
   "name": "@daostack/migration",
-  "version": "0.0.1-rc.12-v7",
+  "version": "0.0.1-rc.14-v0",
   "description": "A repo for handling DAOstack contract migrations",
   "main": "index.js",
   "bin": {
@@ -37,7 +37,7 @@
   },
   "homepage": "https://github.com/daostack/migration#readme",
   "dependencies": {
-    "@daostack/arc": "0.0.1-rc.12",
+    "@daostack/arc": "0.0.1-rc.14",
     "ethereumjs-wallet": "^0.6.3",
     "ganache-cli": "^6.4.1",
     "hdwallet-accounts": "0.0.1",

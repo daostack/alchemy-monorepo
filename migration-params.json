@@ -1,6 +1,5 @@
 {
   "ContributionReward": {
-    "orgNativeTokenFeeGWei": 0
   },
   "GenericScheme": {
     "targetContract": "0x0000000000000000000000000000000000000000"

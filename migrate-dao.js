@@ -196,7 +196,6 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   if (migrationParams.schemes.ContributionReward) {
     spinner.start('Setting Contribution Reward parameters...')
     const contributionRewardSetParams = contributionReward.methods.setParameters(
-      web3.utils.toWei(migrationParams.ContributionReward.orgNativeTokenFeeGWei.toString(), 'gwei'),
       migrationParams.ContributionReward.voteParams == null ? genesisProtocolParams : migrationParams.ContributionReward.voteParams,
       migrationParams.ContributionReward.votingMachine == null ? GenesisProtocol : migrationParams.ContributionReward.votingMachine
     )

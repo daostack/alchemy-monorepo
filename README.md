@@ -244,9 +244,7 @@ Example migration parameters object:
 
   // Needed only if you would like to use Contribution Reward scheme in your DAO
   "ContributionReward": {
-    "orgNativeTokenFeeGWei": 0
   },
-
   // Needed only if you would like to use Generic Scheme scheme in your DAO
   "GenericScheme": {
     // The address of the contract the Generic Scheme can call.

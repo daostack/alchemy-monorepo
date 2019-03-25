@@ -20,14 +20,14 @@
       "GenericScheme": "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D"
     },
     "dao": {
-      "name": "Zealous Rainbows",
+      "name": "Parsimonious Wheelwright",
       "Avatar": "0x86072CbFF48dA3C1F01824a6761A03F105BCC697",
       "DAOToken": "0x7C728214be9A0049e6a86f2137ec61030D0AA964",
       "Reputation": "0x5017A545b09ab9a30499DE7F431DF0855bCb7275",
       "Controller": "0x4bf3A7dFB3b76b5B3E169ACE65f888A4b4FCa5Ee"
     },
     "test": {
-      "name": "Mordant Stick figures",
+      "name": "Fulsome Dragons",
       "Avatar": "0xfd02f6E80F5e478C9f862fDb5A9971c1fd099914",
       "DAOToken": "0x5109F62E4e0CA152f5543E59E42dc0360C3aeD25",
       "Reputation": "0x5fD287667AC7D13161648e82dA6e8B8A3C9Bc432",
@@ -53,56 +53,57 @@
   "kovan": {
     "base": {
       "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
-      "ControllerCreator": "0x4e605238e6eaE63c0Edd18C50F0C26606AaBf13F",
-      "DaoCreator": "0x3Fa36CB4cf051cF8B3Ce41427b5d4A8C5C3C5121",
-      "UController": "0x1AF90cCBd3f58C1eB657fD4c12bbF94507996EA1",
+      "ControllerCreator": "0x35096558Ac781c7dC78976a4c47cBb2D2b730Ad5",
+      "DaoCreator": "0xCa1a66c9047A5e2Ad12D8e44cbc3eA0648220289",
+      "UController": "0x6cEeA0Ae33EE12944517c211A6a9B9345BF638CA",
       "GenesisProtocol": "0x3d9F3AFB3729118A239C6992433D3741cBf4fb9A",
-      "SchemeRegistrar": "0xb2097b5Df0b3dF09977623a62e1a308b0c37DF0A",
-      "UpgradeScheme": "0x632EabC30c6465E645Eb16CB14A359428d417Af3",
-      "GlobalConstraintRegistrar": "0x483b3eAf12Ea5C8806E5c8bBB6B898bcD1C13E50",
-      "ContributionReward": "0x5389d899050A221311F0253c68E9D36D26dF1342",
+      "SchemeRegistrar": "0xe9839b3a903FDC7C2D8867f1Ac2dd84054aA8c3D",
+      "UpgradeScheme": "0xDa42B62282EC5763782B0Faf4d2e337EDaF46414",
+      "GlobalConstraintRegistrar": "0x66C4C114f76Ec6e256bfDa73AfFF50E36eEF57B4",
+      "ContributionReward": "0xAC6cBd2Ec07a8D30248F063e7358B6e671E5cDD6",
       "AbsoluteVote": "0x1f342702831891f35671255b28350cc3f4f6d81a",
       "QuorumVote": "0x5db1FdF3a2212BCa512D4Ee0CbC455738474b44d",
       "TokenCapGC": "0x55D6166DAcD03f321FC3F3a143959249Ed72Df55",
-      "VestingScheme": "0x786C54F0c31a6af156D1dCC894f3DBD509413917",
-      "VoteInOrganizationScheme": "0xF0760cB988DDea042368029eBeD24A4d02863673",
-      "OrganizationRegister": "0xDf6030B140Ba67b1703C1365C18a4EAc860db825",
-      "Redeemer": "0x2Ece87781b4D20491B92e135bb602a2445323d24",
-      "GenericScheme": "0x131Ed4263bc88Be39dCa50D5F7Ea25cEF9342b92"
+      "VestingScheme": "0xF6c264F618DB48Fd748b90b68E75CDfa1BDB57D7",
+      "VoteInOrganizationScheme": "0x28C1Fd2547453BB0705e4D3a9f566f689B887d7F",
+      "OrganizationRegister": "0xC5a62d79166F5653F0edE2A72Bb2Fef002916223",
+      "Redeemer": "0xe5108bf34763a2F2fbB1a906fB724FfD6d9A3C36",
+      "GenericScheme": "0x75a4D1F6eF7E541F12F9DEB00EB149eE9eAd5D52"
     },
     "dao": {
-      "name": "Propitious Plumber",
-      "Avatar": "0xa9d36F61Cfba2Ee5A42a5C921AfAA5CE87fFfa14",
-      "DAOToken": "0xEF98e86798AffeeE6a484139568d696EB36a3355",
-      "Reputation": "0x9eE705D1852B4Dd02BC166Fc9ff43c15d2F9bBA2"
+      "name": "Loquacious Artist",
+      "Avatar": "0x95Ac943E7D44206Fb8CA323199C9B5800AEA671C",
+      "DAOToken": "0xc3c6d8B1d9C23f3782F2b73e221bE4ef5DB574C1",
+      "Reputation": "0x8A2e1F549C1215607F91541F2943e4f474AF5457",
+      "Controller": "0xF36dCfAF3dB507D7FD3a6D744214d9D85bAb2bd1"
     }
   },
   "rinkeby": {
     "base": {
       "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
-      "ControllerCreator": "0xf050F3C6772Ff35eB174A6900833243fcCD0261F",
-      "DaoCreator": "0xe2Ce9C5E4C875347419525ae1f15813e85a3581A",
-      "UController": "0xeFEa5034FDA5EcD58cDb982A33dC40b57Ccd6C27",
+      "ControllerCreator": "0x2d7746305b3Eed2283730439d93c648792916716",
+      "DaoCreator": "0x9f3d2B2b2eC0BC973F9137e3d9cB78457B7489dE",
+      "UController": "0x3884019fE6A65A9e877D6F348C5937a9ECfd8A96",
       "GenesisProtocol": "0x08cC7BBa91b849156e9c44DEd51896B38400f55B",
-      "SchemeRegistrar": "0x5df5D7Bc7dBe5C9aC34201Ea8647d9C229ce0635",
-      "UpgradeScheme": "0x25592ef8f652cfFaDd3D569AEFcE7Df1a88E9f74",
-      "GlobalConstraintRegistrar": "0x2C27710BbBad69793Ce5EAe77093acb28fbe63c8",
-      "ContributionReward": "0x7F24E3bdc640DD1Db413b9e1d68977653AeeDa7e",
+      "SchemeRegistrar": "0x66DA01Ea261000CCFBCFeDa320D3f948bEDaFB0e",
+      "UpgradeScheme": "0x2538dF9E3794E70d34A96e2661d1d054F885f6ef",
+      "GlobalConstraintRegistrar": "0xeD69d1F77Da377c3d73d0765B04a41d2C574bE51",
+      "ContributionReward": "0x0a1401DE9f6810E2AC311FceAC23739455871F1c",
       "AbsoluteVote": "0x59860b8A0A6ee9783Aa95798609069E3A97dFf28",
       "QuorumVote": "0x6E347cB7A913C5B6B55577eD945255aAdD4E7E93",
       "TokenCapGC": "0xf00b0573cC25E1a455092c1Cd89a2D2B1Dff5Ada",
-      "VestingScheme": "0x199719EE4d5DCF174B80b80afa1FE4a8e5b0E3A0",
-      "VoteInOrganizationScheme": "0xA69056D140432f335D04FD6bBb6D8C8004bB6B47",
-      "OrganizationRegister": "0x58f6d32FCeeC19866464288FCeA7a0C9CE31f69B",
-      "Redeemer": "0x1331082205301C8188D530E11c2100038448fa2f",
-      "GenericScheme": "0x9777130bAc261B3882444622841AEBCDA93834bA"
+      "VestingScheme": "0x3D9734A39C0897517C8Ad953a429B9124b74E335",
+      "VoteInOrganizationScheme": "0x4FD149B1B68F1cB70f3723EDfafAa0Cad96c7D8F",
+      "OrganizationRegister": "0xcF5f16809DD0b0A900f09b4D2195FA88237B4729",
+      "Redeemer": "0x96de166b5850624309452eE83B643f968943b231",
+      "GenericScheme": "0x5b9D69c82a65ce87A6Ce09Bc370fAe9388E72c3E"
     },
     "dao": {
-      "name": "Meretricious Inker",
-      "Avatar": "0xe570dB6859C9EcF02161B907a57Ea577843f6CFe",
-      "DAOToken": "0x95Ac943E7D44206Fb8CA323199C9B5800AEA671C",
-      "Reputation": "0xF2e8eb85dc624829028ce68a4BB8718ed0717f51",
-      "Controller": "0x87Ef982e4CF9F7542D9180970Cb394f6d732132C"
+      "name": "Meretricious Unicorn",
+      "Avatar": "0xB5e3Ef614b18De5AD8A57B334210C93D334E944E",
+      "DAOToken": "0x7EF4cf87e7Ee0904e85DFA2ee752FA668b53a6f5",
+      "Reputation": "0x9A91e59442012D549913410690e4B8D1690F10Fe",
+      "Controller": "0xc813c489E90a74CF3Fd2499D983Ed3cc1A483ADb"
     }
   },
   "main": {
