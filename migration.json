@@ -20,14 +20,14 @@
       "GenericScheme": "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D"
     },
     "dao": {
-      "name": "Querulous Salad",
+      "name": "Antic Panel beater",
       "Avatar": "0x86072CbFF48dA3C1F01824a6761A03F105BCC697",
       "DAOToken": "0x7C728214be9A0049e6a86f2137ec61030D0AA964",
       "Reputation": "0x5017A545b09ab9a30499DE7F431DF0855bCb7275",
       "Controller": "0xA57B8a5584442B467b4689F1144D269d096A3daF"
     },
     "test": {
-      "name": "Wheedling Inker",
+      "name": "Zealous Flatter",
       "Avatar": "0xfd02f6E80F5e478C9f862fDb5A9971c1fd099914",
       "DAOToken": "0x5109F62E4e0CA152f5543E59E42dc0360C3aeD25",
       "Reputation": "0x5fD287667AC7D13161648e82dA6e8B8A3C9Bc432",
@@ -99,10 +99,10 @@
       "GenericScheme": "0x5b9D69c82a65ce87A6Ce09Bc370fAe9388E72c3E"
     },
     "dao": {
-      "name": "Heuristic Maintenance",
-      "Avatar": "0xf7507cE89789898611d14904eC903F8549C6C690",
-      "DAOToken": "0x879aA6558305C18a424BCBcE466fb8D3e9e7413f",
-      "Reputation": "0xF39FBF6d2103047a26f41d727D3c73Cd02ED63AA",
+      "name": "Concomitant Apples",
+      "Avatar": "0xaE09A337602730FCAb27709302Ca786e15C6a0C8",
+      "DAOToken": "0xe55f370be8ef53baC2d5263007A0716b7f4E1d87",
+      "Reputation": "0xF544D4F47CDDC21d3050642290d3c78e758E3228",
       "Controller": "0x3884019fE6A65A9e877D6F348C5937a9ECfd8A96"
     }
   },

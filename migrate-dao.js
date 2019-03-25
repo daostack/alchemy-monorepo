@@ -112,11 +112,11 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     let founder = founders[i]
 
     if (founder.reputation > 0) {
-      tx = await daoToken.methods.mint(founder.address, founder.reputation).send()
+      tx = await reputation.methods.mint(founder.address, web3.utils.toWei(`${founder.reputation}`)).send()
       await logTx(tx, `Minted ${founder.reputation} reputation to ${founder.address}`)
     }
     if (founder.tokens > 0) {
-      tx = await daoToken.methods.mint(founder.address, founder.tokens).send()
+      tx = await daoToken.methods.mint(founder.address, web3.utils.toWei(`${founder.tokens}`)).send()
       await logTx(tx, `Minted ${founder.tokens} tokens to ${founder.address}`)
     }
   }
