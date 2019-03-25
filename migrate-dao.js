@@ -179,7 +179,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   tx = await genesisProtocolSetParams.send()
   await logTx(tx, 'GenesisProtocol parameters set.')
 
-  if (migrationParams.schemes.RegisterScheme) {
+  if (migrationParams.schemes.SchemeRegistrar) {
     spinner.start('Setting Scheme Registrar parameters...')
     const schemeRegistrarSetParams = schemeRegistrar.methods.setParameters(
       migrationParams.SchemeRegistrar.voteRegisterParams === undefined ? genesisProtocolParams : migrationParams.SchemeRegistrar.voteRegisterParams,

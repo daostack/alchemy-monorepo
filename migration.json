@@ -20,18 +20,18 @@
       "GenericScheme": "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D"
     },
     "dao": {
-      "name": "Adamant Coppersmith",
+      "name": "Guileless Leadman",
       "Avatar": "0x86072CbFF48dA3C1F01824a6761A03F105BCC697",
       "DAOToken": "0x7C728214be9A0049e6a86f2137ec61030D0AA964",
       "Reputation": "0x5017A545b09ab9a30499DE7F431DF0855bCb7275",
       "Controller": "0xA57B8a5584442B467b4689F1144D269d096A3daF"
     },
     "test": {
-      "name": "Minatory Plant operator",
+      "name": "Gustatory Senor",
       "Avatar": "0xfd02f6E80F5e478C9f862fDb5A9971c1fd099914",
       "DAOToken": "0x5109F62E4e0CA152f5543E59E42dc0360C3aeD25",
       "Reputation": "0x5fD287667AC7D13161648e82dA6e8B8A3C9Bc432",
-      "ActionMock": "0x3acc15dE35aaB8A94B7D2426E27c887541e4DE6c",
+      "ActionMock": "0x2f3efA6bbDC5fAf4dC1a600765c7B7829e47bE10",
       "gsProposalId": "0xe295d4d372028de9d3cd6de42bdafa8bd7aee064d4474f13d672967aa9cfd818",
       "queuedProposalId": "0x683470b14d5f0ef74272c84e0e938bea6e4507ead4b1f911a3d91cd3cb3077d7",
       "preBoostedProposalId": "0xe55cf1d6f8d3bb69dead47539fe714648294a42d53e4349b58005e3aa85e7ff1",
@@ -39,9 +39,9 @@
       "executedProposalId": "0xf9ddf32cdfbb82df653de6860616bc1090e23b955324b5ec0f4fd29951124214"
     },
     "organs": {
-      "DemoAvatar": "0x25AF99b922857C37282f578F428CB7f34335B379",
-      "DemoDAOToken": "0xC5aFE31AE505594B190AC71EA689B58139d1C354",
-      "DemoReputation": "0x42D4BA5e542d9FeD87EA657f0295F1968A61c00A"
+      "DemoAvatar": "0x995629b19667Ae71483DC812c1B5a35fCaaAF4B8",
+      "DemoDAOToken": "0x25AF99b922857C37282f578F428CB7f34335B379",
+      "DemoReputation": "0xd611F1AF9D056f00F49CB036759De2753EfA82c2"
     },
     "orgName": {
       "name": "The DAO",
@@ -99,10 +99,10 @@
       "GenericScheme": "0x5b9D69c82a65ce87A6Ce09Bc370fAe9388E72c3E"
     },
     "dao": {
-      "name": "Concomitant Apples",
-      "Avatar": "0xaE09A337602730FCAb27709302Ca786e15C6a0C8",
-      "DAOToken": "0xe55f370be8ef53baC2d5263007A0716b7f4E1d87",
-      "Reputation": "0xF544D4F47CDDC21d3050642290d3c78e758E3228",
+      "name": "Invidious Ninja",
+      "Avatar": "0x15354e4AA3ee99Bd07bb0B660faBf885c413033E",
+      "DAOToken": "0xf2Afae753c3c69773a8C35239a2a2C7A277d18cC",
+      "Reputation": "0x7A0f18B678565030E70e7309955227c06D7497E2",
       "Controller": "0x3884019fE6A65A9e877D6F348C5937a9ECfd8A96"
     }
   },
