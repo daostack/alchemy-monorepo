@@ -165,7 +165,6 @@ export class Arc {
       Logger.debug(query.loc.source.body)
 
       if (!apolloQueryOptions.fetchPolicy) {
-        // apolloQueryOptions.fetchPolicy = 'cache-and-network'
         apolloQueryOptions.fetchPolicy = 'network-only'
       }
 
@@ -186,7 +185,6 @@ export class Arc {
       })
 
       const sub = zenToRxjsObservable(
-        // this.apolloClient.watchQuery({query, fetchPolicy: 'cache-and-network'})
         this.apolloClient.watchQuery({
           fetchPolicy: 'cache-and-network',
           fetchResults: true,
