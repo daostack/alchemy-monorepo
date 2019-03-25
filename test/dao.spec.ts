@@ -2,7 +2,7 @@ import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { fromWei, getArc, getTestDAO, toWei, waitUntilTrue } from './utils'
+import { fromWei, newArc, getTestDAO, toWei, waitUntilTrue } from './utils'
 
 /**
  * DAO test
@@ -11,7 +11,7 @@ describe('DAO', () => {
   let arc: Arc
 
   beforeAll(async () => {
-    arc = getArc()
+    arc = newArc()
 })
 
   it('DAO is instantiable', () => {

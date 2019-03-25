@@ -69,9 +69,10 @@ export function sendTransaction<T>(
       tx = transaction
     }
 
-    const emitter = tx.send({
+    const options = {
       from: await context.getAccount().pipe(first()).toPromise()
-    })
+    }
+    const emitter = tx.send(options)
 
     emitter
       .once('transactionHash', (hash: string) => {
@@ -119,7 +120,13 @@ export function sendTransaction<T>(
         }
       })
       .on('error', async (error: Error) => {
-        observer.error(await errorHandler(error))
+        let errToReturn: Error
+        try {
+          errToReturn = await errorHandler(error)
+        } catch (err) {
+          errToReturn = err
+        }
+        observer.error(errToReturn)
       })
     }
   )

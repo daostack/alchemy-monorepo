@@ -2,7 +2,7 @@ import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IProposalOutcome} from '../src/proposal'
 import { Stake } from '../src/stake'
-import { createAProposal, getArc, toWei, waitUntilTrue } from './utils'
+import { createAProposal, newArc, toWei, waitUntilTrue } from './utils'
 
 /**
  * Stake test
@@ -12,7 +12,7 @@ describe('Stake', () => {
   let arc: Arc
 
   beforeAll(() => {
-    arc = getArc()
+    arc = newArc()
   })
 
   it('Stake is instantiable', () => {

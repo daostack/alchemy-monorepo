@@ -2,7 +2,7 @@ import { first, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Proposal } from '../src/proposal'
 import { Reward } from '../src/reward'
-import { getArc, getTestDAO, toWei } from './utils'
+import { newArc, getTestDAO, toWei } from './utils'
 
 /**
  * Reward test
@@ -12,7 +12,7 @@ describe('Reward', () => {
   let arc: Arc
 
   beforeAll(() => {
-    arc = getArc()
+    arc = newArc()
   })
 
   it('Reward is instantiable', () => {

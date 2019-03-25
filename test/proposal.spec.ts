@@ -2,7 +2,7 @@ import BN = require('bn.js')
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IExecutionState, IProposalOutcome, IProposalStage, IProposalState, Proposal  } from '../src/proposal'
-import { createAProposal, fromWei, getArc, toWei, waitUntilTrue} from './utils'
+import { createAProposal, fromWei, newArc, toWei, waitUntilTrue} from './utils'
 const DAOstackMigration = require('@daostack/migration')
 
 jest.setTimeout(10000)
@@ -14,7 +14,7 @@ describe('Proposal', () => {
   let arc: Arc
 
   beforeAll(async () => {
-    arc = getArc()
+    arc = newArc()
   })
 
   it('Proposal is instantiable', () => {

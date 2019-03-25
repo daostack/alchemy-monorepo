@@ -1,12 +1,14 @@
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ApolloClient } from 'apollo-client'
 import { split } from 'apollo-link'
+import { Observable as ZenObservable } from 'apollo-link'
 import { HttpLink } from 'apollo-link-http'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 import BN = require('bn.js')
 import fetch from 'isomorphic-fetch'
 import * as WebSocket from 'isomorphic-ws'
+import {  Observable, Observer } from 'rxjs'
 import { Logger } from './logger'
 import { Address } from './types'
 
@@ -141,4 +143,16 @@ export function isAddress(address: Address) {
   if (!Web3.utils.isAddress(address)) {
     throw new Error(`Not a valid address: ${address}`)
   }
+}
+
+/**
+ * convert a ZenObservable to an rxjs.Observable
+ * @param  zenObservable [description]
+ * @return an Observable instance
+ */
+export function zenToRxjsObservable(zenObservable: ZenObservable<any>) {
+  return Observable.create((obs: Observer<any>) => {
+    const subscription = zenObservable.subscribe(obs)
+    return () => subscription.unsubscribe()
+  })
 }

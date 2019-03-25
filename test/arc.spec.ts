@@ -2,7 +2,7 @@ import BN = require('bn.js')
 import Arc from '../src/index'
 import { Logger } from '../src/logger'
 import { Address } from '../src/types'
-import { fromWei, getArc, toWei, waitUntilTrue } from './utils'
+import { fromWei, newArc, toWei, waitUntilTrue } from './utils'
 
 Logger.setLevel(Logger.OFF)
 jest.setTimeout(10000)
@@ -26,13 +26,13 @@ describe('Arc ', () => {
   })
 
   it('arc.getContract() works', async () => {
-    const arc = await getArc()
+    const arc = await newArc()
     expect(arc.getContract('ContributionReward')).toBeInstanceOf(arc.web3.eth.Contract)
     expect(arc.getContract('AbsoluteVote')).toBeInstanceOf(arc.web3.eth.Contract)
   })
 
   it('arc.allowance() should work', async () => {
-    const arc = await getArc()
+    const arc = await newArc()
     let approval: any
     arc.allowance(arc.web3.eth.defaultAccount).subscribe(
       (next: any) => {
@@ -51,7 +51,7 @@ describe('Arc ', () => {
   })
 
   it('arc.getAccount() works and is correct', async () => {
-    const arc = await getArc()
+    const arc = await newArc()
     const addressesObserved: Address[] = []
     arc.getAccount().subscribe((address) => addressesObserved.push(address))
     await waitUntilTrue(() => addressesObserved.length > 0)
@@ -59,7 +59,7 @@ describe('Arc ', () => {
   })
 
   it('arc.ethBalance() works', async () => {
-    const arc = await getArc()
+    const arc = await newArc()
     // observe two balances
     const balances1: BN[] = []
     const balances2: BN[] = []

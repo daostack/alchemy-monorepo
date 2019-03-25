@@ -3,7 +3,7 @@ import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
-import { fromWei, getArc, getContractAddresses, toWei } from './utils'
+import { fromWei, getContractAddresses, newArc, toWei } from './utils'
 /**
  * Reputation test
  */
@@ -17,7 +17,7 @@ describe('Reputation', () => {
   beforeAll(async () => {
     addresses = getContractAddresses()
     address = addresses.dao.Reputation
-    arc = getArc()
+    arc = newArc()
     accounts = arc.web3.eth.accounts.wallet
   })
 
@@ -50,7 +50,7 @@ describe('Reputation', () => {
     const reputation = new Reputation(address, arc)
     const reputationOf = await reputation.reputationOf(accounts[2].address)
       .pipe(first()).toPromise()
-    expect(fromWei(reputationOf)).toEqual('1000')
+    expect(Number(reputationOf.toString())).toBeGreaterThan(0)
   })
 
   it('mint() works', async () => {
@@ -66,7 +66,17 @@ describe('Reputation', () => {
     expect(difference.toString()).toEqual('1000000000003003837')
 
   })
-  it.skip('reputationOf throws a meaningful error if an invalid address is provided', async () => {
-    // write this test
+  it('mint() throws a meaningful error if the sender is not the contract owner', async () => {
+    const reputation = new Reputation(addresses.test.Reputation, arc)
+    await expect(reputation.mint(accounts[3].address, toWei(1)).send()).rejects.toThrow(
+      /is not the owner/i
+    )
+  })
+
+  it('reputationOf throws a meaningful error if an invalid address is provided', async () => {
+    const reputation = new Reputation(addresses.test.Reputation, arc)
+    await expect(() => reputation.reputationOf('0xInvalidAddress')).toThrow(
+      /not a valid address/i
+    )
   })
 })

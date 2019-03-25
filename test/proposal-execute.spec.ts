@@ -1,7 +1,8 @@
 import BN = require('bn.js')
+import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IProposalOutcome, IProposalStage, IProposalState, Proposal } from '../src/proposal'
-import { createAProposal, fromWei, getArc, getTestDAO, toWei, waitUntilTrue } from './utils'
+import { createAProposal, fromWei, getContractAddresses, getTestDAO, mintSomeReputation, newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
@@ -9,7 +10,7 @@ describe('Proposal execute()', () => {
   let arc: Arc
 
   beforeAll(async () => {
-    arc = await getArc()
+    arc = await newArc()
   })
 
   it('runs correctly through the stages', async () => {
@@ -85,21 +86,71 @@ describe('Proposal execute()', () => {
 
   }, 10000)
 
-  it.skip('throws a meaningful error if the proposal does not exist', async () => {
+  it('throws a meaningful error if the proposal does not exist', async () => {
     const dao = await getTestDAO()
     // a non-existing proposal
     const proposal = new Proposal(
       '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, arc
     )
     await expect(proposal.execute().send()).rejects.toThrow(
-      /unknown proposal/i
+      /does not exist/i
     )
   })
 
-  it.skip('throws a meaningful error if the proposal cannot be executed', async () => {
-    const proposal = await createAProposal()
+  it('execute a proposal by voting only', async () => {
+    const dao = await getTestDAO()
+    arc = dao.context
+    // daoBalance
+    const daoState = await dao.state().pipe(first()).toPromise()
+    const repTotalSupply = daoState.reputationTotalSupply
+    // const daoBalance = await dao.ethBalance().pipe(first()).toPromise()
+    // expect(daoBalance).toEqual(new BN(0))
+
+    const proposalStates: IProposalState[] = []
+
+    const lastState = () => proposalStates[proposalStates.length - 1]
+    const accounts = arc.web3.eth.accounts.wallet
+    const proposal = await createAProposal(dao,  { ethReward: new BN(0)})
+    proposal.state().subscribe((state) => {
+      proposalStates.push(state)
+    })
+    // calling "execute" immediately will have no effect, because the proposal is not
+    await waitUntilTrue(() => proposalStates.length === 2)
+    expect(proposalStates[proposalStates.length - 1].stage).toEqual(IProposalStage.Queued)
+    // this execution will not change the state, because the quorum is not met
+    await proposal.execute().send()
+    expect(lastState().stage).toEqual(IProposalStage.Queued)
+    expect(lastState().executedAt).toEqual(null)
+
+    proposal.context.web3.eth.accounts.defaultAccount = accounts[0]
+    await proposal.vote(IProposalOutcome.Pass).send()
+    // let's vote for the proposal with accounts[1]
+    arc.setAccount(accounts[1].address)
+    const response = await proposal.vote(IProposalOutcome.Pass).send()
+    // check if the "from" address is as expected
+    expect(response.receipt.from).toEqual(accounts[1].address.toLowerCase())
+
+    arc.setAccount(accounts[2].address)
+    await proposal.vote(IProposalOutcome.Pass).send()
+
+    arc.setAccount(accounts[3].address)
+    await proposal.vote(IProposalOutcome.Pass).send()
+
+    arc.setAccount(accounts[0].address)
+
+    // wait until all votes have been counted
+    await waitUntilTrue(() => {
+      return lastState().votesCount === 4
+    })
+    expect(Number(lastState().votesFor.toString())).toBeGreaterThan(Number(repTotalSupply.div(new BN(2)).toString()))
+
+    /// with the last (winning) vote, the proposal is already executed
     await expect(proposal.execute().send()).rejects.toThrow(
-      /proposal execution failed/i
+      /already executed/i
     )
+
+    // check the state
+    expect(lastState().stage).toEqual(IProposalStage.Executed)
+    expect(lastState().executedAt).not.toEqual(null)
   })
 })

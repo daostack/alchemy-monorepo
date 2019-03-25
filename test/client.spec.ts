@@ -100,15 +100,13 @@ describe('apolloClient', () => {
       }
     `
 
-    let cntr: number = 0
     const observable = arc.getObservable(query)
 
-    let returnedData: object[] = []
+    const returnedData: object[] = []
 
     const subscription = observable.subscribe(
       (eventData: any) => {
         // Do something on receipt of the event
-        cntr += 1
         returnedData.push(eventData.data)
       },
       (err: any) => {
@@ -116,20 +114,15 @@ describe('apolloClient', () => {
       }
     )
 
-    const promise = observable.toPromise()
-    promise.then((x: any) => {
-      returnedData = x.data.reputationMints
-    })
-
     await mintSomeReputation()
     await mintSomeReputation()
 
     // we should have received trhee reputation events
     // - 1 the result of original query
     // - 2 the two mint events
-    await waitUntilTrue(() => cntr === 3 )
+    await waitUntilTrue(() => returnedData.length === 3 )
     expect(returnedData.length).toBeGreaterThan(0)
-    expect(cntr).toEqual(3)
+    // expect(cntr).toEqual(3)
     subscription.unsubscribe()
   })
 
