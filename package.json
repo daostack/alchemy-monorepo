@@ -71,7 +71,7 @@
   "devDependencies": {
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
-    "@daostack/migration": "0.0.1-rc.12-v3",
+    "@daostack/migration": "0.0.1-rc.14-v4",
     "@types/graphql": "^14.0.3",
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/jest": "^24.0.11",
@@ -105,7 +105,7 @@
     "u": "^0.1.0"
   },
   "dependencies": {
-    "@daostack/arc": "0.0.1-rc.12",
+    "@daostack/arc": "0.0.1-rc.14",
     "apollo-cache-inmemory": "^1.5.1",
     "apollo-client": "^2.5.1",
     "apollo-client-ws": "^2.4.0",
