@@ -21,14 +21,14 @@
       "GenericScheme": "0x7C728214be9A0049e6a86f2137ec61030D0AA964"
     },
     "dao": {
-      "name": "Dilatory Exorcism",
+      "name": "Risible Coppersmith",
       "Avatar": "0xFF6049B87215476aBf744eaA3a476cBAd46fB1cA",
       "DAOToken": "0x5017A545b09ab9a30499DE7F431DF0855bCb7275",
       "Reputation": "0x86072CbFF48dA3C1F01824a6761A03F105BCC697",
       "Controller": "0xFcCeD5E997E7fb1D0594518D3eD57245bB8ed17E"
     },
     "test": {
-      "name": "Loquacious Foreman",
+      "name": "Zealous Producer",
       "Avatar": "0xE7A2C59e134ee81D4035Ae6DB2254f79308e334f",
       "DAOToken": "0xcDbe8b52A6c60A5f101d4A0F1f049f19a9e1D35F",
       "Reputation": "0x93cdbf39fB9e13BD253CA5819247D52fbabf0F2f",
@@ -54,6 +54,7 @@
   "kovan": {
     "base": {
       "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
+      "DAORegistry": "0xD7d2a4Ae99Af1496DFCe8c0F0c9a581074F017B9",
       "ControllerCreator": "0x2538dF9E3794E70d34A96e2661d1d054F885f6ef",
       "DaoCreator": "0xeD69d1F77Da377c3d73d0765B04a41d2C574bE51",
       "UController": "0x0a1401DE9f6810E2AC311FceAC23739455871F1c",
@@ -69,8 +70,7 @@
       "VoteInOrganizationScheme": "0x9A91e59442012D549913410690e4B8D1690F10Fe",
       "OrganizationRegister": "0xB5e3Ef614b18De5AD8A57B334210C93D334E944E",
       "Redeemer": "0xe3b844272707022CE15eE0Be905402c6F1b0a716",
-      "GenericScheme": "0xfF1fF2B74ECa4Cc75498b228A0471cCb34e9e66B",
-      "DAORegistry": "0x90592361B5ac0A271167887f7d2E1BC8632dbBa1"
+      "GenericScheme": "0xfF1fF2B74ECa4Cc75498b228A0471cCb34e9e66B"
     },
     "dao": {
       "name": "Meretricious Hot air balloon",
@@ -83,7 +83,7 @@
   "rinkeby": {
     "base": {
       "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
-      "DAORegistry": "0x5F058e446486576AdF03524E6513a41a152Aab1A",
+      "DAORegistry": "0xE965f48Fc7A2C67356cbE3dc59b8e7f546b517bb",
       "ControllerCreator": "0xe895F551e33d0642255B545a6169c4314A7550d1",
       "DaoCreator": "0xc9CE7Df151A298C4d36174eD19E7aF75435ee6Fc",
       "UController": "0xC2D4672806F6c9d9DbE3980a68Fbf92f173F4193",
