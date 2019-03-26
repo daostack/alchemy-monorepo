@@ -88,8 +88,27 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
       web3.eth.accounts.wallet.add(web3.eth.accounts.privateKeyToAccount(privateKeys[i]))
       await GENTokenContract.methods.mint(web3.eth.accounts.wallet[i].address, web3.utils.toWei('1000')).send()
     }
+
+    await deploy(
+      require('@daostack/arc-hive/build/contracts/DAORegistry.json'),
+      [],
+      web3.eth.accounts.wallet[0].address
+    )
   } else {
     addresses['GEN'] = GENToken
+    if (network === 'main') {
+      await deploy(
+        require('@daostack/arc-hive/build/contracts/DAORegistry.json'),
+        [],
+        '0xd3BA32dd207Db75f535001FAC749c925423D8A6f' // DAOstack multisig
+      )
+    } else {
+      await deploy(
+        require('@daostack/arc-hive/build/contracts/DAORegistry.json'),
+        [],
+        '0x73Db6408abbea97C5DB8A2234C4027C315094936'
+      )
+    }
   }
 
   const ControllerCreator = await deploy(require('@daostack/arc/build/contracts/ControllerCreator.json'))
