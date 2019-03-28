@@ -135,7 +135,7 @@ export class Proposal implements IStateful<IProposalState> {
             options.ethReward && options.ethReward.toString() || 0,
             options.externalTokenReward && options.externalTokenReward.toString() || 0,
             options.periodLength || 12,
-           options.periods || 5
+            options.periods || 5
           ],
           options.externalTokenAddress || nullAddress,
           options.beneficiary
@@ -144,6 +144,7 @@ export class Proposal implements IStateful<IProposalState> {
     }
 
     const map = (receipt: any) => {
+      console.log(receipt)
       const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
       return new Proposal(proposalId, options.dao as string, context)
     }
