@@ -38,7 +38,7 @@
   "homepage": "https://github.com/daostack/migration#readme",
   "dependencies": {
     "@daostack/arc": "0.0.1-rc.14",
-    "@daostack/arc-hive": "0.0.1-rc.3",
+    "@daostack/arc-hive": "0.0.1-rc.4",
     "ethereumjs-wallet": "^0.6.3",
     "ganache-cli": "^6.4.1",
     "hdwallet-accounts": "0.0.1",
