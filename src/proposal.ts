@@ -107,47 +107,81 @@ export class Proposal implements IStateful<IProposalState> {
 
     let ipfsDataToSave: object = {}
 
-    if (options.title || options.url || options.description) {
-      if (!context.ipfsProvider) {
-        throw Error(`No ipfsProvider set on Arc instance - cannot save data on IPFS`)
+    const saveIPFSData = async () => {
+      if (options.title || options.url || options.description) {
+        if (!context.ipfsProvider) {
+          throw Error(`No ipfsProvider set on Arc instance - cannot save data on IPFS`)
+        }
+        ipfsDataToSave = {
+          description: options.description,
+          title: options.title,
+          url: options.url
+        }
+        if (options.descriptionHash) {
+          const msg = `Proposal.create() takes a descriptionHash, or values for title, url and description; not both`
+          throw Error(msg)
+        }
       }
-      ipfsDataToSave = {
-        description: options.description,
-        title: options.title,
-        url: options.url
-      }
-      if (options.descriptionHash) {
-        const msg = `Proposal.create() takes a descriptionHash, or a value for title, url and description, but not both`
-        throw Error(msg)
-      }
-    }
-    const contributionReward = context.getContract('ContributionReward')
-
-    async function createTransaction() {
       if (ipfsDataToSave !== {}) {
         Logger.debug('Saving data on IPFS...')
         const ipfsResponse = await context.ipfs.add(Buffer.from(JSON.stringify(ipfsDataToSave)))
-        options.descriptionHash = ipfsResponse[0].path
+        const descriptionHash = ipfsResponse[0].path
         // pin the file
-        await context.ipfs.pin.add(options.descriptionHash)
+        await context.ipfs.pin.add(descriptionHash)
         Logger.debug(`Data saved successfully as ${options.descriptionHash}`)
+        return descriptionHash
       }
+    }
 
-      const transaction = contributionReward.methods.proposeContributionReward(
+    let createTransaction: () => any = () => null
+    if (options.type === IProposalType.ContributionReward) {
+
+      const contributionReward = context.getContract('ContributionReward')
+
+      createTransaction = async () => {
+        options.descriptionHash = await saveIPFSData()
+        const transaction = contributionReward.methods.proposeContributionReward(
+            options.dao,
+            options.descriptionHash || '',
+            options.reputationReward && options.reputationReward.toString() || 0,
+            [
+              options.nativeTokenReward && options.nativeTokenReward.toString() || 0,
+              options.ethReward && options.ethReward.toString() || 0,
+              options.externalTokenReward && options.externalTokenReward.toString() || 0,
+              options.periodLength || 12,
+              options.periods || 5
+            ],
+            options.externalTokenAddress || nullAddress,
+            options.beneficiary
+        )
+        return transaction
+      }
+    } else if (options.type === IProposalType.GenericScheme) {
+      if (!options.callData) {
+        throw new Error((`Missing argument "callData" for GenericScheme`))
+      }
+      if (options.value === undefined) {
+        throw new Error((`Missing argument "value" for GenericScheme`))
+      }
+      createTransaction = async () => {
+        options.descriptionHash = await saveIPFSData()
+
+        const genericScheme = context.getContract('GenericScheme')
+        const transaction = genericScheme.methods.proposeCall(
           options.dao,
-          options.descriptionHash || '',
-          options.reputationReward && options.reputationReward.toString() || 0,
-          [
-            options.nativeTokenReward && options.nativeTokenReward.toString() || 0,
-            options.ethReward && options.ethReward.toString() || 0,
-            options.externalTokenReward && options.externalTokenReward.toString() || 0,
-            options.periodLength || 12,
-            options.periods || 5
-          ],
-          options.externalTokenAddress || nullAddress,
-          options.beneficiary
-      )
-      return transaction
+          options.callData,
+          options.value,
+          options.descriptionHash
+        )
+        return transaction
+      }
+      // throw Error(msg)
+    } else if (options.type === IProposalType.SchemeRegistrar) {
+      const msg = `IProposalType.SchemeProposal is not implemented yet`
+      throw Error(msg)
+    } else {
+      const msg = `Unknown proposal type: "${options.type}"`
+      throw Error(msg)
     }
 
     const map = (receipt: any) => {
@@ -585,14 +619,16 @@ export interface IProposalCreateOptions {
   dao?: Address
   description?: string
   descriptionHash?: string
-  nativeTokenReward?: BN
-  reputationReward?: BN
-  ethReward?: BN
-  externalTokenReward?: BN
-  externalTokenAddress?: Address
-  periodLength?: number
-  periods?: any
+  callData?: string // for GenericSchemeProposal
+  nativeTokenReward?: BN // for ContributionRewardProposal
+  reputationReward?: BN // for ContributionRewardProposal
+  ethReward?: BN // for ContributionRewardProposal
+  externalTokenReward?: BN // for ContributionRewardProposal
+  externalTokenAddress?: Address // for ContributionRewardProposal
+  periodLength?: number // for ContributionRewardProposal
+  periods?: any // for ContributionRewardProposal
   title?: string
-  type?: string
+  type: number
   url?: string
+  value?: number // for GenericSchemeProposal
 }

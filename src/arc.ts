@@ -204,7 +204,6 @@ export class Arc {
         .subscribe(observer)
       return () => sub.unsubscribe()
     })
-
     observable.firstResult = () => observable.pipe(first()).toPromise()
     return observable
   }
@@ -317,6 +316,10 @@ export class Arc {
     let contractClass
     let contract
     switch (name) {
+      case 'ActionMock':
+        contractClass = require('@daostack/arc/build/contracts/ActionMock.json')
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.ActionMock, opts)
+        return contract
       case 'AbsoluteVote':
         contractClass = require('@daostack/arc/build/contracts/AbsoluteVote.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.AbsoluteVote, opts)
@@ -328,6 +331,10 @@ export class Arc {
       case 'GEN':
         contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.GEN, opts)
+        return contract
+      case 'GenericScheme':
+        contractClass = require('@daostack/arc/build/contracts/GenericScheme.json')
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.GenericScheme, opts)
         return contract
       case 'GenesisProtocol':
         contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')

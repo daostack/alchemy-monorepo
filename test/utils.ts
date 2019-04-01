@@ -4,9 +4,8 @@ import gql from 'graphql-tag'
 import { IContractAddresses } from '../src/arc'
 import { DAO } from '../src/dao'
 import Arc from '../src/index'
-import { Proposal } from '../src/proposal'
+import { IProposalType, Proposal } from '../src/proposal'
 import { Reputation } from '../src/reputation'
-
 const Web3 = require('web3')
 
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack'
@@ -148,7 +147,7 @@ export async function createAProposal(dao?: DAO, options: any = {}) {
     periodLength: 12,
     periods: 5,
     reputationReward: toWei('10'),
-    type: 'ContributionReward',
+    type: IProposalType.ContributionReward,
     ...options
   }
 
