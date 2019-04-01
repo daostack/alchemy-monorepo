@@ -1,9 +1,11 @@
 import BN = require('bn.js')
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { IExecutionState, IProposalOutcome, IProposalStage, IProposalState, Proposal  } from '../src/proposal'
+import { IExecutionState, IProposalOutcome, IProposalStage, IProposalState, IProposalType, Proposal
+  } from '../src/proposal'
 import { createAProposal, fromWei, newArc, toWei, waitUntilTrue} from './utils'
 const DAOstackMigration = require('@daostack/migration')
+import { Logger } from '../src/logger'
 
 jest.setTimeout(10000)
 
@@ -41,6 +43,16 @@ describe('Proposal', () => {
     const l2 = await Proposal.search({expiresInQueueAt_gt: expiryDate}, arc).pipe(first()).toPromise()
     expect(l2.length).toBeLessThan(l1.length)
 
+  })
+
+  it('proposal.search() accepts type argument', async () => {
+    let ls
+    ls = await Proposal.search({type: IProposalType.ContributionReward}, arc).pipe(first()).toPromise()
+    expect(ls.length).toBeGreaterThan(0)
+    ls = await Proposal.search({type: IProposalType.GenericScheme }, arc).pipe(first()).toPromise()
+    expect(ls.length).toBeGreaterThan(0)
+    ls = await Proposal.search({type: IProposalType.SchemeRegistrar}, arc).pipe(first()).toPromise()
+    expect(ls.length).toEqual(0)
   })
 
   it('proposal.search ignores case in address', async () => {

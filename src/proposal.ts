@@ -28,6 +28,12 @@ export enum IProposalStage {
   QuietEndingPeriod
 }
 
+export enum IProposalType {
+  ContributionReward,
+  GenericScheme,
+  SchemeRegistrar
+}
+
 export enum IExecutionState {
   None,
   QueueBarCrossed,
@@ -76,6 +82,7 @@ export interface IProposalState {
   thresholdConst: number
   title?: string
   totalRepWhenExecuted: BN
+  type: IProposalType.ContributionReward,
   url?: string
   votesFor: BN
   votesAgainst: BN
@@ -144,25 +151,43 @@ export class Proposal implements IStateful<IProposalState> {
     }
 
     const map = (receipt: any) => {
-      console.log(receipt)
       const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
       return new Proposal(proposalId, options.dao as string, context)
     }
 
     return context.sendTransaction(createTransaction, map)
   }
+
+  /**
+   * Search for proposals
+   * @param  options            Search options, must implemeent IProposalQueryOptions
+   * @param  context            An instance of Arc
+   * @param  apolloQueryOptions [description]
+   * @return                    An observable of lists of results
+   *
+   * For example:
+   *    Proposal.search({ stage: IProposalStage.Queued})
+   */
   public static search(
     options: IProposalQueryOptions,
     context: Arc,
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Proposal[]> {
     let where = ''
+
+    // default options
+    options.type = options.type || IProposalType.ContributionReward
+
+    // constribut the query
     for (const key of Object.keys(options)) {
       if (key === 'stage' && options[key] !== undefined) {
         where += `stage: "${IProposalStage[options[key] as IProposalStage]}"\n`
       } else if (key === 'stage_in' && Array.isArray(options[key])) {
         const stageValues = options[key].map((stage: number) => '"' + IProposalStage[stage as IProposalStage] + '"')
         where += `stage_in: [${stageValues.join(',')}]\n`
+      } else if (key === 'type') {
+        const apolloKey = IProposalType[options[key]][0].toLowerCase() + IProposalType[options[key]].slice(1)
+        where += `${apolloKey}_not: null\n`
       } else if (Array.isArray(options[key])) {
         // Support for operators like _in
         const values = options[key].map((value: number) => '"' + value + '"')
@@ -177,9 +202,6 @@ export class Proposal implements IStateful<IProposalState> {
         }
       }
     }
-
-    // TODO: we only manage contributionReward proposals
-    where += `contributionReward_not: null`
 
     const query = gql`
       {
@@ -324,6 +346,7 @@ export class Proposal implements IStateful<IProposalState> {
         thresholdConst: Number(item.thresholdConst),
         title: item.title,
         totalRepWhenExecuted: new BN(item.totalRepWhenExecuted),
+        type: IProposalType.ContributionReward,
         url: item.url,
         votesAgainst: new BN(item.votesAgainst),
         votesCount: item.votes.length,

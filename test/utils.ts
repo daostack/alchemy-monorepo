@@ -154,5 +154,4 @@ export async function createAProposal(dao?: DAO, options: any = {}) {
 
   const response = await dao.createProposal(options).send()
   return response.result as Proposal
-
 }

@@ -3,7 +3,7 @@ import { Observable as ZenObservable } from 'apollo-link'
 import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { from, Observable, Observer, of, Subscription } from 'rxjs'
-import { catchError, concat, filter, map } from 'rxjs/operators'
+import { catchError, filter, first, map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
@@ -25,6 +25,8 @@ export class Arc {
   public ipfs: any
   public web3: any
   public contractAddresses: IContractAddresses | undefined
+
+  public Logger = Logger
 
   // accounts obseved by ethBalance
   public blockHeaderSubscription: Subscription|undefined = undefined
@@ -161,7 +163,7 @@ export class Arc {
    */
   public getObservable(query: any, apolloQueryOptions: IApolloQueryOptions = {}) {
 
-    return Observable.create(async (observer: Observer<ApolloQueryResult<any>>) => {
+    const observable = Observable.create(async (observer: Observer<ApolloQueryResult<any>>) => {
       Logger.debug(query.loc.source.body)
 
       if (!apolloQueryOptions.fetchPolicy) {
@@ -202,6 +204,9 @@ export class Arc {
         .subscribe(observer)
       return () => sub.unsubscribe()
     })
+
+    observable.firstResult = () => observable.pipe(first()).toPromise()
+    return observable
   }
 
   /**
