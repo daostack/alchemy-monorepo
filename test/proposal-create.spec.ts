@@ -5,14 +5,10 @@ import { Logger } from '../src/logger'
 import { IProposalStage, IProposalType, Proposal } from '../src/proposal'
 import {
   fromWei,
-  getContractAddresses,
   getTestDAO,
-  graphqlHttpProvider,
-  graphqlWsProvider,
   newArc,
   toWei,
-  waitUntilTrue,
-  web3Provider
+  waitUntilTrue
 } from './utils'
 
 Logger.setLevel(Logger.OFF)

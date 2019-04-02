@@ -127,7 +127,7 @@ export async function getTestDAO() {
   // we are using for testing
   const arc = await newArc()
   if (arc.contractAddresses) {
-    return arc.dao(arc.contractAddresses.dao.Avatar)
+    return arc.dao(arc.contractAddresses.test.Avatar)
   } else {
     return arc.dao('0xnotfound')
   }

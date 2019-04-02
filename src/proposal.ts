@@ -46,26 +46,21 @@ export enum IExecutionState {
 export interface IProposalState {
   accountsWithUnclaimedRewards: Address[],
   activationTime: number
-  beneficiary: Address
   boostedAt: Date
   boostedVotePeriodLimit: number
+  contributionReward: IContributionReward|null
   confidenceThreshold: number
   createdAt: Date
   dao: DAO
   daoBountyConst: number
   descriptionHash?: string
   description?: string
-  ethReward: BN
   executedAt: Date
-  externalTokenReward: BN
   executionState: IExecutionState
   expiresInQueueAt: Date
-  externalToken: Address
+  genericScheme: IGenericScheme|null
   id: string
-  nativeTokenReward: BN
   organizationId: string
-  periods: number
-  periodLength: number
   paramsHash: string
   preBoostedAt: Date
   preBoostedVotePeriodLimit: number
@@ -74,8 +69,8 @@ export interface IProposalState {
   queuedVoteRequiredPercentage: number
   queuedVotePeriodLimit: number
   quietEndingPeriodBeganAt: Date
-  reputationReward: BN
   resolvedAt: Date|null
+  schemeRegistrar: ISchemeRegistrar|null
   stage: IProposalStage
   stakesFor: BN
   stakesAgainst: BN
@@ -89,6 +84,36 @@ export interface IProposalState {
   votesCount: number
   votingMachine: Address
   winningOutcome: IProposalOutcome
+}
+
+export interface IContributionReward {
+  beneficiary: Address
+  externalTokenReward: BN
+  externalToken: Address
+  ethReward: BN
+  nativeTokenReward: BN
+  periods: number
+  periodLength: number
+  reputationReward: BN
+}
+
+export interface IGenericScheme {
+  id: string
+  contractToCall: Address
+  callData: string
+  executed: boolean
+  returnValue: string
+}
+
+export interface ISchemeRegistrar {
+  id: string
+  schemeToRegister: Address
+  schemeToRegisterParamsHash: string
+  schemeToRegisterPermission: string
+  schemeToRemove: string
+  decision: number
+  schemeRegistered: boolean
+  schemeRemoved: boolean
 }
 
 export class Proposal implements IStateful<IProposalState> {
@@ -134,6 +159,8 @@ export class Proposal implements IStateful<IProposalState> {
     }
 
     let createTransaction: () => any = () => null
+
+    // ContributionReward
     if (options.type === IProposalType.ContributionReward) {
       const contributionReward = context.getContract('ContributionReward')
 
@@ -155,6 +182,8 @@ export class Proposal implements IStateful<IProposalState> {
         )
         return transaction
       }
+
+    // GenericScheme
     } else if (options.type === IProposalType.GenericScheme) {
       if (!options.callData) {
         throw new Error((`Missing argument "callData" for GenericScheme`))
@@ -174,7 +203,8 @@ export class Proposal implements IStateful<IProposalState> {
         )
         return transaction
       }
-      // throw Error(msg)
+
+    // SchemeRegistrar
     } else if (options.type === IProposalType.SchemeRegistrar) {
       const msg = `IProposalType.SchemeProposal is not implemented yet`
       throw Error(msg)
@@ -184,7 +214,21 @@ export class Proposal implements IStateful<IProposalState> {
     }
 
     const map = (receipt: any) => {
-      const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
+      let eventName
+      switch (options.type) {
+        case IProposalType.ContributionReward:
+          eventName = 'NewContributionProposal'
+          break
+        case IProposalType.GenericScheme:
+          eventName = 'NewCallProposal'
+          break
+        case IProposalType.SchemeRegistrar:
+          throw Error('SchemeRegistrar not implemented yet')
+        default:
+          const msg = `Unknown proposal type: "${options.type}" (did you use IProposalType.TypeOfProposal?)`
+          throw Error(msg)
+      }
+      const proposalId = receipt.events[eventName].returnValues._proposalId
       return new Proposal(proposalId, options.dao as string, context)
     }
 
@@ -298,6 +342,13 @@ export class Proposal implements IStateful<IProposalState> {
           executedAt
           executionState
           expiresInQueueAt
+          genericScheme {
+            id
+            contractToCall
+            callData
+            executed
+            returnValue
+          }
           gpRewards {
             id
           }
@@ -312,6 +363,16 @@ export class Proposal implements IStateful<IProposalState> {
           quietEndingPeriodBeganAt
           queuedVotePeriodLimit
           queuedVoteRequiredPercentage
+          schemeRegistrar {
+            id
+            schemeToRegister
+            schemeToRegisterParamsHash
+            schemeToRegisterPermission
+            schemeToRemove
+            decision
+            schemeRegistered
+            schemeRemoved
+          }
           stage
           stakes {
             id
@@ -340,30 +401,63 @@ export class Proposal implements IStateful<IProposalState> {
         return null
       }
 
+      let contributionReward: IContributionReward|null = null
+      if (item.contributionReward) {
+        contributionReward = {
+          beneficiary: item.contributionReward.beneficiary,
+          ethReward: new BN(item.contributionReward.ethReward),
+          externalToken: item.contributionReward.externalToken,
+          externalTokenReward: new BN(item.contributionReward.externalTokenReward),
+          nativeTokenReward: new BN(item.contributionReward.nativeTokenReward),
+          periodLength: Number(item.contributionReward.periodLength),
+          periods: Number(item.contributionReward.periods),
+          reputationReward: new BN(item.contributionReward.reputationReward)
+        }
+      }
+
+      let genericScheme: IGenericScheme|null = null
+      if (item.genericScheme) {
+        genericScheme = {
+          callData: item.genericScheme.callData,
+          contractToCall: item.genericScheme.contractToCall,
+          executed: item.genericScheme.executed,
+          id: item.genericScheme.id,
+          returnValue: item.genericScheme.returnValue
+        }
+      }
+
+      let schemeRegistrar: ISchemeRegistrar|null = null
+      if (item.schemeRegistrar) {
+        schemeRegistrar =  {
+          decision: item.schemeRegistrar.decision,
+          id: item.schemeRegistrar.id,
+          schemeRegistered: item.schemeRegistrar.schemeRegistered,
+          schemeRemoved: item.schemeRegistrar.schemeRemoved,
+          schemeToRegister: item.schemeRegistrar.schemeToRegister,
+          schemeToRegisterParamsHash: item.schemeRegistrar.schemeToRegisterParamsHash,
+          schemeToRegisterPermission: item.schemeRegistrar.schemeToRegisterPermission,
+          schemeToRemove: item.schemeRegistrar.schemeToRemove
+        }
+      }
       return {
         accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
         activationTime: Number(item.activationTime),
-        beneficiary: item.contributionReward.beneficiary,
         boostedAt: Number(item.boostedAt),
         boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
         confidenceThreshold: Number(item.confidenceThreshold),
+        contributionReward: contributionReward || null,
         createdAt: Number(item.createdAt),
         dao: new DAO(item.dao.id, this.context),
         daoBountyConst: item.daoBountyConst,
         description: item.description,
         descriptionHash: item.descriptionHash,
-        ethReward: new BN(item.contributionReward.ethReward),
         executedAt: item.executedAt,
         executionState: IExecutionState[item.executionState] as any,
         expiresInQueueAt: Number(item.expiresInQueueAt),
-        externalToken: item.contributionReward.externalToken,
-        externalTokenReward: new BN(item.contributionReward.externalTokenReward),
+        genericScheme,
         id: item.id,
-        nativeTokenReward: new BN(item.contributionReward.nativeTokenReward),
         organizationId: item.organizationId,
         paramsHash: item.paramsHash,
-        periodLength: Number(item.contributionReward.periodLength),
-        periods: Number(item.contributionReward.periods),
         preBoostedAt: Number(item.preBoostedAt),
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposer: item.proposer,
@@ -371,8 +465,8 @@ export class Proposal implements IStateful<IProposalState> {
         queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
         queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
-        reputationReward: new BN(item.contributionReward.reputationReward),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : null,
+        schemeRegistrar,
         stage: IProposalStage[item.stage] as any,
         stakesAgainst: new BN(item.stakesAgainst),
         stakesFor: new BN(item.stakesFor),

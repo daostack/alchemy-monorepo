@@ -49,37 +49,12 @@ describe('Proposal', () => {
 
     await waitUntilTrue(() => states.length > 0 && states[states.length - 1] !== null)
     const proposalState = states[states.length - 1]
-    expect(states).toEqual('xx')
-    // expect(fromWei(proposalState.nativeTokenReward)).toEqual('10')
-    // expect(fromWei(proposalState.stakesAgainst)).toEqual('0.0000001')
-    // expect(fromWei(proposalState.stakesFor)).toEqual('0')
-    // expect(fromWei(proposalState.reputationReward)).toEqual('10')
-    // expect(fromWei(proposalState.ethReward)).toEqual('10')
-    // expect(fromWei(proposalState.externalTokenReward)).toEqual('10')
-    // expect(fromWei(proposalState.votesFor)).toEqual('1000')
-    // expect(fromWei(proposalState.votesAgainst)).toEqual('1000')
-    // expect(fromWei(proposalState.proposingRepReward)).toEqual('0.000000005')
-    //
-    // expect(proposalState).toMatchObject({
-    //     beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
-    //     boostedAt: 0,
-    //     boostedVotePeriodLimit: 600,
-    //     description: null,
-    //     descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
-    //     executedAt: null,
-    //     executionState: IExecutionState.None,
-    //     // externalToken: '0xff6049b87215476abf744eaa3a476cbad46fb1ca',
-    //     periodLength: 0,
-    //     periods: 1,
-    //     preBoostedVotePeriodLimit: 600,
-    //     proposer: '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1',
-    //     quietEndingPeriodBeganAt: null,
-    //     resolvedAt: null,
-    //     stage: IProposalStage.Queued,
-    //     thresholdConst: 2199023255552,
-    //     title: null,
-    //     url: null,
-    //     winningOutcome: IProposalOutcome.Fail
-    // })
+    expect(proposalState.genericScheme).toMatchObject({
+      callData,
+      executed: false,
+      returnValue: null
+    })
+
+    // expect('Now exedcute').toEqual('this proposal')
   })
 })

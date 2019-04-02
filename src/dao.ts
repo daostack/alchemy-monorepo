@@ -11,12 +11,11 @@ import {
 } from './proposal'
 import { Reputation } from './reputation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
+import { Scheme } from './scheme'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
-
-const Web3 = require('web3')
 
 export interface IDAOState {
   address: Address // address of the avatar
@@ -88,7 +87,12 @@ export class DAO implements IStateful<IDAOState> {
     return this.state().pipe(first()).pipe(map((r) => r.reputation))
   }
 
-  public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
+  public schemes(options: any = {}): Observable < Scheme[] > {
+    options.dao = this.address
+    return Scheme.search(options, this.context)
+
+  }
+  public members(options: IMemberQueryOptions = {}): Observable < Member[] > {
     const query = gql`{
       members (where: {
         dao: "${this.address}"
@@ -106,7 +110,7 @@ export class DAO implements IStateful<IDAOState> {
     return new Member(address, this.address, this.context)
   }
 
-  public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
+  public proposals(options: IProposalQueryOptions = {}): Observable < Proposal[] > {
     options.dao = this.address
     return Proposal.search(options, this.context)
 
@@ -121,22 +125,22 @@ export class DAO implements IStateful<IDAOState> {
     return Proposal.create(options, this.context)
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
+  public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
     options.dao = this.address
     return Reward.search(options, this.context)
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
+  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
     options.dao = this.address
     return Vote.search(options, this.context)
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
+  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
     options.dao = this.address
     return Stake.search(options, this.context)
   }
 
-  public ethBalance(): Observable<BN> {
+  public ethBalance(): Observable < BN > {
     return this.context.ethBalance(this.address)
   }
 }
