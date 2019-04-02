@@ -278,6 +278,8 @@ Example migration parameters object:
   "unregisterOwner": true,
   // True if should use Universal Controller (default false).
   "useUController": false,
+  // True if should use the DAO Creator to deploy the DAO (default false).
+  "useDaoCreator": false,
   // List of addresses to mint initial tokens and reputation to
   "founders": [
     {
