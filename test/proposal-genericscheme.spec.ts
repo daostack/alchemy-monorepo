@@ -1,14 +1,13 @@
 import BN = require('bn.js')
 import { Arc } from '../src/arc'
 import {
-  IExecutionState,
-  IProposalOutcome,
+  IGenericScheme,
   IProposalStage,
   IProposalState,
   IProposalType,
   Proposal
   } from '../src/proposal'
-import { createAProposal, getTestDAO, newArc, waitUntilTrue } from './utils'
+import { createAProposal, getTestDAO, newArc, voteForProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
@@ -42,19 +41,32 @@ describe('Proposal', () => {
     })
     expect(proposal).toBeInstanceOf(Proposal)
     const states: IProposalState[] = []
+    const lastState = (): IProposalState => states[states.length - 1]
 
     proposal.state().subscribe((pState: IProposalState) => {
       states.push(pState)
     })
 
-    await waitUntilTrue(() => states.length > 0 && states[states.length - 1] !== null)
-    const proposalState = states[states.length - 1]
-    expect(proposalState.genericScheme).toMatchObject({
+    await waitUntilTrue(() => states.length > 1)
+
+    expect(lastState().genericScheme).toMatchObject({
       callData,
       executed: false,
       returnValue: null
     })
 
-    // expect('Now exedcute').toEqual('this proposal')
+    // accept the proposal by voting the hell out of it
+    await voteForProposal(proposal)
+
+    await proposal.execute()
+    await waitUntilTrue(() => (lastState().genericScheme as IGenericScheme).executed)
+    expect(lastState()).toMatchObject({
+      stage: IProposalStage.Executed
+    })
+    expect(lastState().genericScheme).toMatchObject({
+      callData,
+      executed: true,
+      returnValue: '0x0000000000000000000000000000000000000000000000000000000000000001'
+    })
   })
 })

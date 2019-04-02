@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import { IContractAddresses } from '../src/arc'
 import { DAO } from '../src/dao'
 import Arc from '../src/index'
-import { IProposalType, Proposal } from '../src/proposal'
+import { IProposalOutcome, IProposalType, Proposal } from '../src/proposal'
 import { Reputation } from '../src/reputation'
 const Web3 = require('web3')
 
@@ -153,4 +153,25 @@ export async function createAProposal(dao?: DAO, options: any = {}) {
 
   const response = await dao.createProposal(options).send()
   return response.result as Proposal
+}
+
+export async function voteForProposal(proposal: Proposal) {
+  const arc = proposal.context
+  const accounts = proposal.context.web3.eth.accounts.wallet
+
+  arc.setAccount(accounts[0].address)
+  await proposal.vote(IProposalOutcome.Pass).send()
+
+  // let's vote for the proposal with accounts[1]
+  arc.setAccount(accounts[1].address)
+  const response = await proposal.vote(IProposalOutcome.Pass).send()
+  expect(response.receipt.from).toEqual(accounts[1].address.toLowerCase())
+
+  arc.setAccount(accounts[2].address)
+  await proposal.vote(IProposalOutcome.Pass).send()
+
+  arc.setAccount(accounts[3].address)
+  await proposal.vote(IProposalOutcome.Pass).send()
+
+  arc.setAccount(accounts[0].address)
 }
