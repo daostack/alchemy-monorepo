@@ -144,7 +144,6 @@ export class Proposal implements IStateful<IProposalState> {
     }
 
     const map = (receipt: any) => {
-      console.log(receipt)
       const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
       return new Proposal(proposalId, options.dao as string, context)
     }
