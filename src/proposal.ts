@@ -445,7 +445,7 @@ export class Proposal implements IStateful<IProposalState> {
         boostedAt: Number(item.boostedAt),
         boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
         confidenceThreshold: Number(item.confidenceThreshold),
-        contributionReward: contributionReward || null,
+        contributionReward,
         createdAt: Number(item.createdAt),
         dao: new DAO(item.dao.id, this.context),
         daoBountyConst: item.daoBountyConst,

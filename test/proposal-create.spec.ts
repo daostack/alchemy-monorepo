@@ -2,7 +2,7 @@ import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Logger } from '../src/logger'
-import { IProposalStage, IProposalType, Proposal } from '../src/proposal'
+import { IContributionReward, IProposalStage, IProposalType, Proposal } from '../src/proposal'
 import {
   fromWei,
   getTestDAO,
@@ -53,15 +53,15 @@ describe('Create a ContributionReward proposal', () => {
     expect(proposal.id).toBeDefined()
     const proposalState = await proposal.state().pipe(first()).toPromise()
 
-    expect(fromWei(proposalState.externalTokenReward)).toEqual('0')
-    expect(fromWei(proposalState.ethReward)).toEqual('300')
-    expect(fromWei(proposalState.nativeTokenReward)).toEqual('1')
-    expect(fromWei(proposalState.reputationReward)).toEqual('10')
+    const contributionReward = proposalState.contributionReward as IContributionReward
+    expect(fromWei(contributionReward.externalTokenReward)).toEqual('0')
+    expect(fromWei(contributionReward.ethReward)).toEqual('300')
+    expect(fromWei(contributionReward.nativeTokenReward)).toEqual('1')
+    expect(fromWei(contributionReward.reputationReward)).toEqual('10')
     expect(fromWei(proposalState.stakesAgainst)).toEqual('0.0000001') // TODO: why this amount?
     expect(fromWei(proposalState.stakesFor)).toEqual('0')
 
     expect(proposalState).toMatchObject({
-      beneficiary: options.beneficiary,
       executedAt: null,
       proposer: dao.context.web3.eth.defaultAccount.toLowerCase(),
       quietEndingPeriodBeganAt: null,
