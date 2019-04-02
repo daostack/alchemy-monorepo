@@ -8,7 +8,7 @@ import {
   IProposalType,
   Proposal
   } from '../src/proposal'
-import { createAProposal, fromWei, getTestDAO, newArc, waitUntilTrue } from './utils'
+import { createAProposal, getTestDAO, newArc, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 

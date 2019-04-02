@@ -135,7 +135,6 @@ export class Proposal implements IStateful<IProposalState> {
 
     let createTransaction: () => any = () => null
     if (options.type === IProposalType.ContributionReward) {
-
       const contributionReward = context.getContract('ContributionReward')
 
       createTransaction = async () => {
@@ -180,7 +179,7 @@ export class Proposal implements IStateful<IProposalState> {
       const msg = `IProposalType.SchemeProposal is not implemented yet`
       throw Error(msg)
     } else {
-      const msg = `Unknown proposal type: "${options.type}"`
+      const msg = `Unknown proposal type: "${options.type}" (did you use IProposalType.TypeOfProposal?)`
       throw Error(msg)
     }
 
@@ -453,6 +452,16 @@ export class Proposal implements IStateful<IProposalState> {
         const prop = await votingMachine.methods.proposals(proposal.id).call()
         if (prop.proposer === nullAddress ) {
           return new Error(`Unknown proposal with id ${proposal.id}`)
+        }
+        const contributionReward = this.context.getContract('ContributionReward')
+        const proposalDataOnChain = await contributionReward.methods
+          .organizationsProposals(this.dao.address, this.id).call()
+
+        // requirement from ContributionReward.sol
+        // require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0);
+        if (Number(proposalDataOnChain.executionTime) !== 0) {
+          const msg = `proposal ${proposal.id} already executed`
+          throw Error(msg)
         }
       }
       // if we have found no known error, we return the original error

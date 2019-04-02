@@ -1,8 +1,9 @@
 import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { IProposalOutcome, IProposalStage, IProposalState, Proposal } from '../src/proposal'
-import { createAProposal, fromWei, getContractAddresses, getTestDAO, mintSomeReputation, newArc, toWei, waitUntilTrue } from './utils'
+import { IProposalOutcome, IProposalStage, IProposalState, IProposalType, Proposal } from '../src/proposal'
+import { createAProposal, fromWei,
+  getTestDAO, newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
@@ -27,7 +28,7 @@ describe('Proposal execute()', () => {
       periodLength: 12,
       periods: 5,
       reputationReward: toWei('1'),
-      type: 'ContributionReward'
+      type: IProposalType.ContributionReward
     }
     const response = await dao.createProposal(options).send()
     const proposalId = (response.result as any).id

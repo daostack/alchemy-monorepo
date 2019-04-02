@@ -430,6 +430,7 @@ export class Arc {
     mapToObject: (receipt: web3receipt) => T,
     errorHandler: (error: Error) => Promise<Error> | Error = (error) => error
   ) {
+    console.log('send transaction')
     return sendTransaction(transaction, mapToObject, errorHandler, this)
   }
 

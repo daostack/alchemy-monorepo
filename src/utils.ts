@@ -108,7 +108,9 @@ export async function getOptionsFromChain(web3Instance: any) {
 
 export function getWeb3Options(web3Instance: any) {
   if (!web3Instance.eth.defaultAccount) {
-    Logger.warn(`No defaultAccount was set -- cannot send transaction`)
+    const msg = `No defaultAccount was set -- cannot send transaction`
+    Logger.warn(msg)
+    throw Error(msg)
   }
   return {
     from: web3Instance.eth.defaultAccount,

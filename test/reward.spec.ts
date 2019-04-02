@@ -1,8 +1,8 @@
 import { first, take } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { Proposal } from '../src/proposal'
+import { IProposalType, Proposal } from '../src/proposal'
 import { Reward } from '../src/reward'
-import { newArc, getTestDAO, toWei } from './utils'
+import { getTestDAO, newArc, toWei } from './utils'
 
 /**
  * Reward test
@@ -34,7 +34,7 @@ describe('Reward', () => {
       nativeTokenReward: toWei('1'),
       periodLength: 12,
       periods: 5,
-      type: 'ContributionReward'
+      type: IProposalType.ContributionReward
     }).send()
     const proposal = state.result as Proposal
 
