@@ -767,11 +767,11 @@ export interface IProposalCreateOptions {
   externalTokenAddress?: Address // for ContributionRewardProposal
   periodLength?: number // for ContributionRewardProposal
   periods?: any // for ContributionRewardProposal
-  parametersHash: string // for schemeRegistrar Proposal
-  permissions: string // for schemeRegistrar Proposal
+  parametersHash?: string // for schemeRegistrar Proposal
+  permissions?: string // for schemeRegistrar Proposal
   scheme?: Address // for schemeRegistrar Proposal
   title?: string
-  type: number
+  type: IProposalType
   url?: string
   value?: number // for GenericSchemeProposal
 }

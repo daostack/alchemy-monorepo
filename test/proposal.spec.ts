@@ -48,7 +48,9 @@ describe('Proposal', () => {
     expect(ls.length).toBeGreaterThan(0)
     ls = await Proposal.search({type: IProposalType.GenericScheme }, arc).pipe(first()).toPromise()
     expect(ls.length).toBeGreaterThan(0)
-    ls = await Proposal.search({type: IProposalType.SchemeRegistrar}, arc).pipe(first()).toPromise()
+    ls = await Proposal.search({type: IProposalType.SchemeRegistrarPropose}, arc).pipe(first()).toPromise()
+    expect(ls.length).toEqual(0)
+    ls = await Proposal.search({type: IProposalType.SchemeRegistrarProposeToRemove}, arc).pipe(first()).toPromise()
     expect(ls.length).toEqual(0)
   })
 
