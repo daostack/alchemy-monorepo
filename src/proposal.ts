@@ -13,6 +13,13 @@ import { Address, Date, ICommonQueryOptions, IStateful } from './types'
 import { nullAddress } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
+export enum IProposalType {
+  ContributionReward, // propose a contributionReward
+  GenericScheme, // propose to execute a function call from a registered genericScheme
+  SchemeRegistrarPropose, // propose to register to schme
+  SchemeRegistrarProposeToRemove // propose to remove a registered scheme
+}
+
 export enum IProposalOutcome {
   None,
   Pass,
@@ -26,12 +33,6 @@ export enum IProposalStage {
   PreBoosted,
   Boosted,
   QuietEndingPeriod
-}
-
-export enum IProposalType {
-  ContributionReward,
-  GenericScheme,
-  SchemeRegistrar
 }
 
 export enum IExecutionState {
@@ -160,74 +161,110 @@ export class Proposal implements IStateful<IProposalState> {
 
     let createTransaction: () => any = () => null
 
+    let eventName: string
+    let msg: string // used for error messages
+    switch (options.type) {
     // ContributionReward
-    if (options.type === IProposalType.ContributionReward) {
-      const contributionReward = context.getContract('ContributionReward')
+      case IProposalType.ContributionReward:
+        eventName = 'NewContributionProposal'
+        const contributionReward = context.getContract('ContributionReward')
 
-      createTransaction = async () => {
-        options.descriptionHash = await saveIPFSData()
-        const transaction = contributionReward.methods.proposeContributionReward(
+        createTransaction = async () => {
+          options.descriptionHash = await saveIPFSData()
+          const transaction = contributionReward.methods.proposeContributionReward(
+              options.dao,
+              options.descriptionHash || '',
+              options.reputationReward && options.reputationReward.toString() || 0,
+              [
+                options.nativeTokenReward && options.nativeTokenReward.toString() || 0,
+                options.ethReward && options.ethReward.toString() || 0,
+                options.externalTokenReward && options.externalTokenReward.toString() || 0,
+                options.periodLength || 12,
+                options.periods || 5
+              ],
+              options.externalTokenAddress || nullAddress,
+              options.beneficiary
+          )
+          return transaction
+        }
+        break
+
+      // GenericScheme
+      case IProposalType.GenericScheme:
+        eventName = 'NewCallProposal'
+        if (!options.callData) {
+          throw new Error(`Missing argument "callData" for GenericScheme`)
+        }
+        if (options.value === undefined) {
+          throw new Error(`Missing argument "value" for GenericScheme`)
+        }
+        createTransaction = async () => {
+          options.descriptionHash = await saveIPFSData()
+
+          const genericScheme = context.getContract('GenericScheme')
+          const transaction = genericScheme.methods.proposeCall(
             options.dao,
-            options.descriptionHash || '',
-            options.reputationReward && options.reputationReward.toString() || 0,
-            [
-              options.nativeTokenReward && options.nativeTokenReward.toString() || 0,
-              options.ethReward && options.ethReward.toString() || 0,
-              options.externalTokenReward && options.externalTokenReward.toString() || 0,
-              options.periodLength || 12,
-              options.periods || 5
-            ],
-            options.externalTokenAddress || nullAddress,
-            options.beneficiary
-        )
-        return transaction
-      }
+            options.callData,
+            options.value,
+            options.descriptionHash
+          )
+          return transaction
+        }
+        break
 
-    // GenericScheme
-    } else if (options.type === IProposalType.GenericScheme) {
-      if (!options.callData) {
-        throw new Error((`Missing argument "callData" for GenericScheme`))
-      }
-      if (options.value === undefined) {
-        throw new Error((`Missing argument "value" for GenericScheme`))
-      }
-      createTransaction = async () => {
-        options.descriptionHash = await saveIPFSData()
+      // SchemeRegistrar
+      case IProposalType.SchemeRegistrarPropose:
+        eventName = 'NewSchemeProposal'
+        if (!options.scheme) {
+          msg = `Missing argument "scheme" for SchemeRegistrar`
+          throw Error(msg)
+        }
+        if (!options.parametersHash) {
+          msg = `Missing argument "parametersHash" for SchemeRegistrar`
+          throw Error(msg)
+        }
+        if (!options.permissions) {
+          msg = `Missing argument "permissions" for SchemeRegistrar`
+          throw Error(msg)
+        }
+        createTransaction = async () => {
+          const schemeRegistrar = context.getContract('SchemeRegistrar')
+          options.descriptionHash = await saveIPFSData()
 
-        const genericScheme = context.getContract('GenericScheme')
-        const transaction = genericScheme.methods.proposeCall(
-          options.dao,
-          options.callData,
-          options.value,
-          options.descriptionHash
-        )
-        return transaction
-      }
-
-    // SchemeRegistrar
-    } else if (options.type === IProposalType.SchemeRegistrar) {
-      const msg = `IProposalType.SchemeProposal is not implemented yet`
-      throw Error(msg)
-    } else {
-      const msg = `Unknown proposal type: "${options.type}" (did you use IProposalType.TypeOfProposal?)`
-      throw Error(msg)
+          const transaction = schemeRegistrar.methods.proposeScheme(
+            options.dao,
+            options.scheme,
+            options.parametersHash,
+            options.permissions,
+            options.descriptionHash
+          )
+          return transaction
+        }
+        break
+      case IProposalType.SchemeRegistrarProposeToRemove:
+        eventName = 'RemoveSchemeProposal'
+        if (!options.scheme) {
+          msg = `Missing argument "scheme" for SchemeRegistrar`
+          throw Error(msg)
+        }
+        createTransaction = async () => {
+          const schemeRegistrar = context.getContract('SchemeRegistrar')
+          options.descriptionHash = await saveIPFSData()
+          const transaction = schemeRegistrar.methods.proposeToRemoveScheme(
+            options.dao,
+            options.scheme,
+            options.descriptionHash
+          )
+          return transaction
+        }
+        break
+              // function proposeToRemoveScheme(Avatar _avatar, address _scheme, string memory _descriptionHash)
+      default:
+        msg = `Unknown proposal type: "${options.type}" (did you use IProposalType.TypeOfProposal?)`
+        throw Error(msg)
     }
 
     const map = (receipt: any) => {
-      let eventName
-      switch (options.type) {
-        case IProposalType.ContributionReward:
-          eventName = 'NewContributionProposal'
-          break
-        case IProposalType.GenericScheme:
-          eventName = 'NewCallProposal'
-          break
-        case IProposalType.SchemeRegistrar:
-          throw Error('SchemeRegistrar not implemented yet')
-        default:
-          const msg = `Unknown proposal type: "${options.type}" (did you use IProposalType.TypeOfProposal?)`
-          throw Error(msg)
-      }
       const proposalId = receipt.events[eventName].returnValues._proposalId
       return new Proposal(proposalId, options.dao as string, context)
     }
@@ -249,7 +286,7 @@ export class Proposal implements IStateful<IProposalState> {
     options: IProposalQueryOptions,
     context: Arc,
     apolloQueryOptions: IApolloQueryOptions = {}
-  ): Observable<Proposal[]> {
+  ): Observable < Proposal[] > {
     let where = ''
 
     // default options
@@ -305,13 +342,13 @@ export class Proposal implements IStateful<IProposalState> {
   public context: Arc
   public dao: DAO
 
-  constructor(public id: string, public daoAddress: Address, context: Arc) {
+constructor(public id: string, public daoAddress: Address, context: Arc) {
     this.id = id
     this.context = context
     this.dao = new DAO(daoAddress, context)
   }
 
-  public state(): Observable<IProposalState> {
+  public state(): Observable < IProposalState > {
     const query = gql`
       {
         proposal(id: "${this.id}") {
@@ -498,7 +535,7 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.getContract('Redeemer')
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
+  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
     options.proposal = this.id
     return Vote.search(options, this.context)
   }
@@ -510,7 +547,7 @@ export class Proposal implements IStateful<IProposalState> {
    *  all the sender's rep will be used
    * @return  an observable Operation<Vote>
    */
-  public vote(outcome: IProposalOutcome, amount: number = 0): Operation<Vote|null> {
+  public vote(outcome: IProposalOutcome, amount: number = 0): Operation < Vote | null > {
 
     const votingMachine = this.votingMachine()
 
@@ -568,12 +605,12 @@ export class Proposal implements IStateful<IProposalState> {
     return new Token(this.context.getContract('GEN').options.address, this.context)
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
+  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
     options.proposal = this.id
     return Stake.search(options, this.context)
   }
 
-  public stake(outcome: IProposalOutcome, amount: BN ): Operation<Stake> {
+  public stake(outcome: IProposalOutcome, amount: BN ): Operation < Stake > {
     const stakeMethod = this.votingMachine().methods.stake(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
@@ -633,7 +670,7 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.sendTransaction(stakeMethod, map, errorHandler)
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
+  public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
     options.proposal = this.id
     return Reward.search(options, this.context)
   }
@@ -645,7 +682,7 @@ export class Proposal implements IStateful<IProposalState> {
    * @param  beneficiary Addresss of the beneficiary, optional, defaults to the defaultAccount
    * @return  an Operation
    */
-  public claimRewards(beneficiary?: Address): Operation<boolean> {
+  public claimRewards(beneficiary ?: Address): Operation < boolean > {
     // const transaction = this.votingMachine().methods.redeem(this.id, account)
     if (!beneficiary) {
       beneficiary = this.context.web3.eth.defaultAccount
@@ -658,7 +695,7 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.sendTransaction(transaction, () => true)
   }
 
-  public execute(): Operation<any> {
+  public execute(): Operation < any > {
     const transaction = this.votingMachine().methods.execute(this.id)
     const map = (receipt: any) => {
       if (Object.keys(receipt.events).length  === 0) {
@@ -730,6 +767,9 @@ export interface IProposalCreateOptions {
   externalTokenAddress?: Address // for ContributionRewardProposal
   periodLength?: number // for ContributionRewardProposal
   periods?: any // for ContributionRewardProposal
+  parametersHash: string // for schemeRegistrar Proposal
+  permissions: string // for schemeRegistrar Proposal
+  scheme?: Address // for schemeRegistrar Proposal
   title?: string
   type: number
   url?: string

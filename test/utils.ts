@@ -155,9 +155,10 @@ export async function createAProposal(dao?: DAO, options: any = {}) {
   return response.result as Proposal
 }
 
+// Vote and vote and vote for proposal until it is accepted
 export async function voteForProposal(proposal: Proposal) {
   const arc = proposal.context
-  const accounts = proposal.context.web3.eth.accounts.wallet
+  const accounts = arc.web3.eth.accounts.wallet
 
   arc.setAccount(accounts[0].address)
   await proposal.vote(IProposalOutcome.Pass).send()
@@ -172,6 +173,5 @@ export async function voteForProposal(proposal: Proposal) {
 
   arc.setAccount(accounts[3].address)
   await proposal.vote(IProposalOutcome.Pass).send()
-
   arc.setAccount(accounts[0].address)
 }

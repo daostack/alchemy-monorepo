@@ -348,6 +348,10 @@ export class Arc {
         contractClass = require('@daostack/arc/build/contracts/Reputation.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.dao.Reputation, opts)
         return contract
+      case 'SchemeRegistrar':
+        contractClass = require('@daostack/arc/build/contracts/SchemeRegistrar.json')
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.SchemeRegistrar, opts)
+        return contract
       default:
         throw Error(`Unknown contract: ${name}`)
     }
@@ -396,7 +400,7 @@ export class Arc {
   }
 
   public setAccount(address: Address) {
-    this.web3.eth.accounts.wallet[0] = address
+    // this.web3.eth.accounts.wallet[0] = address
     this.web3.eth.defaultAccount = address
   }
 
