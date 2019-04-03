@@ -127,6 +127,7 @@ export class Proposal implements IStateful<IProposalState> {
    */
   public static create(options: IProposalCreateOptions, context: Arc): Operation<Proposal> {
 
+    let msg: string // used for error messages
     if (!options.dao) {
       throw Error(`Proposal.create(options): options must include an address for "dao"`)
     }
@@ -144,7 +145,7 @@ export class Proposal implements IStateful<IProposalState> {
           url: options.url
         }
         if (options.descriptionHash) {
-          const msg = `Proposal.create() takes a descriptionHash, or values for title, url and description; not both`
+          msg = `Proposal.create() takes a descriptionHash, or values for title, url and description; not both`
           throw Error(msg)
         }
       }
@@ -162,7 +163,6 @@ export class Proposal implements IStateful<IProposalState> {
     let createTransaction: () => any = () => null
 
     let eventName: string
-    let msg: string // used for error messages
     switch (options.type) {
     // ContributionReward
       case IProposalType.ContributionReward:
@@ -294,20 +294,28 @@ export class Proposal implements IStateful<IProposalState> {
 
     // constribut the query
     for (const key of Object.keys(options)) {
-      if (key === 'stage' && options[key] !== undefined) {
-        where += `stage: "${IProposalStage[options[key] as IProposalStage]}"\n`
-      } else if (key === 'stage_in' && Array.isArray(options[key])) {
+      const value = options[key]
+      if (key === 'stage' && value !== undefined) {
+        where += `stage: "${IProposalStage[value as IProposalStage]}"\n`
+      } else if (key === 'stage_in' && Array.isArray(value)) {
         const stageValues = options[key].map((stage: number) => '"' + IProposalStage[stage as IProposalStage] + '"')
         where += `stage_in: [${stageValues.join(',')}]\n`
       } else if (key === 'type') {
-        const apolloKey = IProposalType[options[key]][0].toLowerCase() + IProposalType[options[key]].slice(1)
-        where += `${apolloKey}_not: null\n`
+        // TODO: we are not distinguishing between the schemeregisterpropose
+        // and SchemeRegistrarProposeToRemove proposals
+        if (value === IProposalType.SchemeRegistrarPropose) {
+          where += `schemeRegistrar_not: null\n`
+        } else if (value === IProposalType.SchemeRegistrarProposeToRemove) {
+          where += `schemeRegistrar_not: null\n`
+        } else {
+          const apolloKey = IProposalType[value][0].toLowerCase() + IProposalType[value].slice(1)
+          where += `${apolloKey}_not: null\n`
+        }
       } else if (Array.isArray(options[key])) {
         // Support for operators like _in
-        const values = options[key].map((value: number) => '"' + value + '"')
+        const values = options[key].map((val: number) => '"' + val + '"')
         where += `${key}: [${values.join(',')}]\n`
       } else {
-
         if (key === 'proposer' || key === 'beneficiary' || key === 'dao') {
           where += `${key}: "${(options[key] as string).toLowerCase()}"\n`
         } else {
