@@ -1,9 +1,11 @@
 import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
+import { DAO } from '../src/dao'
 import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Stake } from '../src/stake'
 import { createAProposal, getTestDAO, newArc, toWei, waitUntilTrue } from './utils'
+const DAOstackMigration = require('@daostack/migration')
 
 jest.setTimeout(10000)
 
@@ -80,5 +82,16 @@ describe('Stake on a ContributionReward', () => {
     await expect(proposal.stake(IProposalOutcome.Pass, toWei('10000000')).send()).rejects.toThrow(
       /unknown proposal/i
     )
+  })
+
+  it.only('upstakeNeededToBoost() gives correct values', async () => {
+
+    const { Avatar, queuedProposalId, preBoostedProposalId } = DAOstackMigration.migration('private').test
+
+    const dao = new DAO(Avatar, arc)
+    const proposal = await createAProposal(dao)
+    // this new proposal is now queued, so upstakeNeededToBoost returns undefined
+    expect(proposal.upstakeNeededToBoost()).toEqual(undefined)
+
   })
 })

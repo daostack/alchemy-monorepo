@@ -350,10 +350,16 @@ export class Proposal implements IStateful<IProposalState> {
   public context: Arc
   public dao: DAO
 
-constructor(public id: string, public daoAddress: Address, context: Arc) {
+constructor(
+    public id: string,
+    public daoAddress: Address,
+    // public type: IProposalType = IProposalType.ContributionReward,
+    context: Arc
+  ) {
     this.id = id
     this.context = context
     this.dao = new DAO(daoAddress, context)
+    // this.type = type
   }
 
   public state(): Observable < IProposalState > {
@@ -703,7 +709,13 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
     return this.context.sendTransaction(transaction, () => true)
   }
 
-  public execute(): Operation < any > {
+  /**
+   * calll the 'execute()' function on the votingMachine.
+   * the main purpose of this function is to set the stage of the proposals
+   * this call may (or may not) "execute" the proposal itself (i.e. do what the proposal proposes)
+   * @return an Operation that, when sucessful, wil lcontain the receipt of the transaction
+   */
+  public execute(): Operation<any> {
     const transaction = this.votingMachine().methods.execute(this.id)
     const map = (receipt: any) => {
       if (Object.keys(receipt.events).length  === 0) {
@@ -742,6 +754,24 @@ constructor(public id: string, public daoAddress: Address, context: Arc) {
     }
     return this.context.sendTransaction(transaction, map, errorHandler)
   }
+
+  /**
+   * if the proposal state is "PreBoosted" this will return the number of tokens
+   * (currently) needed to crosee the confidence threshold of the proposal's queue
+   * It will trhow an error is the situation does not apply (for example, if the current state is not PreBoosted)
+   * @return a BN, or an l
+   */
+  public upstakeNeededToBoost(): BN|undefined {
+    return undefined
+  }
+
+  // the current threshold
+  public queueThreshold(): Observable<BN> {
+    return this.dao.queueThreshold(this.type)
+    const query = gql(`{
+      gpQueue()}`)
+  }
+
 }
 
 enum ProposalQuerySortOptions {
