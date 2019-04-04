@@ -2,16 +2,13 @@ import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Logger } from '../src/logger'
-import { IProposalStage, Proposal } from '../src/proposal'
+import { IContributionReward, IProposalStage, IProposalType, Proposal } from '../src/proposal'
 import {
   fromWei,
-  newArc,
   getTestDAO,
-  graphqlHttpProvider,
-  graphqlWsProvider,
+  newArc,
   toWei,
-  waitUntilTrue,
-  web3Provider
+  waitUntilTrue
 } from './utils'
 
 Logger.setLevel(Logger.OFF)
@@ -39,7 +36,7 @@ describe('Create a ContributionReward proposal', () => {
       periodLength: 12,
       periods: 5,
       reputationReward: toWei('10'),
-      type: 'ContributionReward'
+      type: IProposalType.ContributionReward
     }
 
     const response = await dao.createProposal(options).send()
@@ -56,15 +53,15 @@ describe('Create a ContributionReward proposal', () => {
     expect(proposal.id).toBeDefined()
     const proposalState = await proposal.state().pipe(first()).toPromise()
 
-    expect(fromWei(proposalState.externalTokenReward)).toEqual('0')
-    expect(fromWei(proposalState.ethReward)).toEqual('300')
-    expect(fromWei(proposalState.nativeTokenReward)).toEqual('1')
-    expect(fromWei(proposalState.reputationReward)).toEqual('10')
+    const contributionReward = proposalState.contributionReward as IContributionReward
+    expect(fromWei(contributionReward.externalTokenReward)).toEqual('0')
+    expect(fromWei(contributionReward.ethReward)).toEqual('300')
+    expect(fromWei(contributionReward.nativeTokenReward)).toEqual('1')
+    expect(fromWei(contributionReward.reputationReward)).toEqual('10')
     expect(fromWei(proposalState.stakesAgainst)).toEqual('0.0000001') // TODO: why this amount?
     expect(fromWei(proposalState.stakesFor)).toEqual('0')
 
     expect(proposalState).toMatchObject({
-      beneficiary: options.beneficiary,
       executedAt: null,
       proposer: dao.context.web3.eth.defaultAccount.toLowerCase(),
       quietEndingPeriodBeganAt: null,
@@ -87,7 +84,7 @@ describe('Create a ContributionReward proposal', () => {
       periodLength: 12,
       periods: 5,
       title: 'A modest proposal',
-      type: 'ContributionReward',
+      type: IProposalType.ContributionReward,
       url: 'http://swift.org/modest'
     }
 
@@ -118,14 +115,9 @@ describe('Create a ContributionReward proposal', () => {
   })
 
   it('handles the fact that the ipfs url is not set elegantly', async () => {
-    const arcWithoutIPFS = new Arc({
-      graphqlHttpProvider,
-      graphqlWsProvider,
-      ipfsProvider: '',
-      web3Provider
-    })
-
-    const dao = arcWithoutIPFS.dao('0xe74f3c49c162c00ac18b022856e1a4ecc8947c42')
+    const arcWithoutIPFS = newArc()
+    arcWithoutIPFS.ipfsProvider = ''
+    const dao = arcWithoutIPFS.dao((arc.contractAddresses as any).dao.Avatar)
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       description: 'Just eat them',
@@ -135,11 +127,11 @@ describe('Create a ContributionReward proposal', () => {
       periodLength: 12,
       periods: 5,
       title: 'A modest proposal',
-      type: 'ContributionReward',
+      type: IProposalType.ContributionReward,
       url: 'http://swift.org/modest'
     }
 
-    expect(() => dao.createProposal(options)).toThrowError(
+    expect(dao.createProposal(options).send()).rejects.toThrowError(
       /no ipfsProvider set/i
     )
   })

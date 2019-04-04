@@ -4,7 +4,6 @@ import { Logger } from '../src/logger'
 import { Address } from '../src/types'
 import { fromWei, newArc, toWei, waitUntilTrue } from './utils'
 
-Logger.setLevel(Logger.OFF)
 jest.setTimeout(10000)
 
 /**

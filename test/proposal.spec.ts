@@ -1,11 +1,11 @@
 import BN = require('bn.js')
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { IExecutionState, IProposalOutcome, IProposalStage, IProposalState, Proposal  } from '../src/proposal'
+import { IContributionReward, IExecutionState, IProposalOutcome, IProposalStage, IProposalState,
+  IProposalType,
+  Proposal } from '../src/proposal'
 import { createAProposal, fromWei, newArc, toWei, waitUntilTrue} from './utils'
 const DAOstackMigration = require('@daostack/migration')
-
-jest.setTimeout(10000)
 
 /**
  * Proposal test
@@ -40,7 +40,18 @@ describe('Proposal', () => {
     const expiryDate = (await l1[0].state().pipe(first()).toPromise()).expiresInQueueAt
     const l2 = await Proposal.search({expiresInQueueAt_gt: expiryDate}, arc).pipe(first()).toPromise()
     expect(l2.length).toBeLessThan(l1.length)
+  })
 
+  it('proposal.search() accepts type argument', async () => {
+    let ls
+    ls = await Proposal.search({type: IProposalType.ContributionReward}, arc).pipe(first()).toPromise()
+    expect(ls.length).toBeGreaterThan(0)
+    ls = await Proposal.search({type: IProposalType.GenericScheme }, arc).pipe(first()).toPromise()
+    expect(ls.length).toBeGreaterThan(0)
+    ls = await Proposal.search({type: IProposalType.SchemeRegistrarPropose}, arc).pipe(first()).toPromise()
+    // expect(ls.length).toEqual(0)
+    ls = await Proposal.search({type: IProposalType.SchemeRegistrarProposeToRemove}, arc).pipe(first()).toPromise()
+    // expect(ls.length).toEqual(0)
   })
 
   it('proposal.search ignores case in address', async () => {
@@ -122,27 +133,24 @@ describe('Proposal', () => {
     expect(proposal).toBeInstanceOf(Proposal)
 
     // TODO: these amounts seem odd, I guess not using WEI when proposal created?
-    expect(fromWei(proposalState.nativeTokenReward)).toEqual('10')
+    const contributionReward = proposalState.contributionReward as IContributionReward
+    expect(fromWei(contributionReward.nativeTokenReward)).toEqual('10')
     expect(fromWei(proposalState.stakesAgainst)).toEqual('0.0000001')
     expect(fromWei(proposalState.stakesFor)).toEqual('0')
-    expect(fromWei(proposalState.reputationReward)).toEqual('10')
-    expect(fromWei(proposalState.ethReward)).toEqual('10')
-    expect(fromWei(proposalState.externalTokenReward)).toEqual('10')
+    expect(fromWei(contributionReward.reputationReward)).toEqual('10')
+    expect(fromWei(contributionReward.ethReward)).toEqual('10')
+    expect(fromWei(contributionReward.externalTokenReward)).toEqual('10')
     expect(fromWei(proposalState.votesFor)).toEqual('1000')
     expect(fromWei(proposalState.votesAgainst)).toEqual('1000')
     expect(fromWei(proposalState.proposingRepReward)).toEqual('0.000000005')
 
     expect(proposalState).toMatchObject({
-        beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
         boostedAt: 0,
         boostedVotePeriodLimit: 600,
         description: null,
         descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
         executedAt: null,
         executionState: IExecutionState.None,
-        // externalToken: '0xff6049b87215476abf744eaa3a476cbad46fb1ca',
-        periodLength: 0,
-        periods: 1,
         preBoostedVotePeriodLimit: 600,
         proposer: '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1',
         quietEndingPeriodBeganAt: null,
@@ -152,6 +160,11 @@ describe('Proposal', () => {
         title: null,
         url: null,
         winningOutcome: IProposalOutcome.Fail
+    })
+    expect(proposalState.contributionReward).toMatchObject({
+        beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+        periodLength: 0,
+        periods: 1
     })
   })
 

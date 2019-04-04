@@ -1,8 +1,9 @@
 import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { IProposalOutcome, IProposalStage, IProposalState, Proposal } from '../src/proposal'
-import { createAProposal, fromWei, getContractAddresses, getTestDAO, mintSomeReputation, newArc, toWei, waitUntilTrue } from './utils'
+import { IProposalOutcome, IProposalStage, IProposalState, IProposalType, Proposal } from '../src/proposal'
+import { createAProposal, fromWei, getTestDAO,
+  newArc, toWei, voteForProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
@@ -27,7 +28,7 @@ describe('Proposal execute()', () => {
       periodLength: 12,
       periods: 5,
       reputationReward: toWei('1'),
-      type: 'ContributionReward'
+      type: IProposalType.ContributionReward
     }
     const response = await dao.createProposal(options).send()
     const proposalId = (response.result as any).id
@@ -122,22 +123,7 @@ describe('Proposal execute()', () => {
     expect(lastState().stage).toEqual(IProposalStage.Queued)
     expect(lastState().executedAt).toEqual(null)
 
-    proposal.context.web3.eth.accounts.defaultAccount = accounts[0]
-    await proposal.vote(IProposalOutcome.Pass).send()
-    // let's vote for the proposal with accounts[1]
-    arc.setAccount(accounts[1].address)
-    const response = await proposal.vote(IProposalOutcome.Pass).send()
-    // check if the "from" address is as expected
-    expect(response.receipt.from).toEqual(accounts[1].address.toLowerCase())
-
-    arc.setAccount(accounts[2].address)
-    await proposal.vote(IProposalOutcome.Pass).send()
-
-    arc.setAccount(accounts[3].address)
-    await proposal.vote(IProposalOutcome.Pass).send()
-
-    arc.setAccount(accounts[0].address)
-
+    await voteForProposal(proposal)
     // wait until all votes have been counted
     await waitUntilTrue(() => {
       return lastState().votesCount === 4

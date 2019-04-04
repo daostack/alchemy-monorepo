@@ -1,7 +1,7 @@
 import BN = require('bn.js')
 import { Arc } from '../src/arc'
-import { Proposal } from '../src/proposal'
-import { createAProposal, newArc, getTestDAO, toWei } from './utils'
+import { IProposalType, Proposal } from '../src/proposal'
+import { createAProposal, getTestDAO, newArc, toWei } from './utils'
 
 describe('Claim rewards', () => {
   let arc: Arc
@@ -23,7 +23,7 @@ describe('Claim rewards', () => {
       nativeTokenReward: toWei('1'),
       periodLength: 12,
       periods: 5,
-      type: 'ContributionReward'
+      type: IProposalType.ContributionReward
     }
 
     const response = await dao.createProposal(options).send()

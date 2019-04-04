@@ -13,6 +13,13 @@ import { Address, Date, ICommonQueryOptions, IStateful } from './types'
 import { nullAddress } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
+export enum IProposalType {
+  ContributionReward, // propose a contributionReward
+  GenericScheme, // propose to execute a function call from a registered genericScheme
+  SchemeRegistrarPropose, // propose to register to schme
+  SchemeRegistrarProposeToRemove // propose to remove a registered scheme
+}
+
 export enum IProposalOutcome {
   None,
   Pass,
@@ -40,26 +47,21 @@ export enum IExecutionState {
 export interface IProposalState {
   accountsWithUnclaimedRewards: Address[],
   activationTime: number
-  beneficiary: Address
   boostedAt: Date
   boostedVotePeriodLimit: number
+  contributionReward: IContributionReward|null
   confidenceThreshold: number
   createdAt: Date
   dao: DAO
   daoBountyConst: number
   descriptionHash?: string
   description?: string
-  ethReward: BN
   executedAt: Date
-  externalTokenReward: BN
   executionState: IExecutionState
   expiresInQueueAt: Date
-  externalToken: Address
+  genericScheme: IGenericScheme|null
   id: string
-  nativeTokenReward: BN
   organizationId: string
-  periods: number
-  periodLength: number
   paramsHash: string
   preBoostedAt: Date
   preBoostedVotePeriodLimit: number
@@ -68,20 +70,51 @@ export interface IProposalState {
   queuedVoteRequiredPercentage: number
   queuedVotePeriodLimit: number
   quietEndingPeriodBeganAt: Date
-  reputationReward: BN
   resolvedAt: Date|null
+  schemeRegistrar: ISchemeRegistrar|null
   stage: IProposalStage
   stakesFor: BN
   stakesAgainst: BN
   thresholdConst: number
   title?: string
   totalRepWhenExecuted: BN
+  type: IProposalType.ContributionReward,
   url?: string
   votesFor: BN
   votesAgainst: BN
   votesCount: number
   votingMachine: Address
   winningOutcome: IProposalOutcome
+}
+
+export interface IContributionReward {
+  beneficiary: Address
+  externalTokenReward: BN
+  externalToken: Address
+  ethReward: BN
+  nativeTokenReward: BN
+  periods: number
+  periodLength: number
+  reputationReward: BN
+}
+
+export interface IGenericScheme {
+  id: string
+  contractToCall: Address
+  callData: string
+  executed: boolean
+  returnValue: string
+}
+
+export interface ISchemeRegistrar {
+  id: string
+  schemeToRegister: Address
+  schemeToRegisterParamsHash: string
+  schemeToRegisterPermission: string
+  schemeToRemove: string
+  decision: number
+  schemeRegistered: boolean
+  schemeRemoved: boolean
 }
 
 export class Proposal implements IStateful<IProposalState> {
@@ -94,80 +127,195 @@ export class Proposal implements IStateful<IProposalState> {
    */
   public static create(options: IProposalCreateOptions, context: Arc): Operation<Proposal> {
 
+    let msg: string // used for error messages
     if (!options.dao) {
       throw Error(`Proposal.create(options): options must include an address for "dao"`)
     }
 
     let ipfsDataToSave: object = {}
 
-    if (options.title || options.url || options.description) {
-      if (!context.ipfsProvider) {
-        throw Error(`No ipfsProvider set on Arc instance - cannot save data on IPFS`)
+    const saveIPFSData = async () => {
+      if (options.title || options.url || options.description) {
+        if (!context.ipfsProvider) {
+          throw Error(`No ipfsProvider set on Arc instance - cannot save data on IPFS`)
+        }
+        ipfsDataToSave = {
+          description: options.description,
+          title: options.title,
+          url: options.url
+        }
+        if (options.descriptionHash) {
+          msg = `Proposal.create() takes a descriptionHash, or values for title, url and description; not both`
+          throw Error(msg)
+        }
       }
-      ipfsDataToSave = {
-        description: options.description,
-        title: options.title,
-        url: options.url
-      }
-      if (options.descriptionHash) {
-        const msg = `Proposal.create() takes a descriptionHash, or a value for title, url and description, but not both`
-        throw Error(msg)
-      }
-    }
-    const contributionReward = context.getContract('ContributionReward')
-
-    async function createTransaction() {
       if (ipfsDataToSave !== {}) {
         Logger.debug('Saving data on IPFS...')
         const ipfsResponse = await context.ipfs.add(Buffer.from(JSON.stringify(ipfsDataToSave)))
-        options.descriptionHash = ipfsResponse[0].path
+        const descriptionHash = ipfsResponse[0].path
         // pin the file
-        await context.ipfs.pin.add(options.descriptionHash)
+        await context.ipfs.pin.add(descriptionHash)
         Logger.debug(`Data saved successfully as ${options.descriptionHash}`)
+        return descriptionHash
       }
+    }
 
-      const transaction = contributionReward.methods.proposeContributionReward(
-          options.dao,
-          options.descriptionHash || '',
-          options.reputationReward && options.reputationReward.toString() || 0,
-          [
-            options.nativeTokenReward && options.nativeTokenReward.toString() || 0,
-            options.ethReward && options.ethReward.toString() || 0,
-            options.externalTokenReward && options.externalTokenReward.toString() || 0,
-            options.periodLength || 12,
-            options.periods || 5
-          ],
-          options.externalTokenAddress || nullAddress,
-          options.beneficiary
-      )
-      return transaction
+    let createTransaction: () => any = () => null
+
+    let eventName: string
+    switch (options.type) {
+    // ContributionReward
+      case IProposalType.ContributionReward:
+        eventName = 'NewContributionProposal'
+        const contributionReward = context.getContract('ContributionReward')
+
+        createTransaction = async () => {
+          options.descriptionHash = await saveIPFSData()
+          const transaction = contributionReward.methods.proposeContributionReward(
+              options.dao,
+              options.descriptionHash || '',
+              options.reputationReward && options.reputationReward.toString() || 0,
+              [
+                options.nativeTokenReward && options.nativeTokenReward.toString() || 0,
+                options.ethReward && options.ethReward.toString() || 0,
+                options.externalTokenReward && options.externalTokenReward.toString() || 0,
+                options.periodLength || 12,
+                options.periods || 5
+              ],
+              options.externalTokenAddress || nullAddress,
+              options.beneficiary
+          )
+          return transaction
+        }
+        break
+
+      // GenericScheme
+      case IProposalType.GenericScheme:
+        eventName = 'NewCallProposal'
+        if (!options.callData) {
+          throw new Error(`Missing argument "callData" for GenericScheme`)
+        }
+        if (options.value === undefined) {
+          throw new Error(`Missing argument "value" for GenericScheme`)
+        }
+        createTransaction = async () => {
+          options.descriptionHash = await saveIPFSData()
+
+          const genericScheme = context.getContract('GenericScheme')
+          const transaction = genericScheme.methods.proposeCall(
+            options.dao,
+            options.callData,
+            options.value,
+            options.descriptionHash
+          )
+          return transaction
+        }
+        break
+
+      // SchemeRegistrar
+      case IProposalType.SchemeRegistrarPropose:
+        eventName = 'NewSchemeProposal'
+        if (!options.scheme) {
+          msg = `Missing argument "scheme" for SchemeRegistrar`
+          throw Error(msg)
+        }
+        if (!options.parametersHash) {
+          msg = `Missing argument "parametersHash" for SchemeRegistrar`
+          throw Error(msg)
+        }
+        if (!options.permissions) {
+          msg = `Missing argument "permissions" for SchemeRegistrar`
+          throw Error(msg)
+        }
+        createTransaction = async () => {
+          const schemeRegistrar = context.getContract('SchemeRegistrar')
+          options.descriptionHash = await saveIPFSData()
+
+          const transaction = schemeRegistrar.methods.proposeScheme(
+            options.dao,
+            options.scheme,
+            options.parametersHash,
+            options.permissions,
+            options.descriptionHash
+          )
+          return transaction
+        }
+        break
+      case IProposalType.SchemeRegistrarProposeToRemove:
+        eventName = 'RemoveSchemeProposal'
+        if (!options.scheme) {
+          msg = `Missing argument "scheme" for SchemeRegistrar`
+          throw Error(msg)
+        }
+        createTransaction = async () => {
+          const schemeRegistrar = context.getContract('SchemeRegistrar')
+          options.descriptionHash = await saveIPFSData()
+          const transaction = schemeRegistrar.methods.proposeToRemoveScheme(
+            options.dao,
+            options.scheme,
+            options.descriptionHash
+          )
+          return transaction
+        }
+        break
+              // function proposeToRemoveScheme(Avatar _avatar, address _scheme, string memory _descriptionHash)
+      default:
+        msg = `Unknown proposal type: "${options.type}" (did you use IProposalType.TypeOfProposal?)`
+        throw Error(msg)
     }
 
     const map = (receipt: any) => {
-      const proposalId = receipt.events.NewContributionProposal.returnValues._proposalId
+      const proposalId = receipt.events[eventName].returnValues._proposalId
       return new Proposal(proposalId, options.dao as string, context)
     }
 
     return context.sendTransaction(createTransaction, map)
   }
+
+  /**
+   * Search for proposals
+   * @param  options            Search options, must implemeent IProposalQueryOptions
+   * @param  context            An instance of Arc
+   * @param  apolloQueryOptions [description]
+   * @return                    An observable of lists of results
+   *
+   * For example:
+   *    Proposal.search({ stage: IProposalStage.Queued})
+   */
   public static search(
     options: IProposalQueryOptions,
     context: Arc,
     apolloQueryOptions: IApolloQueryOptions = {}
-  ): Observable<Proposal[]> {
+  ): Observable < Proposal[] > {
     let where = ''
+
+    // default options
+    options.type = options.type || IProposalType.ContributionReward
+
+    // constribut the query
     for (const key of Object.keys(options)) {
-      if (key === 'stage' && options[key] !== undefined) {
-        where += `stage: "${IProposalStage[options[key] as IProposalStage]}"\n`
-      } else if (key === 'stage_in' && Array.isArray(options[key])) {
+      const value = options[key]
+      if (key === 'stage' && value !== undefined) {
+        where += `stage: "${IProposalStage[value as IProposalStage]}"\n`
+      } else if (key === 'stage_in' && Array.isArray(value)) {
         const stageValues = options[key].map((stage: number) => '"' + IProposalStage[stage as IProposalStage] + '"')
         where += `stage_in: [${stageValues.join(',')}]\n`
+      } else if (key === 'type') {
+        // TODO: we are not distinguishing between the schemeregisterpropose
+        // and SchemeRegistrarProposeToRemove proposals
+        if (value === IProposalType.SchemeRegistrarPropose) {
+          where += `schemeRegistrar_not: null\n`
+        } else if (value === IProposalType.SchemeRegistrarProposeToRemove) {
+          where += `schemeRegistrar_not: null\n`
+        } else {
+          const apolloKey = IProposalType[value][0].toLowerCase() + IProposalType[value].slice(1)
+          where += `${apolloKey}_not: null\n`
+        }
       } else if (Array.isArray(options[key])) {
         // Support for operators like _in
-        const values = options[key].map((value: number) => '"' + value + '"')
+        const values = options[key].map((val: number) => '"' + val + '"')
         where += `${key}: [${values.join(',')}]\n`
       } else {
-
         if (key === 'proposer' || key === 'beneficiary' || key === 'dao') {
           where += `${key}: "${(options[key] as string).toLowerCase()}"\n`
         } else {
@@ -176,9 +324,6 @@ export class Proposal implements IStateful<IProposalState> {
         }
       }
     }
-
-    // TODO: we only manage contributionReward proposals
-    where += `contributionReward_not: null`
 
     const query = gql`
       {
@@ -205,13 +350,13 @@ export class Proposal implements IStateful<IProposalState> {
   public context: Arc
   public dao: DAO
 
-  constructor(public id: string, public daoAddress: Address, context: Arc) {
+constructor(public id: string, public daoAddress: Address, context: Arc) {
     this.id = id
     this.context = context
     this.dao = new DAO(daoAddress, context)
   }
 
-  public state(): Observable<IProposalState> {
+  public state(): Observable < IProposalState > {
     const query = gql`
       {
         proposal(id: "${this.id}") {
@@ -242,6 +387,13 @@ export class Proposal implements IStateful<IProposalState> {
           executedAt
           executionState
           expiresInQueueAt
+          genericScheme {
+            id
+            contractToCall
+            callData
+            executed
+            returnValue
+          }
           gpRewards {
             id
           }
@@ -256,6 +408,16 @@ export class Proposal implements IStateful<IProposalState> {
           quietEndingPeriodBeganAt
           queuedVotePeriodLimit
           queuedVoteRequiredPercentage
+          schemeRegistrar {
+            id
+            schemeToRegister
+            schemeToRegisterParamsHash
+            schemeToRegisterPermission
+            schemeToRemove
+            decision
+            schemeRegistered
+            schemeRemoved
+          }
           stage
           stakes {
             id
@@ -284,30 +446,63 @@ export class Proposal implements IStateful<IProposalState> {
         return null
       }
 
+      let contributionReward: IContributionReward|null = null
+      if (item.contributionReward) {
+        contributionReward = {
+          beneficiary: item.contributionReward.beneficiary,
+          ethReward: new BN(item.contributionReward.ethReward),
+          externalToken: item.contributionReward.externalToken,
+          externalTokenReward: new BN(item.contributionReward.externalTokenReward),
+          nativeTokenReward: new BN(item.contributionReward.nativeTokenReward),
+          periodLength: Number(item.contributionReward.periodLength),
+          periods: Number(item.contributionReward.periods),
+          reputationReward: new BN(item.contributionReward.reputationReward)
+        }
+      }
+
+      let genericScheme: IGenericScheme|null = null
+      if (item.genericScheme) {
+        genericScheme = {
+          callData: item.genericScheme.callData,
+          contractToCall: item.genericScheme.contractToCall,
+          executed: item.genericScheme.executed,
+          id: item.genericScheme.id,
+          returnValue: item.genericScheme.returnValue
+        }
+      }
+
+      let schemeRegistrar: ISchemeRegistrar|null = null
+      if (item.schemeRegistrar) {
+        schemeRegistrar =  {
+          decision: item.schemeRegistrar.decision,
+          id: item.schemeRegistrar.id,
+          schemeRegistered: item.schemeRegistrar.schemeRegistered,
+          schemeRemoved: item.schemeRegistrar.schemeRemoved,
+          schemeToRegister: item.schemeRegistrar.schemeToRegister,
+          schemeToRegisterParamsHash: item.schemeRegistrar.schemeToRegisterParamsHash,
+          schemeToRegisterPermission: item.schemeRegistrar.schemeToRegisterPermission,
+          schemeToRemove: item.schemeRegistrar.schemeToRemove
+        }
+      }
       return {
         accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
         activationTime: Number(item.activationTime),
-        beneficiary: item.contributionReward.beneficiary,
         boostedAt: Number(item.boostedAt),
         boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
         confidenceThreshold: Number(item.confidenceThreshold),
+        contributionReward,
         createdAt: Number(item.createdAt),
         dao: new DAO(item.dao.id, this.context),
         daoBountyConst: item.daoBountyConst,
         description: item.description,
         descriptionHash: item.descriptionHash,
-        ethReward: new BN(item.contributionReward.ethReward),
         executedAt: item.executedAt,
         executionState: IExecutionState[item.executionState] as any,
         expiresInQueueAt: Number(item.expiresInQueueAt),
-        externalToken: item.contributionReward.externalToken,
-        externalTokenReward: new BN(item.contributionReward.externalTokenReward),
+        genericScheme,
         id: item.id,
-        nativeTokenReward: new BN(item.contributionReward.nativeTokenReward),
         organizationId: item.organizationId,
         paramsHash: item.paramsHash,
-        periodLength: Number(item.contributionReward.periodLength),
-        periods: Number(item.contributionReward.periods),
         preBoostedAt: Number(item.preBoostedAt),
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposer: item.proposer,
@@ -315,14 +510,15 @@ export class Proposal implements IStateful<IProposalState> {
         queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
         queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
-        reputationReward: new BN(item.contributionReward.reputationReward),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : null,
+        schemeRegistrar,
         stage: IProposalStage[item.stage] as any,
         stakesAgainst: new BN(item.stakesAgainst),
         stakesFor: new BN(item.stakesFor),
         thresholdConst: Number(item.thresholdConst),
         title: item.title,
         totalRepWhenExecuted: new BN(item.totalRepWhenExecuted),
+        type: IProposalType.ContributionReward,
         url: item.url,
         votesAgainst: new BN(item.votesAgainst),
         votesCount: item.votes.length,
@@ -347,7 +543,7 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.getContract('Redeemer')
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
+  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
     options.proposal = this.id
     return Vote.search(options, this.context)
   }
@@ -359,7 +555,7 @@ export class Proposal implements IStateful<IProposalState> {
    *  all the sender's rep will be used
    * @return  an observable Operation<Vote>
    */
-  public vote(outcome: IProposalOutcome, amount: number = 0): Operation<Vote|null> {
+  public vote(outcome: IProposalOutcome, amount: number = 0): Operation < Vote | null > {
 
     const votingMachine = this.votingMachine()
 
@@ -396,6 +592,16 @@ export class Proposal implements IStateful<IProposalState> {
         if (prop.proposer === nullAddress ) {
           return new Error(`Unknown proposal with id ${proposal.id}`)
         }
+        const contributionReward = this.context.getContract('ContributionReward')
+        const proposalDataOnChain = await contributionReward.methods
+          .organizationsProposals(this.dao.address, this.id).call()
+
+        // requirement from ContributionReward.sol
+        // require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0);
+        if (Number(proposalDataOnChain.executionTime) !== 0) {
+          const msg = `proposal ${proposal.id} already executed`
+          throw Error(msg)
+        }
       }
       // if we have found no known error, we return the original error
       return error
@@ -407,12 +613,12 @@ export class Proposal implements IStateful<IProposalState> {
     return new Token(this.context.getContract('GEN').options.address, this.context)
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
+  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
     options.proposal = this.id
     return Stake.search(options, this.context)
   }
 
-  public stake(outcome: IProposalOutcome, amount: BN ): Operation<Stake> {
+  public stake(outcome: IProposalOutcome, amount: BN ): Operation < Stake > {
     const stakeMethod = this.votingMachine().methods.stake(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
@@ -472,7 +678,7 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.sendTransaction(stakeMethod, map, errorHandler)
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
+  public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
     options.proposal = this.id
     return Reward.search(options, this.context)
   }
@@ -484,7 +690,7 @@ export class Proposal implements IStateful<IProposalState> {
    * @param  beneficiary Addresss of the beneficiary, optional, defaults to the defaultAccount
    * @return  an Operation
    */
-  public claimRewards(beneficiary?: Address): Operation<boolean> {
+  public claimRewards(beneficiary ?: Address): Operation < boolean > {
     // const transaction = this.votingMachine().methods.redeem(this.id, account)
     if (!beneficiary) {
       beneficiary = this.context.web3.eth.defaultAccount
@@ -497,7 +703,7 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.sendTransaction(transaction, () => true)
   }
 
-  public execute(): Operation<any> {
+  public execute(): Operation < any > {
     const transaction = this.votingMachine().methods.execute(this.id)
     const map = (receipt: any) => {
       if (Object.keys(receipt.events).length  === 0) {
@@ -561,14 +767,19 @@ export interface IProposalCreateOptions {
   dao?: Address
   description?: string
   descriptionHash?: string
-  nativeTokenReward?: BN
-  reputationReward?: BN
-  ethReward?: BN
-  externalTokenReward?: BN
-  externalTokenAddress?: Address
-  periodLength?: number
-  periods?: any
+  callData?: string // for GenericSchemeProposal
+  nativeTokenReward?: BN // for ContributionRewardProposal
+  reputationReward?: BN // for ContributionRewardProposal
+  ethReward?: BN // for ContributionRewardProposal
+  externalTokenReward?: BN // for ContributionRewardProposal
+  externalTokenAddress?: Address // for ContributionRewardProposal
+  periodLength?: number // for ContributionRewardProposal
+  periods?: any // for ContributionRewardProposal
+  parametersHash?: string // for schemeRegistrar Proposal
+  permissions?: string // for schemeRegistrar Proposal
+  scheme?: Address // for schemeRegistrar Proposal
   title?: string
-  type?: string
+  type: IProposalType
   url?: string
+  value?: number // for GenericSchemeProposal
 }

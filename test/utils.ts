@@ -4,9 +4,8 @@ import gql from 'graphql-tag'
 import { IContractAddresses } from '../src/arc'
 import { DAO } from '../src/dao'
 import Arc from '../src/index'
-import { Proposal } from '../src/proposal'
+import { IProposalOutcome, IProposalType, Proposal } from '../src/proposal'
 import { Reputation } from '../src/reputation'
-
 const Web3 = require('web3')
 
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack'
@@ -128,7 +127,7 @@ export async function getTestDAO() {
   // we are using for testing
   const arc = await newArc()
   if (arc.contractAddresses) {
-    return arc.dao(arc.contractAddresses.dao.Avatar)
+    return arc.dao(arc.contractAddresses.test.Avatar)
   } else {
     return arc.dao('0xnotfound')
   }
@@ -148,11 +147,31 @@ export async function createAProposal(dao?: DAO, options: any = {}) {
     periodLength: 12,
     periods: 5,
     reputationReward: toWei('10'),
-    type: 'ContributionReward',
+    type: IProposalType.ContributionReward,
     ...options
   }
 
   const response = await dao.createProposal(options).send()
   return response.result as Proposal
+}
 
+// Vote and vote and vote for proposal until it is accepted
+export async function voteForProposal(proposal: Proposal) {
+  const arc = proposal.context
+  const accounts = arc.web3.eth.accounts.wallet
+
+  arc.setAccount(accounts[0].address)
+  await proposal.vote(IProposalOutcome.Pass).send()
+
+  // let's vote for the proposal with accounts[1]
+  arc.setAccount(accounts[1].address)
+  const response = await proposal.vote(IProposalOutcome.Pass).send()
+  expect(response.receipt.from).toEqual(accounts[1].address.toLowerCase())
+
+  arc.setAccount(accounts[2].address)
+  await proposal.vote(IProposalOutcome.Pass).send()
+
+  arc.setAccount(accounts[3].address)
+  await proposal.vote(IProposalOutcome.Pass).send()
+  arc.setAccount(accounts[0].address)
 }

@@ -2,7 +2,7 @@ import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { fromWei, newArc, getTestDAO, toWei, waitUntilTrue } from './utils'
+import { fromWei, getTestDAO, newArc, toWei } from './utils'
 
 /**
  * DAO test
@@ -72,6 +72,12 @@ describe('DAO', () => {
     await expect(reputation.state().toPromise()).rejects.toThrow(
       'Could not find a DAO with address 0xfake'
     )
+  })
+  it('dao.schemes() should work', async () => {
+    const dao = await getTestDAO()
+    const schemes = await dao.schemes().pipe(first()).toPromise()
+    expect(typeof schemes).toEqual(typeof [])
+    expect(schemes.length).toEqual(3)
   })
 
   it('dao.members() should work', async () => {

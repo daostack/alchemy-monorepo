@@ -3,7 +3,7 @@ import { Observable as ZenObservable } from 'apollo-link'
 import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { from, Observable, Observer, of, Subscription } from 'rxjs'
-import { catchError, concat, filter, map } from 'rxjs/operators'
+import { catchError, filter, first, map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
@@ -25,6 +25,8 @@ export class Arc {
   public ipfs: any
   public web3: any
   public contractAddresses: IContractAddresses | undefined
+
+  public Logger = Logger
 
   // accounts obseved by ethBalance
   public blockHeaderSubscription: Subscription|undefined = undefined
@@ -161,7 +163,7 @@ export class Arc {
    */
   public getObservable(query: any, apolloQueryOptions: IApolloQueryOptions = {}) {
 
-    return Observable.create(async (observer: Observer<ApolloQueryResult<any>>) => {
+    const observable = Observable.create(async (observer: Observer<ApolloQueryResult<any>>) => {
       Logger.debug(query.loc.source.body)
 
       if (!apolloQueryOptions.fetchPolicy) {
@@ -202,6 +204,8 @@ export class Arc {
         .subscribe(observer)
       return () => sub.unsubscribe()
     })
+    observable.firstResult = () => observable.pipe(first()).toPromise()
+    return observable
   }
 
   /**
@@ -312,6 +316,10 @@ export class Arc {
     let contractClass
     let contract
     switch (name) {
+      case 'ActionMock':
+        contractClass = require('@daostack/arc/build/contracts/ActionMock.json')
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.ActionMock, opts)
+        return contract
       case 'AbsoluteVote':
         contractClass = require('@daostack/arc/build/contracts/AbsoluteVote.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.AbsoluteVote, opts)
@@ -324,6 +332,10 @@ export class Arc {
         contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.GEN, opts)
         return contract
+      case 'GenericScheme':
+        contractClass = require('@daostack/arc/build/contracts/GenericScheme.json')
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.GenericScheme, opts)
+        return contract
       case 'GenesisProtocol':
         contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.GenesisProtocol, opts)
@@ -335,6 +347,10 @@ export class Arc {
       case 'Reputation':
         contractClass = require('@daostack/arc/build/contracts/Reputation.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.dao.Reputation, opts)
+        return contract
+      case 'SchemeRegistrar':
+        contractClass = require('@daostack/arc/build/contracts/SchemeRegistrar.json')
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.SchemeRegistrar, opts)
         return contract
       default:
         throw Error(`Unknown contract: ${name}`)
@@ -384,7 +400,7 @@ export class Arc {
   }
 
   public setAccount(address: Address) {
-    this.web3.eth.accounts.wallet[0] = address
+    // this.web3.eth.accounts.wallet[0] = address
     this.web3.eth.defaultAccount = address
   }
 
