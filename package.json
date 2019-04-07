@@ -1,6 +1,6 @@
 {
   "name": "@daostack/migration",
-  "version": "0.0.1-rc.14-v9",
+  "version": "0.0.1-rc.15-v0",
   "description": "A repo for handling DAOstack contract migrations",
   "main": "index.js",
   "bin": {
@@ -14,7 +14,7 @@
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
     "cleandb": "rimraf db",
-    "ganache": "mkdirp db && ganache-cli --db=./db --networkId 1512051714758 --deterministic --hostname=0.0.0.0",
+    "ganache": "mkdirp db && ganache-cli --db=./db -l 8000000 --networkId 1512051714758 --deterministic --hostname=0.0.0.0",
     "migrate": "node ./migrate.js",
     "migrate.base": "node ./migrate.js base",
     "migrate.dao": "node ./migrate.js dao",

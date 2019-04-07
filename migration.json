@@ -21,18 +21,18 @@
       "GenericScheme": "0x7C728214be9A0049e6a86f2137ec61030D0AA964"
     },
     "dao": {
-      "name": "Tenacious Miller",
+      "name": "Animistic Cupcake",
       "Avatar": "0xFF6049B87215476aBf744eaA3a476cBAd46fB1cA",
       "DAOToken": "0x5017A545b09ab9a30499DE7F431DF0855bCb7275",
       "Reputation": "0x86072CbFF48dA3C1F01824a6761A03F105BCC697",
       "Controller": "0xFcCeD5E997E7fb1D0594518D3eD57245bB8ed17E"
     },
     "test": {
-      "name": "Dilatory Sawfiler",
+      "name": "Rebarbative Dolls",
       "Avatar": "0xE7A2C59e134ee81D4035Ae6DB2254f79308e334f",
       "DAOToken": "0xcDbe8b52A6c60A5f101d4A0F1f049f19a9e1D35F",
       "Reputation": "0x93cdbf39fB9e13BD253CA5819247D52fbabf0F2f",
-      "ActionMock": "0x966d3e76E7a890A2d7B9AE1E370dC219E920F9D4",
+      "ActionMock": "0x2f3efA6bbDC5fAf4dC1a600765c7B7829e47bE10",
       "gsProposalId": "0x2c320fa0e7a341cd28b8140247422b430c941390567ca3690fffc1e8577d3057",
       "queuedProposalId": "0x8aa9e79ccae5d18919d7c8850370f3595a1f858e6e4d4323803469bf2a4e7357",
       "preBoostedProposalId": "0xfebcac95ae283c1944909eacc11e8a4ac9e2ed31c1192342690fc7c9aae9bbbc",
@@ -40,9 +40,9 @@
       "executedProposalId": "0x6afee092a28c74f6358093d5376ac75014ac4d9fd42d296a5498ef42eecd7248"
     },
     "organs": {
-      "DemoAvatar": "0x94dFeceb91678ec912ef8f14c72721c102ed2Df7",
-      "DemoDAOToken": "0xd611F1AF9D056f00F49CB036759De2753EfA82c2",
-      "DemoReputation": "0x995629b19667Ae71483DC812c1B5a35fCaaAF4B8"
+      "DemoAvatar": "0x995629b19667Ae71483DC812c1B5a35fCaaAF4B8",
+      "DemoDAOToken": "0x25AF99b922857C37282f578F428CB7f34335B379",
+      "DemoReputation": "0xd611F1AF9D056f00F49CB036759De2753EfA82c2"
     },
     "orgName": {
       "name": "The DAO",
@@ -102,11 +102,11 @@
       "GenericScheme": "0x8b09ED90bF01BcBB41609d0a519b553Dd6474d01"
     },
     "dao": {
-      "name": "Loquacious Carrot",
-      "Avatar": "0x10dB3F591c6ADAF9B025660925454231F5D0d3c9",
-      "DAOToken": "0x34c3cD78Dbd46e187f8FA41Ef07Ac94a0C01781C",
-      "Reputation": "0x5B54906B2bF6Da61EF8Bac3a6656321352637D98",
-      "Controller": "0xBebFA32962c9959c1832Af3D43AF1b11e319b22B"
+      "name": "Genesis Alpha",
+      "Avatar": "0x8c45444de92c4299Ab6c1259dd21bCdE461475B2",
+      "DAOToken": "0x9Fb3493679f1029aA142C5028Ef7B26307bf7DBa",
+      "Reputation": "0xb893EfEce22581f6Cf480b61C7F040A1098C0c2f",
+      "Controller": "0x2241e851c898e26e506BC8213500B7A53D5b64c9"
     }
   },
   "main": {
@@ -129,6 +129,13 @@
       "OrganizationRegister": "0x66A7Fdc68e9691F927D937E060bBa4Fe02833984",
       "Redeemer": "0xBfeed48f3c1E309B942246354C5c1460C0E44D4E",
       "GenericScheme": "0xaFE59DF878E23623A7a91d16001a66A4DD87e0c0"
+    },
+    "dao": {
+      "name": "Parsimonious Glitter",
+      "Avatar": "0xd512576C536BE2aFAC1bd647A403985439470E4d",
+      "DAOToken": "0x1c2fcF6aEE50ea40B1A53ec221e14aE4bD0AeE2a",
+      "Reputation": "0x46c701b227Ac130157545Fd4Bc828d7F031FD7DE",
+      "Controller": "0x2D6b07Fb085d69d939c6034BC7E45cf38D1850f8"
     }
   }
 }

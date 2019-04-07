@@ -244,27 +244,36 @@ Example migration parameters object:
 
   // Needed only if you would like to use Contribution Reward scheme in your DAO
   "ContributionReward": {
+    "voteParams": 0 // The index of the parameters in the vting machines parameters array
   },
   // Needed only if you would like to use Generic Scheme scheme in your DAO
   "GenericScheme": {
     // The address of the contract the Generic Scheme can call.
     "targetContract": "0x0000000000000000000000000000000000000000"
+    "votingMachine": "0x00000000000000000000votingmachineaddress" // The address of your voting machine (default is Genesis Protocol address)
+    "voteParams": 1 // The index of the parameters in the vting machines parameters array (default is 0)
   },
-  // Parameters list your DAO will use with the Genesis Protocol voting machine
-  "GenesisProtocol": {
-    "boostedVotePeriodLimit": 600,
-    "daoBountyConst": 10,
-    "minimumDaoBountyGWei": 100,
-    "queuedVotePeriodLimit": 1800,
-    "queuedVoteRequiredPercentage": 50,
-    "preBoostedVotePeriodLimit": 600,
-    "proposingRepRewardGwei": 5,
-    "quietEndingPeriod": 300,
-    "thresholdConst": 2000,
-    "voteOnBehalf": "0x0000000000000000000000000000000000000000",
-    "votersReputationLossRatio": 1,
-    "activationTime": 0
-  },
+  // Parameters list your DAO will use with the voting machines
+  // You can add here either Genesis Protocol parameters which will set the parameters in the GP voting machine or add a pre-set parameters hash to any voting machine
+  "VotingMachinesParams": [
+      {
+      "boostedVotePeriodLimit": 600,
+      "daoBountyConst": 10,
+      "minimumDaoBountyGWei": 100,
+      "queuedVotePeriodLimit": 1800,
+      "queuedVoteRequiredPercentage": 50,
+      "preBoostedVotePeriodLimit": 600,
+      "proposingRepRewardGwei": 5,
+      "quietEndingPeriod": 300,
+      "thresholdConst": 2000,
+      "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+      "votersReputationLossRatio": 1,
+      "activationTime": 0
+    },
+    {
+      "votingParamsHash": "0x000000000000000000000000000000paramshash" // If you want to use a different voting machine params you can set the parameters hash here
+    }
+  ],
   // Select the schemes you would like your DAO to have
   "schemes": {
     "ContributionReward": true,
