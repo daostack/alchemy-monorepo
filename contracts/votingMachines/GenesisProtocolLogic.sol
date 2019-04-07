@@ -538,20 +538,23 @@ contract GenesisProtocolLogic is IntVoteInterface {
                 confidenceThreshold = threshold(proposal.paramsHash, proposal.organizationId);
               // solhint-disable-next-line not-rely-on-time
                 if ((now - proposal.times[2]) >= params.preBoostedVotePeriodLimit) {
-                    if ((_score(_proposalId) > confidenceThreshold) &&
-                        (orgBoostedProposalsCnt[proposal.organizationId] < MAX_BOOSTED_PROPOSALS)) {
-                       //change proposal mode to Boosted mode.
-                        proposal.state = ProposalState.Boosted;
-                       // solhint-disable-next-line not-rely-on-time
-                        proposal.times[1] = now;
-                        orgBoostedProposalsCnt[proposal.organizationId]++;
-                       //add a value to average -> average = average + ((value - average) / nbValues)
-                        averageDownstakesOfBoosted = averagesDownstakesOfBoosted[proposal.organizationId];
-                        // solium-disable-next-line indentation
-                        averagesDownstakesOfBoosted[proposal.organizationId] =
-                            uint256(int256(averageDownstakesOfBoosted) +
-                            ((int256(proposal.stakes[NO])-int256(averageDownstakesOfBoosted))/
-                            int256(orgBoostedProposalsCnt[proposal.organizationId])));
+                    if (_score(_proposalId) > confidenceThreshold) {
+                        if (orgBoostedProposalsCnt[proposal.organizationId] < MAX_BOOSTED_PROPOSALS) {
+                         //change proposal mode to Boosted mode.
+                            proposal.state = ProposalState.Boosted;
+                         // solhint-disable-next-line not-rely-on-time
+                            proposal.times[1] = now;
+                            orgBoostedProposalsCnt[proposal.organizationId]++;
+                         //add a value to average -> average = average + ((value - average) / nbValues)
+                            averageDownstakesOfBoosted = averagesDownstakesOfBoosted[proposal.organizationId];
+                          // solium-disable-next-line indentation
+                            averagesDownstakesOfBoosted[proposal.organizationId] =
+                                uint256(int256(averageDownstakesOfBoosted) +
+                                ((int256(proposal.stakes[NO])-int256(averageDownstakesOfBoosted))/
+                                int256(orgBoostedProposalsCnt[proposal.organizationId])));
+                        }
+                    } else {
+                        proposal.state = ProposalState.Queued;
                     }
                 } else { //check the Confidence level is stable
                     uint256 proposalScore = _score(_proposalId);
