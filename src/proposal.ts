@@ -151,10 +151,15 @@ export class Proposal implements IStateful<IProposalState> {
       }
       if (ipfsDataToSave !== {}) {
         Logger.debug('Saving data on IPFS...')
-        const ipfsResponse = await context.ipfs.add(Buffer.from(JSON.stringify(ipfsDataToSave)))
-        const descriptionHash = ipfsResponse[0].path
-        // pin the file
-        await context.ipfs.pin.add(descriptionHash)
+        let descriptionHash: string = ''
+        try {
+          const ipfsResponse = await context.ipfs.add(Buffer.from(JSON.stringify(ipfsDataToSave)))
+          descriptionHash = ipfsResponse[0].path
+          // pin the file
+          await context.ipfs.pin.add(descriptionHash)
+        } catch (error) {
+          throw error
+        }
         Logger.debug(`Data saved successfully as ${options.descriptionHash}`)
         return descriptionHash
       }
@@ -761,16 +766,23 @@ constructor(
    * It will trhow an error is the situation does not apply (for example, if the current state is not PreBoosted)
    * @return a BN, or an l
    */
-  public upstakeNeededToBoost(): BN|undefined {
+  private async upstakeNeededToBoost(state: IProposalState): Promise<BN|undefined> {
+    if (state.stage !== IProposalStage.PreBoosted) {
+      return undefined
+    } else {
+      //    get current queue threshold
+
+    }
+    //    TODO: make an issue in subgraph that the current queue threshold should be part of the roposal entity
+    //
     return undefined
   }
 
   // the current threshold
-  public queueThreshold(): Observable<BN> {
-    return this.dao.queueThreshold(this.type)
-    const query = gql(`{
-      gpQueue()}`)
-  }
+  // public queueThreshold(): Observable<BN> {
+  //   // run query
+  //   return this.dao.queueThreshold(this.type)
+  // }
 
 }
 

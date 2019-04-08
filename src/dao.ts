@@ -87,12 +87,13 @@ export class DAO implements IStateful<IDAOState> {
     return this.state().pipe(first()).pipe(map((r) => r.reputation))
   }
 
-  public schemes(options: any = {}): Observable < Scheme[] > {
+  public schemes(options: any = {}): Observable<Scheme[]> {
     options.dao = this.address
     return Scheme.search(options, this.context)
 
   }
-  public members(options: IMemberQueryOptions = {}): Observable < Member[] > {
+
+  public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
     const query = gql`{
       members (where: {
         dao: "${this.address}"
@@ -110,19 +111,18 @@ export class DAO implements IStateful<IDAOState> {
     return new Member(address, this.address, this.context)
   }
 
-  public proposals(options: IProposalQueryOptions = {}): Observable < Proposal[] > {
+  public createProposal(options: IProposalCreateOptions) {
     options.dao = this.address
-    return Proposal.search(options, this.context)
-
+    return Proposal.create(options, this.context)
   }
 
   public proposal(id: string): Proposal {
     return new Proposal(id, this.address, this.context)
   }
 
-  public createProposal(options: IProposalCreateOptions) {
+  public proposals(options: IProposalQueryOptions = {}): Observable < Proposal[] > {
     options.dao = this.address
-    return Proposal.create(options, this.context)
+    return Proposal.search(options, this.context)
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {

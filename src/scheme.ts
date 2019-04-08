@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { Address, ICommonQueryOptions } from './types'
+import { Address } from './types'
 
 export interface IScheme {
   id: string
@@ -37,6 +37,7 @@ export class Scheme {
        canRegisterSchemes
        canUpgradeController
        canManageGlobalConstraints
+       paramsHash
      }
    }`
     const itemMap = (item: any): Scheme => {
