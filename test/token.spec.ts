@@ -3,7 +3,7 @@ import { first} from 'rxjs/operators'
 import { Arc, IContractAddresses } from '../src/arc'
 import { Token } from '../src/token'
 import { Address } from '../src/types'
-import { fromWei, newArc, getContractAddresses, toWei, waitUntilTrue } from './utils'
+import { fromWei, getContractAddresses, newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 /**
@@ -94,8 +94,9 @@ describe('Token', () => {
     const amount = toWei('31415')
     await token.approveForStaking(amount).send()
     let allowances: any[] = []
+    const genesisProtocol = arc.getContract('GenesisProtocol')
 
-    token.allowances({ owner: arc.web3.eth.defaultAccount}).subscribe(
+    token.allowances({ owner: arc.web3.eth.defaultAccount, spender: genesisProtocol.options.address}).subscribe(
       (next: any) => allowances = next
     )
     await waitUntilTrue(() => allowances.length > 0 && allowances[0].amount.gte(amount))
