@@ -93,7 +93,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       founders.map(({ reputation }) => web3.utils.toWei(reputation !== undefined ? reputation.toString() : '0'))
     ]
 
-    const foundersBatchSize = 40
+    const foundersBatchSize = 20
 
     let foundersInitCount = founderAddresses.length < foundersBatchSize ? founderAddresses.length : foundersBatchSize
     const forgeOrg = daoCreator.methods.forgeOrg(

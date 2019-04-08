@@ -32,6 +32,8 @@ node set-version.js
 # update npm package lock
 echo "Updating package-lock..."
 npm install
+echo "Running linter..."
+npm run lint-fix
 # commit addresses
 echo "Commiting changes..."
 git add -A && git commit -m "release $(cat package.json | jq -r '.version')"

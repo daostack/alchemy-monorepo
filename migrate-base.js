@@ -133,7 +133,6 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
   await deploy(require('@daostack/arc/build/contracts/AbsoluteVote.json'))
   await deploy(require('@daostack/arc/build/contracts/QuorumVote.json'))
   await deploy(require('@daostack/arc/build/contracts/TokenCapGC.json'))
-  await deploy(require('@daostack/arc/build/contracts/VestingScheme.json'))
   await deploy(require('@daostack/arc/build/contracts/VoteInOrganizationScheme.json'))
   await deploy(require('@daostack/arc/build/contracts/OrganizationRegister.json'))
   await deploy(
