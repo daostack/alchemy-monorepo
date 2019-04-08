@@ -148,6 +148,9 @@ export class Token implements IStateful<ITokenState> {
     if (options.owner) {
       whereclause += `owner: "${options.owner.toLowerCase()}"\n`
     }
+    if (options.spender) {
+      whereclause += `spender: "${options.spender.toLowerCase()}"\n`
+    }
     whereclause += `token: "${this.address.toLowerCase()}"\n`
     if (whereclause) {
       whereclause = `(where: { ${whereclause}})`
