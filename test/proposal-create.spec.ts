@@ -5,10 +5,10 @@ import { Logger } from '../src/logger'
 import { IProposalStage, Proposal } from '../src/proposal'
 import {
   fromWei,
-  newArc,
   getTestDAO,
   graphqlHttpProvider,
   graphqlWsProvider,
+  newArc,
   toWei,
   waitUntilTrue,
   web3Provider
@@ -22,7 +22,7 @@ describe('Create a ContributionReward proposal', () => {
   let accounts: any
 
   beforeAll(async () => {
-    arc = newArc()
+    arc = await newArc()
     web3 = arc.web3
     accounts = web3.eth.accounts.wallet
     web3.eth.defaultAccount = accounts[0].address

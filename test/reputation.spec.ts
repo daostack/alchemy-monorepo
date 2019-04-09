@@ -3,7 +3,7 @@ import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
-import { fromWei, getContractAddresses, newArc, toWei } from './utils'
+import { fromWei, getContractAddressesFromMigration, newArc, toWei } from './utils'
 /**
  * Reputation test
  */
@@ -15,9 +15,9 @@ describe('Reputation', () => {
   let accounts: any
 
   beforeAll(async () => {
-    addresses = getContractAddresses()
+    addresses = getContractAddressesFromMigration()
     address = addresses.dao.Reputation
-    arc = newArc()
+    arc = await newArc()
     accounts = arc.web3.eth.accounts.wallet
   })
 

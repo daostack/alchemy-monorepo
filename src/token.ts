@@ -140,8 +140,9 @@ export class Token implements IStateful<ITokenState> {
 
   public allowances(options: { owner?: Address, spender?: Address}): Observable<IAllowance[]> {
     // the allownaces entry tracks the GEN token, so the query only makes sense if the current token is the GEN token
-    if (this.address !== this.context.getContract('GEN').options.address) {
-      throw Error(`This token is not the GEN token - cannot query for allowances`)
+    if (this.address.toLowerCase() !== this.context.getContract('GEN').options.address.toLowerCase()) {
+      throw Error(`This token (@${this.address}) is not the GEN token` +
+         `(@${this.context.getContract('GEN').options.address})- cannot query for allowances`)
     }
 
     let whereclause = ''

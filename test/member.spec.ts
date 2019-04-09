@@ -6,7 +6,8 @@ import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Stake } from '../src/stake'
 import { Address } from '../src/types'
 import { Vote } from '../src/vote'
-import { createAProposal, fromWei, newArc, getContractAddresses, getTestDAO, toWei, waitUntilTrue } from './utils'
+import { createAProposal, fromWei, getContractAddressesFromMigration,
+  getTestDAO, newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
@@ -21,8 +22,8 @@ describe('Member', () => {
   let dao: DAO
 
   beforeAll(async () => {
-    addresses = getContractAddresses()
-    arc = newArc()
+    addresses = getContractAddressesFromMigration()
+    arc = await newArc()
     dao = await getTestDAO()
     defaultAccount = arc.web3.eth.defaultAccount
   })

@@ -6,10 +6,11 @@ import { DAO } from '../src/dao'
 import Arc from '../src/index'
 import { Proposal } from '../src/proposal'
 import { Reputation } from '../src/reputation'
-
+import { getContractAddresses } from '../src/utils'
 const Web3 = require('web3')
 
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack'
+export const graphqlHttpMetaProvider: string = 'http://127.0.0.1:8000/subgraphs'
 export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/daostack'
 export const web3Provider: string = 'ws://127.0.0.1:8545'
 export const ipfsProvider: string = '/ip4/127.0.0.1/tcp/5001'
@@ -40,7 +41,7 @@ export function toWei(amount: string | number): BN {
   return new BN(Web3.utils.toWei(amount.toString(), 'ether'))
 }
 
-export function getContractAddresses(): IContractAddresses {
+export function getContractAddressesFromMigration(): IContractAddresses {
   const path = '@daostack/migration/migration.json'
   const addresses = require(path)
   // const addresses = { base: require(path).private.base, dao: require(path).private.dao }
@@ -58,9 +59,9 @@ export async function getOptions(web3: any) {
   }
 }
 
-export function newArc() {
+export async function newArc() {
   const arc = new Arc({
-    contractAddresses: getContractAddresses(),
+    contractAddresses: await getContractAddresses(graphqlHttpMetaProvider, 'daostack'),
     graphqlHttpProvider,
     graphqlWsProvider,
     ipfsProvider,
@@ -76,8 +77,8 @@ export function newArc() {
 }
 
 export async function mintSomeReputation() {
-  const arc = newArc()
-  const addresses = getContractAddresses()
+  const arc = await newArc()
+  const addresses = getContractAddressesFromMigration()
   const token = new Reputation(addresses.organs.DemoReputation, arc)
   const accounts = arc.web3.eth.accounts.wallet
   await token.mint(accounts[1].address, toWei('99')).send()
@@ -96,39 +97,13 @@ export async function waitUntilTrue(test: () => Promise<boolean> | boolean) {
   })
 }
 
-export async function getContractAddressesFromSubgraph(): Promise<{ daos: any }> {
-  const arc = newArc()
-  const query = gql`
-        {
-              daos { id
-              nativeReputation {
-                id
-              }
-              nativeToken {
-                id
-              }
-          }
-      }
-    `
-  const response = await arc.apolloClient.query({query}) as ApolloQueryResult<{ daos: any[]}>
-  const daos = response.data.daos
-  return { daos: daos.map((dao: any) => {
-    return {
-      address: dao.id,
-      membersCount: dao.membersCount,
-      nativeReputation: dao.nativeReputation.id,
-      nativeToken: dao.nativeToken.id
-    }
-  })
-}
-}
-
 export async function getTestDAO() {
   // we have two indexed daos with the same name, but one has 6 members, and that is the one
   // we are using for testing
   const arc = await newArc()
-  if (arc.contractAddresses) {
-    return arc.dao(arc.contractAddresses.dao.Avatar)
+  const contractAddresses = getContractAddressesFromMigration()
+  if (contractAddresses) {
+    return arc.dao(contractAddresses.dao.Avatar)
   } else {
     return arc.dao('0xnotfound')
   }

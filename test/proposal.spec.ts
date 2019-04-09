@@ -14,7 +14,7 @@ describe('Proposal', () => {
   let arc: Arc
 
   beforeAll(async () => {
-    arc = newArc()
+    arc = await newArc()
   })
 
   it('Proposal is instantiable', () => {
