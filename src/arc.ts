@@ -405,9 +405,11 @@ export class Arc {
         spender: rs[0].spender
       } : undefined
     }
-
+    const genesisProtocol = this.getContract('GenesisProtocol')
+    const spender = genesisProtocol.options.address
     return this.GENToken().allowances({
-      owner
+      owner,
+      spender
     }).pipe(
       map(itemMap)
     )
