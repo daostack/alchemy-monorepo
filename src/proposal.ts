@@ -298,10 +298,17 @@ export class Proposal implements IStateful<IProposalState> {
       const threshold: BN = realMathToNumber(new BN(item.gpQueue.threshold))
       const stakesFor = new BN(item.stakesFor)
       const stakesAgainst = new BN(item.stakesAgainst)
+
+      // upstakeNeededToPreBoost is the amount of tokens needed to upstake to move to the preboost queue
+      // this is only non-zero for Queued proposals
+      // note that the number can be negative!
       let upstakeNeededToPreBoost: BN = new BN(0)
       if (stage === IProposalStage.Queued) {
         upstakeNeededToPreBoost = threshold.mul(stakesAgainst).sub(stakesFor)
       }
+      // upstakeNeededToPreBoost is the amount of tokens needed to upstake to move to the Queued queue
+      // this is only non-zero for Preboosted proposals
+      // note that the number can be negative!
       let downStakeNeededToQueue: BN = new BN(0)
       if (stage === IProposalStage.PreBoosted) {
         downStakeNeededToQueue = stakesFor.div(threshold).sub(stakesAgainst)
