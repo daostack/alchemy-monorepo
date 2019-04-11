@@ -1,9 +1,9 @@
+const DAOstackMigration = require('@daostack/migration')
 import BN = require('bn.js')
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IExecutionState, IProposalOutcome, IProposalStage, IProposalState, Proposal  } from '../src/proposal'
 import { createAProposal, fromWei, newArc, toWei, waitUntilTrue} from './utils'
-const DAOstackMigration = require('@daostack/migration')
 
 jest.setTimeout(10000)
 
@@ -149,7 +149,7 @@ describe('Proposal', () => {
         quietEndingPeriodBeganAt: null,
         resolvedAt: null,
         stage: IProposalStage.Queued,
-        thresholdConst: 2199023255552,
+        thresholdConst: new BN(2),
         title: null,
         url: null,
         winningOutcome: IProposalOutcome.Fail
@@ -157,7 +157,12 @@ describe('Proposal', () => {
 
     // check if the upstakeNeededToPreBoost value is correct
     //  (S+/S-) > AlphaConstant^NumberOfBoostedProposal.
-    const numberOfBoostedProposals = 1
+    const boostedProposals = await pState.dao
+      .proposals({stage: IProposalStage.Boosted}).pipe(first()).toPromise()
+    const numberOfBoostedProposals = boostedProposals.length
+    expect(pState.threshold.toString())
+      .toEqual(new BN(pState.thresholdConst).pow(new BN(numberOfBoostedProposals)).toString())
+
     expect(pState.stakesFor.add(pState.upstakeNeededToPreBoost).div(pState.stakesAgainst).toString())
       .toEqual((new BN(pState.thresholdConst)).pow(new BN(numberOfBoostedProposals)).toString())
   })

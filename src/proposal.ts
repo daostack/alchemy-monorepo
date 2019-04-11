@@ -10,7 +10,7 @@ import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import { nullAddress } from './utils'
+import { nullAddress, realMathToNumber } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export enum IProposalOutcome {
@@ -75,7 +75,7 @@ export interface IProposalState {
   stakesFor: BN
   stakesAgainst: BN
   threshold: BN
-  thresholdConst: number
+  thresholdConst: BN
   title?: string
   totalRepWhenExecuted: BN
   upstakeNeededToPreBoost: BN
@@ -295,7 +295,7 @@ export class Proposal implements IStateful<IProposalState> {
       // (S+/S-) > AlphaConstant^NumberOfBoostedProposal.
       // (stakesFor/stakesAgainst) > gpQueue.threshold
       const stage: any = IProposalStage[item.stage]
-      const threshold: BN = new BN(item.gpQueue.threshold)
+      const threshold: BN = realMathToNumber(new BN(item.gpQueue.threshold))
       const stakesFor = new BN(item.stakesFor)
       const stakesAgainst = new BN(item.stakesAgainst)
       let upstakeNeededToPreBoost: BN = new BN(0)
@@ -306,6 +306,7 @@ export class Proposal implements IStateful<IProposalState> {
       if (stage === IProposalStage.PreBoosted) {
         downStakeNeededToQueue = stakesFor.div(threshold).sub(stakesAgainst)
       }
+      const thresholdConst = realMathToNumber(new BN(item.thresholdConst))
 
       return {
         accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
@@ -345,7 +346,7 @@ export class Proposal implements IStateful<IProposalState> {
         stakesAgainst,
         stakesFor,
         threshold,
-        thresholdConst: Number(item.thresholdConst),
+        thresholdConst,
         title: item.title,
         totalRepWhenExecuted: new BN(item.totalRepWhenExecuted),
         upstakeNeededToPreBoost,
