@@ -114,7 +114,7 @@ describe('Proposal', () => {
     expect(proposalState).toEqual(null)
   })
 
-  it('Check proposal state is correct', async () => {
+  it('Check queued proposal state is correct', async () => {
     const { queuedProposalId } = DAOstackMigration.migration('private').test
 
     const proposal = new Proposal(queuedProposalId, '', arc)
@@ -157,6 +157,7 @@ describe('Proposal', () => {
 
     // check if the upstakeNeededToPreBoost value is correct
     //  (S+/S-) > AlphaConstant^NumberOfBoostedProposal.
+    expect(pState.downStakeNeededToQueue).toEqual(new BN(0))
     const boostedProposals = await pState.dao
       .proposals({stage: IProposalStage.Boosted}).pipe(first()).toPromise()
     const numberOfBoostedProposals = boostedProposals.length
@@ -164,6 +165,24 @@ describe('Proposal', () => {
       .toEqual(new BN(pState.thresholdConst).pow(new BN(numberOfBoostedProposals)).toString())
 
     expect(pState.stakesFor.add(pState.upstakeNeededToPreBoost).div(pState.stakesAgainst).toString())
+      .toEqual((new BN(pState.thresholdConst)).pow(new BN(numberOfBoostedProposals)).toString())
+  })
+
+  it('Check preboosted proposal state is correct', async () => {
+    const { preBoostedProposalId } = DAOstackMigration.migration('private').test
+
+    const proposal = new Proposal(preBoostedProposalId, '', arc)
+    const pState = await proposal.state().pipe(first()).toPromise()
+    expect(proposal).toBeInstanceOf(Proposal)
+
+    expect(pState.upstakeNeededToPreBoost).toEqual(new BN(0))
+    // check if the upstakeNeededToPreBoost value is correct
+    //  (S+/S-) > AlphaConstant^NumberOfBoostedProposal.
+    const boostedProposals = await pState.dao
+      .proposals({stage: IProposalStage.Boosted}).pipe(first()).toPromise()
+    const numberOfBoostedProposals = boostedProposals.length
+
+    expect(pState.stakesFor.div(pState.stakesAgainst.add(pState.downStakeNeededToQueue)).toString())
       .toEqual((new BN(pState.thresholdConst)).pow(new BN(numberOfBoostedProposals)).toString())
   })
 
