@@ -156,3 +156,13 @@ export function zenToRxjsObservable(zenObservable: ZenObservable<any>) {
     return () => subscription.unsubscribe()
   })
 }
+
+/**
+ * convert the number representation of RealMath.sol representations to real real numbers
+ * @param  t a BN instance of a real number in the RealMath representation
+ * @return  a BN
+ */
+export function realMathToNumber(t: BN): BN {
+  const REAL_FBITS = 40
+  return t.shrn(REAL_FBITS).add((t.maskn(REAL_FBITS).div(new BN(Math.pow(2, REAL_FBITS)))))
+}
