@@ -2,8 +2,8 @@ import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { Observable as ZenObservable } from 'apollo-link'
 import BN = require('bn.js')
 import gql from 'graphql-tag'
-import { from, Observable, Observer, of, Subscription } from 'rxjs'
-import { catchError, concat, filter, map } from 'rxjs/operators'
+import { Observable, Observer, of, Subscription } from 'rxjs'
+import { catchError, filter, map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
@@ -112,10 +112,11 @@ export class Arc {
   public ethBalance(address: Address): Observable<BN> {
     if (this.observedAccounts[address]) {
       if (this.observedAccounts[address].observable) {
+        this.observedAccounts[address].subscriptionsCount += 1
         return this.observedAccounts[address].observable as Observable<BN>
       }
     } else {
-      this.observedAccounts[address] = { subscriptionsCount: 0}
+      this.observedAccounts[address] = { subscriptionsCount: 1 }
     }
 
     const observable = Observable.create((observer: Observer<BN>) => {
@@ -123,17 +124,12 @@ export class Arc {
         this.observedAccounts[address] = { subscriptionsCount: 0}
       }
       this.observedAccounts[address].observer = observer
-      this.observedAccounts[address].subscriptionsCount += 1
 
       // get the current balance and return it
       this.web3.eth.getBalance(address).then((currentBalance: number) => {
-        const accInfo = this.observedAccounts[address]
-        if (accInfo) {
-          (accInfo.observer as Observer<BN>).next(new BN(currentBalance))
-          // in theory it is possible that the client unsubscribed before reaching this callback
-          // accInfo.observer.next(new BN(currentBalance))
-          accInfo.lastBalance = currentBalance
-        }
+        const accInfo = this.observedAccounts[address];
+        (accInfo.observer as Observer<BN>).next(new BN(currentBalance))
+        accInfo.lastBalance = currentBalance
       })
       // set up the blockheadersubscription if it does not exist yet
       if (!this.blockHeaderSubscription) {

@@ -1,4 +1,5 @@
 import BN = require('bn.js')
+import { first } from 'rxjs/operators'
 import Arc from '../src/index'
 import { Logger } from '../src/logger'
 import { Address } from '../src/types'
@@ -58,6 +59,12 @@ describe('Arc ', () => {
     expect(addressesObserved[0]).toEqual(arc.web3.eth.defaultAccount)
   })
 
+  it('arc.ethBalance() works with an account with 0 balance', async () => {
+    const arc = await newArc()
+    const balance = await arc.ethBalance('0x90f8bf6a479f320ead074411a4b0e7944ea81111').pipe(first()).toPromise()
+    expect(balance).toEqual(new BN(0))
+
+  })
   it('arc.ethBalance() works with multiple subscriptions', async () => {
     const arc = await newArc()
     // observe two balances
