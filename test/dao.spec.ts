@@ -2,7 +2,7 @@ import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { fromWei, newArc, getTestDAO, toWei, waitUntilTrue } from './utils'
+import { fromWei, getTestDAO, newArc, toWei } from './utils'
 
 /**
  * DAO test
