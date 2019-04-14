@@ -36,7 +36,7 @@ const DAOstackMigration = require('@daostack/migration');
 // options are as specified in https://github.com/trufflesuite/ganache-cli#library
 DAOstackMigration.Ganache.server(..);
 DAOstackMigration.Ganache.provider(..);
-// choose the network to get addressed for. Either private (ganache), kovan, rinkeby, main.
+// choose the network to get addressed for. Either private (ganache), kovan, rinkeby, mainnet.
 let network = 'private'
 // migration result object for ganache
 DAOstackMigration.migration(network);

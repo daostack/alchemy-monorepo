@@ -14,24 +14,24 @@
       "AbsoluteVote": "0xb09bCc172050fBd4562da8b229Cf3E45Dc3045A6",
       "QuorumVote": "0xFC628dd79137395F3C9744e33b1c5DE554D94882",
       "TokenCapGC": "0x5f8e26fAcC23FA4cbd87b8d9Dbbd33D5047abDE1",
-      "VoteInOrganizationScheme": "0xD86C8F0327494034F60e25074420BcCF560D5610",
-      "OrganizationRegister": "0x4bf749ec68270027C5910220CEAB30Cc284c7BA2",
-      "Redeemer": "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D",
-      "GenericScheme": "0x7C728214be9A0049e6a86f2137ec61030D0AA964"
+      "VoteInOrganizationScheme": "0x21a59654176f2689d12E828B77a783072CD26680",
+      "OrganizationRegister": "0xD86C8F0327494034F60e25074420BcCF560D5610",
+      "Redeemer": "0x4bf749ec68270027C5910220CEAB30Cc284c7BA2",
+      "GenericScheme": "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D"
     },
     "dao": {
-      "name": "Comely Jellybeans",
-      "Avatar": "0xFF6049B87215476aBf744eaA3a476cBAd46fB1cA",
-      "DAOToken": "0x5017A545b09ab9a30499DE7F431DF0855bCb7275",
-      "Reputation": "0x86072CbFF48dA3C1F01824a6761A03F105BCC697",
-      "Controller": "0xFcCeD5E997E7fb1D0594518D3eD57245bB8ed17E"
+      "name": "Turbulent Banjo",
+      "Avatar": "0x86072CbFF48dA3C1F01824a6761A03F105BCC697",
+      "DAOToken": "0x7C728214be9A0049e6a86f2137ec61030D0AA964",
+      "Reputation": "0x5017A545b09ab9a30499DE7F431DF0855bCb7275",
+      "Controller": "0x4bf3A7dFB3b76b5B3E169ACE65f888A4b4FCa5Ee"
     },
     "test": {
-      "name": "Uxorious Model",
+      "name": "Nefarious Soaper",
       "Avatar": "0xE7A2C59e134ee81D4035Ae6DB2254f79308e334f",
       "DAOToken": "0xcDbe8b52A6c60A5f101d4A0F1f049f19a9e1D35F",
       "Reputation": "0x93cdbf39fB9e13BD253CA5819247D52fbabf0F2f",
-      "ActionMock": "0x2f3efA6bbDC5fAf4dC1a600765c7B7829e47bE10",
+      "ActionMock": "0x2c5f3c004878923f55A2a255F89Fe29393177509",
       "gsProposalId": "0x2c320fa0e7a341cd28b8140247422b430c941390567ca3690fffc1e8577d3057",
       "queuedProposalId": "0x8aa9e79ccae5d18919d7c8850370f3595a1f858e6e4d4323803469bf2a4e7357",
       "preBoostedProposalId": "0xfebcac95ae283c1944909eacc11e8a4ac9e2ed31c1192342690fc7c9aae9bbbc",
@@ -39,9 +39,9 @@
       "executedProposalId": "0x6afee092a28c74f6358093d5376ac75014ac4d9fd42d296a5498ef42eecd7248"
     },
     "organs": {
-      "DemoAvatar": "0x995629b19667Ae71483DC812c1B5a35fCaaAF4B8",
-      "DemoDAOToken": "0x25AF99b922857C37282f578F428CB7f34335B379",
-      "DemoReputation": "0xd611F1AF9D056f00F49CB036759De2753EfA82c2"
+      "DemoAvatar": "0xd611F1AF9D056f00F49CB036759De2753EfA82c2",
+      "DemoDAOToken": "0x42D4BA5e542d9FeD87EA657f0295F1968A61c00A",
+      "DemoReputation": "0x25AF99b922857C37282f578F428CB7f34335B379"
     },
     "orgName": {
       "name": "The DAO",
@@ -106,7 +106,7 @@
       "Controller": "0x473C45F70678D550d30823E8aDEd27c0d28A7fc6"
     }
   },
-  "main": {
+  "mainnet": {
     "base": {
       "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
       "DAORegistry": "0x41C24232452057b9c812A94f84b8643Ee0253C44",

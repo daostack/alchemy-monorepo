@@ -80,7 +80,11 @@ const wrapCommand = fn => async options => {
     spinner.info(`${transactionHash} | ${Number(txCost).toFixed(5)} ETH | ${msg}`)
   }
 
-  const network = await web3.eth.net.getNetworkType()
+  let network = await web3.eth.net.getNetworkType()
+  if (network === 'main') {
+    network = 'mainnet'
+  }
+
   const balance = await web3.eth.getBalance(web3.eth.defaultAccount)
 
   spinner.info(`Network: \t${network}`)
