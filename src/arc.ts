@@ -2,8 +2,8 @@ import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { Observable as ZenObservable } from 'apollo-link'
 import BN = require('bn.js')
 import gql from 'graphql-tag'
-import { from, Observable, Observer, of, Subscription } from 'rxjs'
-import { catchError, concat, filter, map } from 'rxjs/operators'
+import { Observable, Observer, of, Subscription } from 'rxjs'
+import { catchError, filter, map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
@@ -28,7 +28,13 @@ export class Arc {
 
   // accounts obseved by ethBalance
   public blockHeaderSubscription: Subscription|undefined = undefined
-  public observedAccounts: { [address: string]: {observer: Observer<BN>, lastBalance?: number}}  = {}
+  public observedAccounts: { [address: string]: {
+      observable?: Observable<BN>,
+      observer?: Observer<BN>,
+      lastBalance?: number,
+      subscriptionsCount: number
+    }
+  } = {}
 
   constructor(options: {
     graphqlHttpProvider: string
@@ -104,34 +110,38 @@ export class Arc {
    * @return         [description]
    */
   public ethBalance(address: Address): Observable<BN> {
+    if (this.observedAccounts[address]) {
+      if (this.observedAccounts[address].observable) {
+        this.observedAccounts[address].subscriptionsCount += 1
+        return this.observedAccounts[address].observable as Observable<BN>
+      }
+    } else {
+      this.observedAccounts[address] = { subscriptionsCount: 1 }
+    }
 
     const observable = Observable.create((observer: Observer<BN>) => {
-      // get the current balance and return it
-      this.observedAccounts[address] = {
-        lastBalance: undefined,
-        observer
+      if (!this.observedAccounts[address]) {
+        this.observedAccounts[address] = { subscriptionsCount: 0}
       }
+      this.observedAccounts[address].observer = observer
 
+      // get the current balance and return it
       this.web3.eth.getBalance(address).then((currentBalance: number) => {
-        const accInfo = this.observedAccounts[address]
-        if (accInfo) {
-          // in theory it is possible that the client unsubscribed before reaching this callback
-
-          accInfo.observer.next(new BN(currentBalance))
-          accInfo.lastBalance = currentBalance
-        }
+        const accInfo = this.observedAccounts[address];
+        (accInfo.observer as Observer<BN>).next(new BN(currentBalance))
+        accInfo.lastBalance = currentBalance
       })
       // set up the blockheadersubscription if it does not exist yet
       if (!this.blockHeaderSubscription) {
-        this.blockHeaderSubscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
+        this.blockHeaderSubscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error) => {
           Object.keys(this.observedAccounts).forEach((addr) => {
             const accInfo = this.observedAccounts[addr]
             if (err) {
-              accInfo.observer.error(err)
+              (accInfo.observer as Observer<BN>).error(err)
             } else {
               this.web3.eth.getBalance(addr).then((balance: any) => {
                 if (balance !== accInfo.lastBalance) {
-                  accInfo.observer.next(new BN(balance))
+                  (accInfo.observer as Observer<BN>).next(new BN(balance))
                   accInfo.lastBalance = balance
                 }
               })
@@ -141,7 +151,10 @@ export class Arc {
       }
       // unsubscribe
       return () => {
-        delete this.observedAccounts[address]
+        this.observedAccounts[address].subscriptionsCount -= 1
+        if (this.observedAccounts[address].subscriptionsCount <= 0) {
+          delete this.observedAccounts[address]
+        }
         if (Object.keys(this.observedAccounts).length === 0 && this.blockHeaderSubscription) {
           this.blockHeaderSubscription.unsubscribe()
           this.blockHeaderSubscription = undefined
@@ -149,6 +162,7 @@ export class Arc {
       }
     })
 
+    this.observedAccounts[address].observable = observable
     return observable
       .pipe(map((item: any) => new BN(item)))
   }
@@ -232,7 +246,7 @@ export class Arc {
     return this.getObservable(query, apolloQueryOptions).pipe(
       map((r: ApolloQueryResult<any>) => {
         if (!r.data[entity]) {
-          throw Error(`Could not find entity "${entity}" in ${Object.keys(r.data)}`)
+          throw Error(`Could not find entity '${entity}' in ${Object.keys(r.data)}`)
         }
         return r.data[entity]
       }),
