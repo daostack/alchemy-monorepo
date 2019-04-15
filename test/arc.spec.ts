@@ -34,21 +34,15 @@ describe('Arc ', () => {
 
   it('arc.allowance() should work', async () => {
     const arc = await newArc()
-    let approval: any
+    const approvals: BN[] = []
     arc.allowance(arc.web3.eth.defaultAccount).subscribe(
-      (next: any) => {
-        approval = next
-      }
+      (next: BN) => { approvals.push(next) }
     )
-    await arc.approveForStaking(toWei('1001')).send()
-    await waitUntilTrue(() => {
-      if (approval) {
-        return fromWei(approval.amount) === '1001'
-      } else {
-        return false
-      }
-    })
-    expect(fromWei(approval.amount)).toEqual('1001')
+    const lastApproval = () => approvals[approvals.length - 1]
+    const amount = toWei(1001)
+    await arc.approveForStaking(amount).send()
+    await waitUntilTrue(() => (approvals.length > 0 && lastApproval().eq(amount)))
+    expect(fromWei(lastApproval())).toEqual('1001')
   })
 
   it('arc.getAccount() works and is correct', async () => {

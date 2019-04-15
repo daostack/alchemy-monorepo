@@ -80,7 +80,7 @@ describe('Token', () => {
     expect(balances[1].sub(balances[0]).toString()).toEqual(amount.toString())
   })
 
-  it('see approvals', async () => {
+  it.skip('see approvals', async () => {
     const token = new Token(address, arc)
     const approvals = await token.approvals('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1')
       .pipe(first()).toPromise()
@@ -89,7 +89,7 @@ describe('Token', () => {
 
   })
 
-  it('approveForStaking works and is indexed property', async () => {
+  it.skip('approveForStaking works and is indexed property', async () => {
     const token = new Token(arc.getContract('GEN').options.address, arc)
     const amount = toWei('31415')
     await token.approveForStaking(amount).send()
@@ -105,5 +105,20 @@ describe('Token', () => {
       owner: arc.web3.eth.defaultAccount.toLowerCase(),
       spender: arc.getContract('GenesisProtocol').options.address.toLowerCase()
     })
+  })
+
+  it('approveForStaking() and allowance() work', async () => {
+    const token = new Token(arc.getContract('GEN').options.address, arc)
+    const amount = toWei('31415')
+    await token.approveForStaking(amount).send()
+    const allowances: BN[] = []
+    const genesisProtocol = arc.getContract('GenesisProtocol')
+
+    token.allowance(arc.web3.eth.defaultAccount, genesisProtocol.options.address).subscribe(
+      (next: any) => allowances.push(next)
+    )
+    const lastAllowance = () => allowances[allowances.length - 1]
+    await waitUntilTrue(() => allowances.length > 0 && lastAllowance().gte(amount))
+    expect(lastAllowance()).toMatchObject(amount)
   })
 })

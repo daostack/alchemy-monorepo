@@ -107,32 +107,37 @@ export class Arc {
       (r: any) => new DAO(r.id, this)
     ) as Observable<DAO[]>
   }
+  public ethBalance(owner: Address): Observable<BN> {
+    return this.tokenBalance(owner, 'eth')
+  }
   /**
-   * getBalance returns an observer with a stream of ETH balances
-   * @param  address [description]
+   * getBalance returns an observer with a stream of token balances
+   *
+   * @param  owner address of token holder
    * @return         [description]
    */
-  public ethBalance(address: Address): Observable < BN > {
-    if (!this.observedAccounts[address]) {
-      this.observedAccounts[address] = {
+  public tokenBalance(owner: Address, token: Address|'eth'|'gen' = 'eth'): Observable < BN > {
+
+    if (!this.observedAccounts[owner]) {
+      this.observedAccounts[owner] = {
         subscriptionsCount: 1,
         tokens: { eth: {} }
        }
     }
-    if (this.observedAccounts[address].tokens.eth.observable) {
-        this.observedAccounts[address].subscriptionsCount += 1
-        return this.observedAccounts[address].tokens.eth.observable as Observable<BN>
+    if (this.observedAccounts[owner].tokens[token].observable) {
+        this.observedAccounts[owner].subscriptionsCount += 1
+        return this.observedAccounts[owner].tokens[token].observable as Observable<BN>
     }
 
     const observable = Observable.create((observer: Observer<BN>) => {
-      // if (!this.observedAccounts[address]) {
-      //   this.observedAccounts[address] = { subscriptionsCount: 0}
+      // if (!this.observedAccounts[owner]) {
+      //   this.observedAccounts[owner] = { subscriptionsCount: 0}
       // }
-      this.observedAccounts[address].tokens.eth.observer = observer
+      this.observedAccounts[owner].tokens[token].observer = observer
 
       // get the current balance and return it
-      this.web3.eth.getBalance(address).then((currentBalance: number) => {
-        const accInfo = this.observedAccounts[address].tokens.eth;
+      this.web3.eth.getBalance(owner).then((currentBalance: number) => {
+        const accInfo = this.observedAccounts[owner].tokens[token];
         (accInfo.observer as Observer<BN>).next(new BN(currentBalance))
         accInfo.lastBalance = currentBalance
       })
@@ -140,7 +145,7 @@ export class Arc {
       if (!this.blockHeaderSubscription) {
         this.blockHeaderSubscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error) => {
           Object.keys(this.observedAccounts).forEach((addr) => {
-            const accInfo = this.observedAccounts[addr].tokens.eth
+            const accInfo = this.observedAccounts[addr].tokens[token]
             if (err) {
               (accInfo.observer as Observer<BN>).error(err)
             } else {
@@ -156,9 +161,9 @@ export class Arc {
       }
       // unsubscribe
       return () => {
-        this.observedAccounts[address].subscriptionsCount -= 1
-        if (this.observedAccounts[address].subscriptionsCount <= 0) {
-          delete this.observedAccounts[address]
+        this.observedAccounts[owner].subscriptionsCount -= 1
+        if (this.observedAccounts[owner].subscriptionsCount <= 0) {
+          delete this.observedAccounts[owner]
         }
         if (Object.keys(this.observedAccounts).length === 0 && this.blockHeaderSubscription) {
           this.blockHeaderSubscription.unsubscribe()
@@ -167,7 +172,7 @@ export class Arc {
       }
     })
 
-    this.observedAccounts[address].tokens.eth.observable = observable
+    this.observedAccounts[owner].tokens.eth.observable = observable
     return observable
       .pipe(map((item: any) => new BN(item)))
   }
@@ -416,22 +421,10 @@ export class Arc {
    * @param  owner owner for which to check the allowance
    * @return An allowance { amount: BN, owner: string, spender: string }
    */
-  public allowance(owner: string): Observable < any > {
-    const itemMap = (rs: any[]) => {
-      return rs.length > 0 ? {
-        amount: new BN(rs[0].amount),
-        owner: rs[0].owner,
-        spender: rs[0].spender
-      } : undefined
-    }
+  public allowance(owner: string): Observable<BN> {
     const genesisProtocol = this.getContract('GenesisProtocol')
     const spender = genesisProtocol.options.address
-    return this.GENToken().allowances({
-      owner,
-      spender
-    }).pipe(
-      map(itemMap)
-    )
+    return this.GENToken().allowance(owner, spender)
   }
 
   public sendTransaction<T>(
