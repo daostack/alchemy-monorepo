@@ -29,9 +29,12 @@ export class Arc {
   // accounts obseved by ethBalance
   public blockHeaderSubscription: Subscription|undefined = undefined
   public observedAccounts: { [address: string]: {
-      observable?: Observable<BN>,
-      observer?: Observer<BN>,
-      lastBalance?: number,
+      tokens: { [address: string]: {
+        observable?: Observable<BN>,
+        observer?: Observer<BN>,
+        lastBalance?: number
+        }
+      },
       subscriptionsCount: number
     }
   } = {}
@@ -109,25 +112,27 @@ export class Arc {
    * @param  address [description]
    * @return         [description]
    */
-  public ethBalance(address: Address): Observable<BN> {
-    if (this.observedAccounts[address]) {
-      if (this.observedAccounts[address].observable) {
+  public ethBalance(address: Address): Observable < BN > {
+    if (!this.observedAccounts[address]) {
+      this.observedAccounts[address] = {
+        subscriptionsCount: 1,
+        tokens: { eth: {} }
+       }
+    }
+    if (this.observedAccounts[address].tokens.eth.observable) {
         this.observedAccounts[address].subscriptionsCount += 1
-        return this.observedAccounts[address].observable as Observable<BN>
-      }
-    } else {
-      this.observedAccounts[address] = { subscriptionsCount: 1 }
+        return this.observedAccounts[address].tokens.eth.observable as Observable<BN>
     }
 
     const observable = Observable.create((observer: Observer<BN>) => {
-      if (!this.observedAccounts[address]) {
-        this.observedAccounts[address] = { subscriptionsCount: 0}
-      }
-      this.observedAccounts[address].observer = observer
+      // if (!this.observedAccounts[address]) {
+      //   this.observedAccounts[address] = { subscriptionsCount: 0}
+      // }
+      this.observedAccounts[address].tokens.eth.observer = observer
 
       // get the current balance and return it
       this.web3.eth.getBalance(address).then((currentBalance: number) => {
-        const accInfo = this.observedAccounts[address];
+        const accInfo = this.observedAccounts[address].tokens.eth;
         (accInfo.observer as Observer<BN>).next(new BN(currentBalance))
         accInfo.lastBalance = currentBalance
       })
@@ -135,7 +140,7 @@ export class Arc {
       if (!this.blockHeaderSubscription) {
         this.blockHeaderSubscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error) => {
           Object.keys(this.observedAccounts).forEach((addr) => {
-            const accInfo = this.observedAccounts[addr]
+            const accInfo = this.observedAccounts[addr].tokens.eth
             if (err) {
               (accInfo.observer as Observer<BN>).error(err)
             } else {
@@ -162,7 +167,7 @@ export class Arc {
       }
     })
 
-    this.observedAccounts[address].observable = observable
+    this.observedAccounts[address].tokens.eth.observable = observable
     return observable
       .pipe(map((item: any) => new BN(item)))
   }
@@ -363,7 +368,7 @@ export class Arc {
     }
   }
 
-  public getAccount(): Observable<Address> {
+  public getAccount(): Observable < Address > {
     // this complex logic is to get the correct account both from the Web3 as well as from the Metamaask provider
     // Polling is Evil!
     // cf. https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#ear-listening-for-selected-account-changes
