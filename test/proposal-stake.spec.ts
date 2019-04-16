@@ -83,15 +83,4 @@ describe('Stake on a ContributionReward', () => {
       /unknown proposal/i
     )
   })
-
-  it('upstakeNeededToBoost() gives correct values', async () => {
-
-    const { Avatar, queuedProposalId, preBoostedProposalId } = DAOstackMigration.migration('private').test
-
-    const dao = new DAO(Avatar, arc)
-    const proposal = await createAProposal(dao)
-    // this new proposal is now queued, so upstakeNeededToBoost returns undefined
-    expect(proposal.upstakeNeededToBoost()).toEqual(undefined)
-
-  })
 })

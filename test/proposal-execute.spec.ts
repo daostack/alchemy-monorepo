@@ -1,7 +1,7 @@
 import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { IProposalOutcome, IProposalStage, IProposalState, Proposal } from '../src/proposal'
+import { IProposalOutcome, IProposalStage, IProposalState, IProposalType, Proposal } from '../src/proposal'
 import { createAProposal, fromWei, getTestDAO, newArc, timeTravel, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
@@ -13,7 +13,7 @@ describe('Proposal execute()', () => {
     arc = await newArc()
   })
 
-  it.only('runs correctly through the stages', async () => {
+  it('runs correctly through the stages', async () => {
 
     const dao = await getTestDAO()
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'

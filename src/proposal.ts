@@ -489,9 +489,9 @@ constructor(
           returnValue: item.genericScheme.returnValue
         }
       } else if (item.schemeRegistrar) {
-        if (item.schemeRegistar.schemeToRegister) {
+        if (item.schemeRegistrar.schemeToRegister) {
           type = IProposalType.SchemeRegistrarPropose
-        } else if (item.schemeRegister.schemeToRemove) {
+        } else if (item.schemeRegistrar.schemeToRemove) {
           type = IProposalType.SchemeRegistrarProposeToRemove
         } else {
           throw Error(`Unknown proposal type: schemeRegistrar without a scheme to register or to remove`)
@@ -560,7 +560,7 @@ constructor(
         queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
         queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
         quietEndingPeriod: Number(item.quietEndingPeriod),
-        quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
+        quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt || 0,
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : 0,
         schemeRegistrar,
         stage,

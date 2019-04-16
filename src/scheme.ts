@@ -29,10 +29,10 @@ export class Scheme {
     }
 
     const query = gql` {
-     ucontrollerSchemes  (where: {${where}}) {
+     controllerSchemes  (where: {${where}}) {
        id
        address
-       avatarAddress
+       dao { id }
        canDelegateCall
        canRegisterSchemes
        canUpgradeController
@@ -47,7 +47,7 @@ export class Scheme {
         canManageGlobalConstraints: item.canManageGlobalConstraints,
         canRegisterSchemes: item.canRegisterSchemes,
         canUpgradeController: item.canUpgradeController,
-        dao: new DAO(item.avatarAddress, context),
+        dao: new DAO(item.dao.id, context),
         id: item.id
       }, context)
     }
