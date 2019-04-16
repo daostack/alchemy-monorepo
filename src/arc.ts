@@ -117,9 +117,6 @@ export class Arc {
     }
 
     const observable = Observable.create((observer: Observer<BN>) => {
-      // if (!this.observedAccounts[owner]) {
-      //   this.observedAccounts[owner] = { subscriptionsCount: 0}
-      // }
       this.observedAccounts[owner].observer = observer
 
       // get the current balance and return it
