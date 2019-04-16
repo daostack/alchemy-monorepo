@@ -31,7 +31,7 @@ export class Arc {
   public observedAccounts: { [address: string]: {
       observable?: Observable<BN>,
       observer?: Observer<BN>,
-      lastBalance?: number,
+      lastBalance?: number
       subscriptionsCount: number
     }
   } = {}
@@ -104,30 +104,24 @@ export class Arc {
       (r: any) => new DAO(r.id, this)
     ) as Observable<DAO[]>
   }
-  /**
-   * getBalance returns an observer with a stream of ETH balances
-   * @param  address [description]
-   * @return         [description]
-   */
-  public ethBalance(address: Address): Observable<BN> {
-    if (this.observedAccounts[address]) {
-      if (this.observedAccounts[address].observable) {
-        this.observedAccounts[address].subscriptionsCount += 1
-        return this.observedAccounts[address].observable as Observable<BN>
-      }
-    } else {
-      this.observedAccounts[address] = { subscriptionsCount: 1 }
+
+  public ethBalance(owner: Address): Observable<BN> {
+    if (!this.observedAccounts[owner]) {
+      this.observedAccounts[owner] = {
+        subscriptionsCount: 1
+       }
+    }
+    if (this.observedAccounts[owner].observable) {
+        this.observedAccounts[owner].subscriptionsCount += 1
+        return this.observedAccounts[owner].observable as Observable<BN>
     }
 
     const observable = Observable.create((observer: Observer<BN>) => {
-      if (!this.observedAccounts[address]) {
-        this.observedAccounts[address] = { subscriptionsCount: 0}
-      }
-      this.observedAccounts[address].observer = observer
+      this.observedAccounts[owner].observer = observer
 
       // get the current balance and return it
-      this.web3.eth.getBalance(address).then((currentBalance: number) => {
-        const accInfo = this.observedAccounts[address];
+      this.web3.eth.getBalance(owner).then((currentBalance: number) => {
+        const accInfo = this.observedAccounts[owner];
         (accInfo.observer as Observer<BN>).next(new BN(currentBalance))
         accInfo.lastBalance = currentBalance
       })
@@ -137,7 +131,7 @@ export class Arc {
           Object.keys(this.observedAccounts).forEach((addr) => {
             const accInfo = this.observedAccounts[addr]
             if (err) {
-              (accInfo.observer as Observer<BN>).error(err)
+            (accInfo.observer as Observer<BN>).error(err)
             } else {
               this.web3.eth.getBalance(addr).then((balance: any) => {
                 if (balance !== accInfo.lastBalance) {
@@ -150,10 +144,10 @@ export class Arc {
         })
       }
       // unsubscribe
-      return () => {
-        this.observedAccounts[address].subscriptionsCount -= 1
-        if (this.observedAccounts[address].subscriptionsCount <= 0) {
-          delete this.observedAccounts[address]
+      return( ) => {
+        this.observedAccounts[owner].subscriptionsCount -= 1
+        if (this.observedAccounts[owner].subscriptionsCount <= 0) {
+          delete this.observedAccounts[owner]
         }
         if (Object.keys(this.observedAccounts).length === 0 && this.blockHeaderSubscription) {
           this.blockHeaderSubscription.unsubscribe()
@@ -162,7 +156,7 @@ export class Arc {
       }
     })
 
-    this.observedAccounts[address].observable = observable
+    this.observedAccounts[owner].observable = observable
     return observable
       .pipe(map((item: any) => new BN(item)))
   }
@@ -366,7 +360,7 @@ export class Arc {
     }
   }
 
-  public getAccount(): Observable<Address> {
+  public getAccount(): Observable < Address > {
     // this complex logic is to get the correct account both from the Web3 as well as from the Metamaask provider
     // Polling is Evil!
     // cf. https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#ear-listening-for-selected-account-changes
@@ -414,22 +408,10 @@ export class Arc {
    * @param  owner owner for which to check the allowance
    * @return An allowance { amount: BN, owner: string, spender: string }
    */
-  public allowance(owner: string): Observable < any > {
-    const itemMap = (rs: any[]) => {
-      return rs.length > 0 ? {
-        amount: new BN(rs[0].amount),
-        owner: rs[0].owner,
-        spender: rs[0].spender
-      } : undefined
-    }
+  public allowance(owner: string): Observable < BN > {
     const genesisProtocol = this.getContract('GenesisProtocol')
     const spender = genesisProtocol.options.address
-    return this.GENToken().allowances({
-      owner,
-      spender
-    }).pipe(
-      map(itemMap)
-    )
+    return this.GENToken().allowance(owner, spender)
   }
 
   public sendTransaction<T>(

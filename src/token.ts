@@ -1,9 +1,10 @@
 import { ApolloQueryResult } from 'apollo-client'
 import BN = require('bn.js')
 import gql from 'graphql-tag'
-import { Observable, of } from 'rxjs'
+import { Observable, Observer, of, Subscription } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc } from './arc'
+import { Logger } from './logger'
 import { Address, Hash, IStateful, Web3Receipt } from './types'
 import { getWeb3Options, isAddress } from './utils'
 
@@ -65,29 +66,58 @@ export class Token implements IStateful<ITokenState> {
     return this.context._getObservableObject(query, itemMap) as Observable<ITokenState>
   }
 
-  public balanceOf(address: string): Observable<BN> {
-    const query = gql`{
-      tokenHolders (
-        where: {
-          address:"${address}",
-          contract: "${this.address}"
-        }
-      )
-      {
-        id, address, balance,contract
+  public balanceOf(owner: string): Observable<BN> {
+    return Observable.create(async (observer: Observer<BN>) => {
+      const contract = this.contract()
+      console.log('open balance subscription')
+      let subscription: Subscription
+      contract.methods.balanceOf(owner).call()
+        .then((balance: number) => {
+          if (balance === null) {
+            observer.error(`balanceOf ${owner} returned null`)
+          }
+          observer.next(new BN(balance))
+          subscription = contract.events.Transfer({ filter: { _to: owner }})
+            .on('data', () => {
+              // const newBalance = data.returnValues.value
+              contract.methods.balanceOf(owner).call().then((newBalance: number) => {
+                observer.next(new BN(newBalance))
+              })
+            })
+        })
+        .catch((err: Error) => { observer.error(err)})
+      return () => {
+        if (subscription) { subscription.unsubscribe() }
       }
-    }`
-    return this.context.getObservable(query).pipe(
-      map((r: ApolloQueryResult<any>) => r.data.tokenHolders),
-      map((items: any[]) => {
-        const item = items.length > 0 && items[0]
-        if (item) {
-          return new BN(item.balance)
-        } else {
-          return new BN(0)
+    })
+  }
+
+  public allowance(owner: Address, spender: Address): Observable<BN> {
+    return Observable.create(async (observer: Observer<BN>) => {
+      let subscription: Subscription
+      const contract = this.contract()
+      contract.methods.allowance(owner, spender).call()
+        .then((balance: number) => {
+          if (balance === null) {
+            observer.error(`balanceOf ${owner} returned null`)
+          }
+          observer.next(new BN(balance))
+          subscription = contract.events.Approval({ filter: { _owner: owner }})
+            .on('data', () => {
+              // const newBalance = data.returnValues.value
+              contract.methods.allowance(owner, spender).call().then((newBalance: number) => {
+                observer.next(new BN(newBalance))
+            })
+          })
+        })
+        .catch((err: Error) => { observer.error(err)})
+      return () => {
+        if (subscription) {
+          console.log('close allowance subscription')
+          subscription.unsubscribe()
         }
-      })
-    )
+      }
+    })
   }
 
   /*
@@ -121,59 +151,5 @@ export class Token implements IStateful<ITokenState> {
       }
     }
     return this.context.sendTransaction(transaction, mapReceipt)
-  }
-
-  public approvals(address: string): Observable<any[]> {
-    const query = gql`{
-      tokenApprovals (
-        where: {
-          owner: "${address}",
-          contract: "${this.address}"
-        }
-      )
-      {
-        id, contract, owner, spender, txHash, value
-      }
-    }`
-    return this.context._getObservableList(query)
-  }
-
-  public allowances(options: { owner?: Address, spender?: Address}): Observable<IAllowance[]> {
-    // the allownaces entry tracks the GEN token, so the query only makes sense if the current token is the GEN token
-    if (this.address.toLowerCase() !== this.context.getContract('GEN').options.address.toLowerCase()) {
-      throw Error(`This token (@${this.address}) is not the GEN token` +
-         `(@${this.context.getContract('GEN').options.address})- cannot query for allowances`)
-    }
-
-    let whereclause = ''
-    if (options.owner) {
-      whereclause += `owner: "${options.owner.toLowerCase()}"\n`
-    }
-    if (options.spender) {
-      whereclause += `spender: "${options.spender.toLowerCase()}"\n`
-    }
-    whereclause += `token: "${this.address.toLowerCase()}"\n`
-    if (whereclause) {
-      whereclause = `(where: { ${whereclause}})`
-    }
-    const query = gql`{
-      allowances
-        ${whereclause}
-      {
-        id
-        token
-        owner
-        spender
-        amount
-      }
-    }`
-    const itemMap = (r: any) => {
-      return {
-        amount: new BN(r.amount),
-        owner: r.owner,
-        spender: r.spender
-      }
-    }
-    return this.context._getObservableList(query, itemMap)
   }
 }
