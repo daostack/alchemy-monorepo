@@ -102,20 +102,28 @@ export class Token implements IStateful<ITokenState> {
     )
   }
 
-  public balanceOf(address: string): Observable<BN> {
+  public balanceOf(owner: string): Observable<BN> {
     return Observable.create(async (observer: Observer<BN>) => {
       const contract = this.contract()
+      console.log('open balance subscription')
       let subscription: Subscription
-      contract.methods.balanceOf(address).call().then((balance: number) => {
-        observer.next(new BN(balance))
-        subscription = contract.events.Transfer({ filter: { _to: address }})
-        .on('data', () => {
-          // const newBalance = data.returnValues.value
-          contract.methods.balanceOf(address).call().then((newBalance: number) => {
-            observer.next(new BN(newBalance))
-          })
+      console.log('get balance')
+      contract.methods.balanceOf(owner).call()
+        .then((balance: number) => {
+          if (balance === null) {
+            observer.error(`balanceOf ${owner} returned null`)
+          }
+          observer.next(new BN(balance))
+          subscription = contract.events.Transfer({ filter: { _to: owner }})
+            .on('data', () => {
+              // const newBalance = data.returnValues.value
+              console.log('get balance')
+              contract.methods.balanceOf(owner).call().then((newBalance: number) => {
+                observer.next(new BN(newBalance))
+              })
+            })
         })
-      })
+        .catch((err: Error) => { observer.error(err)})
       return () => {
         if (subscription) { subscription.unsubscribe() }
       }
@@ -124,20 +132,29 @@ export class Token implements IStateful<ITokenState> {
 
   public allowance(owner: Address, spender: Address): Observable<BN> {
     return Observable.create(async (observer: Observer<BN>) => {
-      const contract = this.contract()
+      console.log('open allowance subscription')
       let subscription: Subscription
-      contract.methods.allowance(owner, spender).call().then((balance: number) => {
-        observer.next(new BN(balance))
-        subscription = contract.events.Approval({ filter: { _owner: owner }})
-        .on('data', () => {
-          // const newBalance = data.returnValues.value
-          contract.methods.allowance(owner, spender).call().then((newBalance: number) => {
-            observer.next(new BN(newBalance))
+      const contract = this.contract()
+      contract.methods.allowance(owner, spender).call()
+        .then((balance: number) => {
+          if (balance === null) {
+            observer.error(`balanceOf ${owner} returned null`)
+          }
+          observer.next(new BN(balance))
+          subscription = contract.events.Approval({ filter: { _owner: owner }})
+            .on('data', () => {
+              // const newBalance = data.returnValues.value
+              contract.methods.allowance(owner, spender).call().then((newBalance: number) => {
+                observer.next(new BN(newBalance))
+            })
           })
         })
-      })
+        .catch((err: Error) => { observer.error(err)})
       return () => {
-        if (subscription) { subscription.unsubscribe() }
+        if (subscription) {
+          console.log('close allowance subscription')
+          subscription.unsubscribe()
+        }
       }
     })
   }
@@ -193,7 +210,7 @@ export class Token implements IStateful<ITokenState> {
     return this.context._getObservableList(query)
   }
 
-  public allowances(options: { owner?: Address, spender?: Address}): Observable < IAllowance[] > {
+  public allowances(options: { owner?: Address, spender?: Address}): Observable<IAllowance[]> {
     // the allownaces entry tracks the GEN token, so the query only makes sense if the current token is the GEN token
     if (true as any) {
       throw new Error(`This function is obsolete`)

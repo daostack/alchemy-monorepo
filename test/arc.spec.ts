@@ -32,19 +32,21 @@ describe('Arc ', () => {
     expect(arc.getContract('AbsoluteVote')).toBeInstanceOf(arc.web3.eth.Contract)
   })
 
-  it('arc.allowance() should work', async () => {
+  it.only('arc.allowance() should work', async () => {
     const arc = await newArc()
     const allowances: BN[] = []
-    arc.allowance(arc.web3.eth.defaultAccount).subscribe(
-      (next: BN) => { allowances.push(next) }
-    )
-    const lastAllowance = () => allowances[allowances.length - 1]
     const amount = toWei(1001)
     await arc.approveForStaking(amount).send()
-    await waitUntilTrue(() => (allowances.length > 1))
+    arc.allowance(arc.web3.eth.defaultAccount).subscribe(
+      (next: BN) => {
+        allowances.push(next)
+      }
+    )
+    const lastAllowance = () => allowances[allowances.length - 1]
+    await waitUntilTrue(() => (allowances.length > 0))
      // && lastAllowance().eq(amount)))
     expect(fromWei(lastAllowance())).toEqual('1001')
-  }, 20000)
+  })
 
   it('arc.getAccount() works and is correct', async () => {
     const arc = await newArc()
