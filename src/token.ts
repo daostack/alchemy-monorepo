@@ -66,48 +66,11 @@ export class Token implements IStateful<ITokenState> {
     return this.context._getObservableObject(query, itemMap) as Observable<ITokenState>
   }
 
-  /**
-   * This functino is (temporarily?) unavailable
-   * because of indexing times that regard the entire token history
-   * it is replaced by `this.balanceOf()` which subscribed to the thereum node
-   * @param  address [description]
-   * @return         [description]
-   */
-  public balanceOfFromSubgraph(address: string): Observable<BN> {
-    if (true as any) {
-      throw new Error(`This function is obsolete`)
-    }
-
-    const query = gql`{
-      tokenHolders (
-        where: {
-          address:"${address}",
-          contract: "${this.address}"
-        }
-      )
-      {
-        id, address, balance,contract
-      }
-    }`
-    return this.context.getObservable(query).pipe(
-      map((r: ApolloQueryResult<any>) => r.data.tokenHolders),
-      map((items: any[]) => {
-        const item = items.length > 0 && items[0]
-        if (item) {
-          return new BN(item.balance)
-        } else {
-          return new BN(0)
-        }
-      })
-    )
-  }
-
   public balanceOf(owner: string): Observable<BN> {
     return Observable.create(async (observer: Observer<BN>) => {
       const contract = this.contract()
       console.log('open balance subscription')
       let subscription: Subscription
-      console.log('get balance')
       contract.methods.balanceOf(owner).call()
         .then((balance: number) => {
           if (balance === null) {
@@ -117,7 +80,6 @@ export class Token implements IStateful<ITokenState> {
           subscription = contract.events.Transfer({ filter: { _to: owner }})
             .on('data', () => {
               // const newBalance = data.returnValues.value
-              console.log('get balance')
               contract.methods.balanceOf(owner).call().then((newBalance: number) => {
                 observer.next(new BN(newBalance))
               })
@@ -132,7 +94,6 @@ export class Token implements IStateful<ITokenState> {
 
   public allowance(owner: Address, spender: Address): Observable<BN> {
     return Observable.create(async (observer: Observer<BN>) => {
-      console.log('open allowance subscription')
       let subscription: Subscription
       const contract = this.contract()
       contract.methods.allowance(owner, spender).call()
@@ -190,65 +151,5 @@ export class Token implements IStateful<ITokenState> {
       }
     }
     return this.context.sendTransaction(transaction, mapReceipt)
-  }
-
-  public approvals(address: string): Observable<any[]> {
-    if (true as any) {
-      throw new Error(`This function is obsolete`)
-    }
-    const query = gql`{
-      tokenApprovals (
-        where: {
-          owner: "${address}",
-          contract: "${this.address}"
-        }
-      )
-      {
-        id, contract, owner, spender, txHash, value
-      }
-    }`
-    return this.context._getObservableList(query)
-  }
-
-  public allowances(options: { owner?: Address, spender?: Address}): Observable<IAllowance[]> {
-    // the allownaces entry tracks the GEN token, so the query only makes sense if the current token is the GEN token
-    if (true as any) {
-      throw new Error(`This function is obsolete`)
-    }
-
-    if (this.address !== this.context.getContract('GEN').options.address) {
-      throw Error(`This token is not the GEN token - cannot query for allowances`)
-    }
-
-    let whereclause = ''
-    if (options.owner) {
-      whereclause += `owner: "${options.owner.toLowerCase()}"\n`
-    }
-    if (options.spender) {
-      whereclause += `spender: "${options.spender.toLowerCase()}"\n`
-    }
-    whereclause += `token: "${this.address.toLowerCase()}"\n`
-    if (whereclause) {
-      whereclause = `(where: { ${whereclause}})`
-    }
-    const query = gql`{
-      allowances
-        ${whereclause}
-      {
-        id
-        token
-        owner
-        spender
-        amount
-      }
-    }`
-    const itemMap = (r: any) => {
-      return {
-        amount: new BN(r.amount),
-        owner: r.owner,
-        spender: r.spender
-      }
-    }
-    return this.context._getObservableList(query, itemMap)
   }
 }

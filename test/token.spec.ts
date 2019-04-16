@@ -75,36 +75,11 @@ describe('Token', () => {
     const balances: BN[] = []
     const amount = new BN('1234')
     token.balanceOf(account).subscribe((next: BN) => balances.push(next))
+    await waitUntilTrue(() => balances.length > 0)
+    expect(typeof balances[0]).toEqual(typeof new BN(0))
     await token.mint(account, amount).send()
     await waitUntilTrue(() => balances.length > 1)
     expect(balances[1].sub(balances[0]).toString()).toEqual(amount.toString())
-  })
-
-  it.skip('see approvals', async () => {
-    const token = new Token(address, arc)
-    const approvals = await token.approvals('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1')
-      .pipe(first()).toPromise()
-    expect(approvals).toEqual([])
-    // todo: this needs a test with some approvals
-
-  })
-
-  it.skip('approveForStaking works and is indexed property', async () => {
-    const token = new Token(arc.getContract('GEN').options.address, arc)
-    const amount = toWei('31415')
-    await token.approveForStaking(amount).send()
-    let allowances: any[] = []
-    const genesisProtocol = arc.getContract('GenesisProtocol')
-
-    token.allowances({ owner: arc.web3.eth.defaultAccount, spender: genesisProtocol.options.address}).subscribe(
-      (next: any) => allowances = next
-    )
-    await waitUntilTrue(() => allowances.length > 0 && allowances[0].amount.gte(amount))
-    expect(allowances[0]).toMatchObject({
-      amount,
-      owner: arc.web3.eth.defaultAccount.toLowerCase(),
-      spender: arc.getContract('GenesisProtocol').options.address.toLowerCase()
-    })
   })
 
   it('approveForStaking() and allowance() work', async () => {
