@@ -64,8 +64,8 @@ describe('Reputation', () => {
     const reputationAfter = new BN(await reputation.contract().methods.balanceOf(accounts[3].address).call())
     const difference = reputationAfter.sub(reputationBefore)
     expect(difference.toString()).toEqual('1000000000003003837')
-
   })
+
   it('mint() throws a meaningful error if the sender is not the contract owner', async () => {
     const reputation = new Reputation(addresses.test.Reputation, arc)
     await expect(reputation.mint(accounts[3].address, toWei(1)).send()).rejects.toThrow(
