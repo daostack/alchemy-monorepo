@@ -62,10 +62,12 @@ describe('Create a ContributionReward proposal', () => {
     expect(fromWei(proposalState.stakesFor)).toEqual('0')
 
     expect(proposalState).toMatchObject({
-      executedAt: null,
+      beneficiary: options.beneficiary,
+      executedAt: 0,
       proposer: dao.context.web3.eth.defaultAccount.toLowerCase(),
-      quietEndingPeriodBeganAt: null,
-      resolvedAt: null,
+      quietEndingPeriod: 300,
+      quietEndingPeriodBeganAt: 0,
+      resolvedAt: 0,
       stage: IProposalStage.Queued
     })
     expect(proposalState.dao.address).toEqual(dao.address)

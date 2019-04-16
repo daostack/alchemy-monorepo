@@ -175,3 +175,27 @@ export async function voteForProposal(proposal: Proposal) {
   await proposal.vote(IProposalOutcome.Pass).send()
   arc.setAccount(accounts[0].address)
 }
+export async function timeTravel(seconds: number, web3: any) {
+  const jsonrpc = '2.0'
+  const id = 1
+  web3 = new Web3('http://localhost:8545')
+  web3.providers.HttpProvider.prototype.sendAsync = web3.providers.HttpProvider.prototype.send
+  return new Promise((resolve, reject) => {
+    web3.currentProvider.sendAsync({
+      id,
+      jsonrpc,
+      method: 'evm_increaseTime',
+      params: [seconds]
+    }, (err1: Error) => {
+      if (err1) { return reject(err1) }
+
+      web3.currentProvider.sendAsync({
+        id: id + 1,
+        jsonrpc,
+        method: 'evm_mine'
+      }, (err2: Error, res: any) => {
+        return err2 ? reject(err2) : resolve(res)
+      })
+    })
+  })
+}

@@ -10,7 +10,7 @@ import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import { nullAddress } from './utils'
+import { nullAddress, realMathToNumber } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export enum IProposalType {
@@ -56,6 +56,7 @@ export interface IProposalState {
   daoBountyConst: number
   descriptionHash?: string
   description?: string
+  downStakeNeededToQueue: BN
   executedAt: Date
   executionState: IExecutionState
   expiresInQueueAt: Date
@@ -69,16 +70,19 @@ export interface IProposalState {
   proposingRepReward: BN
   queuedVoteRequiredPercentage: number
   queuedVotePeriodLimit: number
+  quietEndingPeriod: number
   quietEndingPeriodBeganAt: Date
-  resolvedAt: Date|null
   schemeRegistrar: ISchemeRegistrar|null
+  resolvedAt: Date
   stage: IProposalStage
   stakesFor: BN
   stakesAgainst: BN
-  thresholdConst: number
+  threshold: BN
+  thresholdConst: BN
   title?: string
   totalRepWhenExecuted: BN
-  type: IProposalType.ContributionReward,
+  type: IProposalType,
+  upstakeNeededToPreBoost: BN
   url?: string
   votesFor: BN
   votesAgainst: BN
@@ -408,6 +412,10 @@ constructor(
           gpRewards {
             id
           }
+          gpQueue {
+            threshold
+            paramsHash
+          }
           minimumDaoBounty
           organizationId
           paramsHash
@@ -458,7 +466,11 @@ constructor(
       }
 
       let contributionReward: IContributionReward|null = null
+      let type: IProposalType
+      let genericScheme: IGenericScheme|null = null
+      let schemeRegistrar: ISchemeRegistrar|null = null
       if (item.contributionReward) {
+        type = IProposalType.ContributionReward
         contributionReward = {
           beneficiary: item.contributionReward.beneficiary,
           ethReward: new BN(item.contributionReward.ethReward),
@@ -469,10 +481,8 @@ constructor(
           periods: Number(item.contributionReward.periods),
           reputationReward: new BN(item.contributionReward.reputationReward)
         }
-      }
-
-      let genericScheme: IGenericScheme|null = null
-      if (item.genericScheme) {
+      } else if (item.genericScheme) {
+        type = IProposalType.GenericScheme
         genericScheme = {
           callData: item.genericScheme.callData,
           contractToCall: item.genericScheme.contractToCall,
@@ -480,10 +490,14 @@ constructor(
           id: item.genericScheme.id,
           returnValue: item.genericScheme.returnValue
         }
-      }
-
-      let schemeRegistrar: ISchemeRegistrar|null = null
-      if (item.schemeRegistrar) {
+      } else if (item.schemeRegistrar) {
+        if (item.schemeRegistar.schemeToRegister) {
+          type = IProposalType.SchemeRegistrarPropose
+        } else if (item.schemeRegister.schemeToRemove) {
+          type = IProposalType.SchemeRegistrarProposeToRemove
+        } else {
+          throw Error(`Unknown proposal type: schemeRegistrar without a scheme to register or to remove`)
+        }
         schemeRegistrar =  {
           decision: item.schemeRegistrar.decision,
           id: item.schemeRegistrar.id,
@@ -494,7 +508,33 @@ constructor(
           schemeToRegisterPermission: item.schemeRegistrar.schemeToRegisterPermission,
           schemeToRemove: item.schemeRegistrar.schemeToRemove
         }
+      } else {
+        throw Error(`Unknown propsal type`)
       }
+      // the  formule to enter into the preboosted state is:
+      // (S+/S-) > AlphaConstant^NumberOfBoostedProposal.
+      // (stakesFor/stakesAgainst) > gpQueue.threshold
+      const stage: any = IProposalStage[item.stage]
+      const threshold: BN = realMathToNumber(new BN(item.gpQueue.threshold))
+      const stakesFor = new BN(item.stakesFor)
+      const stakesAgainst = new BN(item.stakesAgainst)
+
+      // upstakeNeededToPreBoost is the amount of tokens needed to upstake to move to the preboost queue
+      // this is only non-zero for Queued proposals
+      // note that the number can be negative!
+      let upstakeNeededToPreBoost: BN = new BN(0)
+      if (stage === IProposalStage.Queued) {
+        upstakeNeededToPreBoost = threshold.mul(stakesAgainst).sub(stakesFor)
+      }
+      // upstakeNeededToPreBoost is the amount of tokens needed to upstake to move to the Queued queue
+      // this is only non-zero for Preboosted proposals
+      // note that the number can be negative!
+      let downStakeNeededToQueue: BN = new BN(0)
+      if (stage === IProposalStage.PreBoosted) {
+        downStakeNeededToQueue = stakesFor.div(threshold).sub(stakesAgainst)
+      }
+      const thresholdConst = realMathToNumber(new BN(item.thresholdConst))
+
       return {
         accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
         activationTime: Number(item.activationTime),
@@ -507,7 +547,8 @@ constructor(
         daoBountyConst: item.daoBountyConst,
         description: item.description,
         descriptionHash: item.descriptionHash,
-        executedAt: item.executedAt,
+        downStakeNeededToQueue,
+        executedAt: Number(item.executedAt),
         executionState: IExecutionState[item.executionState] as any,
         expiresInQueueAt: Number(item.expiresInQueueAt),
         genericScheme,
@@ -520,16 +561,19 @@ constructor(
         proposingRepReward: new BN(item.proposingRepReward),
         queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
         queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
+        quietEndingPeriod: Number(item.quietEndingPeriod),
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
-        resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : null,
+        resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : 0,
         schemeRegistrar,
-        stage: IProposalStage[item.stage] as any,
-        stakesAgainst: new BN(item.stakesAgainst),
-        stakesFor: new BN(item.stakesFor),
-        thresholdConst: Number(item.thresholdConst),
+        stage,
+        stakesAgainst,
+        stakesFor,
+        threshold,
+        thresholdConst,
         title: item.title,
         totalRepWhenExecuted: new BN(item.totalRepWhenExecuted),
-        type: IProposalType.ContributionReward,
+        type,
+        upstakeNeededToPreBoost,
         url: item.url,
         votesAgainst: new BN(item.votesAgainst),
         votesCount: item.votes.length,
@@ -640,7 +684,7 @@ constructor(
         const event = receipt.events.Stake
         if (!event) {
           // for some reason, a transaction was mined but no error was raised before
-          throw new Error(`Error voting: no "Stake" event was found - ${Object.keys(receipt.events)}`)
+          throw new Error(`Error staking: no "Stake" event was found - ${Object.keys(receipt.events)}`)
         }
         const stakeId = undefined
 

@@ -1,9 +1,8 @@
 import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { IProposalOutcome, IProposalStage, IProposalState, IProposalType, Proposal } from '../src/proposal'
-import { createAProposal, fromWei, getTestDAO,
-  newArc, toWei, voteForProposal, waitUntilTrue } from './utils'
+import { IProposalOutcome, IProposalStage, IProposalState, Proposal } from '../src/proposal'
+import { createAProposal, fromWei, getTestDAO, newArc, timeTravel, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
@@ -14,7 +13,7 @@ describe('Proposal execute()', () => {
     arc = await newArc()
   })
 
-  it('runs correctly through the stages', async () => {
+  it.only('runs correctly through the stages', async () => {
 
     const dao = await getTestDAO()
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
@@ -47,6 +46,7 @@ describe('Proposal execute()', () => {
       },
       (error: Error) => { throw error }
     )
+    const lastState = () => proposalStates[proposalStates.length - 1]
     await waitUntilTrue(() => proposalIsIndexed)
     // check the state right after creation
     await waitUntilTrue(() => proposalStates.length > 1)
@@ -62,11 +62,8 @@ describe('Proposal execute()', () => {
     proposal.context.web3.eth.accounts.defaultAccount = accounts[0]
 
     // wait until the votes have been counted
-    await waitUntilTrue(async () => {
-      proposalState = proposalStates[proposalStates.length - 1]
-      return proposalState.votesFor.gt(new BN(0))
-    })
-    proposalState = proposalStates[proposalStates.length - 1]
+    await waitUntilTrue(() => lastState().votesFor.gt(new BN(0)))
+    proposalState = lastState()
     expect(proposalState.stage).toEqual(IProposalStage.Queued)
     expect(Number(fromWei(proposalState.votesFor))).toBeGreaterThan(0)
     expect(fromWei(proposalState.votesAgainst)).toEqual('0')
@@ -75,16 +72,23 @@ describe('Proposal execute()', () => {
     await proposal.stakingToken().approveForStaking(toWei('1000')).send()
 
     await proposal.stake(IProposalOutcome.Pass, toWei('200')).send()
-    await waitUntilTrue(async () => {
-      proposalState = proposalStates[proposalStates.length - 1]
-      return proposalState.stakesFor.gt(new BN(0))
-    })
-    proposalState = proposalStates[proposalStates.length - 1]
+
+    await waitUntilTrue(() => lastState().stakesFor.gt(new BN(0)))
+    proposalState = lastState()
 
     expect(Number(fromWei(proposalState.stakesFor))).toBeGreaterThan(0)
     expect(proposalState.stage).toEqual(IProposalStage.PreBoosted)
-    return
 
+    // TODO: find out why the state is not updated to Boosted
+    await timeTravel(60000 * 60, arc.web3) // 30 minutes
+    proposal.context.web3.eth.accounts.defaultAccount = accounts[2]
+    await proposal.vote(IProposalOutcome.Pass).send()
+    proposal.context.web3.eth.accounts.defaultAccount = accounts[0]
+
+    await waitUntilTrue(() => {
+      return lastState().stage === IProposalStage.Boosted
+    })
+    expect(lastState().stage).toEqual(IProposalStage.Boosted)
   }, 10000)
 
   it('throws a meaningful error if the proposal does not exist', async () => {

@@ -2,7 +2,7 @@ import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { Observable as ZenObservable } from 'apollo-link'
 import BN = require('bn.js')
 import gql from 'graphql-tag'
-import { from, Observable, Observer, of, Subscription } from 'rxjs'
+import { Observable, Observer, of, Subscription } from 'rxjs'
 import { catchError, filter, first, map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { Logger } from './logger'
@@ -30,7 +30,13 @@ export class Arc {
 
   // accounts obseved by ethBalance
   public blockHeaderSubscription: Subscription|undefined = undefined
-  public observedAccounts: { [address: string]: {observer: Observer<BN>, lastBalance?: number}}  = {}
+  public observedAccounts: { [address: string]: {
+      observable?: Observable<BN>,
+      observer?: Observer<BN>,
+      lastBalance?: number
+      subscriptionsCount: number
+    }
+  } = {}
 
   constructor(options: {
     graphqlHttpProvider: string
@@ -100,40 +106,38 @@ export class Arc {
       (r: any) => new DAO(r.id, this)
     ) as Observable<DAO[]>
   }
-  /**
-   * getBalance returns an observer with a stream of ETH balances
-   * @param  address [description]
-   * @return         [description]
-   */
-  public ethBalance(address: Address): Observable<BN> {
+
+  public ethBalance(owner: Address): Observable<BN> {
+    if (!this.observedAccounts[owner]) {
+      this.observedAccounts[owner] = {
+        subscriptionsCount: 1
+       }
+    }
+    if (this.observedAccounts[owner].observable) {
+        this.observedAccounts[owner].subscriptionsCount += 1
+        return this.observedAccounts[owner].observable as Observable<BN>
+    }
 
     const observable = Observable.create((observer: Observer<BN>) => {
+      this.observedAccounts[owner].observer = observer
+
       // get the current balance and return it
-      this.observedAccounts[address] = {
-        lastBalance: undefined,
-        observer
-      }
-
-      this.web3.eth.getBalance(address).then((currentBalance: number) => {
-        const accInfo = this.observedAccounts[address]
-        if (accInfo) {
-          // in theory it is possible that the client unsubscribed before reaching this callback
-
-          accInfo.observer.next(new BN(currentBalance))
-          accInfo.lastBalance = currentBalance
-        }
+      this.web3.eth.getBalance(owner).then((currentBalance: number) => {
+        const accInfo = this.observedAccounts[owner];
+        (accInfo.observer as Observer<BN>).next(new BN(currentBalance))
+        accInfo.lastBalance = currentBalance
       })
       // set up the blockheadersubscription if it does not exist yet
       if (!this.blockHeaderSubscription) {
-        this.blockHeaderSubscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error, result: any) => {
+        this.blockHeaderSubscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error) => {
           Object.keys(this.observedAccounts).forEach((addr) => {
             const accInfo = this.observedAccounts[addr]
             if (err) {
-              accInfo.observer.error(err)
+            (accInfo.observer as Observer<BN>).error(err)
             } else {
               this.web3.eth.getBalance(addr).then((balance: any) => {
                 if (balance !== accInfo.lastBalance) {
-                  accInfo.observer.next(new BN(balance))
+                  (accInfo.observer as Observer<BN>).next(new BN(balance))
                   accInfo.lastBalance = balance
                 }
               })
@@ -142,8 +146,11 @@ export class Arc {
         })
       }
       // unsubscribe
-      return () => {
-        delete this.observedAccounts[address]
+      return( ) => {
+        this.observedAccounts[owner].subscriptionsCount -= 1
+        if (this.observedAccounts[owner].subscriptionsCount <= 0) {
+          delete this.observedAccounts[owner]
+        }
         if (Object.keys(this.observedAccounts).length === 0 && this.blockHeaderSubscription) {
           this.blockHeaderSubscription.unsubscribe()
           this.blockHeaderSubscription = undefined
@@ -151,6 +158,7 @@ export class Arc {
       }
     })
 
+    this.observedAccounts[owner].observable = observable
     return observable
       .pipe(map((item: any) => new BN(item)))
   }
@@ -236,7 +244,7 @@ export class Arc {
     return this.getObservable(query, apolloQueryOptions).pipe(
       map((r: ApolloQueryResult<any>) => {
         if (!r.data[entity]) {
-          throw Error(`Could not find entity "${entity}" in ${Object.keys(r.data)}`)
+          throw Error(`Could not find entity '${entity}' in ${Object.keys(r.data)}`)
         }
         return r.data[entity]
       }),
@@ -365,7 +373,7 @@ export class Arc {
     }
   }
 
-  public getAccount(): Observable<Address> {
+  public getAccount(): Observable < Address > {
     // this complex logic is to get the correct account both from the Web3 as well as from the Metamaask provider
     // Polling is Evil!
     // cf. https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#ear-listening-for-selected-account-changes
@@ -413,20 +421,10 @@ export class Arc {
    * @param  owner owner for which to check the allowance
    * @return An allowance { amount: BN, owner: string, spender: string }
    */
-  public allowance(owner: string): Observable < any > {
-    const itemMap = (rs: any[]) => {
-      return rs.length > 0 ? {
-        amount: new BN(rs[0].amount),
-        owner: rs[0].owner,
-        spender: rs[0].spender
-      } : undefined
-    }
-
-    return this.GENToken().allowances({
-      owner
-    }).pipe(
-      map(itemMap)
-    )
+  public allowance(owner: string): Observable < BN > {
+    const genesisProtocol = this.getContract('GenesisProtocol')
+    const spender = genesisProtocol.options.address
+    return this.GENToken().allowance(owner, spender)
   }
 
   public sendTransaction<T>(
