@@ -6,8 +6,7 @@ import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Stake } from '../src/stake'
 import { Address } from '../src/types'
 import { Vote } from '../src/vote'
-import { createAProposal, fromWei, getContractAddressesFromMigration,
-  getTestDAO, newArc, toWei, waitUntilTrue } from './utils'
+import { createAProposal, fromWei, getContractAddresses, getTestDAO, newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
@@ -40,7 +39,7 @@ describe('Member', () => {
     expect(Number(fromWei(memberState.tokens))).toBeGreaterThan(0)
     expect(memberState.dao).toBeInstanceOf(DAO)
     expect(memberState.address).toEqual(defaultAccount)
-    expect(memberState.dao.address).toBe(addresses.dao.Avatar.toLowerCase())
+    expect(memberState.dao.address).toBe(addresses.test.Avatar.toLowerCase())
   })
 
   it('Member state also works for members that are not in the index', async () => {

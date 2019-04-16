@@ -10,7 +10,7 @@ import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import { nullAddress } from './utils'
+import { nullAddress, realMathToNumber } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export enum IProposalOutcome {
@@ -49,6 +49,7 @@ export interface IProposalState {
   daoBountyConst: number
   descriptionHash?: string
   description?: string
+  downStakeNeededToQueue: BN
   ethReward: BN
   executedAt: Date
   externalTokenReward: BN
@@ -67,15 +68,18 @@ export interface IProposalState {
   proposingRepReward: BN
   queuedVoteRequiredPercentage: number
   queuedVotePeriodLimit: number
+  quietEndingPeriod: number
   quietEndingPeriodBeganAt: Date
   reputationReward: BN
-  resolvedAt: Date|null
+  resolvedAt: Date
   stage: IProposalStage
   stakesFor: BN
   stakesAgainst: BN
-  thresholdConst: number
+  threshold: BN
+  thresholdConst: BN
   title?: string
   totalRepWhenExecuted: BN
+  upstakeNeededToPreBoost: BN
   url?: string
   votesFor: BN
   votesAgainst: BN
@@ -245,6 +249,10 @@ export class Proposal implements IStateful<IProposalState> {
           gpRewards {
             id
           }
+          gpQueue {
+            threshold
+            paramsHash
+          }
           minimumDaoBounty
           organizationId
           paramsHash
@@ -284,6 +292,30 @@ export class Proposal implements IStateful<IProposalState> {
         return null
       }
 
+      // the formule to enter into the preboosted state is:
+      // (S+/S-) > AlphaConstant^NumberOfBoostedProposal.
+      // (stakesFor/stakesAgainst) > gpQueue.threshold
+      const stage: any = IProposalStage[item.stage]
+      const threshold: BN = realMathToNumber(new BN(item.gpQueue.threshold))
+      const stakesFor = new BN(item.stakesFor)
+      const stakesAgainst = new BN(item.stakesAgainst)
+
+      // upstakeNeededToPreBoost is the amount of tokens needed to upstake to move to the preboost queue
+      // this is only non-zero for Queued proposals
+      // note that the number can be negative!
+      let upstakeNeededToPreBoost: BN = new BN(0)
+      if (stage === IProposalStage.Queued) {
+        upstakeNeededToPreBoost = threshold.mul(stakesAgainst).sub(stakesFor)
+      }
+      // upstakeNeededToPreBoost is the amount of tokens needed to upstake to move to the Queued queue
+      // this is only non-zero for Preboosted proposals
+      // note that the number can be negative!
+      let downStakeNeededToQueue: BN = new BN(0)
+      if (stage === IProposalStage.PreBoosted) {
+        downStakeNeededToQueue = stakesFor.div(threshold).sub(stakesAgainst)
+      }
+      const thresholdConst = realMathToNumber(new BN(item.thresholdConst))
+
       return {
         accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
         activationTime: Number(item.activationTime),
@@ -296,8 +328,9 @@ export class Proposal implements IStateful<IProposalState> {
         daoBountyConst: item.daoBountyConst,
         description: item.description,
         descriptionHash: item.descriptionHash,
+        downStakeNeededToQueue,
         ethReward: new BN(item.contributionReward.ethReward),
-        executedAt: item.executedAt,
+        executedAt: Number(item.executedAt),
         executionState: IExecutionState[item.executionState] as any,
         expiresInQueueAt: Number(item.expiresInQueueAt),
         externalToken: item.contributionReward.externalToken,
@@ -314,15 +347,18 @@ export class Proposal implements IStateful<IProposalState> {
         proposingRepReward: new BN(item.proposingRepReward),
         queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
         queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
-        quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
+        quietEndingPeriod: Number(item.quietEndingPeriod),
+        quietEndingPeriodBeganAt: Number(item.quietEndingPeriodBeganAt),
         reputationReward: new BN(item.contributionReward.reputationReward),
-        resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : null,
-        stage: IProposalStage[item.stage] as any,
-        stakesAgainst: new BN(item.stakesAgainst),
-        stakesFor: new BN(item.stakesFor),
-        thresholdConst: Number(item.thresholdConst),
+        resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : 0,
+        stage,
+        stakesAgainst,
+        stakesFor,
+        threshold,
+        thresholdConst,
         title: item.title,
         totalRepWhenExecuted: new BN(item.totalRepWhenExecuted),
+        upstakeNeededToPreBoost,
         url: item.url,
         votesAgainst: new BN(item.votesAgainst),
         votesCount: item.votes.length,
@@ -423,7 +459,7 @@ export class Proposal implements IStateful<IProposalState> {
         const event = receipt.events.Stake
         if (!event) {
           // for some reason, a transaction was mined but no error was raised before
-          throw new Error(`Error voting: no "Stake" event was found - ${Object.keys(receipt.events)}`)
+          throw new Error(`Error staking: no "Stake" event was found - ${Object.keys(receipt.events)}`)
         }
         const stakeId = undefined
 

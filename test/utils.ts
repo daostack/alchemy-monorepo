@@ -101,9 +101,8 @@ export async function getTestDAO() {
   // we have two indexed daos with the same name, but one has 6 members, and that is the one
   // we are using for testing
   const arc = await newArc()
-  const contractAddresses = getContractAddressesFromMigration()
-  if (contractAddresses) {
-    return arc.dao(contractAddresses.dao.Avatar)
+  if (arc.contractAddresses) {
+    return arc.dao(arc.contractAddresses.Avatar)
   } else {
     return arc.dao('0xnotfound')
   }
@@ -129,5 +128,29 @@ export async function createAProposal(dao?: DAO, options: any = {}) {
 
   const response = await dao.createProposal(options).send()
   return response.result as Proposal
+}
 
+export async function timeTravel(seconds: number, web3: any) {
+  const jsonrpc = '2.0'
+  const id = 1
+  web3 = new Web3('http://localhost:8545')
+  web3.providers.HttpProvider.prototype.sendAsync = web3.providers.HttpProvider.prototype.send
+  return new Promise((resolve, reject) => {
+      web3.currentProvider.sendAsync({
+        id,
+        jsonrpc,
+        method: 'evm_increaseTime',
+        params: [seconds]
+      }, (err1: Error) => {
+        if (err1) { return reject(err1) }
+
+        web3.currentProvider.sendAsync({
+          id: id + 1,
+          jsonrpc,
+          method: 'evm_mine'
+        }, (err2: Error, res: any) => {
+          return err2 ? reject(err2) : resolve(res)
+        })
+      })
+    })
 }

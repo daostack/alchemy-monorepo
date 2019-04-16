@@ -2,7 +2,7 @@ import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { fromWei, getTestDAO, newArc, toWei, waitUntilTrue } from './utils'
+import { fromWei, getTestDAO, newArc, toWei } from './utils'
 
 /**
  * DAO test
@@ -45,9 +45,9 @@ describe('DAO', () => {
     const state = await dao.state().pipe(first()).toPromise()
     const expected = {
        address: dao.address,
-       memberCount: 6,
-       tokenBalance: new BN('0')
+       memberCount: 6
     }
+    expect(typeof state.tokenBalance).toEqual(typeof new BN(0))
     expect(state).toMatchObject(expected)
     expect(Object.keys(state)).toEqual([
       'address',
