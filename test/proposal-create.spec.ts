@@ -62,7 +62,6 @@ describe('Create a ContributionReward proposal', () => {
     expect(fromWei(proposalState.stakesFor)).toEqual('0')
 
     expect(proposalState).toMatchObject({
-      beneficiary: options.beneficiary,
       executedAt: 0,
       proposer: dao.context.web3.eth.defaultAccount.toLowerCase(),
       quietEndingPeriod: 300,
@@ -70,8 +69,14 @@ describe('Create a ContributionReward proposal', () => {
       resolvedAt: 0,
       stage: IProposalStage.Queued
     })
-    expect(proposalState.dao.address).toEqual(dao.address)
 
+    expect(proposalState.contributionReward).toMatchObject({
+      beneficiary: options.beneficiary
+    })
+
+    expect(proposalState.dao).toMatchObject({
+      address: dao.address
+    })
   })
 
   it('saves title etc on ipfs', async () => {

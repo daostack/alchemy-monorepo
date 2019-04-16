@@ -2,7 +2,8 @@ import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IProposalOutcome, IProposalStage, IProposalState, IProposalType, Proposal } from '../src/proposal'
-import { createAProposal, fromWei, getTestDAO, newArc, timeTravel, toWei, waitUntilTrue } from './utils'
+import { createAProposal, fromWei, getTestDAO, newArc,
+  timeTravel, toWei, voteForProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
@@ -125,7 +126,7 @@ describe('Proposal execute()', () => {
     // this execution will not change the state, because the quorum is not met
     await proposal.execute().send()
     expect(lastState().stage).toEqual(IProposalStage.Queued)
-    expect(lastState().executedAt).toEqual(null)
+    expect(lastState().executedAt).toEqual(0)
 
     await voteForProposal(proposal)
     // wait until all votes have been counted

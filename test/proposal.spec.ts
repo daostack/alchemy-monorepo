@@ -145,7 +145,6 @@ describe('Proposal', () => {
     expect(fromWei(pState.proposingRepReward)).toEqual('0.000000005')
 
     expect(pState).toMatchObject({
-        beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
         boostedAt: 0,
         boostedVotePeriodLimit: 600,
         description: null,

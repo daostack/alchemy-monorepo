@@ -21,7 +21,7 @@ export class Scheme {
       const value = (options as any)[key]
       if (value !== undefined) {
         if (key === 'dao')  {
-          where += `avatarAddress: "${value}"\n`
+          where += `dao: "${value}"\n`
         } else {
           where += `${key}: "${value}"\n`
         }
