@@ -138,8 +138,8 @@ export class Proposal implements IStateful<IProposalState> {
             options.nativeTokenReward && options.nativeTokenReward.toString() || 0,
             options.ethReward && options.ethReward.toString() || 0,
             options.externalTokenReward && options.externalTokenReward.toString() || 0,
-            options.periodLength || 12,
-            options.periods || 5
+            options.periodLength || 0,
+            options.periods || 1
           ],
           options.externalTokenAddress || nullAddress,
           options.beneficiary
