@@ -69,7 +69,6 @@ export class Token implements IStateful<ITokenState> {
   public balanceOf(owner: string): Observable<BN> {
     return Observable.create(async (observer: Observer<BN>) => {
       const contract = this.contract()
-      console.log('open balance subscription')
       let subscription: Subscription
       contract.methods.balanceOf(owner).call()
         .then((balance: number) => {
