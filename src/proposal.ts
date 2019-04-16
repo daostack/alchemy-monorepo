@@ -68,9 +68,10 @@ export interface IProposalState {
   proposingRepReward: BN
   queuedVoteRequiredPercentage: number
   queuedVotePeriodLimit: number
+  quietEndingPeriod: number
   quietEndingPeriodBeganAt: Date
   reputationReward: BN
-  resolvedAt: Date|null
+  resolvedAt: Date
   stage: IProposalStage
   stakesFor: BN
   stakesAgainst: BN
@@ -329,7 +330,7 @@ export class Proposal implements IStateful<IProposalState> {
         descriptionHash: item.descriptionHash,
         downStakeNeededToQueue,
         ethReward: new BN(item.contributionReward.ethReward),
-        executedAt: item.executedAt,
+        executedAt: Number(item.executedAt),
         executionState: IExecutionState[item.executionState] as any,
         expiresInQueueAt: Number(item.expiresInQueueAt),
         externalToken: item.contributionReward.externalToken,
@@ -346,9 +347,10 @@ export class Proposal implements IStateful<IProposalState> {
         proposingRepReward: new BN(item.proposingRepReward),
         queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
         queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
-        quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt,
+        quietEndingPeriod: Number(item.quietEndingPeriod),
+        quietEndingPeriodBeganAt: Number(item.quietEndingPeriodBeganAt),
         reputationReward: new BN(item.contributionReward.reputationReward),
-        resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : null,
+        resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : 0,
         stage,
         stakesAgainst,
         stakesFor,
@@ -457,7 +459,7 @@ export class Proposal implements IStateful<IProposalState> {
         const event = receipt.events.Stake
         if (!event) {
           // for some reason, a transaction was mined but no error was raised before
-          throw new Error(`Error voting: no "Stake" event was found - ${Object.keys(receipt.events)}`)
+          throw new Error(`Error staking: no "Stake" event was found - ${Object.keys(receipt.events)}`)
         }
         const stakeId = undefined
 
