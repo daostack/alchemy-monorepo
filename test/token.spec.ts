@@ -1,16 +1,17 @@
 import BN = require('bn.js')
 import { first} from 'rxjs/operators'
-import { Arc, IContractAddresses } from '../src/arc'
+import { Arc  } from '../src/arc'
 import { Token } from '../src/token'
 import { Address } from '../src/types'
-import { fromWei, getContractAddressesFromMigration, newArc, toWei, waitUntilTrue } from './utils'
+import { fromWei, getContractAddressesFromMigration, IContractAddressesFromMigration,
+   newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 /**
  * Token test
  */
 describe('Token', () => {
-  let addresses: IContractAddresses
+  let addresses: IContractAddressesFromMigration
   let arc: Arc
   let address: Address
 
