@@ -408,7 +408,6 @@ export class Arc {
   }
 
   public setAccount(address: Address) {
-    // this.web3.eth.accounts.wallet[0] = address
     this.web3.eth.defaultAccount = address
   }
 

@@ -267,7 +267,6 @@ export class Proposal implements IStateful<IProposalState> {
           return transaction
         }
         break
-              // function proposeToRemoveScheme(Avatar _avatar, address _scheme, string memory _descriptionHash)
       default:
         msg = `Unknown proposal type: "${options.type}" (did you use IProposalType.TypeOfProposal?)`
         throw Error(msg)
@@ -301,7 +300,6 @@ export class Proposal implements IStateful<IProposalState> {
     // default options
     options.type = options.type || IProposalType.ContributionReward
 
-    // constribut the query
     for (const key of Object.keys(options)) {
       const value = options[key]
       if (key === 'stage' && value !== undefined) {
