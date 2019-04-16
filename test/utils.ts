@@ -1,11 +1,9 @@
-import { ApolloQueryResult } from 'apollo-client'
 import BN = require('bn.js')
-import gql from 'graphql-tag'
-import { IContractAddresses } from '../src/arc'
 import { DAO } from '../src/dao'
 import Arc from '../src/index'
 import { Proposal } from '../src/proposal'
 import { Reputation } from '../src/reputation'
+import { Address } from '../src/types'
 import { getContractAddresses } from '../src/utils'
 const Web3 = require('web3')
 
@@ -41,7 +39,14 @@ export function toWei(amount: string | number): BN {
   return new BN(Web3.utils.toWei(amount.toString(), 'ether'))
 }
 
-export function getContractAddressesFromMigration(): IContractAddresses {
+export interface IContractAddressesFromMigration {
+  base: { [key: string]: Address }
+  dao: { [key: string]: Address }
+  organs: { [key: string]: Address }
+  test: { [key: string]: Address }
+}
+
+export function getContractAddressesFromMigration(): IContractAddressesFromMigration {
   const path = '@daostack/migration/migration.json'
   const addresses = require(path)
   // const addresses = { base: require(path).private.base, dao: require(path).private.dao }

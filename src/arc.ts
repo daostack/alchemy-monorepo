@@ -432,13 +432,6 @@ export interface IApolloQueryOptions {
   fetchPolicy?: 'cache-first' | 'cache-and-network' | 'network-only' | 'cache-only' | 'no-cache' | 'standby'
 }
 
-export interface IContractAddressesFromMigration {
-  base: { [key: string]: Address }
-  dao: { [key: string]: Address }
-  organs: { [key: string]: Address }
-  test: { [key: string]: Address }
-}
-
 export interface IContractAddresses {
   [key: string]: Address
 }
