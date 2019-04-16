@@ -84,7 +84,7 @@ describe('Stake on a ContributionReward', () => {
     )
   })
 
-  it.only('upstakeNeededToBoost() gives correct values', async () => {
+  it('upstakeNeededToBoost() gives correct values', async () => {
 
     const { Avatar, queuedProposalId, preBoostedProposalId } = DAOstackMigration.migration('private').test
 

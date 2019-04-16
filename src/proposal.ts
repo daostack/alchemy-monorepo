@@ -801,31 +801,6 @@ constructor(
     }
     return this.context.sendTransaction(transaction, map, errorHandler)
   }
-
-  /**
-   * if the proposal state is "PreBoosted" this will return the number of tokens
-   * (currently) needed to crosee the confidence threshold of the proposal's queue
-   * It will trhow an error is the situation does not apply (for example, if the current state is not PreBoosted)
-   * @return a BN, or an l
-   */
-  private async upstakeNeededToBoost(state: IProposalState): Promise<BN|undefined> {
-    if (state.stage !== IProposalStage.PreBoosted) {
-      return undefined
-    } else {
-      //    get current queue threshold
-
-    }
-    //    TODO: make an issue in subgraph that the current queue threshold should be part of the roposal entity
-    //
-    return undefined
-  }
-
-  // the current threshold
-  // public queueThreshold(): Observable<BN> {
-  //   // run query
-  //   return this.dao.queueThreshold(this.type)
-  // }
-
 }
 
 enum ProposalQuerySortOptions {
