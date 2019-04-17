@@ -160,33 +160,60 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     }
   } else {
     spinner.start('Deploying DAO Token')
-    daoToken = (await new web3.eth.Contract(
+    daoToken = new web3.eth.Contract(
       require('@daostack/arc/build/contracts/DAOToken.json').abi,
       undefined,
       opts
     ).deploy({
       data: require('@daostack/arc/build/contracts/DAOToken.json').bytecode,
       arguments: [tokenName, tokenSymbol, 0]
-    }).send())
+    }).send()
+
+    tx = await new Promise(resolve => daoToken.on('receipt', resolve))
+    let c = await daoToken
+    await logTx(tx, `${c.options.address} => DAOToken`)
+    daoToken = new web3.eth.Contract(
+      require('@daostack/arc/build/contracts/DAOToken.json').abi,
+      c.options.address,
+      opts
+    )
 
     spinner.start('Deploying Reputation')
-    reputation = (await new web3.eth.Contract(
+    reputation = new web3.eth.Contract(
       require('@daostack/arc/build/contracts/Reputation.json').abi,
       undefined,
       opts
     ).deploy({
       data: require('@daostack/arc/build/contracts/Reputation.json').bytecode
-    }).send())
+    }).send()
+
+    tx = await new Promise(resolve => reputation.on('receipt', resolve))
+    c = await reputation
+    await logTx(tx, `${c.options.address} => Reputation`)
+    reputation = new web3.eth.Contract(
+      require('@daostack/arc/build/contracts/Reputation.json').abi,
+      c.options.address,
+      opts
+    )
 
     spinner.start('Deploying Avatar.')
-    avatar = (await new web3.eth.Contract(
+    avatar = new web3.eth.Contract(
       require('@daostack/arc/build/contracts/Avatar.json').abi,
       undefined,
       opts
     ).deploy({
       data: require('@daostack/arc/build/contracts/Avatar.json').bytecode,
       arguments: [orgName, daoToken.options.address, reputation.options.address]
-    }).send())
+    }).send()
+
+    tx = await new Promise(resolve => avatar.on('receipt', resolve))
+    c = await avatar
+    await logTx(tx, `${c.options.address} => Avatar`)
+    avatar = new web3.eth.Contract(
+      require('@daostack/arc/build/contracts/Avatar.json').abi,
+      c.options.address,
+      opts
+    )
 
     spinner.start('Minting founders tokens and reputation')
     for (let i in founders) {
