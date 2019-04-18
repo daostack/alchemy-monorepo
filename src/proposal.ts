@@ -367,9 +367,7 @@ constructor(
         proposal(id: "${this.id}") {
           id
           accountsWithUnclaimedRewards
-          activationTime
           boostedAt
-          boostedVotePeriodLimit
           confidenceThreshold
           contributionReward {
             beneficiary
@@ -386,7 +384,6 @@ constructor(
           dao {
             id
           }
-          daoBountyConst
           description
           descriptionHash
           executedAt
@@ -403,17 +400,24 @@ constructor(
             id
           }
           gpQueue {
-            threshold
+            activationTime
+            boostedVotePeriodLimit
+            daoBountyConst
+            minimumDaoBounty
             paramsHash
+            preBoostedVotePeriodLimit
+            proposingRepReward
+            quietEndingPeriod
+            queuedVotePeriodLimit
+            queuedVoteRequiredPercentage
+            threshold
+            thresholdConst
+            votersReputationLossRatio
           }
-          minimumDaoBounty
           organizationId
           paramsHash
           preBoostedAt
-          preBoostedVotePeriodLimit
           proposer
-          proposingRepReward
-          quietEndingPeriod
           quietEndingPeriodBeganAt
           queuedVotePeriodLimit
           queuedVoteRequiredPercentage
@@ -433,7 +437,6 @@ constructor(
           }
           stakesFor
           stakesAgainst
-          thresholdConst
           totalRepWhenExecuted
           title
           url
@@ -442,7 +445,6 @@ constructor(
           }
           votesAgainst
           votesFor
-          votersReputationLossRatio
           votingMachine
           winningOutcome
         }
@@ -523,18 +525,22 @@ constructor(
       if (stage === IProposalStage.PreBoosted) {
         downStakeNeededToQueue = stakesFor.div(threshold).sub(stakesAgainst)
       }
-      const thresholdConst = realMathToNumber(new BN(item.thresholdConst))
+      const thresholdConst = realMathToNumber(new BN(item.gpQueue.thresholdConst))
 
       return {
         accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
         // activationTime: Number(item.activationTime),
         boostedAt: Number(item.boostedAt),
         // boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
+        activationTime: Number(item.gpQueue.activationTime),
+        beneficiary: item.contributionReward.beneficiary,
+        boostedAt: Number(item.boostedAt),
+        boostedVotePeriodLimit: Number(item.gpQueue.boostedVotePeriodLimit),
         confidenceThreshold: Number(item.confidenceThreshold),
         contributionReward,
         createdAt: Number(item.createdAt),
         dao: new DAO(item.dao.id, this.context),
-        // daoBountyConst: item.daoBountyConst,
+        daoBountyConst: item.gpQueue.daoBountyConst,
         description: item.description,
         descriptionHash: item.descriptionHash,
         downStakeNeededToQueue,
@@ -549,12 +555,17 @@ constructor(
         // preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposer: item.proposer,
         // proposingRepReward: new BN(item.proposingRepReward),
-        // TODO: we probably want a IQueueState object here!
-        queue: new Queue('0xdummy', item.dao.id, this.context),
         // queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
         // queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
-        quietEndingPeriod: Number(item.quietEndingPeriod),
-        quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt || 0,
+        preBoostedVotePeriodLimit: Number(item.gpQueue.preBoostedVotePeriodLimit),
+        proposingRepReward: new BN(item.gpQueue.proposingRepReward),
+        // TODO: we probably want a IQueueState object here!
+        queue: new Queue('0xdummy', item.dao.id, this.context),
+        queuedVotePeriodLimit: Number(item.gpQueue.queuedVotePeriodLimit),
+        queuedVoteRequiredPercentage: Number(item.gpQueue.queuedVoteRequiredPercentage),
+        quietEndingPeriod: Number(item.gpQueue.quietEndingPeriod),
+        quietEndingPeriodBeganAt: Number(item.quietEndingPeriodBeganAt),
+        reputationReward: new BN(item.contributionReward.reputationReward),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : 0,
         schemeRegistrar,
         stage,

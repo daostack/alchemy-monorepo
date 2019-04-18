@@ -158,7 +158,7 @@ describe('Proposal', () => {
         resolvedAt: 0,
         stage: IProposalStage.Queued,
         thresholdConst: new BN(2),
-        title: null,
+        title: '',
         url: null,
         winningOutcome: IProposalOutcome.Fail
     })
