@@ -221,9 +221,7 @@ export class Proposal implements IStateful<IProposalState> {
         proposal(id: "${this.id}") {
           id
           accountsWithUnclaimedRewards
-          activationTime
           boostedAt
-          boostedVotePeriodLimit
           confidenceThreshold
           contributionReward {
             beneficiary
@@ -240,7 +238,6 @@ export class Proposal implements IStateful<IProposalState> {
           dao {
             id
           }
-          daoBountyConst
           description
           descriptionHash
           executedAt
@@ -250,27 +247,31 @@ export class Proposal implements IStateful<IProposalState> {
             id
           }
           gpQueue {
-            threshold
+            activationTime
+            boostedVotePeriodLimit
+            daoBountyConst
+            minimumDaoBounty
             paramsHash
+            preBoostedVotePeriodLimit
+            proposingRepReward
+            quietEndingPeriod
+            queuedVotePeriodLimit
+            queuedVoteRequiredPercentage
+            threshold
+            thresholdConst
+            votersReputationLossRatio
           }
-          minimumDaoBounty
           organizationId
           paramsHash
           preBoostedAt
-          preBoostedVotePeriodLimit
           proposer
-          proposingRepReward
-          quietEndingPeriod
           quietEndingPeriodBeganAt
-          queuedVotePeriodLimit
-          queuedVoteRequiredPercentage
           stage
           stakes {
             id
           }
           stakesFor
           stakesAgainst
-          thresholdConst
           totalRepWhenExecuted
           title
           url
@@ -279,7 +280,6 @@ export class Proposal implements IStateful<IProposalState> {
           }
           votesAgainst
           votesFor
-          votersReputationLossRatio
           votingMachine
           winningOutcome
         }
@@ -314,18 +314,18 @@ export class Proposal implements IStateful<IProposalState> {
       if (stage === IProposalStage.PreBoosted) {
         downStakeNeededToQueue = stakesFor.div(threshold).sub(stakesAgainst)
       }
-      const thresholdConst = realMathToNumber(new BN(item.thresholdConst))
+      const thresholdConst = realMathToNumber(new BN(item.gpQueue.thresholdConst))
 
       return {
         accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
-        activationTime: Number(item.activationTime),
+        activationTime: Number(item.gpQueue.activationTime),
         beneficiary: item.contributionReward.beneficiary,
         boostedAt: Number(item.boostedAt),
-        boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
+        boostedVotePeriodLimit: Number(item.gpQueue.boostedVotePeriodLimit),
         confidenceThreshold: Number(item.confidenceThreshold),
         createdAt: Number(item.createdAt),
         dao: new DAO(item.dao.id, this.context),
-        daoBountyConst: item.daoBountyConst,
+        daoBountyConst: item.gpQueue.daoBountyConst,
         description: item.description,
         descriptionHash: item.descriptionHash,
         downStakeNeededToQueue,
@@ -342,12 +342,12 @@ export class Proposal implements IStateful<IProposalState> {
         periodLength: Number(item.contributionReward.periodLength),
         periods: Number(item.contributionReward.periods),
         preBoostedAt: Number(item.preBoostedAt),
-        preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
+        preBoostedVotePeriodLimit: Number(item.gpQueue.preBoostedVotePeriodLimit),
         proposer: item.proposer,
-        proposingRepReward: new BN(item.proposingRepReward),
-        queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
-        queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
-        quietEndingPeriod: Number(item.quietEndingPeriod),
+        proposingRepReward: new BN(item.gpQueue.proposingRepReward),
+        queuedVotePeriodLimit: Number(item.gpQueue.queuedVotePeriodLimit),
+        queuedVoteRequiredPercentage: Number(item.gpQueue.queuedVoteRequiredPercentage),
+        quietEndingPeriod: Number(item.gpQueue.quietEndingPeriod),
         quietEndingPeriodBeganAt: Number(item.quietEndingPeriodBeganAt),
         reputationReward: new BN(item.contributionReward.reputationReward),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : 0,
