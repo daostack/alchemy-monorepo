@@ -9,6 +9,7 @@ import {
   IProposalQueryOptions,
   Proposal
 } from './proposal'
+import { Queue } from './queue'
 import { Reputation } from './reputation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { Scheme } from './scheme'
@@ -90,7 +91,11 @@ export class DAO implements IStateful<IDAOState> {
   public schemes(options: any = {}): Observable<Scheme[]> {
     options.dao = this.address
     return Scheme.search(options, this.context)
+  }
 
+  public queues(options: any = {}): Observable<Queue[]> {
+    options.dao = this.address
+    return Queue.search(options, this.context)
   }
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {

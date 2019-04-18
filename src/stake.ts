@@ -67,7 +67,7 @@ export class Stake implements IStake {
         } else {
           throw new Error(`Unexpected value for proposalStakes.outcome: ${r.outcome}`)
         }
-        return new Stake(r.id, r.staker, r.createdAt, outcome, r.amount, r.proposal.id)
+        return new Stake(r.id, r.staker, r.createdAt, outcome, new BN(r.amount || 0), r.proposal.id)
       },
       apolloQueryOptions
     ) as Observable<IStake[]>

@@ -142,7 +142,6 @@ describe('Proposal', () => {
     expect(fromWei(contributionReward.externalTokenReward)).toEqual('10')
     expect(fromWei(pState.votesFor)).toEqual('1000')
     expect(fromWei(pState.votesAgainst)).toEqual('1000')
-    expect(fromWei(pState.proposingRepReward)).toEqual('0.000000005')
 
     expect(pState).toMatchObject({
         boostedAt: 0,

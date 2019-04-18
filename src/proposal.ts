@@ -6,6 +6,7 @@ import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { Logger } from './logger'
 import { Operation } from './operation'
+import { Queue } from './queue'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
@@ -46,14 +47,11 @@ export enum IExecutionState {
 
 export interface IProposalState {
   accountsWithUnclaimedRewards: Address[],
-  activationTime: number
   boostedAt: Date
-  boostedVotePeriodLimit: number
   contributionReward: IContributionReward|null
   confidenceThreshold: number
   createdAt: Date
   dao: DAO
-  daoBountyConst: number
   descriptionHash?: string
   description?: string
   downStakeNeededToQueue: BN
@@ -65,11 +63,8 @@ export interface IProposalState {
   organizationId: string
   paramsHash: string
   preBoostedAt: Date
-  preBoostedVotePeriodLimit: number
   proposer: Address
-  proposingRepReward: BN
-  queuedVoteRequiredPercentage: number
-  queuedVotePeriodLimit: number
+  queue: Queue
   quietEndingPeriod: number
   quietEndingPeriodBeganAt: Date
   schemeRegistrar: ISchemeRegistrar|null
@@ -77,8 +72,6 @@ export interface IProposalState {
   stage: IProposalStage
   stakesFor: BN
   stakesAgainst: BN
-  threshold: BN
-  thresholdConst: BN
   title?: string
   totalRepWhenExecuted: BN
   type: IProposalType,
@@ -87,7 +80,6 @@ export interface IProposalState {
   votesFor: BN
   votesAgainst: BN
   votesCount: number
-  votingMachine: Address
   winningOutcome: IProposalOutcome
 }
 
@@ -294,7 +286,7 @@ export class Proposal implements IStateful<IProposalState> {
     options: IProposalQueryOptions,
     context: Arc,
     apolloQueryOptions: IApolloQueryOptions = {}
-  ): Observable < Proposal[] > {
+  ): Observable<Proposal[]> {
     let where = ''
 
     // default options
@@ -369,7 +361,7 @@ constructor(
     // this.type = type
   }
 
-  public state(): Observable < IProposalState > {
+  public state(): Observable<IProposalState> {
     const query = gql`
       {
         proposal(id: "${this.id}") {
@@ -535,14 +527,14 @@ constructor(
 
       return {
         accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
-        activationTime: Number(item.activationTime),
+        // activationTime: Number(item.activationTime),
         boostedAt: Number(item.boostedAt),
-        boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
+        // boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
         confidenceThreshold: Number(item.confidenceThreshold),
         contributionReward,
         createdAt: Number(item.createdAt),
         dao: new DAO(item.dao.id, this.context),
-        daoBountyConst: item.daoBountyConst,
+        // daoBountyConst: item.daoBountyConst,
         description: item.description,
         descriptionHash: item.descriptionHash,
         downStakeNeededToQueue,
@@ -554,11 +546,13 @@ constructor(
         organizationId: item.organizationId,
         paramsHash: item.paramsHash,
         preBoostedAt: Number(item.preBoostedAt),
-        preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
+        // preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposer: item.proposer,
-        proposingRepReward: new BN(item.proposingRepReward),
-        queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
-        queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
+        // proposingRepReward: new BN(item.proposingRepReward),
+        // TODO: we probably want a IQueueState object here!
+        queue: new Queue('0xdummy', item.dao.id, this.context),
+        // queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
+        // queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
         quietEndingPeriod: Number(item.quietEndingPeriod),
         quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt || 0,
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : 0,
@@ -566,8 +560,8 @@ constructor(
         stage,
         stakesAgainst,
         stakesFor,
-        threshold,
-        thresholdConst,
+        // threshold,
+        // thresholdConst,
         title: item.title,
         totalRepWhenExecuted: new BN(item.totalRepWhenExecuted),
         type,
@@ -576,7 +570,7 @@ constructor(
         votesAgainst: new BN(item.votesAgainst),
         votesCount: item.votes.length,
         votesFor: new BN(item.votesFor),
-        votingMachine: item.votingMachine,
+        // votingMachine: item.votingMachine,
         winningOutcome: IProposalOutcome[item.winningOutcome] as any
       }
     }

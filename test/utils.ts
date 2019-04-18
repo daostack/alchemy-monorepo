@@ -58,6 +58,7 @@ export async function getOptions(web3: any) {
 }
 
 export function newArc() {
+  console.log('x')
   const arc = new Arc({
     contractAddresses: getContractAddresses(),
     graphqlHttpProvider,
@@ -65,12 +66,14 @@ export function newArc() {
     ipfsProvider,
     web3Provider
   })
+  console.log('y')
 
   for (const pk of pks) {
     const account = arc.web3.eth.accounts.privateKeyToAccount(pk)
     arc.web3.eth.accounts.wallet.add(account)
   }
   arc.web3.eth.defaultAccount = arc.web3.eth.accounts.wallet[0].address
+  console.log('z')
   return arc
 }
 
