@@ -13,3 +13,4 @@ docs
 abis/
 schema.graphql
 subgraph.yaml
+play/
