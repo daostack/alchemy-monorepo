@@ -145,19 +145,15 @@ describe('Proposal', () => {
 
     expect(pState).toMatchObject({
         boostedAt: 0,
-        boostedVotePeriodLimit: 600,
         description: null,
         descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000abcd',
         downStakeNeededToQueue: new BN(0),
         executedAt: 0,
         executionState: IExecutionState.None,
-        preBoostedVotePeriodLimit: 600,
         proposer: '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1',
-        quietEndingPeriod: 300,
         quietEndingPeriodBeganAt: 0,
         resolvedAt: 0,
         stage: IProposalStage.Queued,
-        thresholdConst: new BN(2),
         title: '',
         url: null,
         winningOutcome: IProposalOutcome.Fail
@@ -167,18 +163,23 @@ describe('Proposal', () => {
         periodLength: 0,
         periods: 1
     })
+    expect(pState.queue).toMatchObject({
+        boostedVotePeriodLimit: 600,
+        preBoostedVotePeriodLimit: 600,
+        quietEndingPeriod: 300,
+        thresholdConst: new BN(2)
+    })
 
     // check if the upstakeNeededToPreBoost value is correct
     //  (S+/S-) > AlphaConstant^NumberOfBoostedProposal.
-    expect(pState.downStakeNeededToQueue).toEqual(new BN(0))
     const boostedProposals = await pState.dao
       .proposals({stage: IProposalStage.Boosted}).pipe(first()).toPromise()
     const numberOfBoostedProposals = boostedProposals.length
-    expect(pState.threshold.toString())
-      .toEqual(new BN(pState.thresholdConst).pow(new BN(numberOfBoostedProposals)).toString())
+    expect(pState.queue.threshold.toString())
+      .toEqual(new BN(pState.queue.thresholdConst).pow(new BN(numberOfBoostedProposals)).toString())
 
     expect(pState.stakesFor.add(pState.upstakeNeededToPreBoost).div(pState.stakesAgainst).toString())
-      .toEqual((new BN(pState.thresholdConst)).pow(new BN(numberOfBoostedProposals)).toString())
+      .toEqual((new BN(pState.queue.thresholdConst)).pow(new BN(numberOfBoostedProposals)).toString())
   })
 
   it('Check preboosted proposal state is correct', async () => {
@@ -196,7 +197,7 @@ describe('Proposal', () => {
     const numberOfBoostedProposals = boostedProposals.length
 
     expect(pState.stakesFor.div(pState.stakesAgainst.add(pState.downStakeNeededToQueue)).toString())
-      .toEqual((new BN(pState.thresholdConst)).pow(new BN(numberOfBoostedProposals)).toString())
+      .toEqual((new BN(pState.queue.thresholdConst)).pow(new BN(numberOfBoostedProposals)).toString())
   })
 
   it('get proposal rewards', async () => {

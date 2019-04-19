@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
 import { catchError, filter, first, map } from 'rxjs/operators'
 import { DAO } from './dao'
+import { GraphNodeObserver } from './graphnode'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { Token } from './token'
@@ -13,14 +14,11 @@ import { createApolloClient, getWeb3Options, isAddress, zenToRxjsObservable } fr
 const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
 
-export class Arc {
-  public graphqlHttpProvider: string
-  public graphqlWsProvider: string
+export class Arc extends GraphNodeObserver {
   public web3Provider: Web3Provider = ''
   public ipfsProvider: IPFSProvider
 
   public pendingOperations: Observable<Array<Operation<any>>> = of()
-  public apolloClient: ApolloClient<object>
 
   public ipfs: any
   public web3: any
@@ -45,14 +43,11 @@ export class Arc {
     ipfsProvider?: IPFSProvider
     contractAddresses?: IContractAddresses
   }) {
-    this.graphqlHttpProvider = options.graphqlHttpProvider
-    this.graphqlWsProvider = options.graphqlWsProvider
-    this.ipfsProvider = options.ipfsProvider || ''
-
-    this.apolloClient = createApolloClient({
-      graphqlHttpProvider: this.graphqlHttpProvider,
-      graphqlWsProvider: this.graphqlWsProvider
+    super({
+      graphqlHttpProvider: options.graphqlHttpProvider,
+      graphqlWsProvider: options.graphqlWsProvider
     })
+    this.ipfsProvider = options.ipfsProvider || ''
 
     let web3provider: any
 
@@ -161,150 +156,6 @@ export class Arc {
     this.observedAccounts[owner].observable = observable
     return observable
       .pipe(map((item: any) => new BN(item)))
-  }
-
-  /**
-   * Given a gql query, will return an observable of query results
-   * @param  query              a gql query object to execute
-   * @param  apolloQueryOptions options to pass on to Apollo, cf ..
-   * @return an Obsevable that will first yield the current result, and yields updates every time the data changes
-   */
-  public getObservable(query: any, apolloQueryOptions: IApolloQueryOptions = {}) {
-
-    const observable = Observable.create(async (observer: Observer<ApolloQueryResult<any>>) => {
-      Logger.debug(query.loc.source.body)
-
-      if (!apolloQueryOptions.fetchPolicy) {
-        apolloQueryOptions.fetchPolicy = 'network-only'
-      }
-
-      // subscriptionQuery subscribes to get notified of updates to the query
-      const subscriptionQuery = gql`
-          subscription ${query}
-        `
-      // subscribe
-      const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({
-        fetchPolicy: 'network-only',
-        query: subscriptionQuery
-       })
-      zenObservable.subscribe((next: any) => {
-          this.apolloClient.writeQuery({
-            data: next.data,
-            query
-          })
-      })
-
-      const sub = zenToRxjsObservable(
-        this.apolloClient.watchQuery({
-          fetchPolicy: 'cache-and-network',
-          fetchResults: true,
-          query
-        })
-      )
-        .pipe(
-          filter((r: ApolloQueryResult<any>) => {
-            return !r.loading
-          }), // filter empty results
-          catchError((err: Error) => {
-            throw Error(`${err.name}: ${err.message}\n${query.loc.source.body}`)
-          })
-        )
-        .subscribe(observer)
-      return () => sub.unsubscribe()
-    })
-    observable.firstResult = () => observable.pipe(first()).toPromise()
-    return observable
-  }
-
-  /**
-   * Returns an observable that:
-   * - sends a query over http and returns the current list of results
-   * - subscribes over a websocket to changes, and returns the updated list
-   * example:
-   *    const query = gql`
-   *    {
-   *      daos {
-   *        id
-   *        address
-   *      }
-   *    }`
-   *    _getObservableList(query, (r:any) => new DAO(r.address))
-   *
-   * @param query The query to be run
-   * @param  entity  name of the graphql entity to be queried.
-   * @param  itemMap (optional) a function that takes elements of the list and creates new objects
-   * @return
-   */
-  public _getObservableList(
-    query: any,
-    itemMap: (o: object) => object | null = (o) => o,
-    apolloQueryOptions: IApolloQueryOptions = {}
-  ) {
-    const entity = query.definitions[0].selectionSet.selections[0].name.value
-    return this.getObservable(query, apolloQueryOptions).pipe(
-      map((r: ApolloQueryResult<any>) => {
-        if (!r.data[entity]) {
-          throw Error(`Could not find entity '${entity}' in ${Object.keys(r.data)}`)
-        }
-        return r.data[entity]
-      }),
-      map((rs: object[]) => rs.map(itemMap))
-    )
-  }
-
-  /**
-   * Returns an observable that:
-   * - sends a query over http and returns the current list of results
-   * - subscribes over a websocket to changes, and returns the updated list
-   * example:
-   *    const query = gql`
-   *    {
-   *      daos {
-   *        id
-   *        address
-   *      }
-   *    }`
-   *    _getObservableList(query, (r:any) => new DAO(r.address), filter((r:any) => r.address === "0x1234..."))
-   *
-   * @param query The query to be run
-   * @param  entity  name of the graphql entity to be queried.
-   * @param  itemMap (optional) a function that takes elements of the list and creates new objects
-   * @param filter filter the results
-   * @return
-   */
-  public _getObservableListWithFilter(
-    query: any,
-    itemMap: (o: object) => object | null = (o) => o,
-    filterFunc: (o: object) => boolean,
-    apolloQueryOptions: IApolloQueryOptions = {}
-  ) {
-    const entity = query.definitions[0].selectionSet.selections[0].name.value
-    return this.getObservable(query, apolloQueryOptions).pipe(
-      map((r: ApolloQueryResult<object[]>) => {
-        if (!r.data[entity]) { throw Error(`Could not find ${entity} in ${r.data}`)}
-        return r.data[entity]
-      }),
-      filter(filterFunc),
-      map((rs: object[]) => rs.map(itemMap))
-    )
-  }
-
-  public _getObservableObject(
-    query: any,
-    itemMap: (o: object) => object | null = (o) => o,
-    apolloQueryOptions: IApolloQueryOptions = {}
-  ) {
-    const entity = query.definitions[0].selectionSet.selections[0].name.value
-
-    return this.getObservable(query, apolloQueryOptions).pipe(
-      map((r: ApolloQueryResult<any>) => {
-        if (!r.data) {
-          return null
-        }
-        return r.data[entity]
-      }),
-      map(itemMap)
-    )
   }
 
   /**

@@ -88,10 +88,10 @@ export class DAO implements IStateful<IDAOState> {
     return this.state().pipe(first()).pipe(map((r) => r.reputation))
   }
 
-  public schemes(options: any = {}): Observable<Scheme[]> {
-    options.dao = this.address
-    return Scheme.search(options, this.context)
-  }
+  // public schemes(options: any = {}): Observable<Scheme[]> {
+  //   options.dao = this.address
+  //   return Scheme.search(options, this.context)
+  // }
 
   public queues(options: any = {}): Observable<Queue[]> {
     options.dao = this.address

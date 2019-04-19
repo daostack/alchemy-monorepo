@@ -18,3 +18,7 @@ export interface ICommonQueryOptions {
 }
 
 export type IPFSProvider = string| { host: string, protocol?: string, port?: string, apiPath?: string}
+
+export interface IObservableWithFirst<T> extends Observable<T> {
+  first: () => Promise<T>
+}

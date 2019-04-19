@@ -1,4 +1,4 @@
 import * as Logger from 'js-logger'
 Logger.useDefaults()
-Logger.setLevel(Logger.DEBUG)
+Logger.setLevel(Logger.ERROR)
 export { Logger }

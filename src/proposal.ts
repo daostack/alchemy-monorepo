@@ -6,7 +6,7 @@ import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { Logger } from './logger'
 import { Operation } from './operation'
-import { Queue } from './queue'
+import { IQueueState, Queue } from './queue'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
@@ -61,10 +61,9 @@ export interface IProposalState {
   genericScheme: IGenericScheme|null
   id: string
   organizationId: string
-  paramsHash: string
   preBoostedAt: Date
   proposer: Address
-  queue: Queue
+  queue: IQueueState
   quietEndingPeriod: number
   quietEndingPeriodBeganAt: Date
   schemeRegistrar: ISchemeRegistrar|null
@@ -370,6 +369,7 @@ constructor(
           boostedAt
           confidenceThreshold
           contributionReward {
+            id
             beneficiary
             ethReward
             externalToken
@@ -400,6 +400,7 @@ constructor(
             id
           }
           gpQueue {
+            id
             activationTime
             boostedVotePeriodLimit
             daoBountyConst
@@ -415,12 +416,9 @@ constructor(
             votersReputationLossRatio
           }
           organizationId
-          paramsHash
           preBoostedAt
           proposer
           quietEndingPeriodBeganAt
-          queuedVotePeriodLimit
-          queuedVoteRequiredPercentage
           schemeRegistrar {
             id
             schemeToRegister
@@ -526,21 +524,38 @@ constructor(
         downStakeNeededToQueue = stakesFor.div(threshold).sub(stakesAgainst)
       }
       const thresholdConst = realMathToNumber(new BN(item.gpQueue.thresholdConst))
+      const dao = new DAO(item.dao.id, this.context)
+
+      const gpQueue = item.gpQueue
+      const queue: IQueueState = {
+        activationTime: Number(gpQueue.activationTime),
+        boostedVotePeriodLimit: Number(gpQueue.boostedVotePeriodLimit),
+        dao,
+        daoBountyConst: Number(gpQueue.daoBountyConst),
+        id: gpQueue.id,
+        limitExponentValue: Number(gpQueue.limitExponentValue),
+        minimumDaoBounty: new BN(gpQueue.minimumDaoBounty),
+        paramsHash: item.gpQueue.paramsHash,
+        preBoostedVotePeriodLimit: Number(gpQueue.preBoostedVotePeriodLimit),
+        proposingRepReward: new BN(gpQueue.proposingRepReward),
+        queuedVotePeriodLimit: Number(gpQueue.queuedVotePeriodLimit),
+        queuedVoteRequiredPercentage: Number(gpQueue.queuedVoteRequiredPercentage),
+        quietEndingPeriod: Number(gpQueue.quietEndingPeriod),
+        threshold,
+        thresholdConst,
+        voteOnBehalf: gpQueue.voteOnBehalf,
+        votersReputationLossRatio: Number(gpQueue.votersReputationLossRatio),
+        votingMachine: gpQueue.votingMachine
+      }
 
       return {
         accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
-        // activationTime: Number(item.activationTime),
+        // beneficiary: item.contributionReward.beneficiary,
         boostedAt: Number(item.boostedAt),
-        // boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
-        activationTime: Number(item.gpQueue.activationTime),
-        beneficiary: item.contributionReward.beneficiary,
-        boostedAt: Number(item.boostedAt),
-        boostedVotePeriodLimit: Number(item.gpQueue.boostedVotePeriodLimit),
         confidenceThreshold: Number(item.confidenceThreshold),
         contributionReward,
         createdAt: Number(item.createdAt),
-        dao: new DAO(item.dao.id, this.context),
-        daoBountyConst: item.gpQueue.daoBountyConst,
+        dao,
         description: item.description,
         descriptionHash: item.descriptionHash,
         downStakeNeededToQueue,
@@ -550,29 +565,17 @@ constructor(
         genericScheme,
         id: item.id,
         organizationId: item.organizationId,
-        paramsHash: item.paramsHash,
         preBoostedAt: Number(item.preBoostedAt),
-        // preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposer: item.proposer,
-        // proposingRepReward: new BN(item.proposingRepReward),
-        // queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
-        // queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
-        preBoostedVotePeriodLimit: Number(item.gpQueue.preBoostedVotePeriodLimit),
-        proposingRepReward: new BN(item.gpQueue.proposingRepReward),
-        // TODO: we probably want a IQueueState object here!
-        queue: new Queue('0xdummy', item.dao.id, this.context),
-        queuedVotePeriodLimit: Number(item.gpQueue.queuedVotePeriodLimit),
-        queuedVoteRequiredPercentage: Number(item.gpQueue.queuedVoteRequiredPercentage),
+        queue,
         quietEndingPeriod: Number(item.gpQueue.quietEndingPeriod),
         quietEndingPeriodBeganAt: Number(item.quietEndingPeriodBeganAt),
-        reputationReward: new BN(item.contributionReward.reputationReward),
+        // reputationReward: new BN(item.contributionReward.reputationReward),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : 0,
         schemeRegistrar,
         stage,
         stakesAgainst,
         stakesFor,
-        // threshold,
-        // thresholdConst,
         title: item.title,
         totalRepWhenExecuted: new BN(item.totalRepWhenExecuted),
         type,
@@ -581,7 +584,6 @@ constructor(
         votesAgainst: new BN(item.votesAgainst),
         votesCount: item.votes.length,
         votesFor: new BN(item.votesFor),
-        // votingMachine: item.votingMachine,
         winningOutcome: IProposalOutcome[item.winningOutcome] as any
       }
     }

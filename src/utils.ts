@@ -8,10 +8,10 @@ import { getMainDefinition } from 'apollo-utilities'
 import BN = require('bn.js')
 import fetch from 'isomorphic-fetch'
 import * as WebSocket from 'isomorphic-ws'
-import {  Observable, Observer } from 'rxjs'
+import { Observable, Observer } from 'rxjs'
+import { first } from 'rxjs/operators'
 import { Logger } from './logger'
 import { Address } from './types'
-
 const Web3 = require('web3')
 
 export function fromWei(amount: BN): string {
@@ -168,3 +168,5 @@ export function realMathToNumber(t: BN): BN {
   const REAL_FBITS = 40
   return t.shrn(REAL_FBITS).add((t.maskn(REAL_FBITS).div(new BN(Math.pow(2, REAL_FBITS)))))
 }
+
+// }

@@ -73,7 +73,8 @@ describe('DAO', () => {
       'Could not find a DAO with address 0xfake'
     )
   })
-  it('dao.schemes() should work', async () => {
+
+  it.skip('dao.schemes() should work', async () => {
     const dao = await getTestDAO()
     const schemes = await dao.schemes().pipe(first()).toPromise()
     expect(typeof schemes).toEqual(typeof [])

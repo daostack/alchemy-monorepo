@@ -3,13 +3,13 @@ import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
-import { IScheme } from './scheme'
 import { Address } from './types'
 import { realMathToNumber } from './utils'
 
 export interface IQueue {
   id: string
   dao: DAO
+  name?: string
 }
 
 export interface IQueueState {
@@ -55,12 +55,17 @@ export class Queue {
      gpqueues (where: {${where}}) {
        id
        dao { id }
+       scheme {
+         id
+         name
+       }
      }
    }`
     const itemMap = (item: any): Queue => {
       return new Queue(
         item.id,
         item.dao.id,
+        item.scheme.name,
         context
       )
     }
@@ -69,11 +74,13 @@ export class Queue {
   }
   public id: Address
   public dao: Address
+  public name: string
 
-  constructor(id: Address, dao: Address, public context: Arc) {
+  constructor(id: Address, dao: Address, name: string, public context: Arc) {
     this.context = context
     this.id = id
     this.dao = dao
+    this.name = name
   }
 
   public state(): Observable<IQueueState> {
