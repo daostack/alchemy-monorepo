@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
-import { Arc } from '../src/arc'
-import { DAO } from '../src/dao'
+import { Arc } from './arc'
+import { DAO } from './dao'
 import { Address } from './types'
 
 export interface IScheme {
