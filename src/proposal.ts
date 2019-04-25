@@ -375,9 +375,7 @@ constructor(
         proposal(id: "${this.id}") {
           id
           accountsWithUnclaimedRewards
-          activationTime
           boostedAt
-          boostedVotePeriodLimit
           confidenceThreshold
           contributionReward {
             beneficiary
@@ -394,7 +392,6 @@ constructor(
           dao {
             id
           }
-          daoBountyConst
           description
           descriptionHash
           executedAt
@@ -411,20 +408,25 @@ constructor(
             id
           }
           gpQueue {
-            threshold
+            activationTime
+            boostedVotePeriodLimit
+            daoBountyConst
+            minimumDaoBounty
             paramsHash
+            preBoostedVotePeriodLimit
+            proposingRepReward
+            quietEndingPeriod
+            queuedVotePeriodLimit
+            queuedVoteRequiredPercentage
+            threshold
+            thresholdConst
+            votersReputationLossRatio
           }
-          minimumDaoBounty
           organizationId
           paramsHash
           preBoostedAt
-          preBoostedVotePeriodLimit
           proposer
-          proposingRepReward
-          quietEndingPeriod
           quietEndingPeriodBeganAt
-          queuedVotePeriodLimit
-          queuedVoteRequiredPercentage
           schemeRegistrar {
             id
             schemeToRegister
@@ -441,7 +443,6 @@ constructor(
           }
           stakesFor
           stakesAgainst
-          thresholdConst
           totalRepWhenExecuted
           title
           url
@@ -450,7 +451,6 @@ constructor(
           }
           votesAgainst
           votesFor
-          votersReputationLossRatio
           votingMachine
           winningOutcome
         }
@@ -531,18 +531,18 @@ constructor(
       if (stage === IProposalStage.PreBoosted) {
         downStakeNeededToQueue = stakesFor.div(threshold).sub(stakesAgainst)
       }
-      const thresholdConst = realMathToNumber(new BN(item.thresholdConst))
+      const thresholdConst = realMathToNumber(new BN(item.gpQueue.thresholdConst))
 
       return {
         accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
-        activationTime: Number(item.activationTime),
+        activationTime: Number(item.gpQueue.activationTime),
         boostedAt: Number(item.boostedAt),
-        boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
+        boostedVotePeriodLimit: Number(item.gpQueue.boostedVotePeriodLimit),
         confidenceThreshold: Number(item.confidenceThreshold),
         contributionReward,
         createdAt: Number(item.createdAt),
         dao: new DAO(item.dao.id, this.context),
-        daoBountyConst: item.daoBountyConst,
+        daoBountyConst: item.gpQueue.daoBountyConst,
         description: item.description,
         descriptionHash: item.descriptionHash,
         downStakeNeededToQueue,
@@ -554,13 +554,13 @@ constructor(
         organizationId: item.organizationId,
         paramsHash: item.paramsHash,
         preBoostedAt: Number(item.preBoostedAt),
-        preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
+        preBoostedVotePeriodLimit: Number(item.gpQueue.preBoostedVotePeriodLimit),
         proposer: item.proposer,
-        proposingRepReward: new BN(item.proposingRepReward),
-        queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
-        queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
-        quietEndingPeriod: Number(item.quietEndingPeriod),
-        quietEndingPeriodBeganAt: item.quietEndingPeriodBeganAt || 0,
+        proposingRepReward: new BN(item.gpQueue.proposingRepReward),
+        queuedVotePeriodLimit: Number(item.gpQueue.queuedVotePeriodLimit),
+        queuedVoteRequiredPercentage: Number(item.gpQueue.queuedVoteRequiredPercentage),
+        quietEndingPeriod: Number(item.gpQueue.quietEndingPeriod),
+        quietEndingPeriodBeganAt: Number(item.quietEndingPeriodBeganAt),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : 0,
         schemeRegistrar,
         stage,
