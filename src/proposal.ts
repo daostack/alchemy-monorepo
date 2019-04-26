@@ -822,7 +822,7 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
 }
 
 export interface IProposalCreateOptions {
-  beneficiary: Address
+  beneficiary?: Address  // for ContributionRewardProposal
   dao?: Address
   description?: string
   descriptionHash?: string
