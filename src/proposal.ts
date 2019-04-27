@@ -14,10 +14,10 @@ import { nullAddress, realMathToNumber } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export enum IProposalType {
-  ContributionReward, // propose a contributionReward
-  GenericScheme, // propose to execute a function call from a registered genericScheme
-  SchemeRegistrarPropose, // propose to register to schme
-  SchemeRegistrarProposeToRemove // propose to remove a registered scheme
+  ContributionReward = "ContributionReward", // propose a contributionReward
+  GenericScheme = "GenericScheme", // propose to execute a function call from a registered genericScheme
+  SchemeRegistrarPropose = "SchemeRegistrarPropose", // propose to register to schme
+  SchemeRegistrarProposeToRemove = "SchemeRegistrarProposeToRemove" // propose to remove a registered scheme
 }
 
 export enum IProposalOutcome {
@@ -310,9 +310,7 @@ export class Proposal implements IStateful<IProposalState> {
       } else if (key === 'type') {
         // TODO: we are not distinguishing between the schemeregisterpropose
         // and SchemeRegistrarProposeToRemove proposals
-        if (value === IProposalType.SchemeRegistrarPropose) {
-          where += `schemeRegistrar_not: null\n`
-        } else if (value === IProposalType.SchemeRegistrarProposeToRemove) {
+        if (value.toString().includes("SchemeRegistrar")) {
           where += `schemeRegistrar_not: null\n`
         } else {
           const apolloKey = IProposalType[value][0].toLowerCase() + IProposalType[value].slice(1)
