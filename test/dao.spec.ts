@@ -51,9 +51,6 @@ describe('DAO', () => {
     expect(state).toMatchObject(expected)
     expect(Object.keys(state)).toEqual([
       'address',
-      'externalTokenAddress',
-      'externalTokenBalance',
-      'externalTokenSymbol',
       'memberCount',
       'name',
       'reputation',

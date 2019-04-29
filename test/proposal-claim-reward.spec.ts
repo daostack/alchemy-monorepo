@@ -10,7 +10,7 @@ describe('Claim rewards', () => {
     arc = newArc()
   })
 
-  it('works ', async () => {
+  it('works for ether and native token', async () => {
     const dao = await getTestDAO()
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const ethReward = toWei('300')
@@ -20,7 +20,7 @@ describe('Claim rewards', () => {
       ethReward,
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
-      nativeTokenReward: toWei('1'),
+      nativeTokenReward: toWei('271828'),
       periodLength: 12,
       periods: 5,
       type: IProposalType.ContributionReward

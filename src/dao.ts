@@ -12,7 +12,6 @@ import {
 import { Queue } from './queue'
 import { Reputation } from './reputation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
-import { Scheme } from './scheme'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
@@ -29,9 +28,6 @@ export interface IDAOState {
   tokenName: string,
   tokenSymbol: string,
   tokenTotalSupply: BN,
-  externalTokenAddress: Address | undefined,
-  externalTokenBalance: BN | undefined,
-  externalTokenSymbol: string | undefined
 }
 
 export class DAO implements IStateful<IDAOState> {
@@ -62,10 +58,6 @@ export class DAO implements IStateful<IDAOState> {
       }
       return {
         address: item.id,
-        externalTokenAddress: undefined,
-        // TODO: get external token balance, cf. https://github.com/daostack/subgraph/issues/62
-        externalTokenBalance: undefined,
-        externalTokenSymbol: undefined,
         memberCount: Number(item.membersCount),
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, this.context),
