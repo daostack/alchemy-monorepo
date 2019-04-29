@@ -4,7 +4,8 @@ export default Arc
 export { DAO, IDAOState } from './dao'
 export { Member, IMemberState } from './member'
 export { ITransactionUpdate, ITransactionState } from './operation'
-export { IExecutionState, Proposal, IProposalCreateOptions, IProposalState, IProposalOutcome, IProposalStage, IProposalType, } from './proposal'
+export { IExecutionState, Proposal, IProposalCreateOptions, IProposalState,
+    IProposalOutcome, IProposalStage, IProposalType } from './proposal'
 export { Reputation, IReputationState } from './reputation'
 export { IRewardState, Reward } from './reward'
 export { IScheme, Scheme } from './scheme'

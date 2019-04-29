@@ -13,7 +13,7 @@ export interface IScheme {
   dao: DAO
   id: string
   name: string
-  paramsHash: string;
+  paramsHash: string
 }
 
 export class Scheme implements IScheme {
