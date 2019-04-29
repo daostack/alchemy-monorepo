@@ -13,6 +13,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   spinner.start('Migrating DAO...')
   let contributionRewardParams, genericSchemeParams, schemeRegistrarParams, globalConstraintRegistrarParams, upgradeSchemeParams
   let tx
+  let nonce = await web3.eth.getTransactionCount(web3.eth.defaultAccount) - 1
 
   const {
     UController,
@@ -107,7 +108,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       '0'
     )
 
-    tx = await forgeOrg.send()
+    tx = await forgeOrg.send({ nonce: ++nonce })
 
     const Avatar = tx.events.NewOrg.returnValues._avatar
 
@@ -124,7 +125,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
         founderAddresses.slice(i * foundersBatchSize, i * foundersBatchSize + currentBatchCount),
         tokenDist.slice(i * foundersBatchSize, i * foundersBatchSize + currentBatchCount),
         repDist.slice(i * foundersBatchSize, i * foundersBatchSize + currentBatchCount)
-      ).send()
+      ).send({ nonce: ++nonce })
       await logTx(tx, 'Finished adding founders.')
       foundersToAddCount -= foundersBatchSize
     }
@@ -167,7 +168,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     ).deploy({
       data: require('@daostack/arc/build/contracts/DAOToken.json').bytecode,
       arguments: [tokenName, tokenSymbol, 0]
-    }).send()
+    }).send({ nonce: ++nonce })
 
     tx = await new Promise(resolve => daoToken.on('receipt', resolve))
     let c = await daoToken
@@ -185,7 +186,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       opts
     ).deploy({
       data: require('@daostack/arc/build/contracts/Reputation.json').bytecode
-    }).send()
+    }).send({ nonce: ++nonce })
 
     tx = await new Promise(resolve => reputation.on('receipt', resolve))
     c = await reputation
@@ -204,7 +205,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     ).deploy({
       data: require('@daostack/arc/build/contracts/Avatar.json').bytecode,
       arguments: [orgName, daoToken.options.address, reputation.options.address]
-    }).send()
+    }).send({ nonce: ++nonce })
 
     tx = await new Promise(resolve => avatar.on('receipt', resolve))
     c = await avatar
@@ -220,11 +221,11 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       let founder = founders[i]
 
       if (founder.reputation > 0) {
-        tx = await reputation.methods.mint(founder.address, web3.utils.toWei(`${founder.reputation}`)).send()
+        tx = await reputation.methods.mint(founder.address, web3.utils.toWei(`${founder.reputation}`)).send({ nonce: ++nonce })
         await logTx(tx, `Minted ${founder.reputation} reputation to ${founder.address}`)
       }
       if (founder.tokens > 0) {
-        tx = await daoToken.methods.mint(founder.address, web3.utils.toWei(`${founder.tokens}`)).send()
+        tx = await daoToken.methods.mint(founder.address, web3.utils.toWei(`${founder.tokens}`)).send({ nonce: ++nonce })
         await logTx(tx, `Minted ${founder.tokens} tokens to ${founder.address}`)
       }
     }
@@ -241,25 +242,25 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       ).deploy({
         data: require('@daostack/arc/build/contracts/Controller.json').bytecode,
         arguments: [avatar.options.address]
-      }).send())
+      }).send({ nonce: ++nonce }))
       Controller = controller.options.address
     }
 
     spinner.start('Transfer Avatar to Controller ownership')
-    tx = await avatar.methods.transferOwnership(Controller).send()
+    tx = await avatar.methods.transferOwnership(Controller).send({ nonce: ++nonce })
     await logTx(tx, 'Finished transferring Avatar to Controller ownership')
 
     spinner.start('Transfer Reputation to Controller ownership')
-    tx = await reputation.methods.transferOwnership(Controller).send()
+    tx = await reputation.methods.transferOwnership(Controller).send({ nonce: ++nonce })
     await logTx(tx, 'Finished transferring Reputation to Controller ownership')
 
     spinner.start('Transfer DAOToken to Controller ownership')
-    tx = await daoToken.methods.transferOwnership(Controller).send()
+    tx = await daoToken.methods.transferOwnership(Controller).send({ nonce: ++nonce })
     await logTx(tx, 'Finished transferring DAOToken to Controller ownership')
 
     if (migrationParams.useUController) {
       spinner.start('Register Avatar to UController')
-      tx = await controller.methods.newOrganization(avatar.options.address).send()
+      tx = await controller.methods.newOrganization(avatar.options.address).send({ nonce: ++nonce })
       await logTx(tx, 'Finished registerring Avatar')
     }
   }
@@ -286,9 +287,9 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
         migrationParams.VotingMachinesParams[i].preBoostedVotePeriodLimit,
         migrationParams.VotingMachinesParams[i].thresholdConst,
         migrationParams.VotingMachinesParams[i].quietEndingPeriod,
-        web3.utils.toWei(migrationParams.VotingMachinesParams[i].proposingRepRewardGwei.toString(), 'gwei'),
+        web3.utils.toWei(migrationParams.VotingMachinesParams[i].proposingRepReward.toString()),
         migrationParams.VotingMachinesParams[i].votersReputationLossRatio,
-        web3.utils.toWei(migrationParams.VotingMachinesParams[i].minimumDaoBountyGWei.toString(), 'gwei'),
+        web3.utils.toWei(migrationParams.VotingMachinesParams[i].minimumDaoBounty.toString()),
         migrationParams.VotingMachinesParams[i].daoBountyConst,
         migrationParams.VotingMachinesParams[i].activationTime
       ],
@@ -296,7 +297,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     )
 
     votingMachinesParams.push(await genesisProtocolSetParams.call())
-    tx = await genesisProtocolSetParams.send()
+    tx = await genesisProtocolSetParams.send({ nonce: ++nonce })
     await logTx(tx, 'GenesisProtocol parameters set.')
   }
 
@@ -308,7 +309,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       migrationParams.SchemeRegistrar.votingMachine === undefined ? GenesisProtocol : migrationParams.SchemeRegistrar.votingMachine
     )
     schemeRegistrarParams = await schemeRegistrarSetParams.call()
-    tx = await schemeRegistrarSetParams.send()
+    tx = await schemeRegistrarSetParams.send({ nonce: ++nonce })
     await logTx(tx, 'Scheme Registrar parameters set.')
     schemeNames.push('Scheme Registrar')
     schemes.push(SchemeRegistrar)
@@ -323,7 +324,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       migrationParams.ContributionReward.votingMachine === undefined ? GenesisProtocol : migrationParams.ContributionReward.votingMachine
     )
     contributionRewardParams = await contributionRewardSetParams.call()
-    tx = await contributionRewardSetParams.send()
+    tx = await contributionRewardSetParams.send({ nonce: ++nonce })
     await logTx(tx, 'Contribution Reward parameters set.')
     schemeNames.push('Contribution Reward')
     schemes.push(ContributionReward)
@@ -339,7 +340,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       migrationParams.genericScheme.targetContract
     )
     genericSchemeParams = await genericSchemeSetParams.call()
-    tx = await genericSchemeSetParams.send()
+    tx = await genericSchemeSetParams.send({ nonce: ++nonce })
     await logTx(tx, 'Generic Scheme parameters set.')
     schemeNames.push('Generic Scheme')
     schemes.push(GenericScheme)
@@ -354,7 +355,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       migrationParams.GlobalConstraintRegistrar.votingMachine === undefined ? GenesisProtocol : migrationParams.GlobalConstraintRegistrar.votingMachine
     )
     globalConstraintRegistrarParams = await globalConstraintRegistrarSetParams.call()
-    tx = await globalConstraintRegistrarSetParams.send()
+    tx = await globalConstraintRegistrarSetParams.send({ nonce: ++nonce })
     await logTx(tx, 'Global Constraints Registrar parameters set.')
     schemeNames.push('Global Constraints Registrar')
     schemes.push(GlobalConstraintRegistrar)
@@ -369,7 +370,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       migrationParams.UpgradeScheme.votingMachine === undefined ? GenesisProtocol : migrationParams.UpgradeScheme.votingMachine
     )
     upgradeSchemeParams = await upgradeSchemeSetParams.call()
-    tx = await upgradeSchemeSetParams.send()
+    tx = await upgradeSchemeSetParams.send({ nonce: ++nonce })
     await logTx(tx, 'Upgrade Scheme parameters set.')
     schemeNames.push('Upgrade Scheme')
     schemes.push(UpgradeScheme)
@@ -379,12 +380,12 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
 
   if (migrationParams.useDaoCreator === true) {
     spinner.start('Setting DAO schemes...')
-    tx = await daoCreator.methods.setSchemes(avatar.options.address, schemes, params, permissions, 'metaData').send()
+    tx = await daoCreator.methods.setSchemes(avatar.options.address, schemes, params, permissions, 'metaData').send({ nonce: ++nonce })
     await logTx(tx, 'DAO schemes set.')
   } else {
     for (let i in schemes) {
       spinner.start('Registering ' + schemeNames[i] + ' to the DAO...')
-      tx = await controller.methods.registerScheme(schemes[i], params[i], permissions[i], avatar.options.address).send()
+      tx = await controller.methods.registerScheme(schemes[i], params[i], permissions[i], avatar.options.address).send({ nonce: ++nonce })
       await logTx(tx, schemeNames[i] + ' was successfully registered to the DAO.')
     }
   }
