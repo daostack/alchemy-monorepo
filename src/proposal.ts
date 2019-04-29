@@ -402,16 +402,21 @@ constructor(
             activationTime
             boostedVotePeriodLimit
             daoBountyConst
+            limitExponentValue
             minimumDaoBounty
-            paramsHash
+            scheme {
+              id
+              paramsHash
+            }
             preBoostedVotePeriodLimit
             proposingRepReward
-            quietEndingPeriod
             queuedVotePeriodLimit
             queuedVoteRequiredPercentage
+            quietEndingPeriod
             threshold
             thresholdConst
             votersReputationLossRatio
+            votingMachine
           }
           organizationId
           preBoostedAt
@@ -528,12 +533,12 @@ constructor(
       const queue: IQueueState = {
         activationTime: Number(gpQueue.activationTime),
         boostedVotePeriodLimit: Number(gpQueue.boostedVotePeriodLimit),
-        dao,
+        dao: item.dao.id,
         daoBountyConst: Number(gpQueue.daoBountyConst),
         id: gpQueue.id,
         limitExponentValue: Number(gpQueue.limitExponentValue),
         minimumDaoBounty: new BN(gpQueue.minimumDaoBounty),
-        paramsHash: item.gpQueue.paramsHash,
+        paramsHash: item.gpQueue.scheme.paramsHash,
         preBoostedVotePeriodLimit: Number(gpQueue.preBoostedVotePeriodLimit),
         proposingRepReward: new BN(gpQueue.proposingRepReward),
         queuedVotePeriodLimit: Number(gpQueue.queuedVotePeriodLimit),

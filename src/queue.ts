@@ -8,7 +8,7 @@ import { realMathToNumber } from './utils'
 
 export interface IQueue {
   id: string
-  dao: DAO
+  dao: Address
   name?: string
 }
 
@@ -18,7 +18,7 @@ export interface IQueueState {
   paramsHash: string
   threshold: BN
   thresholdConst: BN
-  dao: DAO
+  dao: Address
   votingMachine: Address
   queuedVoteRequiredPercentage: number
   queuedVotePeriodLimit: number // in seconds (?)
@@ -93,6 +93,7 @@ export class Queue {
             id
           }
           daoBountyConst
+          boostedVotePeriodLimit
           scheme {
             id
             address
@@ -104,10 +105,13 @@ export class Queue {
             canManageGlobalConstraints
             paramsHash
           }
+          limitExponentValue
           minimumDaoBounty
+          preBoostedVotePeriodLimit
           proposingRepReward
           queuedVotePeriodLimit
           queuedVoteRequiredPercentage
+          quietEndingPeriod
           threshold
           thresholdConst
           votersReputationLossRatio
@@ -128,11 +132,12 @@ export class Queue {
       return {
         activationTime: Number(item.activationTime),
         boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
-        dao: new DAO(item.dao.id, this.context),
-        daoBountyConst: item.daoBountyConst,
+        // dao: new DAO(item.dao.id, this.context),
+        dao: item.dao.id,
+        daoBountyConst: Number(item.daoBountyConst),
         id: item.id,
-        limitExponentValue: item.limitExponentValue,
-        minimumDaoBounty: item.minimumDaoBounty,
+        limitExponentValue: Number(item.limitExponentValue),
+        minimumDaoBounty:  new BN(item.minimumDaoBounty),
         paramsHash: item.scheme.paramsHash,
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposingRepReward: new BN(item.proposingRepReward),
@@ -142,7 +147,7 @@ export class Queue {
         threshold,
         thresholdConst,
         voteOnBehalf: item.voteOnBehalf,
-        votersReputationLossRatio: item.votersReputationLossRatio,
+        votersReputationLossRatio: Number(item.votersReputationLossRatio),
         votingMachine: item.votingMachine
       }
     }
