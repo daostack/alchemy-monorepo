@@ -32,8 +32,6 @@ describe('Reward', () => {
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
       nativeTokenReward: toWei('1'),
-      periodLength: 12,
-      periods: 5,
       type: IProposalType.ContributionReward
     }).send()
     const proposal = state.result as Proposal

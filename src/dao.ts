@@ -69,7 +69,7 @@ export class DAO implements IStateful<IDAOState> {
         tokenTotalSupply: item.nativeToken.totalSupply
       }
     }
-    return this.context._getObservableObject(query, itemMap) as Observable<IDAOState>
+    return this.context._getObservableObject(query, itemMap)
   }
 
   /*

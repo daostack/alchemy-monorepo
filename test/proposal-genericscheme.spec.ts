@@ -7,7 +7,7 @@ import {
   IProposalType,
   Proposal
   } from '../src/proposal'
-import { createAProposal, getTestDAO, newArc, voteForProposal, waitUntilTrue } from './utils'
+import { createAProposal, getTestDAO, newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(20000)
 
@@ -56,7 +56,7 @@ describe('Proposal', () => {
     })
 
     // accept the proposal by voting the hell out of it
-    await voteForProposal(proposal)
+    await voteToAcceptProposal(proposal)
 
     await proposal.execute()
     await waitUntilTrue(() => (lastState().genericScheme as IGenericScheme).executed)

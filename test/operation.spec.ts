@@ -8,15 +8,12 @@ describe('Operation', () => {
 
   it('returns the correct sequence of states', async () => {
     const dao = await getTestDAO()
-    const arc = await newArc()
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       ethReward: toWei('300'),
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
       nativeTokenReward: toWei('1'),
-      periodLength: 12,
-      periods: 5,
       type: IProposalType.ContributionReward
     }
 

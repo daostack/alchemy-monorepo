@@ -33,8 +33,6 @@ describe('Create a ContributionReward proposal', () => {
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
       nativeTokenReward: toWei('1'),
-      periodLength: 12,
-      periods: 5,
       reputationReward: toWei('10'),
       type: IProposalType.ContributionReward
     }
@@ -88,8 +86,6 @@ describe('Create a ContributionReward proposal', () => {
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
       nativeTokenReward: toWei('1'),
-      periodLength: 12,
-      periods: 5,
       title: 'A modest proposal',
       type: IProposalType.ContributionReward,
       url: 'http://swift.org/modest'
@@ -131,8 +127,6 @@ describe('Create a ContributionReward proposal', () => {
       ethReward: toWei('300'),
       externalTokenAddress: undefined,
       nativeTokenReward: toWei('1'),
-      periodLength: 12,
-      periods: 5,
       title: 'A modest proposal',
       type: IProposalType.ContributionReward,
       url: 'http://swift.org/modest'

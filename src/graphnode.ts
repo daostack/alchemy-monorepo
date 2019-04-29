@@ -2,17 +2,10 @@ import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { Observable as ZenObservable } from 'apollo-link'
 import BN = require('bn.js')
 import gql from 'graphql-tag'
-import { Observable, Observer, of } from 'rxjs'
+import { Observable, Observer } from 'rxjs'
 import { catchError, filter, first, map } from 'rxjs/operators'
 import { Logger } from './logger'
 import { createApolloClient, zenToRxjsObservable } from './utils'
-
-// function wrapObservable<T>(observable: Observable<T>): IGraphNodeObservable<T> {
-//   (observable as IGraphNodeObservable<T>).first = () => observable.pipe(first()).toPromise()
-//   return observable as IGraphNodeObservable<T>
-// }
-
-// export type GraphNodeObservable<T> = IGraphNodeObservable<ApolloQueryResult<T>>
 
 export class GraphNodeObserver {
   public graphqlHttpProvider: string

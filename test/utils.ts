@@ -1,6 +1,8 @@
 import { ApolloQueryResult } from 'apollo-client'
 import BN = require('bn.js')
 import gql from 'graphql-tag'
+import { Observable } from 'rxjs'
+import { first } from 'rxjs/operators'
 import { IContractAddresses } from '../src/arc'
 import { DAO } from '../src/dao'
 import Arc from '../src/index'
@@ -144,8 +146,8 @@ export async function createAProposal(dao?: DAO, options: any = {}) {
     externalTokenAddress: undefined,
     externalTokenReward: toWei('0'),
     nativeTokenReward: toWei('1'),
-    periodLength: 12,
-    periods: 5,
+    periodLength: 0,
+    periods: 1,
     reputationReward: toWei('10'),
     type: IProposalType.ContributionReward,
     ...options
@@ -156,7 +158,7 @@ export async function createAProposal(dao?: DAO, options: any = {}) {
 }
 
 // Vote and vote and vote for proposal until it is accepted
-export async function voteForProposal(proposal: Proposal) {
+export async function voteToAcceptProposal(proposal: Proposal) {
   const arc = proposal.context
   const accounts = arc.web3.eth.accounts.wallet
 
@@ -168,11 +170,22 @@ export async function voteForProposal(proposal: Proposal) {
   const response = await proposal.vote(IProposalOutcome.Pass).send()
   expect(response.receipt.from).toEqual(accounts[1].address.toLowerCase())
 
-  arc.setAccount(accounts[2].address)
-  await proposal.vote(IProposalOutcome.Pass).send()
-
-  arc.setAccount(accounts[3].address)
-  await proposal.vote(IProposalOutcome.Pass).send()
+  try {
+    arc.setAccount(accounts[2].address)
+    await proposal.vote(IProposalOutcome.Pass).send()
+  } catch (err) {
+    if (err.message.match(/already executed/) === null) {
+      throw err
+    }
+  }
+  try {
+    arc.setAccount(accounts[3].address)
+    await proposal.vote(IProposalOutcome.Pass).send()
+  } catch (err) {
+    if (err.message.match(/already executed/) === null) {
+      throw err
+    }
+  }
   arc.setAccount(accounts[0].address)
 }
 
@@ -199,4 +212,8 @@ export async function timeTravel(seconds: number, web3: any) {
       })
     })
   })
+}
+
+export async function firstResult(observable: Observable<any>) {
+  return observable.pipe(first()).toPromise()
 }
