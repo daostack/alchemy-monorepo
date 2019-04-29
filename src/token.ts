@@ -135,6 +135,13 @@ export class Token implements IStateful<ITokenState> {
     return this.context.sendTransaction(transaction, mapReceipt)
   }
 
+  public transfer(beneficiary: Address, amount: BN) {
+    const contract = this.contract()
+    const transaction = contract.methods.transfer(beneficiary, amount.toString())
+    const mapReceipt = (receipt: Web3Receipt) => receipt
+    return this.context.sendTransaction(transaction, mapReceipt)
+  }
+
   public approveForStaking(amount: BN) {
     const stakingToken = this.contract()
     const genesisProtocol = this.context.getContract('GenesisProtocol')

@@ -15,10 +15,10 @@ import { nullAddress, realMathToNumber } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export enum IProposalType {
-  ContributionReward, // propose a contributionReward
-  GenericScheme, // propose to execute a function call from a registered genericScheme
-  SchemeRegistrarPropose, // propose to register to schme
-  SchemeRegistrarProposeToRemove // propose to remove a registered scheme
+  ContributionReward = 'ContributionReward', // propose a contributionReward
+  GenericScheme = 'GenericScheme', // propose to execute a function call from a registered genericScheme
+  SchemeRegistrarPropose = 'SchemeRegistrarPropose', // propose to register to schme
+  SchemeRegistrarProposeToRemove = 'SchemeRegistrarProposeToRemove' // propose to remove a registered scheme
 }
 
 export enum IProposalOutcome {
@@ -179,8 +179,8 @@ export class Proposal implements IStateful<IProposalState> {
                 options.nativeTokenReward && options.nativeTokenReward.toString() || 0,
                 options.ethReward && options.ethReward.toString() || 0,
                 options.externalTokenReward && options.externalTokenReward.toString() || 0,
-                options.periodLength || 12,
-                options.periods || 5
+                options.periodLength || 0,
+                options.periods || 1
               ],
               options.externalTokenAddress || nullAddress,
               options.beneficiary
@@ -301,9 +301,7 @@ export class Proposal implements IStateful<IProposalState> {
       } else if (key === 'type') {
         // TODO: we are not distinguishing between the schemeregisterpropose
         // and SchemeRegistrarProposeToRemove proposals
-        if (value === IProposalType.SchemeRegistrarPropose) {
-          where += `schemeRegistrar_not: null\n`
-        } else if (value === IProposalType.SchemeRegistrarProposeToRemove) {
+        if (value.toString().includes('SchemeRegistrar')) {
           where += `schemeRegistrar_not: null\n`
         } else {
           const apolloKey = IProposalType[value][0].toLowerCase() + IProposalType[value].slice(1)
@@ -550,7 +548,6 @@ constructor(
 
       return {
         accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
-        // beneficiary: item.contributionReward.beneficiary,
         boostedAt: Number(item.boostedAt),
         confidenceThreshold: Number(item.confidenceThreshold),
         contributionReward,
@@ -570,7 +567,6 @@ constructor(
         queue,
         quietEndingPeriod: Number(item.gpQueue.quietEndingPeriod),
         quietEndingPeriodBeganAt: Number(item.quietEndingPeriodBeganAt),
-        // reputationReward: new BN(item.contributionReward.reputationReward),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : 0,
         schemeRegistrar,
         stage,
@@ -829,7 +825,7 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
 }
 
 export interface IProposalCreateOptions {
-  beneficiary: Address
+  beneficiary?: Address  // for ContributionRewardProposal
   dao?: Address
   description?: string
   descriptionHash?: string
