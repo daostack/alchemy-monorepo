@@ -67,7 +67,7 @@ describe('Queue', () => {
 
     const proposal = new Proposal(queuedProposalId, '', arc)
     const proposalState = await proposal.state().pipe(first()).toPromise()
-    const queue = new Queue(proposalState.queue.id, proposalState.queue.dao.id, '', arc)
+    const queue = new Queue(proposalState.queue.id, proposalState.queue.dao.address, '', arc)
     const queueState = queue.state().pipe(first()).toPromise()
     expect(proposalState.queue).toEqual(queueState)
 

@@ -74,13 +74,6 @@ describe('DAO', () => {
     )
   })
 
-  it.skip('dao.schemes() should work', async () => {
-    const dao = await getTestDAO()
-    const schemes = await dao.schemes().pipe(first()).toPromise()
-    expect(typeof schemes).toEqual(typeof [])
-    expect(schemes.length).toEqual(3)
-  })
-
   it('dao.members() should work', async () => {
     const dao = await getTestDAO()
     const members = await dao.members().pipe(first()).toPromise()
