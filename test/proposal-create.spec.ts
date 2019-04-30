@@ -118,7 +118,7 @@ describe('Create a ContributionReward proposal', () => {
   })
 
   it('handles the fact that the ipfs url is not set elegantly', async () => {
-    const arcWithoutIPFS = newArc()
+    const arcWithoutIPFS = await newArc()
     arcWithoutIPFS.ipfsProvider = ''
     const dao = arcWithoutIPFS.dao((arc.contractAddresses as any).dao.Avatar)
     const options = {
