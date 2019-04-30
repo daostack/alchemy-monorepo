@@ -49,7 +49,6 @@ export interface IContractAddressesFromMigration {
 export function getContractAddressesFromMigration(): IContractAddressesFromMigration {
   const path = '@daostack/migration/migration.json'
   const addresses = require(path)
-  // const addresses = { base: require(path).private.base, dao: require(path).private.dao }
   if (!addresses || addresses === {}) {
     throw Error(`No addresses found, does the file at ${path} exist?`)
   }
