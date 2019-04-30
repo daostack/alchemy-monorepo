@@ -4,6 +4,7 @@ import Arc from '../src/index'
 import { Proposal } from '../src/proposal'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
+import { getContractAddresses } from '../src/utils'
 const Web3 = require('web3')
 
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack'
