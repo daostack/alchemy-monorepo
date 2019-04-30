@@ -2,7 +2,6 @@ import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
-import { DAO } from './dao'
 import { Address } from './types'
 import { realMathToNumber } from './utils'
 

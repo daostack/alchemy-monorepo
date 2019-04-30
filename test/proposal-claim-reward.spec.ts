@@ -18,7 +18,7 @@ describe('Claim rewards', () => {
     const reputationReward = toWei('8008')
 
     // check if the DAO has enough Ether to pay forthe reward
-    const daoEthBalance = new BN(await arc.web3.eth.getBalance(beneficiary))
+    const daoEthBalance = new BN(await arc.web3.eth.getBalance(dao.address))
     expect(Number(daoEthBalance.toString())).toBeGreaterThanOrEqual(Number(ethReward.toString()))
 
     const options = {
@@ -49,7 +49,9 @@ describe('Claim rewards', () => {
     const prevNativeTokenBalance = await firstResult(daoState.token.balanceOf(beneficiary))
     const reputationBalances: BN[] = []
 
-    daoState.reputation.reputationOf(beneficiary).subscribe((next: BN) => reputationBalances.push(next))
+    daoState.reputation.reputationOf(beneficiary).subscribe((next: BN) => {
+      reputationBalances.push(next)
+    })
     const prevEthBalance = new BN(await arc.web3.eth.getBalance(beneficiary))
 
     await proposal.claimRewards(beneficiary).send()
@@ -65,7 +67,7 @@ describe('Claim rewards', () => {
     // (it could be higher because we may get rewards for voting)
     expect(Number(reputationBalances[1].sub(reputationBalances[0]).toString()))
       .toBeGreaterThanOrEqual(Number(reputationReward.toString()))
-  })
+  }, 10000)
 
   it('works for external token', async () => {
     const dao = await getTestDAO()
@@ -107,7 +109,7 @@ describe('Claim rewards', () => {
     const newTokenBalance = await firstResult(arc.GENToken().balanceOf(beneficiary))
     expect(newTokenBalance.sub(prevTokenBalance).toString()).toEqual(externalTokenReward.toString())
 
-  })
+  }, 10000)
 
   it('claimRewards should also work without providing a "beneficiary" argument', async () => {
     const proposal: Proposal = await createAProposal()
