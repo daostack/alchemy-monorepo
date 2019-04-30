@@ -176,10 +176,6 @@ export class Arc extends GraphNodeObserver {
     let contractClass
     let contract
     switch (name) {
-      case 'ActionMock':
-        contractClass = require('@daostack/arc/build/contracts/ActionMock.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.ActionMock, opts)
-        return contract
       case 'AbsoluteVote':
         contractClass = require('@daostack/arc/build/contracts/AbsoluteVote.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.AbsoluteVote, opts)

@@ -7,7 +7,9 @@ import {
   IProposalType,
   Proposal
   } from '../src/proposal'
-import { createAProposal, getTestDAO, newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
+import { getWeb3Options } from '../src/utils'
+import { createAProposal, getContractAddressesFromMigration, getTestDAO, newArc,
+  voteToAcceptProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(20000)
 
@@ -18,7 +20,7 @@ describe('Proposal', () => {
   let arc: Arc
 
   beforeAll(async () => {
-    arc = newArc()
+    arc = await newArc()
   })
 
   it('the calldata argument must be provided', async () => {
@@ -29,8 +31,11 @@ describe('Proposal', () => {
   })
 
   it('Check proposal state is correct', async () => {
+    const addresses = await getContractAddressesFromMigration()
     const dao = await getTestDAO()
-    const actionMock = arc.getContract('ActionMock')
+    const contractClass = require('@daostack/arc/build/contracts/ActionMock.json')
+    const opts = getWeb3Options(arc.web3)
+    const actionMock = new arc.web3.eth.Contract(contractClass.abi, addresses.base.ActionMock, opts)
 
     const callData = await actionMock.methods.test2(dao.address).encodeABI()
 

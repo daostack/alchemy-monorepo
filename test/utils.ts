@@ -107,11 +107,8 @@ export async function getTestDAO() {
   // we have two indexed daos with the same name, but one has 6 members, and that is the one
   // we are using for testing
   const arc = await newArc()
-  if (arc.contractAddresses) {
-    return arc.dao(arc.contractAddresses.Avatar)
-  } else {
-    return arc.dao('0xnotfound')
-  }
+  const contractAddressesfromMigration = await getContractAddressesFromMigration()
+  return arc.dao(contractAddressesfromMigration.test.Avatar)
 }
 
 export async function createAProposal(dao?: DAO, options: any = {}) {
@@ -150,7 +147,6 @@ export async function voteToAcceptProposal(proposal: Proposal) {
       // if (err.message.match(/already executed/) === null) {
       //   throw err
       // }
-      console.log(err.message)
       return
     } finally {
       arc.setAccount(accounts[0].address)

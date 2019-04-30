@@ -16,7 +16,7 @@ describe('Queue', () => {
   let arc: Arc
 
   beforeAll(() => {
-    arc = newArc()
+    arc = await newArc()
   })
 
   it('Queue is instantiable', () => {

@@ -18,7 +18,7 @@ describe('Proposal', () => {
   let arc: Arc
 
   beforeAll(async () => {
-    arc = newArc()
+    arc = await newArc()
   })
 
   it('the calldata argument must be provided', async () => {

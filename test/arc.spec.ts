@@ -27,7 +27,6 @@ describe('Arc ', () => {
   it('arc.getContract() works', async () => {
     const arc = await newArc()
     expect(arc.getContract('ContributionReward')).toBeInstanceOf(arc.web3.eth.Contract)
-    expect(arc.getContract('AbsoluteVote')).toBeInstanceOf(arc.web3.eth.Contract)
   })
 
   it('arc.allowance() should work', async () => {

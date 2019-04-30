@@ -5,6 +5,7 @@ import { Logger } from '../src/logger'
 import { IContributionReward, IProposalStage, IProposalType, Proposal } from '../src/proposal'
 import {
   fromWei,
+  getContractAddressesFromMigration,
   getTestDAO,
   newArc,
   toWei,
@@ -120,7 +121,8 @@ describe('Create a ContributionReward proposal', () => {
   it('handles the fact that the ipfs url is not set elegantly', async () => {
     const arcWithoutIPFS = await newArc()
     arcWithoutIPFS.ipfsProvider = ''
-    const dao = arcWithoutIPFS.dao((arc.contractAddresses as any).dao.Avatar)
+    const contractAddresses = await getContractAddressesFromMigration()
+    const dao = arcWithoutIPFS.dao(contractAddresses.dao.Avatar)
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       description: 'Just eat them',
