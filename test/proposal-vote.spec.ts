@@ -87,7 +87,7 @@ describe('Vote on a ContributionReward', () => {
     )
   })
 
-  it.only('handles the case of voting without reputation nicely', async () => {
+  it('handles the case of voting without reputation nicely', async () => {
     // TODO: write this test!
     const proposal = await createAProposal()
 
