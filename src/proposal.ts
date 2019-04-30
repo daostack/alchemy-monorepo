@@ -517,7 +517,8 @@ export class Proposal implements IStateful<IProposalState> {
    * [claimRewards description] Execute the proposal and distribute the rewards
    * to the beneficiary.
    * This uses the Redeemer.sol helper contract
-   * @param  beneficiary Addresss of the beneficiary, optional, if undefined will only redeem the ContributionReward rewards
+   * @param  beneficiary Addresss of the beneficiary, optional,
+   *    if undefined will only redeem the ContributionReward rewards
    * @return  an Operation
    */
   public claimRewards(beneficiary?: Address): Operation<boolean> {
