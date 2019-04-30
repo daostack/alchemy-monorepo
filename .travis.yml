@@ -8,8 +8,6 @@ services:
   - docker
 notifications:
   email: false
-node_js:
-  - node
 
 before_install:
   - sudo apt-get install libsecret-1-dev
