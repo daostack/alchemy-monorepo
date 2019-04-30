@@ -1,6 +1,6 @@
-import { ITransactionUpdate, ITransactionState } from '../src/operation'
+import { ITransactionState, ITransactionUpdate } from '../src/operation'
 import { Proposal } from '../src/proposal'
-import { newArc, getTestDAO, mineANewBlock, toWei, waitUntilTrue } from './utils'
+import { getTestDAO, mineANewBlock, newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
@@ -11,10 +11,10 @@ describe('Operation', () => {
     const arc = await newArc()
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
-      ethReward: toWei("300"),
+      ethReward: toWei('300'),
       externalTokenAddress: undefined,
-      externalTokenReward: toWei("0"),
-      nativeTokenReward: toWei("1"),
+      externalTokenReward: toWei('0'),
+      nativeTokenReward: toWei('1'),
       periodLength: 12,
       periods: 5,
       type: 'ConributionReward'
@@ -63,5 +63,5 @@ describe('Operation', () => {
       transactionHash: listOfUpdates[1].transactionHash
     })
 
-  })
+  }, 20000)
 })
