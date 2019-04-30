@@ -21,7 +21,7 @@ describe('Proposal', () => {
     arc = newArc()
   })
 
-  it.skip('the calldata argument must be provided', async () => {
+  it('the calldata argument must be provided', async () => {
     const dao = await getTestDAO()
     expect(createAProposal(dao, {
       type: IProposalType.GenericScheme

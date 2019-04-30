@@ -651,7 +651,7 @@ constructor(
         const proposal = this
         const prop = await votingMachine.methods.proposals(proposal.id).call()
         if (prop.proposer === nullAddress ) {
-          return new Error(`Unknown proposal with id ${proposal.id}`)
+          return Error(`Unknown proposal with id ${proposal.id}`)
         }
         const contributionReward = this.context.getContract('ContributionReward')
         const proposalDataOnChain = await contributionReward.methods
@@ -661,7 +661,15 @@ constructor(
         // require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0);
         if (Number(proposalDataOnChain.executionTime) !== 0) {
           const msg = `proposal ${proposal.id} already executed`
-          throw Error(msg)
+          return Error(msg)
+        }
+        const gpProtocol = this.context.getContract('GenesisProtocol')
+        const proposalDataFromGP = await gpProtocol.methods
+          .proposals(this.id).call()
+
+        if (Number(proposalDataFromGP.state) === IProposalStage.Executed) {
+          const msg = `proposal ${proposal.id} already executed`
+          return Error(msg)
         }
       }
       // if we have found no known error, we return the original error
