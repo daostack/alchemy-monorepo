@@ -17,7 +17,13 @@ describe('Claim rewards', () => {
     const nativeTokenReward = toWei('271828')
     const reputationReward = toWei('8008')
 
-    // check if the DAO has enough Ether to pay forthe reward
+    // make sure that the DAO has enough Ether to pay forthe reward
+    await arc.web3.eth.sendTransaction({
+      gas: 4000000,
+      gasPrice: 100000000000,
+      to: dao.address,
+      value: ethReward
+    })
     const daoEthBalance = new BN(await arc.web3.eth.getBalance(dao.address))
     expect(Number(daoEthBalance.toString())).toBeGreaterThanOrEqual(Number(ethReward.toString()))
 
