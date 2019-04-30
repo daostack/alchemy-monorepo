@@ -1,11 +1,6 @@
 import BN = require('bn.js')
-<<<<<<< HEAD
-import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
-import { IContractAddresses } from '../src/arc'
-=======
->>>>>>> master
 import { DAO } from '../src/dao'
 import Arc from '../src/index'
 import { IProposalOutcome, IProposalType, Proposal } from '../src/proposal'
