@@ -162,7 +162,7 @@ export async function voteToAcceptProposal(proposal: Proposal) {
   const arc = proposal.context
   const accounts = arc.web3.eth.accounts.wallet
 
-  for (let i = 0; i <= 2; i ++) {
+  for (let i = 0; i <= 3; i ++) {
     try {
       arc.setAccount(accounts[i].address)
       await proposal.vote(IProposalOutcome.Pass).send()
@@ -171,12 +171,14 @@ export async function voteToAcceptProposal(proposal: Proposal) {
       // if (err.message.match(/already executed/) === null) {
       //   throw err
       // }
+      console.log(err.message)
       return
     } finally {
       arc.setAccount(accounts[0].address)
     }
   }
   arc.setAccount(accounts[0].address)
+  await proposal.execute()
   return
 }
 

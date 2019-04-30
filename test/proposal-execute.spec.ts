@@ -113,7 +113,6 @@ describe('Proposal execute()', () => {
     const proposalStates: IProposalState[] = []
 
     const lastState = () => proposalStates[proposalStates.length - 1]
-    const accounts = arc.web3.eth.accounts.wallet
     const proposal = await createAProposal(dao,  { ethReward: new BN(0)})
     proposal.state().subscribe((state) => {
       proposalStates.push(state)
@@ -129,7 +128,7 @@ describe('Proposal execute()', () => {
     await voteToAcceptProposal(proposal)
     // wait until all votes have been counted
     await waitUntilTrue(() => {
-      return lastState().votesCount === 4
+      return lastState().executedAt !== 0
     })
     expect(Number(lastState().votesFor.toString())).toBeGreaterThan(Number(repTotalSupply.div(new BN(2)).toString()))
 
