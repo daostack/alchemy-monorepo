@@ -3,7 +3,7 @@ import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Vote } from '../src/vote'
-import { createAProposal, getTestDAO, newArc, waitUntilTrue } from './utils'
+import { createAProposal, firstResult, getTestDAO, newArc, waitUntilTrue } from './utils'
 const DAOstackMigration = require('@daostack/migration')
 
 describe('Vote on a ContributionReward', () => {
@@ -87,11 +87,18 @@ describe('Vote on a ContributionReward', () => {
     )
   })
 
-  it.skip('handles the case of voting without reputation nicely', () => {
+  it.only('handles the case of voting without reputation nicely', async () => {
     // TODO: write this test!
+    const proposal = await createAProposal()
+
+    const accounts = arc.web3.eth.accounts.wallet
+    const accountWithNoRep = accounts[6].address
+    const reputation = await firstResult(proposal.dao.nativeReputation())
+    const balance = await firstResult(reputation.reputationOf(accountWithNoRep))
+    expect(balance.toString()).toEqual('0')
+    arc.setAccount(accountWithNoRep) // a fake address
+    await proposal.vote(IProposalOutcome.Pass)
+    arc.setAccount(accounts[0].address)
   })
 
-  it.skip('handles the case of voting without reputation nicely', () => {
-    // TODO: write this test!
-  })
 })
