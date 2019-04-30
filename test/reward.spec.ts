@@ -11,8 +11,8 @@ describe('Reward', () => {
 
   let arc: Arc
 
-  beforeAll(() => {
-    arc = newArc()
+  beforeAll(async () => {
+    arc = await newArc()
   })
 
   it('Reward is instantiable', () => {

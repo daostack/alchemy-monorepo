@@ -1,5 +1,3 @@
-import { ApolloClient, ApolloQueryResult } from 'apollo-client'
-import { Observable as ZenObservable } from 'apollo-link'
 import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
@@ -10,7 +8,7 @@ import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { Token } from './token'
 import { Address, IPFSProvider, Web3Provider } from './types'
-import { createApolloClient, getWeb3Options, isAddress, zenToRxjsObservable } from './utils'
+import { getWeb3Options, isAddress } from './utils'
 const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
 
@@ -172,44 +170,43 @@ export class Arc extends GraphNodeObserver {
     if (!addresses) {
       throw new Error(`Cannot get contract: no contractAddress set`)
     }
+    if (!addresses[name]) {
+      throw new Error(`No contract named ${name} could be found in the provided contract addresses`)
+    }
     let contractClass
     let contract
     switch (name) {
       case 'ActionMock':
         contractClass = require('@daostack/arc/build/contracts/ActionMock.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.ActionMock, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.ActionMock, opts)
         return contract
       case 'AbsoluteVote':
         contractClass = require('@daostack/arc/build/contracts/AbsoluteVote.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.AbsoluteVote, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.AbsoluteVote, opts)
         return contract
       case 'ContributionReward':
         contractClass = require('@daostack/arc/build/contracts/ContributionReward.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.ContributionReward, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.ContributionReward, opts)
         return contract
       case 'GEN':
         contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.GEN, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.GEN, opts)
         return contract
       case 'GenericScheme':
         contractClass = require('@daostack/arc/build/contracts/GenericScheme.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.GenericScheme, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenericScheme, opts)
         return contract
       case 'GenesisProtocol':
         contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.GenesisProtocol, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenesisProtocol, opts)
         return contract
       case 'Redeemer':
         contractClass = require('@daostack/arc/build/contracts/Redeemer.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.Redeemer, opts)
-        return contract
-      case 'Reputation':
-        contractClass = require('@daostack/arc/build/contracts/Reputation.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.dao.Reputation, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.Redeemer, opts)
         return contract
       case 'SchemeRegistrar':
         contractClass = require('@daostack/arc/build/contracts/SchemeRegistrar.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.SchemeRegistrar, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.SchemeRegistrar, opts)
         return contract
       default:
         throw Error(`Unknown contract: ${name}`)
@@ -218,7 +215,7 @@ export class Arc extends GraphNodeObserver {
 
   public GENToken() {
     if (this.contractAddresses) {
-      return new Token(this.contractAddresses.base.GEN, this)
+      return new Token(this.contractAddresses.GEN, this)
     } else {
       throw Error(`Cannot get GEN Token because no contract addresses were provided`)
     }
@@ -296,8 +293,5 @@ export interface IApolloQueryOptions {
 }
 
 export interface IContractAddresses {
-  base: { [key: string]: Address }
-  dao: { [key: string]: Address }
-  organs: { [key: string]: Address }
-  test: { [key: string]: Address }
+  [key: string]: Address
 }

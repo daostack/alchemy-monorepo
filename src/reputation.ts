@@ -75,7 +75,8 @@ export class Reputation implements IStateful<IReputationState> {
     const errHandler = async (err: Error) => {
       const owner = await contract.methods.owner().call()
       if (owner.toLowerCase() !== sender.toLowerCase()) {
-        return Error(`Minting failed: sender ${sender} is not the owner of the contract (which is ${owner})`)
+        return Error(`Minting failed: sender ${sender} is not the owner of the contract at ${contract._address}` +
+          `(which is ${owner})`)
       }
       return err
     }

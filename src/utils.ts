@@ -1,15 +1,16 @@
 import { InMemoryCache } from 'apollo-cache-inmemory'
-import { ApolloClient } from 'apollo-client'
+import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { split } from 'apollo-link'
 import { Observable as ZenObservable } from 'apollo-link'
 import { HttpLink } from 'apollo-link-http'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 import BN = require('bn.js')
+import gql from 'graphql-tag'
 import fetch from 'isomorphic-fetch'
 import * as WebSocket from 'isomorphic-ws'
 import { Observable, Observer } from 'rxjs'
-import { first } from 'rxjs/operators'
+import { IContractAddresses } from './arc'
 import { Logger } from './logger'
 import { Address } from './types'
 const Web3 = require('web3')
@@ -160,7 +161,64 @@ export function zenToRxjsObservable(zenObservable: ZenObservable<any>) {
 }
 
 /**
- * convert the number representation of RealMath.sol representations to real real numbers
+ * get the contract addresses by querying the "meta-url" of the subgraph deployment
+ * (in the default configuration, if the subgraph is at a url of the form:
+ *      http://some.thing/subgraphs/name/{subgraphName}/graphql
+ * then the "metaurl" is:
+ *      http://some.thing/subgraphs/graphql
+ * @param  graphqlHttpProvider a URL of the form http://some.thing/subgraphs/graphql
+ * @param  subgraphName        name of the subgraph
+ * @return                     an array with contract names as keys and addresses as values
+ */
+export async function getContractAddresses(graphqlHttpProvider: string, subgraphName: string) {
+
+  const query = gql`{
+    subgraphs (where: { name: "${subgraphName}"} ) {
+      id
+      name
+      currentVersion {
+        deployment {
+          manifest {
+            dataSources {
+              name
+              source {
+                abi
+                address
+              }
+            }
+          }
+        }
+      }
+    }
+  }`
+  const httpLink = new HttpLink({
+    credentials: 'same-origin',
+    fetch,
+    uri: graphqlHttpProvider
+  })
+
+  const client = new ApolloClient({
+    cache: new InMemoryCache(),
+    link: httpLink
+  })
+
+  let response: any
+  try {
+    response = await client.query({query}) as ApolloQueryResult<{ subgraphs: any[]}>
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
+  const dataSources = response.data.subgraphs[0].currentVersion.deployment.manifest.dataSources
+  const result: IContractAddresses = {}
+  for (const record of dataSources) {
+    const name: string = record.name
+    const address = record.source.address
+    result[name] = address.toLowerCase()
+  }
+  return result
+}
+/** convert the number representation of RealMath.sol representations to real real numbers
  * @param  t a BN instance of a real number in the RealMath representation
  * @return  a BN
  */

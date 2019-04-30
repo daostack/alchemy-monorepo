@@ -60,5 +60,5 @@ describe('Operation', () => {
       transactionHash: listOfUpdates[1].transactionHash
     })
 
-  })
+  }, 20000)
 })

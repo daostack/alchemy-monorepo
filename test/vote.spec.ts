@@ -13,8 +13,8 @@ describe('vote', () => {
 
   let arc: Arc
 
-  beforeAll(() => {
-    arc = newArc()
+  beforeAll(async () => {
+    arc = await newArc()
   })
 
   it('Vote is instantiable', () => {

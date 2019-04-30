@@ -7,7 +7,7 @@ describe('Claim rewards', () => {
   let arc: Arc
 
   beforeAll(async () => {
-    arc = newArc()
+    arc = await newArc()
   })
 
   it('works for ether and native token', async () => {
