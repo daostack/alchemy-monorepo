@@ -11,7 +11,7 @@ describe('DAO', () => {
   let arc: Arc
 
   beforeAll(async () => {
-    arc = newArc()
+    arc = await newArc()
 })
 
   it('DAO is instantiable', () => {

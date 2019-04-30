@@ -10,7 +10,7 @@ describe('Vote on a ContributionReward', () => {
   let dao: DAO
 
   beforeAll(async () => {
-    arc = newArc()
+    arc = await newArc()
     dao = await getTestDAO()
   })
 

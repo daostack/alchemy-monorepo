@@ -317,32 +317,31 @@ export class Arc {
     if (!addresses) {
       throw new Error(`Cannot get contract: no contractAddress set`)
     }
+    if (!addresses[name]) {
+      throw new Error(`No contract named ${name} could be found in the provided contract addresses`)
+    }
     let contractClass
     let contract
     switch (name) {
       case 'AbsoluteVote':
         contractClass = require('@daostack/arc/build/contracts/AbsoluteVote.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.AbsoluteVote, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.AbsoluteVote, opts)
         return contract
       case 'ContributionReward':
         contractClass = require('@daostack/arc/build/contracts/ContributionReward.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.ContributionReward, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.ContributionReward, opts)
         return contract
       case 'GEN':
         contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.GEN, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.GEN, opts)
         return contract
       case 'GenesisProtocol':
         contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.GenesisProtocol, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenesisProtocol, opts)
         return contract
       case 'Redeemer':
         contractClass = require('@daostack/arc/build/contracts/Redeemer.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.base.Redeemer, opts)
-        return contract
-      case 'Reputation':
-        contractClass = require('@daostack/arc/build/contracts/Reputation.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.dao.Reputation, opts)
+        contract = new this.web3.eth.Contract(contractClass.abi, addresses.Redeemer, opts)
         return contract
       default:
         throw Error(`Unknown contract: ${name}`)
@@ -351,7 +350,7 @@ export class Arc {
 
   public GENToken() {
     if (this.contractAddresses) {
-      return new Token(this.contractAddresses.base.GEN, this)
+      return new Token(this.contractAddresses.GEN, this)
     } else {
       throw Error(`Cannot get GEN Token because no contract addresses were provided`)
     }
@@ -430,8 +429,5 @@ export interface IApolloQueryOptions {
 }
 
 export interface IContractAddresses {
-  base: { [key: string]: Address }
-  dao: { [key: string]: Address }
-  organs: { [key: string]: Address }
-  test: { [key: string]: Address }
+  [key: string]: Address
 }

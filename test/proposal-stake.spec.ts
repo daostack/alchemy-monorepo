@@ -13,7 +13,7 @@ describe('Stake on a ContributionReward', () => {
   let accounts: any
 
   beforeAll(async () => {
-    arc = newArc()
+    arc = await newArc()
     web3 = arc.web3
     accounts = web3.eth.accounts.wallet
   })

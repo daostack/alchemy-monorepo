@@ -21,7 +21,7 @@ npm run test
 
 After you are done, run:
 ```
-docker-compose down -v
+docker-compose down
 ```
 If you update the subgraph dependency in `package.json`, you must re-configure the graph node:
 ```

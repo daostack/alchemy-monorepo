@@ -11,8 +11,8 @@ describe('Stake', () => {
 
   let arc: Arc
 
-  beforeAll(() => {
-    arc = newArc()
+  beforeAll(async () => {
+    arc = await newArc()
   })
 
   it('Stake is instantiable', () => {

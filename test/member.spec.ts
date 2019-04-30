@@ -6,7 +6,8 @@ import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Stake } from '../src/stake'
 import { Address } from '../src/types'
 import { Vote } from '../src/vote'
-import { createAProposal, fromWei, getContractAddresses, getTestDAO, newArc, toWei, waitUntilTrue } from './utils'
+import { createAProposal, fromWei, getContractAddressesFromMigration,
+  getTestDAO, IContractAddressesFromMigration, newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
@@ -15,14 +16,14 @@ jest.setTimeout(10000)
  */
 describe('Member', () => {
 
-  let addresses: IContractAddresses
+  let addresses: IContractAddressesFromMigration
   let arc: Arc
   let defaultAccount: Address
   let dao: DAO
 
   beforeAll(async () => {
-    addresses = getContractAddresses()
-    arc = newArc()
+    addresses = getContractAddressesFromMigration()
+    arc = await newArc()
     dao = await getTestDAO()
     defaultAccount = arc.web3.eth.defaultAccount
   })
@@ -39,7 +40,7 @@ describe('Member', () => {
     expect(Number(fromWei(memberState.tokens))).toBeGreaterThan(0)
     expect(memberState.dao).toBeInstanceOf(DAO)
     expect(memberState.address).toEqual(defaultAccount)
-    expect(memberState.dao.address).toBe(addresses.test.Avatar.toLowerCase())
+    expect(memberState.dao.address).toBe(dao.address.toLowerCase())
   })
 
   it('Member state also works for members that are not in the index', async () => {
@@ -88,14 +89,15 @@ describe('Member', () => {
       arc.web3.eth.defaultAccount = defaultAccount
     })
 
-  it.skip('Member votes() works', async () => {
+  it('Member votes() works', async () => {
     const member = new Member(defaultAccount, dao.address, arc)
     const proposal = await createAProposal()
-    await proposal.vote(IProposalOutcome.Pass).send()
-    let votes: Vote[] = []
-    member.votes().subscribe((next: Vote[]) => votes = next)
+    const votes: Vote[][] = []
+    member.votes().subscribe((next: Vote[]) => votes.push(next))
     await waitUntilTrue(() => votes.length > 0)
-    expect(votes.length).toBeGreaterThan(0)
-    expect(votes[0].proposalId).toEqual(proposal.id)
+    await proposal.vote(IProposalOutcome.Pass).send()
+    await waitUntilTrue(() => votes.length > 1)
+    expect(votes[votes.length - 1].length).toBeGreaterThan(0)
+    expect(votes[votes.length - 1].map((vote) => vote.proposalId)).toContain(proposal.id)
   })
 })
