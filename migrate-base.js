@@ -100,7 +100,7 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
       await deploy(
         require('@daostack/arc-hive/build/contracts/DAORegistry.json'),
         [],
-        '0xd3BA32dd207Db75f535001FAC749c925423D8A6f' // DAOstack multisig
+        '0x85e7fa550b534656d04d143b9a23a11e05077da3' // DAOstack's controlled account
       )
     } else {
       await deploy(
