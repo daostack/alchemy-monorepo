@@ -15,7 +15,7 @@ describe('Queue', () => {
 
   let arc: Arc
 
-  beforeAll(() => {
+  beforeAll(async () => {
     arc = await newArc()
   })
 
