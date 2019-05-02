@@ -7,7 +7,8 @@
   "typings": "dist/types/index.d.ts",
   "files": [
     "dist",
-    "src"
+    "src",
+    "docker-compose.yml"
   ],
   "author": "Matan Tsuberi <tsuberim@gmail.com>, Jelle Gerbrandy <jelle@daostack.io>",
   "repository": {
