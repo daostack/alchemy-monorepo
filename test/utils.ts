@@ -1,7 +1,9 @@
 import BN = require('bn.js')
+import { Observable } from 'rxjs'
+import { first } from 'rxjs/operators'
 import { DAO } from '../src/dao'
 import Arc from '../src/index'
-import { Proposal } from '../src/proposal'
+import { IProposalOutcome, IProposalType, Proposal } from '../src/proposal'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
 import { getContractAddresses } from '../src/utils'
@@ -12,8 +14,6 @@ export const graphqlHttpMetaProvider: string = 'http://127.0.0.1:8000/subgraphs'
 export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/daostack'
 export const web3Provider: string = 'ws://127.0.0.1:8545'
 export const ipfsProvider: string = '/ip4/127.0.0.1/tcp/5001'
-
-export const nullAddress: string  = '0x' + padZeros('', 40)
 
 export function padZeros(str: string, max = 36): string {
   str = str.toString()
@@ -105,11 +105,8 @@ export async function getTestDAO() {
   // we have two indexed daos with the same name, but one has 6 members, and that is the one
   // we are using for testing
   const arc = await newArc()
-  if (arc.contractAddresses) {
-    return arc.dao(arc.contractAddresses.Avatar)
-  } else {
-    return arc.dao('0xnotfound')
-  }
+  const contractAddressesfromMigration = await getContractAddressesFromMigration()
+  return arc.dao(contractAddressesfromMigration.test.Avatar)
 }
 
 export async function createAProposal(dao?: DAO, options: any = {}) {
@@ -123,15 +120,39 @@ export async function createAProposal(dao?: DAO, options: any = {}) {
     externalTokenAddress: undefined,
     externalTokenReward: toWei('0'),
     nativeTokenReward: toWei('1'),
-    periodLength: 12,
-    periods: 5,
+    periodLength: 0,
+    periods: 1,
     reputationReward: toWei('10'),
-    type: 'ContributionReward',
+    type: IProposalType.ContributionReward,
     ...options
   }
 
   const response = await dao.createProposal(options).send()
   return response.result as Proposal
+}
+
+// Vote and vote and vote for proposal until it is accepted
+export async function voteToAcceptProposal(proposal: Proposal) {
+  const arc = proposal.context
+  const accounts = arc.web3.eth.accounts.wallet
+
+  for (let i = 0; i <= 3; i ++) {
+    try {
+      arc.setAccount(accounts[i].address)
+      await proposal.vote(IProposalOutcome.Pass).send()
+    } catch (err) {
+      // TODO: this sometimes fails with uninformatie `revert`, cannot find out why
+      // if (err.message.match(/already executed/) === null) {
+      //   throw err
+      // }
+      return
+    } finally {
+      arc.setAccount(accounts[0].address)
+    }
+  }
+  arc.setAccount(accounts[0].address)
+  await proposal.execute()
+  return
 }
 
 export async function timeTravel(seconds: number, web3: any) {
@@ -140,21 +161,25 @@ export async function timeTravel(seconds: number, web3: any) {
   web3 = new Web3('http://localhost:8545')
   web3.providers.HttpProvider.prototype.sendAsync = web3.providers.HttpProvider.prototype.send
   return new Promise((resolve, reject) => {
-      web3.currentProvider.sendAsync({
-        id,
-        jsonrpc,
-        method: 'evm_increaseTime',
-        params: [seconds]
-      }, (err1: Error) => {
-        if (err1) { return reject(err1) }
+    web3.currentProvider.sendAsync({
+      id,
+      jsonrpc,
+      method: 'evm_increaseTime',
+      params: [seconds]
+    }, (err1: Error) => {
+      if (err1) { return reject(err1) }
 
-        web3.currentProvider.sendAsync({
-          id: id + 1,
-          jsonrpc,
-          method: 'evm_mine'
-        }, (err2: Error, res: any) => {
-          return err2 ? reject(err2) : resolve(res)
-        })
+      web3.currentProvider.sendAsync({
+        id: id + 1,
+        jsonrpc,
+        method: 'evm_mine'
+      }, (err2: Error, res: any) => {
+        return err2 ? reject(err2) : resolve(res)
       })
     })
+  })
+}
+
+export async function firstResult(observable: Observable<any>) {
+  return observable.pipe(first()).toPromise()
 }

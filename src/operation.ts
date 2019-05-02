@@ -51,6 +51,8 @@ export type web3receipt = object
  *
  * @parameter transaction A web3 transaction, or an (async) function that returns a transaction
  * @parameter map A function that takes the receipt of the transaction and returns an object
+ * @parameter errorHandler A function that takes an error, and either returns or throws a more informative Error
+ * @parameter context An instance of Arc
  * @return An observable with ITransactionUpdate instnces
  */
 export function sendTransaction<T>(

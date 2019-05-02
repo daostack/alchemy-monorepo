@@ -20,7 +20,6 @@ export interface IRewardState {
   tokensForStakerRedeemedAt: BN,
   reputationForProposerRedeemedAt: BN,
   daoBountyForStakerRedeemedAt: BN
-
 }
 
 export interface IRewardQueryOptions extends ICommonQueryOptions {

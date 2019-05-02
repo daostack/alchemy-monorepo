@@ -77,24 +77,21 @@ export function checkWebsocket(options: { url: string }) {
   })
 
   ws.onopen = function open() {
-    console.log('connected')
+    // console.log('connected')
     ws.send(Date.now())
   }
 
   ws.onclose = function close() {
-    console.log('disconnected')
+    // console.log('disconnected')
   }
 
   ws.onmessage = function incoming(data: any) {
-    console.log(`Roundtrip time: ${Date.now() - data} ms`)
-
+    // console.log(`Roundtrip time: ${Date.now() - data} ms`)
     setTimeout(function timeout() {
       ws.send(Date.now())
     }, 500)
   }
 }
-
-export const nullAddress = '0x0000000000000000000000000000000000000000'
 
 export async function getOptionsFromChain(web3Instance: any) {
   if (web3Instance.eth.defaultAccount === null) {
@@ -109,7 +106,9 @@ export async function getOptionsFromChain(web3Instance: any) {
 
 export function getWeb3Options(web3Instance: any) {
   if (!web3Instance.eth.defaultAccount) {
-    Logger.warn(`No defaultAccount was set -- cannot send transaction`)
+    const msg = `No defaultAccount was set -- cannot send transaction`
+    Logger.warn(msg)
+    throw Error(msg)
   }
   return {
     from: web3Instance.eth.defaultAccount,
@@ -224,3 +223,5 @@ export function realMathToNumber(t: BN): BN {
   const REAL_FBITS = 40
   return t.shrn(REAL_FBITS).add((t.maskn(REAL_FBITS).div(new BN(Math.pow(2, REAL_FBITS)))))
 }
+
+export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'

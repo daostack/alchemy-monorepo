@@ -1,11 +1,9 @@
-import { ApolloQueryResult } from 'apollo-client'
 import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
-import { map } from 'rxjs/operators'
+import { first } from 'rxjs/operators'
 import { Arc } from './arc'
-import { Logger } from './logger'
-import { Address, Hash, IStateful, Web3Receipt } from './types'
+import { Address, Hash, IObservableWithFirst, IStateful, Web3Receipt } from './types'
 import { getWeb3Options, isAddress } from './utils'
 
 export interface ITokenState {
@@ -66,8 +64,8 @@ export class Token implements IStateful<ITokenState> {
     return this.context._getObservableObject(query, itemMap) as Observable<ITokenState>
   }
 
-  public balanceOf(owner: string): Observable<BN> {
-    return Observable.create(async (observer: Observer<BN>) => {
+  public balanceOf(owner: string): IObservableWithFirst<BN> {
+    const observable = Observable.create(async (observer: Observer<BN>) => {
       const contract = this.contract()
       let subscription: Subscription
       contract.methods.balanceOf(owner).call()
@@ -89,6 +87,8 @@ export class Token implements IStateful<ITokenState> {
         if (subscription) { subscription.unsubscribe() }
       }
     })
+    observable.first = () => observable.pipe(first()).toPromise()
+    return observable
   }
 
   public allowance(owner: Address, spender: Address): Observable<BN> {
@@ -131,6 +131,13 @@ export class Token implements IStateful<ITokenState> {
   public mint(beneficiary: Address, amount: BN) {
     const contract = this.contract()
     const transaction = contract.methods.mint(beneficiary, amount.toString())
+    const mapReceipt = (receipt: Web3Receipt) => receipt
+    return this.context.sendTransaction(transaction, mapReceipt)
+  }
+
+  public transfer(beneficiary: Address, amount: BN) {
+    const contract = this.contract()
+    const transaction = contract.methods.transfer(beneficiary, amount.toString())
     const mapReceipt = (receipt: Web3Receipt) => receipt
     return this.context.sendTransaction(transaction, mapReceipt)
   }

@@ -3,7 +3,8 @@ import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Vote } from '../src/vote'
-import { createAProposal, getTestDAO, newArc, waitUntilTrue } from './utils'
+import { createAProposal, firstResult, getTestDAO, newArc, waitUntilTrue } from './utils'
+const DAOstackMigration = require('@daostack/migration')
 
 describe('Vote on a ContributionReward', () => {
   let arc: Arc
@@ -52,7 +53,7 @@ describe('Vote on a ContributionReward', () => {
        return []
      }
     }
-    const vote = await proposal.vote(IProposalOutcome.Pass).send()
+    await proposal.vote(IProposalOutcome.Pass).send()
     await waitUntilTrue(() => {
       const ls = lastVotes()
       return ls.length > 0
@@ -73,7 +74,31 @@ describe('Vote on a ContributionReward', () => {
     )
   })
 
-  it.skip('handles the case of voting without reputation nicely', () => {
-    // TODO: write this test!
+  it('throws a meaningful error if the proposal was already executed', async () => {
+    const { Avatar, executedProposalId } = DAOstackMigration.migration('private').test
+    const proposal = new Proposal(executedProposalId, Avatar, arc)
+
+    await expect(proposal.execute().send()).rejects.toThrow(
+      /already executed/i
+    )
+
+    await expect(proposal.vote(IProposalOutcome.Pass).send()).rejects.toThrow(
+      /already executed/i
+    )
   })
+
+  it('handles the case of voting without reputation nicely', async () => {
+    // TODO: write this test!
+    const proposal = await createAProposal()
+
+    const accounts = arc.web3.eth.accounts.wallet
+    const accountWithNoRep = accounts[6].address
+    const reputation = await firstResult(proposal.dao.nativeReputation())
+    const balance = await firstResult(reputation.reputationOf(accountWithNoRep))
+    expect(balance.toString()).toEqual('0')
+    arc.setAccount(accountWithNoRep) // a fake address
+    await proposal.vote(IProposalOutcome.Pass)
+    arc.setAccount(accounts[0].address)
+  })
+
 })

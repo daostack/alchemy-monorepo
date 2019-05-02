@@ -1,8 +1,9 @@
 import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { IProposalOutcome, IProposalStage, IProposalState, Proposal } from '../src/proposal'
-import { createAProposal, fromWei, getTestDAO, newArc, timeTravel, toWei, waitUntilTrue } from './utils'
+import { IProposalOutcome, IProposalStage, IProposalState, IProposalType, Proposal } from '../src/proposal'
+import { createAProposal, fromWei, getTestDAO, newArc,
+  timeTravel, toWei, voteToAcceptProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
@@ -13,7 +14,7 @@ describe('Proposal execute()', () => {
     arc = await newArc()
   })
 
-  it.only('runs correctly through the stages', async () => {
+  it('runs correctly through the stages', async () => {
 
     const dao = await getTestDAO()
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
@@ -24,10 +25,8 @@ describe('Proposal execute()', () => {
       externalTokenAddress: undefined,
       externalTokenReward: toWei('3'),
       nativeTokenReward: toWei('2'),
-      periodLength: 12,
-      periods: 5,
       reputationReward: toWei('1'),
-      type: 'ContributionReward'
+      type: IProposalType.ContributionReward
     }
     const response = await dao.createProposal(options).send()
     const proposalId = (response.result as any).id
@@ -79,7 +78,7 @@ describe('Proposal execute()', () => {
     expect(Number(fromWei(proposalState.stakesFor))).toBeGreaterThan(0)
     expect(proposalState.stage).toEqual(IProposalStage.PreBoosted)
 
-    // TODO: find out why the state is not updated to Boosted
+    // TODO: find out why the state is not updated to Boosted akreadt at this point
     await timeTravel(60000 * 60, arc.web3) // 30 minutes
     proposal.context.web3.eth.accounts.defaultAccount = accounts[2]
     await proposal.vote(IProposalOutcome.Pass).send()
@@ -114,7 +113,6 @@ describe('Proposal execute()', () => {
     const proposalStates: IProposalState[] = []
 
     const lastState = () => proposalStates[proposalStates.length - 1]
-    const accounts = arc.web3.eth.accounts.wallet
     const proposal = await createAProposal(dao,  { ethReward: new BN(0)})
     proposal.state().subscribe((state) => {
       proposalStates.push(state)
@@ -125,27 +123,12 @@ describe('Proposal execute()', () => {
     // this execution will not change the state, because the quorum is not met
     await proposal.execute().send()
     expect(lastState().stage).toEqual(IProposalStage.Queued)
-    expect(lastState().executedAt).toEqual(null)
+    expect(lastState().executedAt).toEqual(0)
 
-    proposal.context.web3.eth.accounts.defaultAccount = accounts[0]
-    await proposal.vote(IProposalOutcome.Pass).send()
-    // let's vote for the proposal with accounts[1]
-    arc.setAccount(accounts[1].address)
-    const response = await proposal.vote(IProposalOutcome.Pass).send()
-    // check if the "from" address is as expected
-    expect(response.receipt.from).toEqual(accounts[1].address.toLowerCase())
-
-    arc.setAccount(accounts[2].address)
-    await proposal.vote(IProposalOutcome.Pass).send()
-
-    arc.setAccount(accounts[3].address)
-    await proposal.vote(IProposalOutcome.Pass).send()
-
-    arc.setAccount(accounts[0].address)
-
+    await voteToAcceptProposal(proposal)
     // wait until all votes have been counted
     await waitUntilTrue(() => {
-      return lastState().votesCount === 4
+      return lastState().executedAt !== 0
     })
     expect(Number(lastState().votesFor.toString())).toBeGreaterThan(Number(repTotalSupply.div(new BN(2)).toString()))
 

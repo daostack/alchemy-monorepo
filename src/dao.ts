@@ -9,14 +9,14 @@ import {
   IProposalQueryOptions,
   Proposal
 } from './proposal'
+import { Queue } from './queue'
 import { Reputation } from './reputation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
+import { NULL_ADDRESS } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
-
-const Web3 = require('web3')
 
 export interface IDAOState {
   address: Address // address of the avatar
@@ -29,9 +29,6 @@ export interface IDAOState {
   tokenName: string,
   tokenSymbol: string,
   tokenTotalSupply: BN,
-  externalTokenAddress: Address | undefined,
-  externalTokenBalance: BN | undefined,
-  externalTokenSymbol: string | undefined
 }
 
 export class DAO implements IStateful<IDAOState> {
@@ -62,10 +59,6 @@ export class DAO implements IStateful<IDAOState> {
       }
       return {
         address: item.id,
-        externalTokenAddress: undefined,
-        // TODO: get external token balance, cf. https://github.com/daostack/subgraph/issues/62
-        externalTokenBalance: undefined,
-        externalTokenSymbol: undefined,
         memberCount: Number(item.membersCount),
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, this.context),
@@ -77,7 +70,7 @@ export class DAO implements IStateful<IDAOState> {
         tokenTotalSupply: item.nativeToken.totalSupply
       }
     }
-    return this.context._getObservableObject(query, itemMap) as Observable<IDAOState>
+    return this.context._getObservableObject(query, itemMap)
   }
 
   /*
@@ -88,11 +81,17 @@ export class DAO implements IStateful<IDAOState> {
     return this.state().pipe(first()).pipe(map((r) => r.reputation))
   }
 
+  public queues(options: any = {}): Observable<Queue[]> {
+    options.dao = this.address
+    return Queue.search(options, this.context)
+  }
+
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
     const query = gql`{
       members (where: {
         dao: "${this.address}"
         address_not: "${this.address}"
+        address_not: "${NULL_ADDRESS}"
       }){
         id
         address
@@ -106,37 +105,36 @@ export class DAO implements IStateful<IDAOState> {
     return new Member(address, this.address, this.context)
   }
 
-  public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
+  public createProposal(options: IProposalCreateOptions) {
     options.dao = this.address
-    return Proposal.search(options, this.context)
-
+    return Proposal.create(options, this.context)
   }
 
   public proposal(id: string): Proposal {
     return new Proposal(id, this.address, this.context)
   }
 
-  public createProposal(options: IProposalCreateOptions) {
+  public proposals(options: IProposalQueryOptions = {}): Observable < Proposal[] > {
     options.dao = this.address
-    return Proposal.create(options, this.context)
+    return Proposal.search(options, this.context)
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
+  public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
     options.dao = this.address
     return Reward.search(options, this.context)
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
+  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
     options.dao = this.address
     return Vote.search(options, this.context)
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
+  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
     options.dao = this.address
     return Stake.search(options, this.context)
   }
 
-  public ethBalance(): Observable<BN> {
+  public ethBalance(): Observable < BN > {
     return this.context.ethBalance(this.address)
   }
 }

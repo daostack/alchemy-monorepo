@@ -1,11 +1,9 @@
 import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import Arc from '../src/index'
-import { Logger } from '../src/logger'
 import { Address } from '../src/types'
 import { fromWei, newArc, toWei, waitUntilTrue } from './utils'
 
-Logger.setLevel(Logger.OFF)
 jest.setTimeout(10000)
 
 /**
@@ -29,10 +27,9 @@ describe('Arc ', () => {
   it('arc.getContract() works', async () => {
     const arc = await newArc()
     expect(arc.getContract('ContributionReward')).toBeInstanceOf(arc.web3.eth.Contract)
-    expect(arc.getContract('AbsoluteVote')).toBeInstanceOf(arc.web3.eth.Contract)
   })
 
-  it.only('arc.allowance() should work', async () => {
+  it('arc.allowance() should work', async () => {
     const arc = await newArc()
     const allowances: BN[] = []
     const amount = toWei(1001)

@@ -9,7 +9,7 @@ jest.setTimeout(10000)
 /**
  * Stake test
  */
-describe('Stake', () => {
+describe('vote', () => {
 
   let arc: Arc
 
