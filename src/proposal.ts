@@ -48,6 +48,7 @@ export enum IExecutionState {
 export interface IProposalState {
   accountsWithUnclaimedRewards: Address[],
   boostedAt: Date
+  boostedVotePeriodLimit: number
   contributionReward: IContributionReward|null
   confidenceThreshold: number
   createdAt: Date
@@ -61,6 +62,12 @@ export interface IProposalState {
   genericScheme: IGenericScheme|null
   id: string
   organizationId: string
+  paramsHash: string
+  queuedVoteRequiredPercentage: number
+  queuedVotePeriodLimit: number // in seconds (?)
+  preBoostedVotePeriodLimit: number
+  limitExponentValue: number
+  proposingRepReward: BN // in REP
   preBoostedAt: Date
   proposer: Address
   queue: IQueueState
@@ -68,6 +75,7 @@ export interface IProposalState {
   quietEndingPeriodBeganAt: Date
   schemeRegistrar: ISchemeRegistrar|null
   resolvedAt: Date
+  thresholdConst: BN
   stage: IProposalStage
   stakesFor: BN
   stakesAgainst: BN
@@ -80,6 +88,11 @@ export interface IProposalState {
   votesAgainst: BN
   votesCount: number
   winningOutcome: IProposalOutcome
+  votersReputationLossRatio: number // in 1000's
+  minimumDaoBounty: BN // in GEN
+  daoBountyConst: number // ?
+  activationTime: number
+  voteOnBehalf: Address
 }
 
 export interface IContributionReward {
@@ -363,8 +376,10 @@ constructor(
       {
         proposal(id: "${this.id}") {
           id
+          activationTime
           accountsWithUnclaimedRewards
           boostedAt
+          boostedVotePeriodLimit
           confidenceThreshold
           contributionReward {
             id
@@ -382,6 +397,7 @@ constructor(
           dao {
             id
           }
+          daoBountyConst
           description
           descriptionHash
           executedAt
@@ -399,28 +415,24 @@ constructor(
           }
           gpQueue {
             id
-            activationTime
-            boostedVotePeriodLimit
-            daoBountyConst
-            limitExponentValue
-            minimumDaoBounty
             scheme {
               id
               paramsHash
             }
-            preBoostedVotePeriodLimit
-            proposingRepReward
-            queuedVotePeriodLimit
-            queuedVoteRequiredPercentage
-            quietEndingPeriod
             threshold
-            thresholdConst
-            votersReputationLossRatio
             votingMachine
           }
+          limitExponentValue
+          minimumDaoBounty
           organizationId
           preBoostedAt
+          preBoostedVotePeriodLimit
           proposer
+          proposingRepReward
+          queuedVotePeriodLimit
+          queuedVoteRequiredPercentage
+          quietEndingPeriod
+          thresholdConst
           quietEndingPeriodBeganAt
           schemeRegistrar {
             id
@@ -441,6 +453,7 @@ constructor(
           totalRepWhenExecuted
           title
           url
+          votersReputationLossRatio
           votes {
             id
           }
@@ -526,38 +539,27 @@ constructor(
       if (stage === IProposalStage.PreBoosted) {
         downStakeNeededToQueue = stakesFor.div(threshold).sub(stakesAgainst)
       }
-      const thresholdConst = realMathToNumber(new BN(item.gpQueue.thresholdConst))
+      const thresholdConst = realMathToNumber(new BN(item.thresholdConst))
       const dao = new DAO(item.dao.id, this.context)
 
       const gpQueue = item.gpQueue
       const queue: IQueueState = {
-        activationTime: Number(gpQueue.activationTime),
-        boostedVotePeriodLimit: Number(gpQueue.boostedVotePeriodLimit),
         dao: item.dao.id,
-        daoBountyConst: Number(gpQueue.daoBountyConst),
         id: gpQueue.id,
-        limitExponentValue: Number(gpQueue.limitExponentValue),
-        minimumDaoBounty: new BN(gpQueue.minimumDaoBounty),
-        paramsHash: item.gpQueue.scheme.paramsHash,
-        preBoostedVotePeriodLimit: Number(gpQueue.preBoostedVotePeriodLimit),
-        proposingRepReward: new BN(gpQueue.proposingRepReward),
-        queuedVotePeriodLimit: Number(gpQueue.queuedVotePeriodLimit),
-        queuedVoteRequiredPercentage: Number(gpQueue.queuedVoteRequiredPercentage),
-        quietEndingPeriod: Number(gpQueue.quietEndingPeriod),
         threshold,
-        thresholdConst,
-        voteOnBehalf: gpQueue.voteOnBehalf,
-        votersReputationLossRatio: Number(gpQueue.votersReputationLossRatio),
         votingMachine: gpQueue.votingMachine
       }
 
       return {
         accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
+        activationTime: Number(item.activationTime),
         boostedAt: Number(item.boostedAt),
+        boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
         confidenceThreshold: Number(item.confidenceThreshold),
         contributionReward,
         createdAt: Number(item.createdAt),
         dao,
+        daoBountyConst: Number(item.daoBountyConst),
         description: item.description,
         descriptionHash: item.descriptionHash,
         downStakeNeededToQueue,
@@ -566,22 +568,32 @@ constructor(
         expiresInQueueAt: Number(item.expiresInQueueAt),
         genericScheme,
         id: item.id,
+        limitExponentValue: Number(item.limitExponentValue),
+        minimumDaoBounty: new BN(item.minimumDaoBounty),
         organizationId: item.organizationId,
+        paramsHash: item.paramsHash,
         preBoostedAt: Number(item.preBoostedAt),
+        preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposer: item.proposer,
+        proposingRepReward: new BN(item.proposingRepReward),
         queue,
-        quietEndingPeriod: Number(item.gpQueue.quietEndingPeriod),
+        queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
+        queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
+        quietEndingPeriod: Number(item.quietEndingPeriod),
         quietEndingPeriodBeganAt: Number(item.quietEndingPeriodBeganAt),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : 0,
         schemeRegistrar,
         stage,
         stakesAgainst,
         stakesFor,
+        thresholdConst,
         title: item.title,
         totalRepWhenExecuted: new BN(item.totalRepWhenExecuted),
         type,
         upstakeNeededToPreBoost,
         url: item.url,
+        voteOnBehalf: item.voteOnBehalf,
+        votersReputationLossRatio: Number(item.votersReputationLossRatio),
         votesAgainst: new BN(item.votesAgainst),
         votesCount: item.votes.length,
         votesFor: new BN(item.votesFor),

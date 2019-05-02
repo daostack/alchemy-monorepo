@@ -5,32 +5,12 @@ import { Arc, IApolloQueryOptions } from './arc'
 import { Address } from './types'
 import { realMathToNumber } from './utils'
 
-export interface IQueue {
-  id: string
-  dao: Address
-  name?: string
-}
-
 export interface IQueueState {
   id: string
-  // scheme: IScheme
-  paramsHash: string
   threshold: BN
-  thresholdConst: BN
   dao: Address
   votingMachine: Address
-  queuedVoteRequiredPercentage: number
-  queuedVotePeriodLimit: number // in seconds (?)
-  boostedVotePeriodLimit: number
-  preBoostedVotePeriodLimit: number
-  limitExponentValue: number
-  quietEndingPeriod: number // in seconds (?)
-  proposingRepReward: BN // in REP
-  votersReputationLossRatio: number // in 1000's
-  minimumDaoBounty: BN // in GEN
-  daoBountyConst: number // ?
-  activationTime: number
-  voteOnBehalf: Address
+
 }
 
 export class Queue {
@@ -87,12 +67,9 @@ export class Queue {
       {
         gpqueue (id: "${this.id}") {
           id
-          activationTime
           dao {
             id
           }
-          daoBountyConst
-          boostedVotePeriodLimit
           scheme {
             id
             address
@@ -104,17 +81,8 @@ export class Queue {
             canManageGlobalConstraints
             paramsHash
           }
-          limitExponentValue
-          minimumDaoBounty
-          preBoostedVotePeriodLimit
-          proposingRepReward
-          queuedVotePeriodLimit
-          queuedVoteRequiredPercentage
-          quietEndingPeriod
-          threshold
-          thresholdConst
-          votersReputationLossRatio
           votingMachine
+          threshold
         }
       }
     `
@@ -126,27 +94,25 @@ export class Queue {
       }
 
       const threshold: BN = realMathToNumber(new BN(item.threshold))
-      const thresholdConst = realMathToNumber(new BN(item.thresholdConst))
 
       return {
-        activationTime: Number(item.activationTime),
-        boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
-        // dao: new DAO(item.dao.id, this.context),
+        // activationTime: Number(item.activationTime),
+          // dao: new DAO(item.dao.id, this.context),
         dao: item.dao.id,
-        daoBountyConst: Number(item.daoBountyConst),
+        // daoBountyConst: Number(item.daoBountyConst),
         id: item.id,
-        limitExponentValue: Number(item.limitExponentValue),
-        minimumDaoBounty:  new BN(item.minimumDaoBounty),
-        paramsHash: item.scheme.paramsHash,
-        preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
-        proposingRepReward: new BN(item.proposingRepReward),
-        queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
-        queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
-        quietEndingPeriod: Number(item.quietEndingPeriod),
+        // limitExponentValue: Number(item.limitExponentValue),
+        // minimumDaoBounty:  new BN(item.minimumDaoBounty),
+        // paramsHash: item.scheme.paramsHash,
+        // preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
+        // proposingRepReward: new BN(item.proposingRepReward),
+        // queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
+        // queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
+        // quietEndingPeriod: Number(item.quietEndingPeriod),
         threshold,
-        thresholdConst,
-        voteOnBehalf: item.voteOnBehalf,
-        votersReputationLossRatio: Number(item.votersReputationLossRatio),
+        // thresholdConst,
+        // voteOnBehalf: item.voteOnBehalf,
+        // votersReputationLossRatio: Number(item.votersReputationLossRatio),
         votingMachine: item.votingMachine
       }
     }

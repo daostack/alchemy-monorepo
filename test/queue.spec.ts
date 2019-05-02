@@ -58,13 +58,11 @@ describe('Queue', () => {
     expect(state).toMatchObject({
       id: queue.id
     })
-    expect(state.proposingRepReward.toString()).toEqual(new BN(5000000000).toString())
 
   })
 
   it('Queue.state() should be equal to proposal.state().queue', async () => {
     const { queuedProposalId } = DAOstackMigration.migration('private').test
-
     const proposal = new Proposal(queuedProposalId, '', arc)
     const proposalState = await proposal.state().pipe(first()).toPromise()
     const queue = new Queue(proposalState.queue.id, proposalState.queue.dao, '', arc)

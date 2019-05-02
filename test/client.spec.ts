@@ -32,9 +32,10 @@ describe('apolloClient', () => {
     client = getClient()
     const query = gql`
       {
-        avatarContracts {
-          id
-          address
+          reputationMints {
+            contract
+            amount
+            address
         }
       }
     `
