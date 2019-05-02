@@ -15,8 +15,6 @@ export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/d
 export const web3Provider: string = 'ws://127.0.0.1:8545'
 export const ipfsProvider: string = '/ip4/127.0.0.1/tcp/5001'
 
-export const nullAddress: string  = '0x' + padZeros('', 40)
-
 export function padZeros(str: string, max = 36): string {
   str = str.toString()
   return str.length < max ? padZeros('0' + str, max) : str

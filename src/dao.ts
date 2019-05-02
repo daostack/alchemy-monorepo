@@ -15,6 +15,7 @@ import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
+import { NULL_ADDRESS } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export interface IDAOState {
@@ -80,11 +81,6 @@ export class DAO implements IStateful<IDAOState> {
     return this.state().pipe(first()).pipe(map((r) => r.reputation))
   }
 
-  // public schemes(options: any = {}): Observable<Scheme[]> {
-  //   options.dao = this.address
-  //   return Scheme.search(options, this.context)
-  // }
-
   public queues(options: any = {}): Observable<Queue[]> {
     options.dao = this.address
     return Queue.search(options, this.context)
@@ -95,6 +91,7 @@ export class DAO implements IStateful<IDAOState> {
       members (where: {
         dao: "${this.address}"
         address_not: "${this.address}"
+        address_not: "${NULL_ADDRESS}"
       }){
         id
         address

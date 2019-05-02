@@ -11,7 +11,7 @@ import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import { nullAddress, realMathToNumber } from './utils'
+import { NULL_ADDRESS, realMathToNumber } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export enum IProposalType {
@@ -182,7 +182,7 @@ export class Proposal implements IStateful<IProposalState> {
                 options.periodLength || 0,
                 options.periods || 1
               ],
-              options.externalTokenAddress || nullAddress,
+              options.externalTokenAddress || NULL_ADDRESS,
               options.beneficiary
           )
           return transaction
@@ -624,7 +624,7 @@ constructor(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
       amount.toString(), // amount of reputation to vote with . if _amount == 0 it will use all voter reputation.
-      nullAddress
+      NULL_ADDRESS
     )
 
     const map = (receipt: any) => {
@@ -650,7 +650,7 @@ constructor(
       if (error.message.match(/revert/)) {
         const proposal = this
         const prop = await votingMachine.methods.proposals(proposal.id).call()
-        if (prop.proposer === nullAddress ) {
+        if (prop.proposer === NULL_ADDRESS ) {
           return Error(`Unknown proposal with id ${proposal.id}`)
         }
         const contributionReward = this.context.getContract('ContributionReward')
@@ -718,7 +718,7 @@ constructor(
         const proposal = this
         const stakingToken = this.stakingToken()
         const prop = await this.votingMachine().methods.proposals(proposal.id).call()
-        if (prop.proposer === nullAddress ) {
+        if (prop.proposer === NULL_ADDRESS ) {
           return new Error(`Unknown proposal with id ${proposal.id}`)
         }
 
@@ -763,7 +763,7 @@ constructor(
   public claimRewards(beneficiary ?: Address): Operation < boolean > {
     // const transaction = this.votingMachine().methods.redeem(this.id, account)
     if (!beneficiary) {
-      beneficiary = nullAddress
+      beneficiary = NULL_ADDRESS
     }
     const transaction = this.redeemerContract().methods.redeem(
       this.id,
@@ -805,8 +805,8 @@ constructor(
       // require(organizationsProposals[address(proposal.avatar)][_proposalId].beneficiary != address(0));
       if (proposalDataOnChain.periodLength === '0' && proposalDataOnChain.numberOfPeriods === '0') {
         msg = `A proposal with id ${this.id} does not exist`
-      } else if (proposalDataOnChain.beneficiary === nullAddress) {
-        msg = `beneficiary is ${nullAddress}`
+      } else if (proposalDataOnChain.beneficiary === NULL_ADDRESS) {
+        msg = `beneficiary is ${NULL_ADDRESS}`
       }
 
       if (msg) {
