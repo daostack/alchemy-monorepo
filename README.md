@@ -4,19 +4,34 @@ A frontend client library for the [DAOstack subgraph](https://github.com/daostac
 
 [![Build Status](https://travis-ci.com/daostack/client.svg?token=aXt9zApRNkfx8zDMypWx&branch=master)](https://travis-ci.com/daostack/client)
 
-(Project started using [TypeScript Library Starter](https://github.com/alexjoverm/typescript-library-starter))
-
 ## Usage
 
-1. `npm install --save @daostack/client`
-2. `import Arc from '@daostack/client'`
+In your nodejs project run
 
-##
-[overview](./documentation/overview.md)
-[development](./documentation/development.md)
-[example](./documentation/example-session.md)
-[example](./documentation/example-session.md)
-[troubleshooting](./documentation/troubleshooting.md)
+```
+npm install --save @daostack/client
+```
+now you can do:
+```
+import Arc from '@daostack/client'
+
+// create an Arc instance
+const arc = new Arc({
+  contractAddresses: await getContractAddresses(graphqlHttpMetaProvider, 'daostack'),
+  graphqlHttpProvider,
+  graphqlWsProvider,
+  ipfsProvider,
+  web3Provider
+})
+// get a list of DAOs
+arc.daos()
+
+```
+
+* [overview](./documentation/overview.md)
+* [development](./documentation/development.md)
+* [example](./documentation/example-session.md)
+* [troubleshooting](./documentation/troubleshooting.md)
 
 ## Developing
 
@@ -26,12 +41,8 @@ Get all services running:
 docker-compose up graph-node
 ```
 
-This command will build and start a graph instance, ganache, IPFS and postgresql.
+This command will start all the services that are needed for a test environment: a graph-node instance, ganache, IPFS and postgresql.
 
-Before being able to use these services, you need to deploy the DAOStack contracts and configure the graph node to listen to changes:
-```sh
-npm run setup-env
-```
 
 To run the tests, run:
 ```sh
@@ -43,14 +54,10 @@ After you are done, run:
 docker-compose down
 ```
 
-If you update the subgraph dependency in `package.json`, you must rebuild the containers and re-configure the graph node:
-```
-docker-compose build
-npm run setup-env
-```
 
 ### Commands
 
 
  - `npm run build`: Generate bundles and typings, create docs
  - `npm run lint`: Lints code
+ - `npm run test`: run all tests

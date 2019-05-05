@@ -70,7 +70,7 @@ export class DAO implements IStateful<IDAOState> {
         tokenTotalSupply: item.nativeToken.totalSupply
       }
     }
-    return this.context._getObservableObject(query, itemMap)
+    return this.context.getObservableObject(query, itemMap)
   }
 
   /*
@@ -98,7 +98,7 @@ export class DAO implements IStateful<IDAOState> {
       }
     }`
     const itemMap = (item: any): Member => new Member(item.address, this.address, this.context)
-    return this.context._getObservableList(query, itemMap) as Observable<Member[]>
+    return this.context.getObservableList(query, itemMap) as Observable<Member[]>
   }
 
   public member(address: Address): Member {

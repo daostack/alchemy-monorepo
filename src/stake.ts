@@ -56,7 +56,7 @@ export class Stake implements IStake {
       }
     `
 
-    return context._getObservableList(
+    return context.getObservableList(
       query,
       (r: any) => {
         let outcome: IProposalOutcome = IProposalOutcome.Pass

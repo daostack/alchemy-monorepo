@@ -10,8 +10,8 @@ import { createApolloClient, zenToRxjsObservable } from './utils'
 export class GraphNodeObserver {
   public graphqlHttpProvider: string
   public graphqlWsProvider: string
-  public apolloClient: ApolloClient<object>
   public Logger = Logger
+  private apolloClient: ApolloClient<object>
 
   constructor(options: {
     graphqlHttpProvider: string
@@ -94,14 +94,14 @@ export class GraphNodeObserver {
    *        address
    *      }
    *    }`
-   *    _getObservableList(query, (r:any) => new DAO(r.address))
+   *    getObservableList(query, (r:any) => new DAO(r.address))
    *
    * @param query The query to be run
    * @param  entity  name of the graphql entity to be queried.
    * @param  itemMap (optional) a function that takes elements of the list and creates new objects
    * @return
    */
-  public _getObservableList(
+  public getObservableList(
     query: any,
     itemMap: (o: object) => object | null = (o) => o,
     apolloQueryOptions: IApolloQueryOptions = {}
@@ -130,7 +130,7 @@ export class GraphNodeObserver {
    *        address
    *      }
    *    }`
-   *    _getObservableList(query, (r:any) => new DAO(r.address), filter((r:any) => r.address === "0x1234..."))
+   *    getObservableList(query, (r:any) => new DAO(r.address), filter((r:any) => r.address === "0x1234..."))
    *
    * @param query The query to be run
    * @param  entity  name of the graphql entity to be queried.
@@ -138,7 +138,7 @@ export class GraphNodeObserver {
    * @param filter filter the results
    * @return
    */
-  public _getObservableListWithFilter(
+  public getObservableListWithFilter(
     query: any,
     itemMap: (o: object) => object | null = (o) => o,
     filterFunc: (o: object) => boolean,
@@ -155,7 +155,7 @@ export class GraphNodeObserver {
     )
   }
 
-  public _getObservableObject(
+  public getObservableObject(
     query: any,
     itemMap: (o: object) => object | null = (o) => o,
     apolloQueryOptions: IApolloQueryOptions = {}
@@ -177,6 +177,7 @@ export class GraphNodeObserver {
     const queryPromise = this.apolloClient.query({ query })
     return queryPromise
   }
+
 }
 
 export interface IApolloQueryOptions {

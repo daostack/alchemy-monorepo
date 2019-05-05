@@ -347,7 +347,7 @@ export class Proposal implements IStateful<IProposalState> {
       }
     `
 
-    return context._getObservableList(
+    return context.getObservableList(
       query,
       (r: any) => new Proposal(r.id, r.dao.id, context),
       apolloQueryOptions
@@ -601,7 +601,7 @@ constructor(
       }
     }
 
-    return this.context._getObservableObject(query, itemMap) as Observable<IProposalState>
+    return this.context.getObservableObject(query, itemMap) as Observable<IProposalState>
   }
 
   /**
@@ -862,7 +862,7 @@ export interface IProposalCreateOptions {
   externalTokenReward?: BN // for ContributionRewardProposal
   externalTokenAddress?: Address // for ContributionRewardProposal
   periodLength?: number // for ContributionRewardProposal
-  periods?: any // for ContributionRewardProposal
+  periods?: any  // for ContributionRewardProposal
   parametersHash?: string // for schemeRegistrar Proposal
   permissions?: string // for schemeRegistrar Proposal
   scheme?: Address // for schemeRegistrar Proposal
