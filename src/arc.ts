@@ -31,8 +31,8 @@ export class Arc extends GraphNodeObserver {
   public contractAddresses: IContractAddresses | undefined
 
   // accounts obseved by ethBalance
-  private blockHeaderSubscription: Subscription|undefined = undefined
-  private observedAccounts: { [address: string]: {
+  public blockHeaderSubscription: Subscription|undefined = undefined
+  public observedAccounts: { [address: string]: {
       observable?: Observable<BN>,
       observer?: Observer<BN>,
       lastBalance?: number
