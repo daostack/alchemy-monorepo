@@ -20,7 +20,7 @@ export class Arc extends GraphNodeObserver {
 
   public ipfs: any
   public web3: any
-  public contractAddresses: IContractAddresses | undefined
+  public contractAddresses: IContractAddresses
 
   public Logger = Logger
 
@@ -35,17 +35,17 @@ export class Arc extends GraphNodeObserver {
   } = {}
 
   constructor(options: {
+    contractAddresses: IContractAddresses
     graphqlHttpProvider: string
     graphqlWsProvider: string
-    web3Provider?: string
-    ipfsProvider?: IPFSProvider
-    contractAddresses?: IContractAddresses
+    ipfsProvider: IPFSProvider
+    web3Provider: string
   }) {
     super({
       graphqlHttpProvider: options.graphqlHttpProvider,
       graphqlWsProvider: options.graphqlWsProvider
     })
-    this.ipfsProvider = options.ipfsProvider || ''
+    this.ipfsProvider = options.ipfsProvider
 
     let web3provider: any
 
@@ -65,10 +65,9 @@ export class Arc extends GraphNodeObserver {
       this.web3 = new Web3(web3provider)
     }
 
-    if (!options.contractAddresses) {
+    this.contractAddresses = options.contractAddresses
+    if (!this.contractAddresses) {
       Logger.warn('No contract addresses given to the Arc.constructor: expect most write operations to fail!')
-    } else {
-      this.contractAddresses = options.contractAddresses
     }
 
     if (this.ipfsProvider) {

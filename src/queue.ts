@@ -7,6 +7,7 @@ import { realMathToNumber } from './utils'
 
 export interface IQueueState {
   id: string
+  name: string
   threshold: BN
   dao: Address
   votingMachine: Address
@@ -25,26 +26,46 @@ export class Queue {
     let where = ''
     for (const key of Object.keys(options)) {
       const value = (options as any)[key]
-      if (value !== undefined) {
+      // querying by'name' will not be predicable as the name is not always populated
+      if (value !== undefined && value !== 'name') {
         where += `${key}: "${value}"\n`
       }
     }
 
     const query = gql` {
-     gpqueues (where: {${where}}) {
+     controllerSchemes (where: {${where}}) {
        id
        dao { id }
-       scheme {
-         id
-         name
-       }
+       name
+       address
      }
    }`
-    const itemMap = (item: any): Queue => {
+    const itemMap = (item: any): Queue|null => {
+      let name = item.name
+      if (!name) {
+        // if the item has no name, we check if we know the name already
+        console.log('looking for name of', item.address)
+        console.log(context.contractAddresses)
+        for (const key of Object.keys(context.contractAddresses)) {
+          console.log(key)
+          if (context.contractAddresses[key].toLowerCase() === item.address.toLowerCase()) {
+            console.log('FOUND IT')
+            name = key
+            break
+          }
+        }
+      }
+      console.log(name)
+      console.log('Querying for', options.name)
+      console.log(name === options.name)
+      if (options.name && options.name !== name) {
+        return null
+      }
+
       return new Queue(
         item.id,
         item.dao.id,
-        item.scheme.name,
+        name,
         context
       )
     }
@@ -75,7 +96,7 @@ export class Queue {
             address
             name
             dao { id }
-            canDelegateCall
+            canDeltegateCall
             canRegisterSchemes
             canUpgradeController
             canManageGlobalConstraints
@@ -89,30 +110,23 @@ export class Queue {
 
     const itemMap = (item: any): IQueueState|null => {
       if (item === null) {
-        // no gpqueue was found - we return null
-        return null
+        // no gpqueue was found - we construct one with basic default values
+        return {
+          dao: this.dao,
+          id: this.id,
+          name: this.name,
+          threshold: new BN(1),
+          votingMachine: this.context.contractAddresses.GenesisProtocol
+        }
       }
 
       const threshold: BN = realMathToNumber(new BN(item.threshold))
 
       return {
-        // activationTime: Number(item.activationTime),
-          // dao: new DAO(item.dao.id, this.context),
         dao: item.dao.id,
-        // daoBountyConst: Number(item.daoBountyConst),
         id: item.id,
-        // limitExponentValue: Number(item.limitExponentValue),
-        // minimumDaoBounty:  new BN(item.minimumDaoBounty),
-        // paramsHash: item.scheme.paramsHash,
-        // preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
-        // proposingRepReward: new BN(item.proposingRepReward),
-        // queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
-        // queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
-        // quietEndingPeriod: Number(item.quietEndingPeriod),
+        name: item.queue.name,
         threshold,
-        // thresholdConst,
-        // voteOnBehalf: item.voteOnBehalf,
-        // votersReputationLossRatio: Number(item.votersReputationLossRatio),
         votingMachine: item.votingMachine
       }
     }
