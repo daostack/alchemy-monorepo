@@ -59,7 +59,7 @@ export class Vote implements IVote {
         }
       }
     `
-    return context._getObservableListWithFilter(
+    return context.getObservableListWithFilter(
       query,
       (r: any) => {
         let outcome: IProposalOutcome = IProposalOutcome.Pass

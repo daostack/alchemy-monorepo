@@ -95,7 +95,7 @@ export class Reward implements IStateful<IRewardState> {
       }
     }
 
-    return context._getObservableList(query, itemMap) as Observable<IRewardState[]>
+    return context.getObservableList(query, itemMap) as Observable<IRewardState[]>
   }
 
   constructor(public id: string, public context: Arc) {

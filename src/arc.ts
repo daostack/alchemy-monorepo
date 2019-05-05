@@ -1,7 +1,7 @@
 import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
-import { catchError, filter, first, map } from 'rxjs/operators'
+import { map } from 'rxjs/operators'
 import { DAO } from './dao'
 import { GraphNodeObserver } from './graphnode'
 import { Logger } from './logger'
@@ -12,6 +12,11 @@ import { getWeb3Options, isAddress } from './utils'
 const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
 
+/**
+ * The Arc class holds all configuration.
+ * Any useage of the library typically will start with instantiating a new Arc instance
+ * @return an instance of Arc
+ */
 export class Arc extends GraphNodeObserver {
   public web3Provider: Web3Provider = ''
   public ipfsProvider: IPFSProvider
@@ -20,13 +25,14 @@ export class Arc extends GraphNodeObserver {
 
   public ipfs: any
   public web3: any
+  /**
+   * a mapping of contrct names to contract addresses
+   */
   public contractAddresses: IContractAddresses | undefined
 
-  public Logger = Logger
-
   // accounts obseved by ethBalance
-  public blockHeaderSubscription: Subscription|undefined = undefined
-  public observedAccounts: { [address: string]: {
+  private blockHeaderSubscription: Subscription|undefined = undefined
+  private observedAccounts: { [address: string]: {
       observable?: Observable<BN>,
       observer?: Observer<BN>,
       lastBalance?: number
@@ -94,7 +100,7 @@ export class Arc extends GraphNodeObserver {
         }
       }
     `
-    return this._getObservableList(
+    return this.getObservableList(
       query,
       (r: any) => new DAO(r.id, this)
     ) as Observable<DAO[]>
@@ -262,26 +268,29 @@ export class Arc extends GraphNodeObserver {
   /**
    * How much GEN the genesisProtocol may spend on behalve of the owner
    * @param  owner owner for which to check the allowance
-   * @return An allowance { amount: BN, owner: string, spender: string }
+   * @return
    */
-  public allowance(owner: string): Observable < BN > {
+  public allowance(owner: string): Observable<BN> {
     const genesisProtocol = this.getContract('GenesisProtocol')
     const spender = genesisProtocol.options.address
     return this.GENToken().allowance(owner, spender)
   }
 
+  /**
+   * send an Ethereum transaction
+   * @param  transaction  [description]
+   * @param  mapToObject  [description]
+   * @param  errorHandler [description]
+   * @return  An observable of
+   */
   public sendTransaction<T>(
     transaction: any,
     mapToObject: (receipt: web3receipt) => T,
     errorHandler: (error: Error) => Promise<Error> | Error = (error) => error
-  ) {
+  ): Operation<T> {
     return sendTransaction(transaction, mapToObject, errorHandler, this)
   }
 
-  public sendQuery(query: any) {
-    const queryPromise = this.apolloClient.query({ query })
-    return queryPromise
-  }
 }
 
 export interface IApolloQueryOptions {
