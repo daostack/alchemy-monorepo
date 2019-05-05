@@ -1,6 +1,7 @@
 ```js
 const Arc = require('@daostack/client').Arc
 
+// create an Arc instanc with the right settings
 const arc = new Arc({
   graphqlHttpProvider: 'https://url.to.graphql.subgraph/',
   graphqlWsProvider: 'https://url.to.graphql.subgraph.websocket/',

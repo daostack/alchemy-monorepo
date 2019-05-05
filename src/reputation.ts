@@ -34,7 +34,7 @@ export class Reputation implements IStateful<IReputationState> {
         totalSupply: item.totalSupply
       }
     }
-    return this.context._getObservableObject(query, itemMap) as Observable<IReputationState>
+    return this.context.getObservableObject(query, itemMap) as Observable<IReputationState>
   }
 
   public reputationOf(address: Address): Observable<BN> {

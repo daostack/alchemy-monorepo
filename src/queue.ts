@@ -49,7 +49,7 @@ export class Queue {
       )
     }
 
-    return context._getObservableList(query, itemMap, apolloQueryOptions) as Observable<Queue[]>
+    return context.getObservableList(query, itemMap, apolloQueryOptions) as Observable<Queue[]>
   }
   public id: Address
   public dao: Address
@@ -116,6 +116,6 @@ export class Queue {
         votingMachine: item.votingMachine
       }
     }
-    return this.context._getObservableObject(query, itemMap) as Observable<IQueueState>
+    return this.context.getObservableObject(query, itemMap) as Observable<IQueueState>
   }
 }

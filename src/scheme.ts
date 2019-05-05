@@ -59,7 +59,7 @@ export class Scheme implements IScheme {
       )
     }
 
-    return context._getObservableList(query, itemMap) as Observable<Scheme[]>
+    return context.getObservableList(query, itemMap) as Observable<Scheme[]>
   }
 
   constructor(

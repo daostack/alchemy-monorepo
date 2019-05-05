@@ -61,7 +61,7 @@ export class Token implements IStateful<ITokenState> {
         totalSupply: new BN(item.totalSupply)
       }
     }
-    return this.context._getObservableObject(query, itemMap) as Observable<ITokenState>
+    return this.context.getObservableObject(query, itemMap) as Observable<ITokenState>
   }
 
   public balanceOf(owner: string): IObservableWithFirst<BN> {
