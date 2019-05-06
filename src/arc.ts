@@ -13,7 +13,7 @@ const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
 
 /**
-  The Arc class holds all configuration.
+ * The Arc class holds all configuration.
  * Any useage of the library typically will start with instantiating a new Arc instance
  * @return an instance of Arc
  */

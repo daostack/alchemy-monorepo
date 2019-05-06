@@ -12,6 +12,7 @@ jest.setTimeout(10000)
 describe('Arc ', () => {
   it('Arc is instantiable', () => {
     const arc = new Arc({
+      contractAddresses: {},
       graphqlHttpProvider: 'https://graphql.provider',
       graphqlWsProvider: 'https://graphql.provider',
       ipfsProvider: {
