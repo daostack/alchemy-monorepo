@@ -94,7 +94,7 @@ export class Queue {
 
     const itemMap = (item: any): IQueueState|null => {
       if (item === null) {
-        // no gpqueue was found - we construct one with basic default values
+        // no queue was found - we construct one with basic default values
         return {
           dao: this.dao,
           id: this.id,
