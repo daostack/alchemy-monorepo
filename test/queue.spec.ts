@@ -29,7 +29,7 @@ describe('Queue', () => {
     expect(queue).toBeInstanceOf(Queue)
   })
 
-  it('Queues are searchable', async () => {
+  it.only('Queues are searchable', async () => {
     const dao = await getTestDAO()
     let result: Queue[]
     result = await Queue.search({dao: dao.address}, arc, { fetchPolicy: 'no-cache' })
@@ -46,17 +46,27 @@ describe('Queue', () => {
     // result = await Queue.search({dao: dao.address, name: 'ContributionReward'}, arc, { fetchPolicy: 'no-cache' })
     //     .pipe(first()).toPromise()
     // expect(result.length).toEqual(1)
+    result = await Queue.search({dao: dao.address, name: 'GenericScheme'}, arc, { fetchPolicy: 'no-cache' })
+        .pipe(first()).toPromise()
+
+    expect(result.length).toEqual(1)
+
+    result = await Queue.search({dao: dao.address, name: 'SchemeRegistrar'}, arc, { fetchPolicy: 'no-cache' })
+        .pipe(first()).toPromise()
+
+    expect(result.length).toEqual(1)
   })
 
   it('Queue.state() is working', async () => {
     const dao = await getTestDAO()
-    const result = await Queue.search({dao: dao.address}, arc, { fetchPolicy: 'no-cache' })
+    const result = await Queue.search({dao: dao.address, name: 'SchemeRegistrar'}, arc, { fetchPolicy: 'no-cache' })
         .pipe(first()).toPromise()
 
     const queue = result[0]
     const state = await queue.state().pipe(first()).toPromise()
     expect(state).toMatchObject({
-      id: queue.id
+      id: queue.id,
+      name: 'SchemeRegistrar'
     })
 
   })

@@ -413,12 +413,13 @@ constructor(
           gpRewards {
             id
           }
+          scheme {
+            id
+            paramsHash
+            name
+          }
           gpQueue {
             id
-            scheme {
-              id
-              paramsHash
-            }
             threshold
             votingMachine
           }
@@ -515,7 +516,7 @@ constructor(
           schemeToRemove: item.schemeRegistrar.schemeToRemove
         }
       } else {
-        throw Error(`Unknown propsal type`)
+        throw Error(`Unknown proposal type`)
       }
       // the  formule to enter into the preboosted state is:
       // (S+/S-) > AlphaConstant^NumberOfBoostedProposal.
@@ -552,8 +553,9 @@ constructor(
       const queue: IQueueState = {
         dao: item.dao.id,
         id: gpQueue.id,
+        name: item.scheme.name || this.context.getContractName(item.scheme.address),
         threshold,
-        votingMachine: gpQueue.votingMachine
+        votingMachine: item.scheme.votingMachine
       }
 
       return {

@@ -28,7 +28,7 @@ export class Arc extends GraphNodeObserver {
   /**
    * a mapping of contrct names to contract addresses
    */
-  public contractAddresses: IContractAddresses | undefined
+  public contractAddresses: IContractAddresses
 
   // accounts obseved by ethBalance
   public blockHeaderSubscription: Subscription|undefined = undefined
@@ -41,17 +41,17 @@ export class Arc extends GraphNodeObserver {
   } = {}
 
   constructor(options: {
+    contractAddresses: IContractAddresses
     graphqlHttpProvider: string
     graphqlWsProvider: string
-    web3Provider?: string
-    ipfsProvider?: IPFSProvider
-    contractAddresses?: IContractAddresses
+    ipfsProvider: IPFSProvider
+    web3Provider: string
   }) {
     super({
       graphqlHttpProvider: options.graphqlHttpProvider,
       graphqlWsProvider: options.graphqlWsProvider
     })
-    this.ipfsProvider = options.ipfsProvider || ''
+    this.ipfsProvider = options.ipfsProvider
 
     let web3provider: any
 
@@ -71,10 +71,9 @@ export class Arc extends GraphNodeObserver {
       this.web3 = new Web3(web3provider)
     }
 
-    if (!options.contractAddresses) {
+    this.contractAddresses = options.contractAddresses
+    if (!this.contractAddresses) {
       Logger.warn('No contract addresses given to the Arc.constructor: expect most write operations to fail!')
-    } else {
-      this.contractAddresses = options.contractAddresses
     }
 
     if (this.ipfsProvider) {
@@ -212,6 +211,20 @@ export class Arc extends GraphNodeObserver {
         return contract
       default:
         throw Error(`Unknown contract: ${name}`)
+    }
+  }
+
+  /**
+   * get the name of the contract, given an address
+   * @param  address An ethereum address
+   * @return        The name of the contract, if the address is known, undefined otherwise
+   */
+  public getContractName(address: Address): string|undefined {
+    isAddress(address)
+    for (const key of Object.keys(this.contractAddresses)) {
+      if (this.contractAddresses[key].toLowerCase() === address.toLowerCase()) {
+        return key
+      }
     }
   }
 
