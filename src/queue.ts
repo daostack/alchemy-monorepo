@@ -42,7 +42,6 @@ export class Queue {
    }`
     const itemMap = (item: any): Queue|null => {
       const name = item.name || context.getContractName(item.address)
-      console.log(name === options.name)
       if (options.name && options.name !== name) {
         return null
       }
