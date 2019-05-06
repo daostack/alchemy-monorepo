@@ -7,7 +7,7 @@ import { realMathToNumber } from './utils'
 
 export interface IQueueState {
   id: string
-  threshold: BN
+  threshold: number
   dao: Address
   votingMachine: Address
 
@@ -93,7 +93,7 @@ export class Queue {
         return null
       }
 
-      const threshold: BN = realMathToNumber(new BN(item.threshold))
+      const threshold = realMathToNumber(new BN(item.threshold))
 
       return {
         // activationTime: Number(item.activationTime),
