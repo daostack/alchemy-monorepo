@@ -80,7 +80,7 @@ export class Queue {
             address
             name
             dao { id }
-            canDeltegateCall
+            canDelegateCall
             canRegisterSchemes
             canUpgradeController
             canManageGlobalConstraints
