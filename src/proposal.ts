@@ -75,7 +75,7 @@ export interface IProposalState {
   quietEndingPeriodBeganAt: Date
   schemeRegistrar: ISchemeRegistrar|null
   resolvedAt: Date
-  thresholdConst: BN
+  thresholdConst: number
   stage: IProposalStage
   stakesFor: BN
   stakesAgainst: BN
@@ -522,7 +522,7 @@ constructor(
       // (S+/S-) > AlphaConstant^NumberOfBoostedProposal.
       // (stakesFor/stakesAgainst) > gpQueue.threshold
       const stage: any = IProposalStage[item.stage]
-      const threshold: BN = realMathToNumber(new BN(item.gpQueue.threshold))
+      const threshold = realMathToNumber(new BN(item.gpQueue.threshold))
       const stakesFor = new BN(item.stakesFor)
       const stakesAgainst = new BN(item.stakesAgainst)
 
@@ -530,15 +530,21 @@ constructor(
       // this is only non-zero for Queued proposals
       // note that the number can be negative!
       let upstakeNeededToPreBoost: BN = new BN(0)
+      const PRECISION = Math.pow(2, 40)
       if (stage === IProposalStage.Queued) {
-        upstakeNeededToPreBoost = threshold.mul(stakesAgainst).sub(stakesFor)
+        upstakeNeededToPreBoost = new BN(threshold * PRECISION)
+          .mul(stakesAgainst)
+          .div(new BN(PRECISION))
+          .sub(stakesFor)
       }
       // upstakeNeededToPreBoost is the amount of tokens needed to upstake to move to the Queued queue
       // this is only non-zero for Preboosted proposals
       // note that the number can be negative!
       let downStakeNeededToQueue: BN = new BN(0)
       if (stage === IProposalStage.PreBoosted) {
-        downStakeNeededToQueue = stakesFor.div(threshold).sub(stakesAgainst)
+        downStakeNeededToQueue = stakesFor.mul(new BN(PRECISION))
+          .div(new BN(threshold * PRECISION))
+          .sub(stakesAgainst)
       }
       const thresholdConst = realMathToNumber(new BN(item.thresholdConst))
       const dao = new DAO(item.dao.id, this.context)

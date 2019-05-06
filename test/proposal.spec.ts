@@ -157,7 +157,7 @@ describe('Proposal', () => {
         quietEndingPeriodBeganAt: 0,
         resolvedAt: 0,
         stage: IProposalStage.Queued,
-        thresholdConst: new BN(2),
+        thresholdConst: 2,
         title: '',
         url: null,
         winningOutcome: IProposalOutcome.Fail
@@ -168,17 +168,17 @@ describe('Proposal', () => {
         periods: 1
     })
 
-    expect(pState.queue.threshold.toNumber()).toBeGreaterThan(0)
+    expect(pState.queue.threshold).toBeGreaterThan(0)
     // check if the upstakeNeededToPreBoost value is correct
     //  (S+/S-) > AlphaConstant^NumberOfBoostedProposal.
     const boostedProposals = await pState.dao
       .proposals({stage: IProposalStage.Boosted}).pipe(first()).toPromise()
     const numberOfBoostedProposals = boostedProposals.length
     expect(pState.queue.threshold.toString())
-      .toEqual(new BN(pState.thresholdConst).pow(new BN(numberOfBoostedProposals)).toString())
+      .toEqual(Math.pow(pState.thresholdConst, numberOfBoostedProposals).toString())
 
     expect(pState.stakesFor.add(pState.upstakeNeededToPreBoost).div(pState.stakesAgainst).toString())
-      .toEqual((new BN(pState.thresholdConst)).pow(new BN(numberOfBoostedProposals)).toString())
+      .toEqual(Math.pow(pState.thresholdConst, numberOfBoostedProposals).toString())
   })
 
   it('Check preboosted proposal state is correct', async () => {
@@ -196,7 +196,7 @@ describe('Proposal', () => {
     const numberOfBoostedProposals = boostedProposals.length
 
     expect(pState.stakesFor.div(pState.stakesAgainst.add(pState.downStakeNeededToQueue)).toString())
-      .toEqual((new BN(pState.thresholdConst)).pow(new BN(numberOfBoostedProposals)).toString())
+      .toEqual(Math.pow(pState.thresholdConst, numberOfBoostedProposals).toString())
   })
 
   it('get proposal rewards', async () => {

@@ -219,9 +219,10 @@ export async function getContractAddresses(graphqlHttpProvider: string, subgraph
  * @param  t a BN instance of a real number in the RealMath representation
  * @return  a BN
  */
-export function realMathToNumber(t: BN): BN {
+export function realMathToNumber(t: BN): number {
   const REAL_FBITS = 40
-  return t.shrn(REAL_FBITS).add((t.maskn(REAL_FBITS).div(new BN(Math.pow(2, REAL_FBITS)))))
+  const fraction = t.maskn(REAL_FBITS).toNumber() / Math.pow(2, REAL_FBITS)
+  return t.shrn(REAL_FBITS).toNumber() + fraction
 }
 
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
