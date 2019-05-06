@@ -13,7 +13,7 @@ const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
 
 /**
- * The Arc class holds all configuration.
+  The Arc class holds all configuration.
  * Any useage of the library typically will start with instantiating a new Arc instance
  * @return an instance of Arc
  */
@@ -211,6 +211,20 @@ export class Arc extends GraphNodeObserver {
         return contract
       default:
         throw Error(`Unknown contract: ${name}`)
+    }
+  }
+
+  /**
+   * get the name of the contract, given an address
+   * @param  address An ethereum address
+   * @return        The name of the contract, if the address is known, undefined otherwise
+   */
+  public getContractName(address: Address): string|undefined {
+    isAddress(address)
+    for (const key of Object.keys(this.contractAddresses)) {
+      if (this.contractAddresses[key].toLowerCase() === address.toLowerCase()) {
+        return key
+      }
     }
   }
 

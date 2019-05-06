@@ -41,22 +41,7 @@ export class Queue {
      }
    }`
     const itemMap = (item: any): Queue|null => {
-      let name = item.name
-      if (!name) {
-        // if the item has no name, we check if we know the name already
-        console.log('looking for name of', item.address)
-        console.log(context.contractAddresses)
-        for (const key of Object.keys(context.contractAddresses)) {
-          console.log(key)
-          if (context.contractAddresses[key].toLowerCase() === item.address.toLowerCase()) {
-            console.log('FOUND IT')
-            name = key
-            break
-          }
-        }
-      }
-      console.log(name)
-      console.log('Querying for', options.name)
+      const name = item.name || context.getContractName(item.address)
       console.log(name === options.name)
       if (options.name && options.name !== name) {
         return null
