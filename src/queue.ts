@@ -100,7 +100,7 @@ export class Queue {
           dao: this.dao,
           id: this.id,
           name: this.name,
-          threshold: new BN(1),
+          threshold: 1,
           votingMachine: this.context.contractAddresses.GenesisProtocol
         }
       }
