@@ -175,7 +175,7 @@ describe('Proposal', () => {
       .proposals({stage: IProposalStage.Boosted}).pipe(first()).toPromise()
     const numberOfBoostedProposals = boostedProposals.length
     expect(pState.queue.threshold.toString())
-      .toEqual(new BN(pState.thresholdConst).pow(new BN(numberOfBoostedProposals)).toString())
+      .toEqual(Math.pow(pState.thresholdConst, numberOfBoostedProposals).toString())
 
     expect(pState.stakesFor.add(pState.upstakeNeededToPreBoost).div(pState.stakesAgainst).toString())
       .toEqual(Math.pow(pState.thresholdConst, numberOfBoostedProposals).toString())
@@ -196,7 +196,7 @@ describe('Proposal', () => {
     const numberOfBoostedProposals = boostedProposals.length
 
     expect(pState.stakesFor.div(pState.stakesAgainst.add(pState.downStakeNeededToQueue)).toString())
-      .toEqual((new BN(pState.thresholdConst)).pow(new BN(numberOfBoostedProposals)).toString())
+      .toEqual(Math.pow(pState.thresholdConst, numberOfBoostedProposals).toString())
   })
 
   it('get proposal rewards', async () => {
