@@ -60,7 +60,7 @@ export class Queue {
   public id: Address
   public dao: Address
   public name: string
-  public scheme: Address;
+  public scheme: Address
 
   constructor(id: Address, dao: Address, name: string, scheme: Address, public context: Arc) {
     this.context = context
