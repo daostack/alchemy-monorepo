@@ -11,7 +11,7 @@ export interface IQueueState {
   threshold: number
   dao: Address
   votingMachine: Address
-
+  scheme: Address
 }
 
 export class Queue {
@@ -50,6 +50,7 @@ export class Queue {
         item.id,
         item.dao.id,
         name,
+        item.address,
         context
       )
     }
@@ -59,12 +60,14 @@ export class Queue {
   public id: Address
   public dao: Address
   public name: string
+  public scheme: Address;
 
-  constructor(id: Address, dao: Address, name: string, public context: Arc) {
+  constructor(id: Address, dao: Address, name: string, scheme: Address, public context: Arc) {
     this.context = context
     this.id = id
     this.dao = dao
     this.name = name
+    this.scheme = scheme
   }
 
   public state(): Observable<IQueueState> {
@@ -99,6 +102,7 @@ export class Queue {
           dao: this.dao,
           id: this.id,
           name: this.name,
+          scheme: this.scheme,
           threshold: 1,
           votingMachine: this.context.contractAddresses.GenesisProtocol
         }
@@ -110,6 +114,7 @@ export class Queue {
         dao: item.dao.id,
         id: item.id,
         name: item.queue.name,
+        scheme: item.scheme.address,
         threshold,
         votingMachine: item.votingMachine
       }

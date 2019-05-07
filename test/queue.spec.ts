@@ -24,6 +24,7 @@ describe('Queue', () => {
       '0x1234id',
       '0x124daoAddress',
       'no-name',
+      '0x123334schemeAddress',
       arc
     )
     expect(queue).toBeInstanceOf(Queue)
@@ -66,7 +67,8 @@ describe('Queue', () => {
     const state = await queue.state().pipe(first()).toPromise()
     expect(state).toMatchObject({
       id: queue.id,
-      name: 'SchemeRegistrar'
+      name: 'SchemeRegistrar',
+      address: arc.contractAddresses.SchemeRegistrar
     })
 
   })
@@ -75,7 +77,7 @@ describe('Queue', () => {
     const { queuedProposalId } = DAOstackMigration.migration('private').test
     const proposal = new Proposal(queuedProposalId, '', arc)
     const proposalState = await proposal.state().pipe(first()).toPromise()
-    const queue = new Queue(proposalState.queue.id, proposalState.queue.dao, '', arc)
+    const queue = new Queue(proposalState.queue.id, proposalState.queue.dao, '', proposalState.queue.scheme, arc)
     const queueState = await queue.state().pipe(first()).toPromise()
     expect(proposalState.queue).toEqual(queueState)
   })
