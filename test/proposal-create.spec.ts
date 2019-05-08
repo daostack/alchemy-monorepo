@@ -73,9 +73,7 @@ describe('Create a ContributionReward proposal', () => {
       beneficiary: options.beneficiary
     })
 
-    expect(proposalState.dao).toMatchObject({
-      address: dao.address
-    })
+    expect(proposalState.dao.address).toEqual(dao.address)
   })
 
   it('saves title etc on ipfs', async () => {

@@ -1,76 +1,80 @@
 import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
-import { Arc, IApolloQueryOptions } from './arc'
+import { Arc } from './arc'
+import { DAO } from './dao'
+import { ISchemeState } from './scheme'
 import { Address } from './types'
 import { realMathToNumber } from './utils'
 
 export interface IQueueState {
+  dao: DAO
   id: string
   name: string
+  paramsHash: string
+  scheme: ISchemeState
   threshold: number
-  dao: Address
   votingMachine: Address
-  scheme: Address
 }
 
 export class Queue {
-  public static search(
-    options: {
-      dao?: Address,
-      name?: string
-    },
-    context: Arc,
-    apolloQueryOptions: IApolloQueryOptions = {}
-): Observable<Queue[]> {
+
+  public static search(options: {dao?: Address, name?: string}, context: Arc): Observable<Queue[]> {
     let where = ''
     for (const key of Object.keys(options)) {
       const value = (options as any)[key]
-      // querying by'name' will not be predicable as the name is not always populated
-      if (value !== undefined && value !== 'name') {
-        where += `${key}: "${value}"\n`
+      if (value !== undefined) {
+        if (key === 'dao')  {
+          where += `dao: "${value}"\n`
+        } else {
+          where += `${key}: "${value}"\n`
+        }
       }
     }
 
-    const query = gql` {
-     controllerSchemes (where: {${where}}) {
-       id
-       dao { id }
-       name
-       address
-     }
-   }`
+    const query = gql`
+      {
+        gpqueues (where: {${where}}) {
+          id
+          dao {
+            id
+          }
+          name
+          paramsHash
+          votingMachine
+        }
+      }
+    `
     const itemMap = (item: any): Queue|null => {
       const name = item.name || context.getContractName(item.address)
+      // we must filter explictly by name as the subgraph does not return the name
       if (options.name && options.name !== name) {
         return null
       }
-
       return new Queue(
         item.id,
-        item.dao.id,
+        new DAO(item.dao.id, context),
         name,
-        item.address,
+        item.paramsHash,
         context
       )
     }
 
-    return context.getObservableList(query, itemMap, apolloQueryOptions) as Observable<Queue[]>
+    return context.getObservableList(query, itemMap) as Observable<Queue[]>
   }
-  public id: Address
-  public dao: Address
-  public name: string
-  public scheme: Address
 
-  constructor(id: Address, dao: Address, name: string, scheme: Address, public context: Arc) {
+  constructor(
+    public id: string,
+    public dao: DAO,
+    public name: string,
+    public paramsHash: string,
+    public context: Arc
+  ) {
     this.context = context
-    this.id = id
-    this.dao = dao
-    this.name = name
-    this.scheme = scheme
   }
 
   public state(): Observable<IQueueState> {
+    //
     const query = gql`
       {
         gpqueue (id: "${this.id}") {
@@ -95,26 +99,24 @@ export class Queue {
       }
     `
 
-    const itemMap = (item: any): IQueueState|null => {
-      if (item === null) {
-        // no queue was found - we construct one with basic default values
-        return {
-          dao: this.dao,
-          id: this.id,
-          name: this.name,
-          scheme: this.scheme,
-          threshold: 1,
-          votingMachine: this.context.contractAddresses.GenesisProtocol
-        }
-      }
-
+    const itemMap = (item: any): IQueueState => {
       const threshold = realMathToNumber(new BN(item.threshold))
-
+      const schemeName = item.scheme.name || this.context.getContractName(item.address)
       return {
         dao: item.dao.id,
         id: item.id,
         name: item.queue.name,
-        scheme: item.scheme.address,
+        paramsHash: item.paramsHash,
+        scheme: {
+          address: item.scheme.address,
+          canDelegateCall: item.scheme.canDelegateCall,
+          canManageGlobalConstraints: item.scheme.canManageGlobalConstraints,
+          canRegisterSchemes: item.scheme.canRegisterSchemes,
+          canUpgradeController: item.scheme.canUpgradeController,
+          dao: item.dao.id,
+          id: item.scheme.id,
+          name: schemeName
+        },
         threshold,
         votingMachine: item.votingMachine
       }

@@ -167,9 +167,6 @@ export class Arc extends GraphNodeObserver {
    * @return a web3 Contract instance
    */
   public getContract(name: string) {
-    // TODO: we are taking the default contracts from the migration repo and assume
-    // that they are the ones used by the current DAO. This assumption is only valid
-    // on our controlled test environment. Should get the correct contracts instead
     const opts = getWeb3Options(this.web3)
     const addresses = this.contractAddresses
     if (!addresses) {
