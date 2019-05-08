@@ -114,7 +114,7 @@ export class GraphNodeObserver {
         }
         return r.data[entity]
       }),
-      map((rs: object[]) => rs.map(itemMap))
+      map((rs: object[]) => rs.map(itemMap).filter((x) => x !== null))
     )
   }
 

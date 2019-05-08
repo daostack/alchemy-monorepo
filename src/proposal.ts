@@ -8,6 +8,7 @@ import { Logger } from './logger'
 import { Operation } from './operation'
 import { IQueueState } from './queue'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
+import { ISchemeState } from './scheme'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
@@ -47,12 +48,14 @@ export enum IExecutionState {
 
 export interface IProposalState {
   accountsWithUnclaimedRewards: Address[],
+  activationTime: number
   boostedAt: Date
   boostedVotePeriodLimit: number
   contributionReward: IContributionReward|null
   confidenceThreshold: number
   createdAt: Date
   dao: DAO
+  daoBountyConst: number // ?
   descriptionHash?: string
   description?: string
   downStakeNeededToQueue: BN
@@ -67,18 +70,20 @@ export interface IProposalState {
   queuedVotePeriodLimit: number // in seconds (?)
   preBoostedVotePeriodLimit: number
   limitExponentValue: number
+  minimumDaoBounty: BN // in GEN
   proposingRepReward: BN // in REP
   preBoostedAt: Date
   proposer: Address
-  queue: IQueueState
+  queue: IQueueState,
   quietEndingPeriod: number
   quietEndingPeriodBeganAt: Date
   schemeRegistrar: ISchemeRegistrar|null
   resolvedAt: Date
-  thresholdConst: number
+  scheme: ISchemeState
   stage: IProposalStage
   stakesFor: BN
   stakesAgainst: BN
+  thresholdConst: number
   title?: string
   totalRepWhenExecuted: BN
   type: IProposalType,
@@ -87,12 +92,9 @@ export interface IProposalState {
   votesFor: BN
   votesAgainst: BN
   votesCount: number
+  voteOnBehalf: Address
   winningOutcome: IProposalOutcome
   votersReputationLossRatio: number // in 1000's
-  minimumDaoBounty: BN // in GEN
-  daoBountyConst: number // ?
-  activationTime: number
-  voteOnBehalf: Address
 }
 
 export interface IContributionReward {
@@ -417,6 +419,12 @@ constructor(
             id
             paramsHash
             name
+            address
+            canDelegateCall
+            canManageGlobalConstraints
+            canRegisterSchemes
+            canUpgradeController
+            name
           }
           gpQueue {
             id
@@ -547,16 +555,28 @@ constructor(
           .sub(stakesAgainst)
       }
       const thresholdConst = realMathToNumber(new BN(item.thresholdConst))
-      const dao = new DAO(item.dao.id, this.context)
-
+      const scheme = item.scheme
+      const schemeName = scheme.name || this.context.getContractName(scheme.address)
       const gpQueue = item.gpQueue
-      const queue: IQueueState = {
+
+      const schemeState: ISchemeState = {
+        address: scheme.address,
+        canDelegateCall: scheme.canDelegateCall,
+        canManageGlobalConstraints: scheme.canManageGlobalConstraints,
+        canRegisterSchemes: scheme.canRegisterSchemes,
+        canUpgradeController: scheme.canUpgradeController,
+        dao: item.dao.id,
+        id: scheme.id,
+        name: schemeName,
+        paramsHash: scheme.paramsHash
+      }
+      const queueState: IQueueState = {
         dao: item.dao.id,
         id: gpQueue.id,
-        name: item.scheme.name || this.context.getContractName(item.scheme.address),
-        scheme: item.scheme.address,
+        name: schemeName,
+        scheme: schemeState,
         threshold,
-        votingMachine: item.scheme.votingMachine
+        votingMachine: gpQueue.votingMachine
       }
 
       return {
@@ -567,7 +587,7 @@ constructor(
         confidenceThreshold: Number(item.confidenceThreshold),
         contributionReward,
         createdAt: Number(item.createdAt),
-        dao,
+        dao: new DAO(item.dao.id, this.context),
         daoBountyConst: Number(item.daoBountyConst),
         description: item.description,
         descriptionHash: item.descriptionHash,
@@ -585,12 +605,13 @@ constructor(
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposer: item.proposer,
         proposingRepReward: new BN(item.proposingRepReward),
-        queue,
+        queue: queueState,
         queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
         queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
         quietEndingPeriod: Number(item.quietEndingPeriod),
         quietEndingPeriodBeganAt: Number(item.quietEndingPeriodBeganAt),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : 0,
+        scheme: schemeState,
         schemeRegistrar,
         stage,
         stakesAgainst,
@@ -859,6 +880,7 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
   [key: string]: any
 }
 
+// TODO: refactor out the options that belong to different schemes
 export interface IProposalCreateOptions {
   beneficiary?: Address  // for ContributionRewardProposal
   dao?: Address

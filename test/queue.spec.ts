@@ -2,6 +2,7 @@ const DAOstackMigration = require('@daostack/migration')
 import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
+import { DAO } from '../src/dao'
 import { Proposal } from '../src/proposal'
 import { Queue } from '../src/queue'
 import { getTestDAO, newArc } from './utils'
@@ -22,7 +23,7 @@ describe('Queue', () => {
   it('Queue is instantiable', () => {
     const queue = new Queue(
       '0x1234id',
-      '0x124daoAddress',
+      new DAO('0x124daoAddress', arc),
       'no-name',
       '0x123334schemeAddress',
       arc
@@ -33,7 +34,7 @@ describe('Queue', () => {
   it.only('Queues are searchable', async () => {
     const dao = await getTestDAO()
     let result: Queue[]
-    result = await Queue.search({dao: dao.address}, arc, { fetchPolicy: 'no-cache' })
+    result = await Queue.search({dao: dao.address}, arc)
         .pipe(first()).toPromise()
     // TODO: we should expect 3 queus here, see https://github.com/daostack/subgraph/issues/195
     expect(result.length).toEqual(3)
@@ -47,12 +48,12 @@ describe('Queue', () => {
     // result = await Queue.search({dao: dao.address, name: 'ContributionReward'}, arc, { fetchPolicy: 'no-cache' })
     //     .pipe(first()).toPromise()
     // expect(result.length).toEqual(1)
-    result = await Queue.search({dao: dao.address, name: 'GenericScheme'}, arc, { fetchPolicy: 'no-cache' })
+    result = await Queue.search({dao: dao.address, name: 'GenericScheme'}, arc)
         .pipe(first()).toPromise()
 
     expect(result.length).toEqual(1)
 
-    result = await Queue.search({dao: dao.address, name: 'SchemeRegistrar'}, arc, { fetchPolicy: 'no-cache' })
+    result = await Queue.search({dao: dao.address, name: 'SchemeRegistrar'}, arc)
         .pipe(first()).toPromise()
 
     expect(result.length).toEqual(1)
@@ -60,15 +61,15 @@ describe('Queue', () => {
 
   it('Queue.state() is working', async () => {
     const dao = await getTestDAO()
-    const result = await Queue.search({dao: dao.address, name: 'SchemeRegistrar'}, arc, { fetchPolicy: 'no-cache' })
+    const result = await Queue.search({dao: dao.address, name: 'SchemeRegistrar'}, arc)
         .pipe(first()).toPromise()
 
     const queue = result[0]
     const state = await queue.state().pipe(first()).toPromise()
     expect(state).toMatchObject({
+      address: arc.contractAddresses.SchemeRegistrar,
       id: queue.id,
-      name: 'SchemeRegistrar',
-      address: arc.contractAddresses.SchemeRegistrar
+      name: 'SchemeRegistrar'
     })
 
   })
@@ -77,7 +78,7 @@ describe('Queue', () => {
     const { queuedProposalId } = DAOstackMigration.migration('private').test
     const proposal = new Proposal(queuedProposalId, '', arc)
     const proposalState = await proposal.state().pipe(first()).toPromise()
-    const queue = new Queue(proposalState.queue.id, proposalState.queue.dao, '', proposalState.queue.scheme, arc)
+    const queue = new Queue(proposalState.queue.id, proposalState.queue.dao, '', proposalState.scheme.address, arc)
     const queueState = await queue.state().pipe(first()).toPromise()
     expect(proposalState.queue).toEqual(queueState)
   })

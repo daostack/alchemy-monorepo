@@ -79,12 +79,13 @@ describe('Proposal', () => {
   })
 
   it('dao.proposals() accepts different query arguments', async () => {
-    const { Avatar, queuedProposalId } = DAOstackMigration.migration('private').test
+    const { Avatar, queuedProposalId, executedProposalId } = DAOstackMigration.migration('private').test
     const dao = arc.dao(Avatar.toLowerCase())
     const proposals = await dao.proposals({ stage: IProposalStage.Queued}).pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
     expect(proposals.length).toBeGreaterThan(0)
-    expect(proposals[proposals.length - 1].id).toBe(queuedProposalId)
+    expect(proposals.map((p: Proposal) => p.id)).toContain(queuedProposalId)
+    expect(proposals.map((p: Proposal) => p.id)).toNotContain(executedProposalId)
   })
 
   it('get list of redeemable proposals for a user', async () => {
@@ -105,7 +106,7 @@ describe('Proposal', () => {
       id: proposal.id
     }).pipe(first()).toPromise()
 
-    expect(shouldBeJustThisExecutedProposal.map((p) => p.id)).toEqual([proposal.id])
+    expect(shouldBeJustThisExecutedProposal.map((p: Proposal) => p.id)).toEqual([proposal.id])
   })
 
   it('get proposal dao', async () => {
