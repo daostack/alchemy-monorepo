@@ -554,6 +554,7 @@ constructor(
         dao: item.dao.id,
         id: gpQueue.id,
         name: item.scheme.name || this.context.getContractName(item.scheme.address),
+        scheme: item.scheme.address,
         threshold,
         votingMachine: item.scheme.votingMachine
       }
