@@ -97,6 +97,7 @@ export class Scheme {
 
     const itemMap = (item: any): ISchemeState|null => {
 
+      const name = item.name || this.context.getContractName(item.address)
       return {
         address: item.address,
         canDelegateCall: item.canDelegateCall,
@@ -105,7 +106,7 @@ export class Scheme {
         canUpgradeController: item.canUpgradeController,
         dao: item.dao.id,
         id: item.id,
-        name: item.name,
+        name,
         paramsHash: item.paramsHash
       }
     }
