@@ -25,29 +25,40 @@ export class Queue {
       if (value !== undefined) {
         if (key === 'dao')  {
           where += `dao: "${value}"\n`
-        } else {
+        } else if (key !== 'name') {
           where += `${key}: "${value}"\n`
         }
       }
     }
 
-    const query = gql`
-      {
-        gpqueues (where: {${where}}) {
-          id
-          dao {
-            id
-          }
-          scheme {
-            id
-            address
-            name
-          }
-        }
+    // use the following query once https://github.com/daostack/subgraph/issues/217 is resolved
+    // const query = gql`
+    //   {
+    //     gpqueues (where: {${where}}) {
+    //       id
+    //       dao {
+    //         id
+    //       }
+    //       scheme {
+    //         id
+    //         address
+    //         name
+    //       }
+    //     }
+    //   }
+    // `
+    const query = gql`{
+      controllerSchemes (where: {${where}}) {
+        id
+        dao { id }
+        name
+        address
       }
-    `
+    }`
+    console.log(query.loc.source.body)
     const itemMap = (item: any): Queue|null => {
-      const name = item.scheme.name || context.getContractName(item.scheme.address)
+      const scheme = item
+      const name = scheme.name || context.getContractName(scheme.address)
       // we must filter explictly by name as the subgraph does not return the name
       if (options.name && options.name !== name) {
         return null
@@ -59,12 +70,6 @@ export class Queue {
         context
       )
     }
-    // some known schemes may not be in the list, because they do not use the genesisprotocol
-    // if we know of these schemes, we will add them to the list (if they are not)
-    // with the following helper function
-    const addMissingQueues = ((rs) => {
-       return rs
-    })
 
     return context.getObservableList(query, itemMap) as Observable<Queue[]>
   }
@@ -105,6 +110,7 @@ export class Queue {
     `
 
     const itemMap = (item: any): IQueueState => {
+      console.log(item)
       const threshold = realMathToNumber(new BN(item.threshold))
       const schemeName = item.scheme.name || this.context.getContractName(item.scheme.address)
       return {

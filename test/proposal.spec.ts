@@ -5,7 +5,7 @@ import { Arc } from '../src/arc'
 import { IExecutionState, IProposalOutcome, IProposalStage, IProposalState,
   IProposalType,
   Proposal } from '../src/proposal'
-import { IContributionReward } from './schemes/contributionReward'
+import { IContributionReward } from '../src/schemes/contributionReward'
 import { createAProposal, fromWei, newArc, toWei, waitUntilTrue} from './utils'
 
 /**
