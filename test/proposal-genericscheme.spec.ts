@@ -1,12 +1,12 @@
 import BN = require('bn.js')
 import { Arc } from '../src/arc'
 import {
-  IGenericScheme,
   IProposalStage,
   IProposalState,
   IProposalType,
   Proposal
   } from '../src/proposal'
+import {   IGenericScheme } from '../src/schemes/genericScheme'
 import { getWeb3Options } from '../src/utils'
 import { createAProposal, getContractAddressesFromMigration, getTestDAO, newArc,
   voteToAcceptProposal, waitUntilTrue } from './utils'

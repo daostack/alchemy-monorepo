@@ -55,9 +55,16 @@ export class Queue {
       return new Queue(
         item.id,
         new DAO(item.dao.id, context),
+        name,
         context
       )
     }
+    // some known schemes may not be in the list, because they do not use the genesisprotocol
+    // if we know of these schemes, we will add them to the list (if they are not)
+    // with the following helper function
+    const addMissingQueues = ((rs) => {
+       return rs
+    })
 
     return context.getObservableList(query, itemMap) as Observable<Queue[]>
   }
@@ -65,6 +72,7 @@ export class Queue {
   constructor(
     public id: string,
     public dao: DAO,
+    public name: string,
     public context: Arc
   ) {
     this.context = context

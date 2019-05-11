@@ -25,13 +25,12 @@ describe('Queue', () => {
       '0x1234id',
       new DAO('0x124daoAddress', arc),
       'no-name',
-      '0x123334schemeAddress',
       arc
     )
     expect(queue).toBeInstanceOf(Queue)
   })
 
-  it.only('Queues are searchable', async () => {
+  it('Queues are searchable', async () => {
     const dao = await getTestDAO()
     let result: Queue[]
     result = await Queue.search({dao: dao.address}, arc)
@@ -78,7 +77,7 @@ describe('Queue', () => {
     const { queuedProposalId } = DAOstackMigration.migration('private').test
     const proposal = new Proposal(queuedProposalId, '', arc)
     const proposalState = await proposal.state().pipe(first()).toPromise()
-    const queue = new Queue(proposalState.queue.id, proposalState.queue.dao, '', proposalState.scheme.address, arc)
+    const queue = new Queue(proposalState.queue.id, proposalState.queue.dao, '(name)', arc)
     const queueState = await queue.state().pipe(first()).toPromise()
     expect(proposalState.queue).toEqual(queueState)
   })

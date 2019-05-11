@@ -6,7 +6,7 @@ import { realMathToNumber  } from '../src/utils'
  */
 describe('Utils', () => {
 
-  it('realMathToNumber workds', () => {
+  it('realMathToNumber works', () => {
 
     expect(realMathToNumber(new BN('4727698744810')).toFixed(5))
       .toEqual(Math.pow(1.2, 8).toFixed(5))

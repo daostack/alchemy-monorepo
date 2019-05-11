@@ -9,6 +9,9 @@ import { Operation } from './operation'
 import { IQueueState } from './queue'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { ISchemeState } from './scheme'
+import { IContributionReward } from './schemes/contributionReward'
+import { IGenericScheme } from './schemes/genericScheme'
+import { ISchemeRegistrar } from './schemes/schemeRegistrar'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
@@ -95,36 +98,6 @@ export interface IProposalState {
   voteOnBehalf: Address
   winningOutcome: IProposalOutcome
   votersReputationLossRatio: number // in 1000's
-}
-
-export interface IContributionReward {
-  beneficiary: Address
-  externalTokenReward: BN
-  externalToken: Address
-  ethReward: BN
-  nativeTokenReward: BN
-  periods: number
-  periodLength: number
-  reputationReward: BN
-}
-
-export interface IGenericScheme {
-  id: string
-  contractToCall: Address
-  callData: string
-  executed: boolean
-  returnValue: string
-}
-
-export interface ISchemeRegistrar {
-  id: string
-  schemeToRegister: Address
-  schemeToRegisterParamsHash: string
-  schemeToRegisterPermission: string
-  schemeToRemove: string
-  decision: number
-  schemeRegistered: boolean
-  schemeRemoved: boolean
 }
 
 export class Proposal implements IStateful<IProposalState> {
@@ -540,6 +513,7 @@ constructor(
       let upstakeNeededToPreBoost: BN = new BN(0)
       const PRECISION = Math.pow(2, 40)
       if (stage === IProposalStage.Queued) {
+
         upstakeNeededToPreBoost = new BN(threshold * PRECISION)
           .mul(stakesAgainst)
           .div(new BN(PRECISION))

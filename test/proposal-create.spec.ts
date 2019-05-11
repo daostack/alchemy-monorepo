@@ -2,7 +2,8 @@ import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Logger } from '../src/logger'
-import { IContributionReward, IProposalStage, IProposalType, Proposal } from '../src/proposal'
+import { IProposalStage, IProposalType, Proposal } from '../src/proposal'
+import { IContributionReward } from '../src/schemes/contributionReward'
 import {
   fromWei,
   getContractAddressesFromMigration,
