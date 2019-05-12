@@ -3,8 +3,8 @@ import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { Arc } from './arc'
-import { Address, IStateful, Web3Receipt } from './types'
+import { Arc, IApolloQueryOptions } from './arc'
+import { Address, IStateful, Web3Receipt, ICommonQueryOptions } from './types'
 import { getWeb3Options, isAddress } from './utils'
 
 export interface IReputationState {
@@ -12,7 +12,40 @@ export interface IReputationState {
   totalSupply: number
 }
 
+export interface IReputationQueryOptions extends ICommonQueryOptions {
+  [id: string]: any
+}
+
 export class Reputation implements IStateful<IReputationState> {
+  public static search(
+    options: IReputationQueryOptions,
+    context: Arc,
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Reputation[]> {
+    let where = ''
+    for (const key of Object.keys(options)) {
+      if (options[key] !== undefined) {
+        where += `${key}: "${options[key] as string}"\n`
+      }
+    }
+
+    const query = gql`{
+      reputationContracts(where: {
+        ${where}
+      }) {
+        id
+        address
+      }
+    }`
+
+    return context.getObservableList(
+      query,
+      (r: any) => {
+        return new Reputation(r.address, context)
+      },
+      apolloQueryOptions
+    )
+  }
 
   constructor(public address: Address, public context: Arc) {
     isAddress(address)
