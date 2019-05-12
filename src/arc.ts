@@ -53,19 +53,7 @@ export class Arc extends GraphNodeObserver {
     })
     this.ipfsProvider = options.ipfsProvider
 
-    let web3provider: any
-
-    // TODO: this is probably better to handle explicitly in the frontend
-    // check if we have a web3 provider set in the window object (in the browser)
-    // cf. https://metamask.github.io/metamask-docs/API_Reference/Ethereum_Provider
-    if (typeof window !== 'undefined' &&
-      (typeof (window as any).ethereum !== 'undefined' || typeof (window as any).web3 !== 'undefined')
-    ) {
-      // Web3 browser user detected. You can now use the provider.
-      web3provider = (window as any).ethereum || (window as any).web3.currentProvider
-    } else {
-      web3provider = Web3.givenProvider || options.web3Provider
-    }
+    const web3provider = options.web3Provider
 
     if (web3provider) {
       this.web3 = new Web3(web3provider)
