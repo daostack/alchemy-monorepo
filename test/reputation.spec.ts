@@ -86,9 +86,9 @@ describe('Reputation', () => {
     Reputation.search({}, arc)
       .subscribe((result) => reputations = result)
 
-    await waitUntilTrue(() => reputations.length === 3);
+    await waitUntilTrue(() => reputations.length === 3)
 
-    expect(reputations.length).toEqual(3);
+    expect(reputations.length).toEqual(3)
 
     let expectedAddresses = [
       addresses.test.Reputation,
