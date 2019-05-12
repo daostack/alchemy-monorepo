@@ -76,8 +76,7 @@ export function sendTransaction<T>(
       from: await context.getAccount().pipe(first()).toPromise()
     }
     observer.next({
-      state: ITransactionState.Sending,
-      transactionHash: undefined
+      state: ITransactionState.Sending
     })
     tx.send(options)
       .once('transactionHash', (hash: string) => {
@@ -135,6 +134,7 @@ export function sendTransaction<T>(
       })
     }
   )
-  observable.send = () => observable.pipe(take(2)).toPromise()
+  // the 3rd update we get from the observable is the confirmation that it is mined
+  observable.send = () => observable.pipe(take(3)).toPromise()
   return observable
 }
