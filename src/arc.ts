@@ -29,6 +29,7 @@ export class Arc extends GraphNodeObserver {
    * a mapping of contrct names to contract addresses
    */
   public contractAddresses: IContractAddresses
+  public contracts: {[key: string]: any} = {}
 
   // accounts obseved by ethBalance
   public blockHeaderSubscription: Subscription|undefined = undefined
@@ -113,13 +114,14 @@ export class Arc extends GraphNodeObserver {
         (accInfo.observer as Observer<BN>).next(new BN(currentBalance))
         accInfo.lastBalance = currentBalance
       })
+
       // set up the blockheadersubscription if it does not exist yet
       if (!this.blockHeaderSubscription) {
         this.blockHeaderSubscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error) => {
           Object.keys(this.observedAccounts).forEach((addr) => {
             const accInfo = this.observedAccounts[addr]
             if (err) {
-            (accInfo.observer as Observer<BN>).error(err)
+              (accInfo.observer as Observer<BN>).error(err)
             } else {
               this.web3.eth.getBalance(addr).then((balance: any) => {
                 if (balance !== accInfo.lastBalance) {
@@ -155,11 +157,11 @@ export class Arc extends GraphNodeObserver {
    * @return a web3 Contract instance
    */
   public getContract(name: string) {
-    // TODO: we are taking the default contracts from the migration repo and assume
-    // that they are the ones used by the current DAO. This assumption is only valid
-    // on our controlled test environment. Should get the correct contracts instead
     const opts = getWeb3Options(this.web3)
     const addresses = this.contractAddresses
+    if (this.contracts[name]) {
+      return this.contracts[name]
+    }
     if (!addresses) {
       throw new Error(`Cannot get contract: no contractAddress set`)
     }
@@ -172,30 +174,37 @@ export class Arc extends GraphNodeObserver {
       case 'AbsoluteVote':
         contractClass = require('@daostack/arc/build/contracts/AbsoluteVote.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.AbsoluteVote, opts)
+        this.contracts[name] = contract
         return contract
       case 'ContributionReward':
         contractClass = require('@daostack/arc/build/contracts/ContributionReward.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.ContributionReward, opts)
+        this.contracts[name] = contract
         return contract
       case 'GEN':
         contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.GEN, opts)
+        this.contracts[name] = contract
         return contract
       case 'GenericScheme':
         contractClass = require('@daostack/arc/build/contracts/GenericScheme.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenericScheme, opts)
+        this.contracts[name] = contract
         return contract
       case 'GenesisProtocol':
         contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenesisProtocol, opts)
+        this.contracts[name] = contract
         return contract
       case 'Redeemer':
         contractClass = require('@daostack/arc/build/contracts/Redeemer.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.Redeemer, opts)
+        this.contracts[name] = contract
         return contract
       case 'SchemeRegistrar':
         contractClass = require('@daostack/arc/build/contracts/SchemeRegistrar.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.SchemeRegistrar, opts)
+        this.contracts[name] = contract
         return contract
       default:
         throw Error(`Unknown contract: ${name}`)
