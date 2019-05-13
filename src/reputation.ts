@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
-import { Address, IStateful, Web3Receipt, ICommonQueryOptions } from './types'
+import { Address, ICommonQueryOptions, IStateful, Web3Receipt } from './types'
 import { getWeb3Options, isAddress } from './utils'
 
 export interface IReputationState {
