@@ -40,9 +40,7 @@ export class Reputation implements IStateful<IReputationState> {
 
     return context.getObservableList(
       query,
-      (r: any) => {
-        return new Reputation(r.id, context)
-      },
+      (r: any) => new Reputation(r.id, context),
       apolloQueryOptions
     )
   }
