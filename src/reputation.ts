@@ -66,8 +66,8 @@ export class Reputation implements IStateful<IReputationState> {
       }
       return {
         address: item.id,
-        totalSupply: item.totalSupply,
-        dao: item.dao.id
+        dao: item.dao.id,
+        totalSupply: item.totalSupply
       }
     }
     return this.context.getObservableObject(query, itemMap) as Observable<IReputationState>
