@@ -109,9 +109,6 @@ describe('Member', () => {
 
     await waitUntilTrue(() => members.length !== 0)
 
-    console.log(members)
-    console.log(members.length)
-
-    expect(members.length).toEqual(10)
+    expect(members.length).toEqual(15)
   })
 })
