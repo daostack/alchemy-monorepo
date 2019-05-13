@@ -31,7 +31,7 @@ describe('Reputation', () => {
     const reputation = new Reputation(address, arc)
     expect(reputation).toBeInstanceOf(Reputation)
     const state = await reputation.state().pipe(first()).toPromise()
-    expect(Object.keys(state)).toEqual(['address', 'totalSupply', 'dao'])
+    expect(Object.keys(state)).toEqual(['address', 'dao', 'totalSupply'])
     const expected = {
        address: address.toLowerCase()
     }
@@ -86,7 +86,7 @@ describe('Reputation', () => {
     Reputation.search({}, arc)
       .subscribe((result) => reputations = result)
 
-    await waitUntilTrue(() => reputations.length === 2)
+    await waitUntilTrue(() => reputations.length !== 0)
 
     expect(reputations.length).toEqual(2)
 
