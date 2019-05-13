@@ -34,10 +34,10 @@ describe('Operation', () => {
     for (let i = 0; i < 4; i++) {
       await mineANewBlock()
     }
-    // wait forl all pdates
+    // wait forl all updates
     await waitUntilTrue(() => listOfUpdates.length > 4)
 
-    // the first returned value is expected to be the "sent" (i.e. not mined yet)
+    // the first returned value is expected to be the "sending" (i.e. not mined yet)
     expect(listOfUpdates[0]).toMatchObject({
       state: ITransactionState.Sending
     })
