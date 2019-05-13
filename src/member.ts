@@ -50,9 +50,7 @@ export class Member implements IStateful<IMemberState> {
 
     return context.getObservableList(
       query,
-      (r: any) => {
-        return new Member(r.address, r.dao.id, context)
-      },
+      (r: any) => new Member(r.address, r.dao.id, context),
       apolloQueryOptions
     )
   }
