@@ -10,6 +10,7 @@ import { getWeb3Options, isAddress } from './utils'
 export interface IReputationState {
   address: Address
   totalSupply: number
+  dao: Address
 }
 
 export interface IReputationQueryOptions extends ICommonQueryOptions {
@@ -30,18 +31,17 @@ export class Reputation implements IStateful<IReputationState> {
     }
 
     const query = gql`{
-      reputationContracts(where: {
+      reps(where: {
         ${where}
       }) {
         id
-        address
       }
     }`
 
     return context.getObservableList(
       query,
       (r: any) => {
-        return new Reputation(r.address, context)
+        return new Reputation(r.id, context)
       },
       apolloQueryOptions
     )
@@ -52,10 +52,12 @@ export class Reputation implements IStateful<IReputationState> {
   }
   public state(): Observable<IReputationState> {
     const query = gql`{
-      reputationContract (id: "${this.address.toLowerCase()}") {
-        id,
-        address,
+      rep (id: "${this.address.toLowerCase()}") {
+        id
         totalSupply
+        dao {
+          id
+        }
       }
     }`
     const itemMap = (item: any): IReputationState => {
@@ -63,8 +65,9 @@ export class Reputation implements IStateful<IReputationState> {
         throw Error(`Could not find a reputation contract with address ${this.address.toLowerCase()}`)
       }
       return {
-        address: item.address,
-        totalSupply: item.totalSupply
+        address: item.id,
+        totalSupply: item.totalSupply,
+        dao: item.dao.id
       }
     }
     return this.context.getObservableObject(query, itemMap) as Observable<IReputationState>
