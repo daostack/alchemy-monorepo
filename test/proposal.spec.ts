@@ -219,7 +219,6 @@ describe('Proposal', () => {
     await proposal.stake(IProposalOutcome.Pass, stakeAmount).send()
 
     // wait until we have the we received the stake update
-    console.log('waiting for state update')
     await waitUntilTrue(() => stakes.length > 0 && stakes[stakes.length - 1].length > 0)
     expect(stakes[0].length).toEqual(0)
     expect(stakes[stakes.length - 1].length).toEqual(1)
