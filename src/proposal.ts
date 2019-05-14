@@ -17,8 +17,9 @@ import { IVote, IVoteQueryOptions, Vote } from './vote'
 export enum IProposalType {
   ContributionReward = 'ContributionReward', // propose a contributionReward
   GenericScheme = 'GenericScheme', // propose to execute a function call from a registered genericScheme
-  SchemeRegistrarPropose = 'SchemeRegistrarPropose', // propose to register to schme
-  SchemeRegistrarProposeToRemove = 'SchemeRegistrarProposeToRemove' // propose to remove a registered scheme
+  SchemeRegistrarAdd = 'SchemeRegistrarAdd', // propose to register to schme
+  SchemeRegistrarEdit = 'SchemeRegistrarEdit', // propose to edit a registered scheme
+  SchemeRegistrarRemove = 'SchemeRegistrarRemove' // propose to remove a registered scheme
 }
 
 export enum IProposalOutcome {
@@ -206,10 +207,10 @@ export class Proposal implements IStateful<IProposalState> {
       case IProposalType.GenericScheme:
         eventName = 'NewCallProposal'
         if (!options.callData) {
-          throw new Error(`Missing argument "callData" for GenericScheme`)
+          throw new Error(`Missing argument "callData" for GenericScheme in Proposal.create()`)
         }
         if (options.value === undefined) {
-          throw new Error(`Missing argument "value" for GenericScheme`)
+          throw new Error(`Missing argument "value" for GenericScheme in Proposal.create()`)
         }
         createTransaction = async () => {
           options.descriptionHash = await saveIPFSData()
@@ -226,18 +227,19 @@ export class Proposal implements IStateful<IProposalState> {
         break
 
       // SchemeRegistrar
-      case IProposalType.SchemeRegistrarPropose:
+      case IProposalType.SchemeRegistrarAdd:
+      case IProposalType.SchemeRegistrarEdit:
         eventName = 'NewSchemeProposal'
         if (!options.scheme) {
-          msg = `Missing argument "scheme" for SchemeRegistrar`
+          msg = `Missing argument "scheme" for SchemeRegistrar in Proposal.create()`
           throw Error(msg)
         }
         if (!options.parametersHash) {
-          msg = `Missing argument "parametersHash" for SchemeRegistrar`
+          msg = `Missing argument "parametersHash" for SchemeRegistrar in Proposal.create()`
           throw Error(msg)
         }
         if (!options.permissions) {
-          msg = `Missing argument "permissions" for SchemeRegistrar`
+          msg = `Missing argument "permissions" for SchemeRegistrar in Proposal.create()`
           throw Error(msg)
         }
         createTransaction = async () => {
@@ -254,7 +256,7 @@ export class Proposal implements IStateful<IProposalState> {
           return transaction
         }
         break
-      case IProposalType.SchemeRegistrarProposeToRemove:
+      case IProposalType.SchemeRegistrarRemove:
         eventName = 'RemoveSchemeProposal'
         if (!options.scheme) {
           msg = `Missing argument "scheme" for SchemeRegistrar`
@@ -499,9 +501,9 @@ constructor(
         }
       } else if (item.schemeRegistrar) {
         if (item.schemeRegistrar.schemeToRegister) {
-          type = IProposalType.SchemeRegistrarPropose
+          type = IProposalType.SchemeRegistrarAdd
         } else if (item.schemeRegistrar.schemeToRemove) {
-          type = IProposalType.SchemeRegistrarProposeToRemove
+          type = IProposalType.SchemeRegistrarRemove
         } else {
           throw Error(`Unknown proposal type: schemeRegistrar without a scheme to register or to remove`)
         }
