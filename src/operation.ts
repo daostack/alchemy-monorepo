@@ -71,8 +71,11 @@ export function sendTransaction<T>(
       tx = transaction
     }
 
+    const from = await context.getAccount().pipe(first()).toPromise()
+    const gasEstimate = tx.estimateGas()
     const options = {
-      from: await context.getAccount().pipe(first()).toPromise()
+      from,
+      gas: gasEstimate * 1.1
     }
     const emitter = tx.send(options)
 
