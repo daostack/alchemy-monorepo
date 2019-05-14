@@ -109,6 +109,6 @@ describe('Member', () => {
 
     await waitUntilTrue(() => members.length !== 0)
 
-    expect(members.length).toEqual(15)
+    expect(members.length).toBeGreaterThanOrEqual(15)
   })
 })
