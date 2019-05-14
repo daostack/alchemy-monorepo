@@ -73,10 +73,27 @@ export function sendTransaction<T>(
     }
 
     const from = await context.getAccount().pipe(first()).toPromise()
-    const gasEstimate = await tx.estimateGas()
+    let gasEstimate: number = 0
+    try {
+      gasEstimate = await tx.estimateGas()
+    } catch (error) {
+      let errToReturn: Error
+      try {
+        errToReturn = await errorHandler(error)
+      } catch (err) {
+        errToReturn = err
+      }
+      observer.error(errToReturn)
+    }
+    let gas: number
+    if (gasEstimate) {
+      gas = new BN(gasEstimate * 1.1)
+    } else {
+      gas =  new BN(6000000)
+    }
     const options = {
       from,
-      gas: new BN(gasEstimate * 1.1)
+      gas
     }
     const emitter = tx.send(options)
 
