@@ -1,3 +1,4 @@
+const BN = require('bn.js')
 import { Observable, Observer } from 'rxjs'
 import { first, take } from 'rxjs/operators'
 import { Arc } from './arc'
@@ -72,10 +73,10 @@ export function sendTransaction<T>(
     }
 
     const from = await context.getAccount().pipe(first()).toPromise()
-    const gasEstimate = tx.estimateGas()
+    const gasEstimate = await tx.estimateGas()
     const options = {
       from,
-      gas: gasEstimate * 1.1
+      gas: new BN(gasEstimate * 1.1)
     }
     const emitter = tx.send(options)
 
