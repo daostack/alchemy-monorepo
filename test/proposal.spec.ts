@@ -7,6 +7,7 @@ import { IContributionReward, IExecutionState, IProposalOutcome, IProposalStage,
   Proposal } from '../src/proposal'
 import { createAProposal, fromWei, newArc, toWei, waitUntilTrue} from './utils'
 
+jest.setTimeout(10000)
 /**
  * Proposal test
  */
@@ -218,6 +219,7 @@ describe('Proposal', () => {
     await proposal.stake(IProposalOutcome.Pass, stakeAmount).send()
 
     // wait until we have the we received the stake update
+    console.log('waiting for state update')
     await waitUntilTrue(() => stakes.length > 0 && stakes[stakes.length - 1].length > 0)
     expect(stakes[0].length).toEqual(0)
     expect(stakes[stakes.length - 1].length).toEqual(1)

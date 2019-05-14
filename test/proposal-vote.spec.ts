@@ -6,6 +6,8 @@ import { Vote } from '../src/vote'
 import { createAProposal, firstResult, getTestDAO, newArc, waitUntilTrue } from './utils'
 const DAOstackMigration = require('@daostack/migration')
 
+jest.setTimeout(10000)
+
 describe('Vote on a ContributionReward', () => {
   let arc: Arc
   let dao: DAO
