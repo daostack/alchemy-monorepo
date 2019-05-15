@@ -5,6 +5,7 @@ import { Logger } from './logger'
 import { Web3Receipt } from './types'
 
 export enum ITransactionState {
+  Sending,
   Sent,
   Mined
 }
@@ -14,7 +15,7 @@ export enum ITransactionState {
  */
 export interface ITransactionUpdate<T> {
   state: ITransactionState
-  transactionHash: string
+  transactionHash?: string
   receipt?: object
   /**
    *  number of confirmations
@@ -74,9 +75,10 @@ export function sendTransaction<T>(
     const options = {
       from: await context.getAccount().pipe(first()).toPromise()
     }
-    const emitter = tx.send(options)
-
-    emitter
+    observer.next({
+      state: ITransactionState.Sending
+    })
+    tx.send(options)
       .once('transactionHash', (hash: string) => {
         Logger.debug('Sending transaction..')
         transactionHash = hash
@@ -132,6 +134,7 @@ export function sendTransaction<T>(
       })
     }
   )
-  observable.send = () => observable.pipe(take(2)).toPromise()
+  // the 3rd update we get from the observable is the confirmation that it is mined
+  observable.send = () => observable.pipe(take(3)).toPromise()
   return observable
 }

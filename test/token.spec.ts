@@ -32,7 +32,8 @@ describe('Token', () => {
     const state = await token.state().pipe(first()).toPromise()
     expect(Object.keys(state)).toEqual(['address', 'name', 'owner', 'symbol', 'totalSupply'])
     const expected = {
-       address: address.toLowerCase()
+       address: address.toLowerCase(),
+       owner: addresses.dao.Avatar.toLowerCase()
     }
     expect(state).toMatchObject(expected)
   })
