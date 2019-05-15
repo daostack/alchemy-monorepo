@@ -143,7 +143,6 @@ export async function voteToAcceptProposal(proposal: Proposal) {
       receipt = await proposal.vote(IProposalOutcome.Pass).send()
     } catch (err) {
       // TODO: this sometimes fails with uninformative `revert`, cannot find out why
-      console.log(receipt)
       if (err.message.match(/already executed/)) {
         return
       } else {
