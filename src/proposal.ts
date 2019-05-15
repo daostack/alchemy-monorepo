@@ -688,10 +688,9 @@ constructor(
         }
 
         const gpProtocol = this.context.getContract('GenesisProtocol')
-        const proposalDataFromGP = await gpProtocol.methods
-          .proposals(this.id).call()
+        const proposalDataFromGP = await gpProtocol.methods.proposals(this.id).call()
 
-        if (Number(proposalDataFromGP.state) === IProposalStage.Executed) {
+        if (proposalDataFromGP.state === '2') {
           const msg = `Error in vote(): proposal ${proposal.id} already executed`
           return Error(msg)
         }
@@ -814,31 +813,22 @@ constructor(
       }
     }
     const errorHandler = async (err: Error) => {
-      let msg: string = ''
-      const contributionReward = this.context.getContract('ContributionReward')
-      const proposalDataOnChain = await contributionReward.methods
-        .organizationsProposals(this.dao.address, this.id).call()
+      const gpProtocol = this.context.getContract('GenesisProtocol')
+      const proposalDataFromGP = await gpProtocol.methods.proposals(this.id).call()
 
-      // requirement from ContributionReward.sol
-      // require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0);
-      if (Number(proposalDataOnChain.executionTime) !== 0) {
-        msg = `proposal already executed`
+      if (proposalDataFromGP.callbacks === NULL_ADDRESS) {
+        const msg = `Error in proposal.execute(): A proposal with id ${this.id} does not exist`
+        return Error(msg)
+      } else if (proposalDataFromGP.state === '2') {
+        const msg = `Error in proposal.execute(): proposal ${this.id} already executed`
+        return Error(msg)
       }
-
-      // requirement from ContributionReward.sol
       // require(organizationsProposals[address(proposal.avatar)][_proposalId].beneficiary != address(0));
-      if (proposalDataOnChain.periodLength === '0' && proposalDataOnChain.numberOfPeriods === '0') {
-        msg = `A proposal with id ${this.id} does not exist`
-      } else if (proposalDataOnChain.beneficiary === NULL_ADDRESS) {
-        msg = `beneficiary is ${NULL_ADDRESS}`
-      }
+      // else if (proposalDataOnChain.beneficiary === NULL_ADDRESS) {
+      //   const msg = `beneficiary is ${NULL_ADDRESS}`
+      // }
 
-      if (msg) {
-        return Error(`Proposal execution failed: ${msg}`)
-      } else {
-        return err
-      }
-
+      return err
     }
     return this.context.sendTransaction(transaction, map, errorHandler)
   }

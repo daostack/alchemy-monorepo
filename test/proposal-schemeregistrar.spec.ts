@@ -1,4 +1,3 @@
-import BN = require('bn.js')
 import { Arc } from '../src/arc'
 import {
   IProposalStage,
@@ -10,7 +9,7 @@ import {
 import { Scheme } from '../src/scheme'
 import { createAProposal, firstResult, getTestDAO, newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
 
-jest.setTimeout(20000)
+jest.setTimeout(30000)
 
 /**
  * Proposal test
