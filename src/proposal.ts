@@ -506,10 +506,8 @@ constructor(
       } else if (item.schemeRegistrar) {
         if (item.schemeRegistrar.schemeToRegister) {
           // TODO: this is failing bc of https://github.com/daostack/subgraph/issues/224
-          // console.log(item.dao.schemes.map((s: any) => s.id).includes(item.schemeRegistrar.id))
-          // console.log(item.dao.schemes.map((s: any) => s.id))
-          // console.log(item.schemeRegistrar.id)
-          if (item.dao.schemes.map((s: any) => s.id).includes(item.schemeRegistrar.id)) {
+          if (item.dao.schemes.map((s: any) => s.address.toLowerCase())
+            .includes(item.schemeRegistrar.schemeToRegister.toLowerCase())) {
             type = IProposalType.SchemeRegistrarEdit
           } else {
             type = IProposalType.SchemeRegistrarAdd
@@ -651,7 +649,7 @@ constructor(
    *  all the sender's rep will be used
    * @return  an observable Operation<Vote>
    */
-  public vote(outcome: IProposalOutcome, amount: number = 0): Operation < Vote | null > {
+  public vote(outcome: IProposalOutcome, amount: number = 0): Operation<Vote|null> {
 
     const votingMachine = this.votingMachine()
 
@@ -686,24 +684,15 @@ constructor(
         const proposal = this
         const prop = await votingMachine.methods.proposals(proposal.id).call()
         if (prop.proposer === NULL_ADDRESS ) {
-          return Error(`Unknown proposal with id ${proposal.id}`)
+          return Error(`Error in vote(): unknown proposal with id ${proposal.id}`)
         }
-        const contributionReward = this.context.getContract('ContributionReward')
-        const proposalDataOnChain = await contributionReward.methods
-          .organizationsProposals(this.dao.address, this.id).call()
 
-        // requirement from ContributionReward.sol
-        // require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0);
-        if (Number(proposalDataOnChain.executionTime) !== 0) {
-          const msg = `proposal ${proposal.id} already executed`
-          return Error(msg)
-        }
         const gpProtocol = this.context.getContract('GenesisProtocol')
         const proposalDataFromGP = await gpProtocol.methods
           .proposals(this.id).call()
 
         if (Number(proposalDataFromGP.state) === IProposalStage.Executed) {
-          const msg = `proposal ${proposal.id} already executed`
+          const msg = `Error in vote(): proposal ${proposal.id} already executed`
           return Error(msg)
         }
       }

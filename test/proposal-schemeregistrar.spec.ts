@@ -7,7 +7,8 @@ import {
   ISchemeRegistrar,
   Proposal
   } from '../src/proposal'
-import { createAProposal, getTestDAO, newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
+import { Scheme } from '../src/scheme'
+import { createAProposal, firstResult, getTestDAO, newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(20000)
 
@@ -23,12 +24,12 @@ describe('Proposal', () => {
 
   it('Check proposal state is correct', async () => {
     const dao = await getTestDAO()
-
+    const schemeToRegister = arc.web3.eth.accounts.wallet[3].address
     const proposalToAdd = await createAProposal(dao, {
       descriptionHash: '',
       parametersHash: '0x0000000000000000000000000000000000000000000000000000000000001234',
       permissions: '0x0000001f',
-      scheme: arc.web3.eth.accounts.wallet[1].address,
+      scheme: schemeToRegister,
       type: IProposalType.SchemeRegistrarAdd
     })
 
@@ -46,7 +47,7 @@ describe('Proposal', () => {
       decision: null,
       schemeRegistered: null,
       schemeRemoved: null,
-      schemeToRegister:  arc.web3.eth.accounts.wallet[1].address.toLowerCase(),
+      schemeToRegister:  schemeToRegister.toLowerCase(),
       schemeToRegisterParamsHash: '0x0000000000000000000000000000000000000000000000000000000000001234',
       schemeToRegisterPermission: '0x0000001f',
       schemeToRemove: null
@@ -55,9 +56,12 @@ describe('Proposal', () => {
     expect(lastProposalToAddState().type).toEqual('SchemeRegistrarAdd')
 
     // accept the proposal by voting the hell out of it
+    console.log('voting')
     await voteToAcceptProposal(proposalToAdd)
+    console.log('voted')
 
     await proposalToAdd.execute()
+    console.log(proposalToAdd.id)
     await waitUntilTrue(() => (lastProposalToAddState().schemeRegistrar as ISchemeRegistrar).schemeRegistered)
     expect(lastProposalToAddState()).toMatchObject({
       stage: IProposalStage.Executed
@@ -67,12 +71,17 @@ describe('Proposal', () => {
       schemeRegistered: true
     })
 
+    // we now expect our new scheme to appear in the schemes collection
+    const registeredSchemes = await firstResult(Scheme.search({ dao: dao.address }, arc))
+    expect(registeredSchemes.map((x: Scheme) => arc.web3.utils.toChecksumAddress(x.address)))
+      .toContain(schemeToRegister)
+
     // we create a new proposal now to edit the scheme
     const proposalToEdit = await createAProposal(dao, {
       descriptionHash: '',
       parametersHash: '0x0000000000000000000000000000000000000000000000000000000000001234',
       permissions: '0x0000001f',
-      scheme: arc.web3.eth.accounts.wallet[1].address,
+      scheme: schemeToRegister,
       type: IProposalType.SchemeRegistrarEdit
     })
     const proposalToEditStates: IProposalState[]  = []
@@ -88,7 +97,7 @@ describe('Proposal', () => {
       // id: '0x11272ed228de85c4fd14ab467f1f8c6d6936ce3854e240f9a93c9deb95f243e6',
       schemeRegistered: null,
       schemeRemoved: null,
-      schemeToRegister: arc.web3.eth.accounts.wallet[1].address.toLowerCase(),
+      schemeToRegister: schemeToRegister.toLowerCase(),
       schemeToRegisterParamsHash: '0x0000000000000000000000000000000000000000000000000000000000001234',
       schemeToRegisterPermission: '0x0000001f',
       schemeToRemove: null
@@ -97,7 +106,7 @@ describe('Proposal', () => {
 
     // we now uregister the new scheme
     const proposalToRemove = await createAProposal(dao, {
-      scheme: arc.web3.eth.accounts.wallet[1].address,
+      scheme: schemeToRegister,
       type: IProposalType.SchemeRegistrarRemove
     })
     expect(proposalToRemove).toBeInstanceOf(Proposal)
@@ -118,7 +127,7 @@ describe('Proposal', () => {
       schemeToRegister: null,
       schemeToRegisterParamsHash: null,
       schemeToRegisterPermission: null,
-      schemeToRemove: arc.web3.eth.accounts.wallet[1].address.toLowerCase()
+      schemeToRemove: schemeToRegister.toLowerCase()
     })
 
     // accept the proposal by voting the hell out of it
@@ -134,7 +143,7 @@ describe('Proposal', () => {
       schemeRemoved: true,
       schemeToRegisterParamsHash: null,
       schemeToRegisterPermission: null,
-      schemeToRemove: arc.web3.eth.accounts.wallet[1].address.toLowerCase()
+      schemeToRemove: schemeToRegister.toLowerCase()
     })
     expect(lastProposalToEditState().type).toEqual('SchemeRegistrarRemove')
 
