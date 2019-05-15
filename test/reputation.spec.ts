@@ -3,7 +3,7 @@ import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
-import { fromWei, getContractAddressesFromMigration, newArc, toWei } from './utils'
+import { fromWei, getContractAddressesFromMigration, newArc, toWei, waitUntilTrue } from './utils'
 /**
  * Reputation test
  */
@@ -31,7 +31,7 @@ describe('Reputation', () => {
     const reputation = new Reputation(address, arc)
     expect(reputation).toBeInstanceOf(Reputation)
     const state = await reputation.state().pipe(first()).toPromise()
-    expect(Object.keys(state)).toEqual(['address', 'totalSupply'])
+    expect(Object.keys(state)).toEqual(['address', 'dao', 'totalSupply'])
     const expected = {
        address: address.toLowerCase()
     }
@@ -78,5 +78,29 @@ describe('Reputation', () => {
     await expect(() => reputation.reputationOf('0xInvalidAddress')).toThrow(
       /not a valid address/i
     )
+  })
+
+  it('Reputations are searchable', async () => {
+    let reputations: Reputation[] = []
+
+    Reputation.search({}, arc)
+      .subscribe((result) => reputations = result)
+
+    await waitUntilTrue(() => reputations.length !== 0)
+
+    expect(reputations.length).toEqual(2)
+
+    let expectedAddresses = [
+      address,
+      addresses.test.Reputation
+    ]
+
+    expectedAddresses.forEach((expectedAddress) => {
+      expect(
+        reputations.findIndex((reputation) =>
+          reputation.address.toLowerCase() === expectedAddress.toLowerCase()
+        )
+      ).toBeGreaterThan(-1)
+    })
   })
 })

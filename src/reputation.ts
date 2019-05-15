@@ -3,26 +3,59 @@ import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { Arc } from './arc'
-import { Address, IStateful, Web3Receipt } from './types'
+import { Arc, IApolloQueryOptions } from './arc'
+import { Address, ICommonQueryOptions, IStateful, Web3Receipt } from './types'
 import { getWeb3Options, isAddress } from './utils'
 
 export interface IReputationState {
   address: Address
   totalSupply: number
+  dao: Address
+}
+
+export interface IReputationQueryOptions extends ICommonQueryOptions {
+  [id: string]: any
 }
 
 export class Reputation implements IStateful<IReputationState> {
+  public static search(
+    options: IReputationQueryOptions,
+    context: Arc,
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Reputation[]> {
+    let where = ''
+    for (const key of Object.keys(options)) {
+      if (options[key] !== undefined) {
+        where += `${key}: "${options[key] as string}"\n`
+      }
+    }
+
+    const query = gql`{
+      reps(where: {
+        ${where}
+      }) {
+        id
+      }
+    }`
+
+    return context.getObservableList(
+      query,
+      (r: any) => new Reputation(r.id, context),
+      apolloQueryOptions
+    )
+  }
 
   constructor(public address: Address, public context: Arc) {
     isAddress(address)
   }
   public state(): Observable<IReputationState> {
     const query = gql`{
-      reputationContract (id: "${this.address.toLowerCase()}") {
-        id,
-        address,
+      rep (id: "${this.address.toLowerCase()}") {
+        id
         totalSupply
+        dao {
+          id
+        }
       }
     }`
     const itemMap = (item: any): IReputationState => {
@@ -30,7 +63,8 @@ export class Reputation implements IStateful<IReputationState> {
         throw Error(`Could not find a reputation contract with address ${this.address.toLowerCase()}`)
       }
       return {
-        address: item.address,
+        address: item.id,
+        dao: item.dao.id,
         totalSupply: item.totalSupply
       }
     }
