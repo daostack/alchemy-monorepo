@@ -398,6 +398,10 @@ constructor(
           createdAt
           dao {
             id
+            schemes {
+              id
+              address
+            }
           }
           daoBountyConst
           description
@@ -501,7 +505,15 @@ constructor(
         }
       } else if (item.schemeRegistrar) {
         if (item.schemeRegistrar.schemeToRegister) {
-          type = IProposalType.SchemeRegistrarAdd
+          // TODO: this is failing bc of https://github.com/daostack/subgraph/issues/224
+          // console.log(item.dao.schemes.map((s: any) => s.id).includes(item.schemeRegistrar.id))
+          // console.log(item.dao.schemes.map((s: any) => s.id))
+          // console.log(item.schemeRegistrar.id)
+          if (item.dao.schemes.map((s: any) => s.id).includes(item.schemeRegistrar.id)) {
+            type = IProposalType.SchemeRegistrarEdit
+          } else {
+            type = IProposalType.SchemeRegistrarAdd
+          }
         } else if (item.schemeRegistrar.schemeToRemove) {
           type = IProposalType.SchemeRegistrarRemove
         } else {

@@ -44,7 +44,6 @@ describe('Proposal', () => {
 
     expect(lastProposalToAddState().schemeRegistrar).toMatchObject({
       decision: null,
-      // id: '0x11272ed228de85c4fd14ab467f1f8c6d6936ce3854e240f9a93c9deb95f243e6',
       schemeRegistered: null,
       schemeRemoved: null,
       schemeToRegister:  arc.web3.eth.accounts.wallet[1].address.toLowerCase(),
