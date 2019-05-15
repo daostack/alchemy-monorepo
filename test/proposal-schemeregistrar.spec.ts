@@ -56,12 +56,9 @@ describe('Proposal', () => {
     expect(lastProposalToAddState().type).toEqual('SchemeRegistrarAdd')
 
     // accept the proposal by voting the hell out of it
-    console.log('voting')
     await voteToAcceptProposal(proposalToAdd)
-    console.log('voted')
 
     await proposalToAdd.execute()
-    console.log(proposalToAdd.id)
     await waitUntilTrue(() => (lastProposalToAddState().schemeRegistrar as ISchemeRegistrar).schemeRegistered)
     expect(lastProposalToAddState()).toMatchObject({
       stage: IProposalStage.Executed
@@ -121,7 +118,6 @@ describe('Proposal', () => {
 
     expect(lastProposalToRemoveState().schemeRegistrar).toMatchObject({
       decision: null,
-      // id: '0x11272ed228de85c4fd14ab467f1f8c6d6936ce3854e240f9a93c9deb95f243e6',
       schemeRegistered: null,
       schemeRemoved: null,
       schemeToRegister: null,
@@ -145,7 +141,7 @@ describe('Proposal', () => {
       schemeToRegisterPermission: null,
       schemeToRemove: schemeToRegister.toLowerCase()
     })
-    expect(lastProposalToEditState().type).toEqual('SchemeRegistrarRemove')
+    expect(lastProposalToRemoveState().type).toEqual('SchemeRegistrarRemove')
 
   })
 })
