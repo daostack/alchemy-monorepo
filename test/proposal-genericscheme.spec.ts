@@ -63,7 +63,6 @@ describe('Proposal', () => {
     // accept the proposal by voting the hell out of it
     await voteToAcceptProposal(proposal)
 
-    await proposal.execute()
     await waitUntilTrue(() => (lastState().genericScheme as IGenericScheme).executed)
     expect(lastState()).toMatchObject({
       stage: IProposalStage.Executed

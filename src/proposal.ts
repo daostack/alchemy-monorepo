@@ -812,13 +812,11 @@ constructor(
     }
     const errorHandler = async (err: Error) => {
       let msg: string = ''
-      const contributionReward = this.context.getContract('ContributionReward')
-      const proposalDataOnChain = await contributionReward.methods
-        .organizationsProposals(this.dao.address, this.id).call()
+      const gpProtocol = this.context.getContract('GenesisProtocol')
+      const proposalDataOnChain = await gpProtocol.methods
+        .gpProtocol(this.id).call()
 
-      // requirement from ContributionReward.sol
-      // require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0);
-      if (Number(proposalDataOnChain.executionTime) !== 0) {
+      if (Number(proposalDataOnChain.state) === IProposalStage.Executed) {
         msg = `proposal already executed`
       }
 

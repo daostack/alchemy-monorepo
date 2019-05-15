@@ -66,7 +66,7 @@ export function sendTransaction<T>(
   const observable = Observable.create(async (observer: Observer<ITransactionUpdate<T>>) => {
     let transactionHash: string
     let result: any
-    let tx
+    let tx: any
     if (typeof transaction === 'function') {
       tx = await transaction()
     }  else {
@@ -85,13 +85,16 @@ export function sendTransaction<T>(
         errToReturn = err
       }
       observer.error(errToReturn)
+      return
     }
     let gas: number
     if (gasEstimate) {
-      gas = new BN(gasEstimate * 1.5)
+      gas = gasEstimate * 2
     } else {
-      gas =  new BN(1000000)
+      gas = 1000000
     }
+    gas = new BN(Math.min(1000000, gas))
+    // gas = new BN(1000000)
     const options = {
       from,
       gas
@@ -147,10 +150,10 @@ export function sendTransaction<T>(
       .on('error', async (error: Error) => {
         let errToReturn: Error
         try {
-          errToReturn = await errorHandler(error)
-        } catch (err) {
-          errToReturn = err
-        }
+            errToReturn = await errorHandler(error)
+          } catch (err) {
+            errToReturn = err
+          }
         observer.error(errToReturn)
       })
     }

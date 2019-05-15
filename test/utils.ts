@@ -138,7 +138,6 @@ export async function voteToAcceptProposal(proposal: Proposal) {
 
   for (let i = 0; i <= 3; i ++) {
     try {
-      console.log(`voting with ${accounts[i].address}`)
       arc.setAccount(accounts[i].address)
       await proposal.vote(IProposalOutcome.Pass).send()
     } catch (err) {
@@ -151,8 +150,6 @@ export async function voteToAcceptProposal(proposal: Proposal) {
       arc.setAccount(accounts[0].address)
     }
   }
-  arc.setAccount(accounts[0].address)
-  await proposal.execute().send()
   return
 }
 
