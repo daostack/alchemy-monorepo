@@ -88,9 +88,9 @@ export function sendTransaction<T>(
     }
     let gas: number
     if (gasEstimate) {
-      gas = new BN(gasEstimate * 1.1)
+      gas = new BN(gasEstimate * 1.5)
     } else {
-      gas =  new BN(6000000)
+      gas =  new BN(1000000)
     }
     const options = {
       from,
