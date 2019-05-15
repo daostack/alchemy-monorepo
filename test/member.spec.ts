@@ -100,4 +100,15 @@ describe('Member', () => {
     expect(votes[votes.length - 1].length).toBeGreaterThan(0)
     expect(votes[votes.length - 1].map((vote) => vote.proposalId)).toContain(proposal.id)
   })
+
+  it('Members are searchable', async () => {
+    let members: Member[] = []
+
+    Member.search({}, arc)
+      .subscribe((result) => members = result)
+
+    await waitUntilTrue(() => members.length !== 0)
+
+    expect(members.length).toBeGreaterThanOrEqual(15)
+  })
 })

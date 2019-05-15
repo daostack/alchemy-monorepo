@@ -1,7 +1,7 @@
 import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
-import { Arc } from './arc'
+import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 
 import { IProposalQueryOptions, Proposal } from './proposal'
@@ -24,6 +24,36 @@ export interface IMemberState {
  */
 
 export class Member implements IStateful<IMemberState> {
+  public static search(
+    options: IMemberQueryOptions,
+    context: Arc,
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Member[]> {
+    let where = ''
+    for (const key of Object.keys(options)) {
+      if (options[key] !== undefined) {
+        where += `${key}: "${options[key] as string}"\n`
+      }
+    }
+
+    const query = gql`{
+      members(where: {
+        ${where}
+      }) {
+        id
+        address
+        dao {
+          id
+        }
+      }
+    }`
+
+    return context.getObservableList(
+      query,
+      (r: any) => new Member(r.address, r.dao.id, context),
+      apolloQueryOptions
+    )
+  }
 
   /**
    * @param address addresssof the member
@@ -107,4 +137,5 @@ export class Member implements IStateful<IMemberState> {
 export interface IMemberQueryOptions extends ICommonQueryOptions {
   address?: Address
   dao?: Address
+  [id: string]: any
 }
