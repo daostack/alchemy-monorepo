@@ -43,6 +43,9 @@ export class Token implements IStateful<ITokenState> {
     const query = gql`{
       token(id: "${this.address.toLowerCase()}") {
         id,
+        dao {
+          id
+        },
         name,
         symbol,
         totalSupply
@@ -56,7 +59,7 @@ export class Token implements IStateful<ITokenState> {
       return {
         address: item.id,
         name: item.name,
-        owner: item.owner,
+        owner: item.dao.id,
         symbol: item.symbol,
         totalSupply: new BN(item.totalSupply)
       }

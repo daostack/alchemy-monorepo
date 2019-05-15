@@ -105,13 +105,13 @@ export async function getOptionsFromChain(web3Instance: any) {
 }
 
 export function getWeb3Options(web3Instance: any) {
-  if (!web3Instance.eth.defaultAccount) {
+  const defaultAccount = web3Instance.eth.defaultAccount
+  if (!defaultAccount) {
     const msg = `No defaultAccount was set -- cannot send transaction`
     Logger.warn(msg)
-    // throw Error(msg)
   }
   return {
-    from: web3Instance.eth.defaultAccount,
+    from: defaultAccount,
     gas: 6000000
   }
 }
