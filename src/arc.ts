@@ -233,7 +233,7 @@ export class Arc extends GraphNodeObserver {
     }
   }
 
-  public getAccount(): Observable < Address > {
+  public getAccount(): Observable<Address> {
     // this complex logic is to get the correct account both from the Web3 as well as from the Metamaask provider
     // Polling is Evil!
     // cf. https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#ear-listening-for-selected-account-changes

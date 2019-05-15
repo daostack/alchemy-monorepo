@@ -28,7 +28,7 @@ describe('Proposal', () => {
     })).rejects.toThrow(/missing argument "callData"/i)
   })
 
-  it('Check proposal state is correct', async () => {
+  it.only('Check proposal state is correct', async () => {
     const dao = await getTestDAO()
 
     const proposal = await createAProposal(dao, {
@@ -63,7 +63,7 @@ describe('Proposal', () => {
     // accept the proposal by voting the hell out of it
     await voteToAcceptProposal(proposal)
 
-    await proposal.execute()
+    await proposal.execute().send()
     await waitUntilTrue(() => (lastState().schemeRegistrar as ISchemeRegistrar).schemeRegistered)
     expect(lastState()).toMatchObject({
       stage: IProposalStage.Executed
@@ -101,7 +101,8 @@ describe('Proposal', () => {
 
     // accept the proposal by voting the hell out of it
     await voteToAcceptProposal(proposalToUnregister)
-    await proposal.execute()
+    await proposal.execute().send()
+    console.log(222)
     await waitUntilTrue(() => (lastUnregisterState().schemeRegistrar as ISchemeRegistrar).schemeRemoved)
     expect(lastUnregisterState()).toMatchObject({
       stage: IProposalStage.Executed
