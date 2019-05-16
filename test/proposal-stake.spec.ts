@@ -26,9 +26,6 @@ describe('Stake on a ContributionReward', () => {
     const proposal = await createAProposal(dao)
     const stakingToken =  await proposal.stakingToken()
 
-    // const defaultAccount = web3.eth.defaultAccount
-    // await stakingToken.mint(defaultAccount, toWei('10000')).send()
-
     // approve the spend, for staking
     await stakingToken.approveForStaking(toWei('100')).send()
 
@@ -62,7 +59,6 @@ describe('Stake on a ContributionReward', () => {
     await expect(proposal.stake(IProposalOutcome.Pass, toWei('100')).send()).rejects.toThrow(
       /insufficient allowance/i
     )
-
   })
 
   it('throws a meaningful error if then senders balance is too low', async () => {
