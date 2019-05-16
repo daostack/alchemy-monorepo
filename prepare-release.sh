@@ -25,7 +25,7 @@ echo "Pruning Arc build..."
 npm run prune-arc-build -- "$@"
 # migrating Arc version to ganache
 echo "Migrating ganache..."
-npm run migrate -- "$@"
+npm run migrate -- --force "$@"
 done
 # migrate kovan
 echo "Migrating kovan..."

@@ -1,5 +1,6 @@
 const utils = require('./utils.js')
-async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logTx, previousMigration: { base } }) {
+async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logTx, previousMigration }) {
+  let base = previousMigration.base
   if (!(await confirm('About to migrate new DAO. Continue?'))) {
     return
   }
@@ -401,15 +402,15 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       Controller
     }
   )
-  return {
-    dao: {
-      name: orgName,
-      Avatar: avatar.options.address,
-      DAOToken: daoToken.options.address,
-      Reputation: reputation.options.address,
-      Controller
-    }
+  let migration = { 'dao': previousMigration.dao || {} }
+  migration.dao[arcVersion] = {
+    name: orgName,
+    Avatar: avatar.options.address,
+    DAOToken: daoToken.options.address,
+    Reputation: reputation.options.address,
+    Controller
   }
+  return migration
 }
 
 module.exports = migrateDAO

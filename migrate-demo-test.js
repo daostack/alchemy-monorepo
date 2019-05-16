@@ -1,21 +1,22 @@
 const utils = require('./utils.js')
-async function assignGlobalVariables (web3, spinner, opts, logTx, base) {
+async function assignGlobalVariables (web3, spinner, opts, logTx, previousMigration) {
   this.arcVersion = require('./package.json').dependencies['@daostack/arc']
+  this.web3 = previousMigration
   this.web3 = web3
   this.spinner = spinner
   this.opts = opts
   this.logTx = logTx
-  this.base = base[this.arcVersion]
+  this.base = previousMigration.base[this.arcVersion]
 }
 
-async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams, logTx, previousMigration: { base } }) {
+async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams, logTx, previousMigration }) {
   if (!(await confirm('About to migrate new Demo Test. Continue?'))) {
     return
   }
 
-  assignGlobalVariables(web3, spinner, opts, logTx, base)
+  assignGlobalVariables(web3, spinner, opts, logTx, previousMigration)
 
-  if (!base) {
+  if (!this.base) {
     const msg = `Couldn't find existing base migration ('migration.json' > 'base').`
     this.spinner.fail(msg)
     throw new Error(msg)
@@ -128,26 +129,25 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
     data: require('@daostack/arc/build/contracts/Avatar.json').bytecode,
     arguments: ['DemoAvatar', DemoDAOToken.options.address, DemoReputation.options.address]
   }).send()
-
-  return {
-    ['test-' + this.arcVersion]: {
-      name: orgName,
-      Avatar,
-      DAOToken,
-      Reputation,
-      ActionMock,
-      gsProposalId,
-      queuedProposalId,
-      preBoostedProposalId,
-      boostedProposalId,
-      executedProposalId
-    },
-    ['organs-' + this.arcVersion]: {
+  let migration = { 'test': previousMigration.test || {} }
+  migration.test[this.arcVersion] = {
+    name: orgName,
+    Avatar,
+    DAOToken,
+    Reputation,
+    ActionMock,
+    gsProposalId,
+    queuedProposalId,
+    preBoostedProposalId,
+    boostedProposalId,
+    executedProposalId,
+    organs: {
       DemoAvatar: DemoAvatar.options.address,
       DemoDAOToken: DemoDAOToken.options.address,
       DemoReputation: DemoReputation.options.address
     }
   }
+  return migration
 }
 
 async function migrateExternalToken () {

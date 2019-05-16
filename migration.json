@@ -64,7 +64,28 @@
       "Avatar": "0x102EB6c9895955Ce780508f1e9ee7Ac2bdd1CE57",
       "DAOToken": "0x3c3d89322de3aC6D5BCBD10801BbB2C68f5AC5f1",
       "Reputation": "0x126CF548F9110Ed46FA3021E8AEAaC2Ba4538896",
-      "Controller": "0x0d31fD995E1540CE90Fd98462Cf3284b1693Ad8C"
+      "Controller": "0x0d31fD995E1540CE90Fd98462Cf3284b1693Ad8C",
+      "0.0.1-rc.16": {
+        "name": "Baleful Teacher",
+        "Avatar": "0x86072CbFF48dA3C1F01824a6761A03F105BCC697",
+        "DAOToken": "0x7C728214be9A0049e6a86f2137ec61030D0AA964",
+        "Reputation": "0x5017A545b09ab9a30499DE7F431DF0855bCb7275",
+        "Controller": "0x4bf3A7dFB3b76b5B3E169ACE65f888A4b4FCa5Ee"
+      },
+      "0.0.1-rc.17": {
+        "name": "Adamant Penciller",
+        "Avatar": "0xd99748782d7643b00C36a4Bb296C4A099dF98Ff3",
+        "DAOToken": "0xEdCD6442143188Deb586e182B7900dFb8707Bc27",
+        "Reputation": "0x81920CAF1F99Bb0f7D72Fdfba840cff21d63CcC5",
+        "Controller": "0xcCf27643fa6C4FC844a8945b7c2F8bd562153649"
+      },
+      "0.0.1-rc.18": {
+        "name": "Fulsome Wheelwright",
+        "Avatar": "0x102EB6c9895955Ce780508f1e9ee7Ac2bdd1CE57",
+        "DAOToken": "0x3c3d89322de3aC6D5BCBD10801BbB2C68f5AC5f1",
+        "Reputation": "0x126CF548F9110Ed46FA3021E8AEAaC2Ba4538896",
+        "Controller": "0x0d31fD995E1540CE90Fd98462Cf3284b1693Ad8C"
+      }
     },
     "test-0.0.1-rc.16": {
       "name": "Guileless Sea barnacles",
@@ -116,6 +137,59 @@
       "DemoAvatar": "0x43192D86e8452957D8076908Dc04ddb6a6B63a61",
       "DemoDAOToken": "0xAe5057BB185fC820219e21bC7382c0DE7A42fE86",
       "DemoReputation": "0xfd30B6e495CC375Bd98d01BD959F741Dd2772d64"
+    },
+    "test": {
+      "0.0.1-rc.16": {
+        "name": "Didactic Snakes",
+        "Avatar": "0xE7A2C59e134ee81D4035Ae6DB2254f79308e334f",
+        "DAOToken": "0xcDbe8b52A6c60A5f101d4A0F1f049f19a9e1D35F",
+        "Reputation": "0x93cdbf39fB9e13BD253CA5819247D52fbabf0F2f",
+        "ActionMock": "0x2c5f3c004878923f55A2a255F89Fe29393177509",
+        "gsProposalId": "0x2c320fa0e7a341cd28b8140247422b430c941390567ca3690fffc1e8577d3057",
+        "queuedProposalId": "0x8aa9e79ccae5d18919d7c8850370f3595a1f858e6e4d4323803469bf2a4e7357",
+        "preBoostedProposalId": "0xfebcac95ae283c1944909eacc11e8a4ac9e2ed31c1192342690fc7c9aae9bbbc",
+        "boostedProposalId": "0x766999e5d9f07dc297d8b404f245ca37515e03ec7dcb53bd5b4cc7bac068d439",
+        "executedProposalId": "0x6afee092a28c74f6358093d5376ac75014ac4d9fd42d296a5498ef42eecd7248",
+        "organs": {
+          "DemoAvatar": "0xd611F1AF9D056f00F49CB036759De2753EfA82c2",
+          "DemoDAOToken": "0x42D4BA5e542d9FeD87EA657f0295F1968A61c00A",
+          "DemoReputation": "0x25AF99b922857C37282f578F428CB7f34335B379"
+        }
+      },
+      "0.0.1-rc.17": {
+        "name": "Bellicose Rainbows",
+        "Avatar": "0xB64f07c6Ca0998f01fb1AD55A6205771776DDE6f",
+        "DAOToken": "0xB751bB8bADF8175860E9798b80943a2278c5E8D3",
+        "Reputation": "0x67e8B6C4C72Be2A56F858279919B7cBC4BfF3084",
+        "ActionMock": "0x959306A913D041D4f634310f6aD3789cBF0e9b18",
+        "gsProposalId": "0xe74e55df1947cd151f07820d174d735cbb04b7ee8594ddfb096c3319ae6fd14f",
+        "queuedProposalId": "0x9e5280483abd15f8094805cd08bb6869a79592e194f566c45dd5be0e825e9e1f",
+        "preBoostedProposalId": "0x1fac58d186a000b4b7705ce09323fb9aff7de9abbb334bdf0aea51835cd385c0",
+        "boostedProposalId": "0x6d2c3d7524c9fd282a17c4bc1ec7c80b04376d4f87621bd7a4f75c4c30338854",
+        "executedProposalId": "0xfe9c7e8d89cef5397ce6c05eecdac31e96c3b532862f0b55c1cd25f469aad46f",
+        "organs": {
+          "DemoAvatar": "0xD8d315932b5c5b9B21B14A39f5F12e4b9Bd65571",
+          "DemoDAOToken": "0x97bd553f21B175F7CC00819cC6494a7FbA344180",
+          "DemoReputation": "0x768b5Faed6DC69816f33377d214ffaf00dcDd0cf"
+        }
+      },
+      "0.0.1-rc.18": {
+        "name": "Noxious Ninja",
+        "Avatar": "0x5Bd4123B67F85dd79B1129FE7f6c04faEA2Ec6a2",
+        "DAOToken": "0x021819df29E59690c5973b0B47d3947C684a74aD",
+        "Reputation": "0x1587Db545140e11d854cC91B11c8848266DB4043",
+        "ActionMock": "0xFD3C3E25E7E30921Bf1B4D1D55fbb97Bc43Ac8B8",
+        "gsProposalId": "0x2002774efce8f5b149f5bc40e9a80d31a1bf4bd2efb5c34b7d48485700cc26a0",
+        "queuedProposalId": "0xc745f20ecf0ad815949c4d672eb6c42d6fa705060923ab8014fe5557eebcede2",
+        "preBoostedProposalId": "0xd829becbc3cc6ff5b0de9e096d80a52a5ffe58891f4ce3e308340dacce72eda0",
+        "boostedProposalId": "0x2a0689defc2605f27b5cf891e0603318f5011b7ffdd877ae3a879fbc92794582",
+        "executedProposalId": "0x966763be6afb41683e6c9f1056db0f6cb8c08c031d6eda6755b1f5120dc732a8",
+        "organs": {
+          "DemoAvatar": "0x43192D86e8452957D8076908Dc04ddb6a6B63a61",
+          "DemoDAOToken": "0xAe5057BB185fC820219e21bC7382c0DE7A42fE86",
+          "DemoReputation": "0xfd30B6e495CC375Bd98d01BD959F741Dd2772d64"
+        }
+      }
     }
   },
   "kovan": {
