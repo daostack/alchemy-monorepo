@@ -17,8 +17,9 @@ import { IVote, IVoteQueryOptions, Vote } from './vote'
 export enum IProposalType {
   ContributionReward = 'ContributionReward', // propose a contributionReward
   GenericScheme = 'GenericScheme', // propose to execute a function call from a registered genericScheme
-  SchemeRegistrarPropose = 'SchemeRegistrarPropose', // propose to register to schme
-  SchemeRegistrarProposeToRemove = 'SchemeRegistrarProposeToRemove' // propose to remove a registered scheme
+  SchemeRegistrarAdd = 'SchemeRegistrarAdd', // propose to register to schme
+  SchemeRegistrarEdit = 'SchemeRegistrarEdit', // propose to edit a registered scheme
+  SchemeRegistrarRemove = 'SchemeRegistrarRemove' // propose to remove a registered scheme
 }
 
 export enum IProposalOutcome {
@@ -206,10 +207,10 @@ export class Proposal implements IStateful<IProposalState> {
       case IProposalType.GenericScheme:
         eventName = 'NewCallProposal'
         if (!options.callData) {
-          throw new Error(`Missing argument "callData" for GenericScheme`)
+          throw new Error(`Missing argument "callData" for GenericScheme in Proposal.create()`)
         }
         if (options.value === undefined) {
-          throw new Error(`Missing argument "value" for GenericScheme`)
+          throw new Error(`Missing argument "value" for GenericScheme in Proposal.create()`)
         }
         createTransaction = async () => {
           options.descriptionHash = await saveIPFSData()
@@ -226,18 +227,19 @@ export class Proposal implements IStateful<IProposalState> {
         break
 
       // SchemeRegistrar
-      case IProposalType.SchemeRegistrarPropose:
+      case IProposalType.SchemeRegistrarAdd:
+      case IProposalType.SchemeRegistrarEdit:
         eventName = 'NewSchemeProposal'
         if (!options.scheme) {
-          msg = `Missing argument "scheme" for SchemeRegistrar`
+          msg = `Missing argument "scheme" for SchemeRegistrar in Proposal.create()`
           throw Error(msg)
         }
         if (!options.parametersHash) {
-          msg = `Missing argument "parametersHash" for SchemeRegistrar`
+          msg = `Missing argument "parametersHash" for SchemeRegistrar in Proposal.create()`
           throw Error(msg)
         }
         if (!options.permissions) {
-          msg = `Missing argument "permissions" for SchemeRegistrar`
+          msg = `Missing argument "permissions" for SchemeRegistrar in Proposal.create()`
           throw Error(msg)
         }
         createTransaction = async () => {
@@ -254,7 +256,7 @@ export class Proposal implements IStateful<IProposalState> {
           return transaction
         }
         break
-      case IProposalType.SchemeRegistrarProposeToRemove:
+      case IProposalType.SchemeRegistrarRemove:
         eventName = 'RemoveSchemeProposal'
         if (!options.scheme) {
           msg = `Missing argument "scheme" for SchemeRegistrar`
@@ -396,6 +398,10 @@ constructor(
           createdAt
           dao {
             id
+            schemes {
+              id
+              address
+            }
           }
           daoBountyConst
           description
@@ -499,9 +505,15 @@ constructor(
         }
       } else if (item.schemeRegistrar) {
         if (item.schemeRegistrar.schemeToRegister) {
-          type = IProposalType.SchemeRegistrarPropose
+          // TODO: this is failing bc of https://github.com/daostack/subgraph/issues/224
+          if (item.dao.schemes.map((s: any) => s.address.toLowerCase())
+            .includes(item.schemeRegistrar.schemeToRegister.toLowerCase())) {
+            type = IProposalType.SchemeRegistrarEdit
+          } else {
+            type = IProposalType.SchemeRegistrarAdd
+          }
         } else if (item.schemeRegistrar.schemeToRemove) {
-          type = IProposalType.SchemeRegistrarProposeToRemove
+          type = IProposalType.SchemeRegistrarRemove
         } else {
           throw Error(`Unknown proposal type: schemeRegistrar without a scheme to register or to remove`)
         }
@@ -637,7 +649,7 @@ constructor(
    *  all the sender's rep will be used
    * @return  an observable Operation<Vote>
    */
-  public vote(outcome: IProposalOutcome, amount: number = 0): Operation < Vote | null > {
+  public vote(outcome: IProposalOutcome, amount: number = 0): Operation<Vote|null> {
 
     const votingMachine = this.votingMachine()
 
@@ -672,24 +684,14 @@ constructor(
         const proposal = this
         const prop = await votingMachine.methods.proposals(proposal.id).call()
         if (prop.proposer === NULL_ADDRESS ) {
-          return Error(`Unknown proposal with id ${proposal.id}`)
+          return Error(`Error in vote(): unknown proposal with id ${proposal.id}`)
         }
-        const contributionReward = this.context.getContract('ContributionReward')
-        const proposalDataOnChain = await contributionReward.methods
-          .organizationsProposals(this.dao.address, this.id).call()
 
-        // requirement from ContributionReward.sol
-        // require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0);
-        if (Number(proposalDataOnChain.executionTime) !== 0) {
-          const msg = `proposal ${proposal.id} already executed`
-          return Error(msg)
-        }
         const gpProtocol = this.context.getContract('GenesisProtocol')
-        const proposalDataFromGP = await gpProtocol.methods
-          .proposals(this.id).call()
+        const proposalDataFromGP = await gpProtocol.methods.proposals(this.id).call()
 
-        if (Number(proposalDataFromGP.state) === IProposalStage.Executed) {
-          const msg = `proposal ${proposal.id} already executed`
+        if (proposalDataFromGP.state === '2') {
+          const msg = `Error in vote(): proposal ${proposal.id} already executed`
           return Error(msg)
         }
       }
@@ -811,31 +813,22 @@ constructor(
       }
     }
     const errorHandler = async (err: Error) => {
-      let msg: string = ''
-      const contributionReward = this.context.getContract('ContributionReward')
-      const proposalDataOnChain = await contributionReward.methods
-        .organizationsProposals(this.dao.address, this.id).call()
+      const gpProtocol = this.context.getContract('GenesisProtocol')
+      const proposalDataFromGP = await gpProtocol.methods.proposals(this.id).call()
 
-      // requirement from ContributionReward.sol
-      // require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0);
-      if (Number(proposalDataOnChain.executionTime) !== 0) {
-        msg = `proposal already executed`
+      if (proposalDataFromGP.callbacks === NULL_ADDRESS) {
+        const msg = `Error in proposal.execute(): A proposal with id ${this.id} does not exist`
+        return Error(msg)
+      } else if (proposalDataFromGP.state === '2') {
+        const msg = `Error in proposal.execute(): proposal ${this.id} already executed`
+        return Error(msg)
       }
-
-      // requirement from ContributionReward.sol
       // require(organizationsProposals[address(proposal.avatar)][_proposalId].beneficiary != address(0));
-      if (proposalDataOnChain.periodLength === '0' && proposalDataOnChain.numberOfPeriods === '0') {
-        msg = `A proposal with id ${this.id} does not exist`
-      } else if (proposalDataOnChain.beneficiary === NULL_ADDRESS) {
-        msg = `beneficiary is ${NULL_ADDRESS}`
-      }
+      // else if (proposalDataOnChain.beneficiary === NULL_ADDRESS) {
+      //   const msg = `beneficiary is ${NULL_ADDRESS}`
+      // }
 
-      if (msg) {
-        return Error(`Proposal execution failed: ${msg}`)
-      } else {
-        return err
-      }
-
+      return err
     }
     return this.context.sendTransaction(transaction, map, errorHandler)
   }
