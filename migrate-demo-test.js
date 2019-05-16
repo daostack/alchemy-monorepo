@@ -1,10 +1,11 @@
 const utils = require('./utils.js')
 async function assignGlobalVariables (web3, spinner, opts, logTx, base) {
+  this.arcVersion = require('./package.json').dependencies['@daostack/arc']
   this.web3 = web3
   this.spinner = spinner
   this.opts = opts
   this.logTx = logTx
-  this.base = base
+  this.base = base[this.arcVersion]
 }
 
 async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams, logTx, previousMigration: { base } }) {
@@ -129,7 +130,7 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
   }).send()
 
   return {
-    test: {
+    ['test-' + this.arcVersion]: {
       name: orgName,
       Avatar,
       DAOToken,
@@ -141,7 +142,7 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
       boostedProposalId,
       executedProposalId
     },
-    organs: {
+    ['organs-' + this.arcVersion]: {
       DemoAvatar: DemoAvatar.options.address,
       DemoDAOToken: DemoDAOToken.options.address,
       DemoReputation: DemoReputation.options.address

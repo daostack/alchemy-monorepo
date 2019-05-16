@@ -4,7 +4,9 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     return
   }
 
-  if (!base) {
+  let arcVersion = require('./package.json').dependencies['@daostack/arc']
+
+  if (!base[arcVersion]) {
     const msg = `Couldn't find existing base migration ('migration.json' > 'base').`
     spinner.fail(msg)
     throw new Error(msg)
@@ -24,7 +26,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     GenesisProtocol,
     GlobalConstraintRegistrar,
     UpgradeScheme
-  } = base
+  } = base[arcVersion]
 
   const daoCreator = new web3.eth.Contract(
     require('@daostack/arc/build/contracts/DaoCreator.json').abi,
