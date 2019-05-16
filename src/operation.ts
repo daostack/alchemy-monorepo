@@ -76,7 +76,7 @@ export function sendTransaction<T>(
     const from = await context.getAccount().pipe(first()).toPromise()
     let gasEstimate: number = 0
     try {
-      gasEstimate = await tx.estimateGas()
+      gasEstimate = await tx.estimateGas({ from })
     } catch (error) {
       let errToReturn: Error
       try {
