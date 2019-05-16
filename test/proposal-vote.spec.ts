@@ -41,6 +41,12 @@ describe('Vote on a ContributionReward', () => {
     expect(vote.outcome).toEqual(IProposalOutcome.Pass)
   })
 
+  it('voting twice will not complain', async () => {
+    const proposal = await createAProposal()
+    await proposal.vote(IProposalOutcome.Pass).send()
+    await proposal.vote(IProposalOutcome.Pass).send()
+  })
+
   it('vote gets correctly indexed on the proposal entity', async () => {
     const proposal = await createAProposal()
 
