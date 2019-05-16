@@ -5,7 +5,7 @@ import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { Address, ICommonQueryOptions, IStateful, Web3Receipt } from './types'
-import { getWeb3Options, isAddress } from './utils'
+import { isAddress } from './utils'
 
 export interface IReputationState {
   address: Address
@@ -96,9 +96,8 @@ export class Reputation implements IStateful<IReputationState> {
    * get a web3 contract instance for this token
    */
   public contract() {
-    const opts = getWeb3Options(this.context.web3)
     const ReputationContractInfo = require('@daostack/arc/build/contracts/Reputation.json')
-    return new this.context.web3.eth.Contract(ReputationContractInfo.abi, this.address, opts)
+    return new this.context.web3.eth.Contract(ReputationContractInfo.abi, this.address)
   }
 
   public mint(beneficiary: Address, amount: BN) {

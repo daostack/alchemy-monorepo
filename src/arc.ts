@@ -8,7 +8,7 @@ import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { Token } from './token'
 import { Address, IPFSProvider, Web3Provider } from './types'
-import { getWeb3Options, isAddress } from './utils'
+import { isAddress } from './utils'
 const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
 
@@ -157,8 +157,8 @@ export class Arc extends GraphNodeObserver {
    * @return a web3 Contract instance
    */
   public getContract(name: string) {
-    const opts = getWeb3Options(this.web3)
     const addresses = this.contractAddresses
+    const opts = {}
     if (this.contracts[name]) {
       return this.contracts[name]
     }
