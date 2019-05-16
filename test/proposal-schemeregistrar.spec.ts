@@ -6,7 +6,8 @@ import {
   ISchemeRegistrar,
   Proposal
   } from '../src/proposal'
-import { createAProposal, getTestDAO, newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
+import { Scheme } from '../src/scheme'
+import { createAProposal, firstResult, getTestDAO, newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(30000)
 
@@ -20,98 +21,126 @@ describe('Proposal', () => {
     arc = await newArc()
   })
 
-  it('the calldata argument must be provided', async () => {
-    const dao = await getTestDAO()
-    expect(createAProposal(dao, {
-      type: IProposalType.GenericScheme
-    })).rejects.toThrow(/missing argument "callData"/i)
-  })
-
   it('Check proposal state is correct', async () => {
     const dao = await getTestDAO()
-
-    const proposal = await createAProposal(dao, {
+    const schemeToRegister = arc.web3.eth.accounts.wallet[3].address
+    const proposalToAdd = await createAProposal(dao, {
       descriptionHash: '',
       parametersHash: '0x0000000000000000000000000000000000000000000000000000000000001234',
       permissions: '0x0000001f',
-      scheme: arc.web3.eth.accounts.wallet[1].address,
-      type: IProposalType.SchemeRegistrarPropose
+      scheme: schemeToRegister,
+      type: IProposalType.SchemeRegistrarAdd
     })
 
-    expect(proposal).toBeInstanceOf(Proposal)
-    const states: IProposalState[] = []
-    const lastState = (): IProposalState => states[states.length - 1]
+    expect(proposalToAdd).toBeInstanceOf(Proposal)
+    const proposalToAddStates: IProposalState[] = []
+    const lastProposalToAddState = (): IProposalState => proposalToAddStates[proposalToAddStates.length - 1]
 
-    proposal.state().subscribe((pState: IProposalState) => {
-      states.push(pState)
+    proposalToAdd.state().subscribe((pState: IProposalState) => {
+      proposalToAddStates.push(pState)
     })
 
-    await waitUntilTrue(() => states.length > 1)
+    await waitUntilTrue(() => proposalToAddStates.length > 1)
 
-    expect(lastState().schemeRegistrar).toMatchObject({
+    expect(lastProposalToAddState().schemeRegistrar).toMatchObject({
       decision: null,
-      // id: '0x11272ed228de85c4fd14ab467f1f8c6d6936ce3854e240f9a93c9deb95f243e6',
       schemeRegistered: null,
       schemeRemoved: null,
-      schemeToRegister:  arc.web3.eth.accounts.wallet[1].address.toLowerCase(),
+      schemeToRegister:  schemeToRegister.toLowerCase(),
       schemeToRegisterParamsHash: '0x0000000000000000000000000000000000000000000000000000000000001234',
       schemeToRegisterPermission: '0x0000001f',
       schemeToRemove: null
     })
 
-    // accept the proposal by voting the hell out of it
-    await voteToAcceptProposal(proposal)
+    expect(lastProposalToAddState().type).toEqual('SchemeRegistrarAdd')
 
-    await waitUntilTrue(() => (lastState().schemeRegistrar as ISchemeRegistrar).schemeRegistered)
-    expect(lastState()).toMatchObject({
+    // accept the proposal by voting the hell out of it
+    await voteToAcceptProposal(proposalToAdd)
+
+    await proposalToAdd.execute()
+    await waitUntilTrue(() => (lastProposalToAddState().schemeRegistrar as ISchemeRegistrar).schemeRegistered)
+    expect(lastProposalToAddState()).toMatchObject({
       stage: IProposalStage.Executed
     })
-
-    expect(lastState().schemeRegistrar).toMatchObject({
+    expect(lastProposalToAddState().schemeRegistrar).toMatchObject({
       decision: '1',
       schemeRegistered: true
     })
 
-    // we now uregister the new scheme
-    const proposalToUnregister = await createAProposal(dao, {
-      scheme: arc.web3.eth.accounts.wallet[1].address,
-      type: IProposalType.SchemeRegistrarProposeToRemove
+    // we now expect our new scheme to appear in the schemes collection
+    const registeredSchemes = await firstResult(Scheme.search({ dao: dao.address }, arc))
+    expect(registeredSchemes.map((x: Scheme) => arc.web3.utils.toChecksumAddress(x.address)))
+      .toContain(schemeToRegister)
+
+    // we create a new proposal now to edit the scheme
+    const proposalToEdit = await createAProposal(dao, {
+      descriptionHash: '',
+      parametersHash: '0x0000000000000000000000000000000000000000000000000000000000001234',
+      permissions: '0x0000001f',
+      scheme: schemeToRegister,
+      type: IProposalType.SchemeRegistrarEdit
     })
-    expect(proposalToUnregister).toBeInstanceOf(Proposal)
-
-    const unregisterStates: IProposalState[]  = []
-    proposalToUnregister.state().subscribe((pState: IProposalState) => {
-      unregisterStates.push(pState)
+    const proposalToEditStates: IProposalState[]  = []
+    proposalToEdit.state().subscribe((pState: IProposalState) => {
+      proposalToEditStates.push(pState)
     })
-    const lastUnregisterState = (): IProposalState => unregisterStates[unregisterStates.length - 1]
+    const lastProposalToEditState = (): IProposalState => proposalToEditStates[proposalToEditStates.length - 1]
 
-    await waitUntilTrue(() => unregisterStates.length > 1)
+    await waitUntilTrue(() => proposalToEditStates.length > 1)
 
-    expect(lastUnregisterState().schemeRegistrar).toMatchObject({
+    expect(lastProposalToEditState().schemeRegistrar).toMatchObject({
       decision: null,
       // id: '0x11272ed228de85c4fd14ab467f1f8c6d6936ce3854e240f9a93c9deb95f243e6',
+      schemeRegistered: null,
+      schemeRemoved: null,
+      schemeToRegister: schemeToRegister.toLowerCase(),
+      schemeToRegisterParamsHash: '0x0000000000000000000000000000000000000000000000000000000000001234',
+      schemeToRegisterPermission: '0x0000001f',
+      schemeToRemove: null
+    })
+    expect(lastProposalToEditState().type).toEqual('SchemeRegistrarEdit')
+
+    // we now uregister the new scheme
+    const proposalToRemove = await createAProposal(dao, {
+      scheme: schemeToRegister,
+      type: IProposalType.SchemeRegistrarRemove
+    })
+    expect(proposalToRemove).toBeInstanceOf(Proposal)
+
+    const proposalToRemoveStates: IProposalState[]  = []
+    proposalToRemove.state().subscribe((pState: IProposalState) => {
+      proposalToRemoveStates.push(pState)
+    })
+    const lastProposalToRemoveState = (): IProposalState => proposalToRemoveStates[proposalToRemoveStates.length - 1]
+
+    await waitUntilTrue(() => proposalToRemoveStates.length > 1)
+
+    expect(lastProposalToRemoveState().schemeRegistrar).toMatchObject({
+      decision: null,
       schemeRegistered: null,
       schemeRemoved: null,
       schemeToRegister: null,
       schemeToRegisterParamsHash: null,
       schemeToRegisterPermission: null,
-      schemeToRemove: arc.web3.eth.accounts.wallet[1].address.toLowerCase()
+      schemeToRemove: schemeToRegister.toLowerCase()
     })
 
     // accept the proposal by voting the hell out of it
-    await voteToAcceptProposal(proposalToUnregister)
-    await waitUntilTrue(() => (lastUnregisterState().schemeRegistrar as ISchemeRegistrar).schemeRemoved)
-    expect(lastUnregisterState()).toMatchObject({
+    await voteToAcceptProposal(proposalToRemove)
+    await proposalToRemove.execute()
+    await waitUntilTrue(() => (lastProposalToRemoveState().schemeRegistrar as ISchemeRegistrar).schemeRemoved)
+    expect(lastProposalToRemoveState()).toMatchObject({
       stage: IProposalStage.Executed
     })
-    expect(lastUnregisterState().schemeRegistrar).toMatchObject({
+    expect(lastProposalToRemoveState().schemeRegistrar).toMatchObject({
       decision: '1',
       schemeRegistered: null,
       schemeRemoved: true,
       schemeToRegisterParamsHash: null,
       schemeToRegisterPermission: null,
-      schemeToRemove: arc.web3.eth.accounts.wallet[1].address.toLowerCase()
+      schemeToRemove: schemeToRegister.toLowerCase()
     })
+    expect(lastProposalToRemoveState().type).toEqual('SchemeRegistrarRemove')
 
   })
 })

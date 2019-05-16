@@ -139,13 +139,15 @@ export async function voteToAcceptProposal(proposal: Proposal) {
   for (let i = 0; i <= 3; i ++) {
     try {
       arc.setAccount(accounts[i].address)
-      await proposal.vote(IProposalOutcome.Pass).send()
+      receipt = await proposal.vote(IProposalOutcome.Pass).send()
     } catch (err) {
       // TODO: this sometimes fails with uninformative `revert`, cannot find out why
-      if (err.message.match(/already executed/) === null) {
-        throw err
+      if (err.message.match(/already executed/)) {
+        return
+      } else {
+        // ignore?
+        // throw err
       }
-      return
     } finally {
       arc.setAccount(accounts[0].address)
     }
