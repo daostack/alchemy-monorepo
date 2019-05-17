@@ -23,9 +23,9 @@ export interface IRewardState {
 }
 
 export interface IRewardQueryOptions extends ICommonQueryOptions {
+  id?: string
+  dao?: Address
   proposal?: string
-  // TODO: beneficiary is not a field on Reward - see issue https://github.com/daostack/subgraph/issues/60
-  // beneficiary?: Address
   createdAtAfter?: Date
   createdAtBefore?: Date
 }
