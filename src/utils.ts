@@ -93,29 +93,6 @@ export function checkWebsocket(options: { url: string }) {
   }
 }
 
-export async function getOptionsFromChain(web3Instance: any) {
-  if (web3Instance.eth.defaultAccount === null) {
-    Logger.warn(`No defaultAccount was set -- cannot send transaction`)
-  }
-  const block = await web3Instance.eth.getBlock('latest')
-  return {
-    from: web3Instance.eth.defaultAccount,
-    gas: block.gasLimit - 100000
-  }
-}
-
-export function getWeb3Options(web3Instance: any) {
-  const defaultAccount = web3Instance.eth.defaultAccount
-  if (!defaultAccount) {
-    const msg = `No defaultAccount was set -- cannot send transaction`
-    Logger.warn(msg)
-  }
-  return {
-    from: defaultAccount,
-    gas: 6000000
-  }
-}
-
 // function lifted and adapted from @daostack/subgraph/src/utils to generate unique ids
 export function concat(a: Uint8Array, b: Uint8Array): Uint8Array {
 

@@ -6,6 +6,8 @@ import { Vote } from '../src/vote'
 import { createAProposal, firstResult, getTestDAO, newArc, waitUntilTrue } from './utils'
 const DAOstackMigration = require('@daostack/migration')
 
+jest.setTimeout(10000)
+
 describe('Vote on a ContributionReward', () => {
   let arc: Arc
   let dao: DAO
@@ -37,6 +39,12 @@ describe('Vote on a ContributionReward', () => {
     expect(vote.proposalId).toEqual(proposal.id)
     expect(vote.dao).toEqual(dao.address)
     expect(vote.outcome).toEqual(IProposalOutcome.Pass)
+  })
+
+  it('voting twice will not complain', async () => {
+    const proposal = await createAProposal()
+    await proposal.vote(IProposalOutcome.Pass).send()
+    await proposal.vote(IProposalOutcome.Pass).send()
   })
 
   it('vote gets correctly indexed on the proposal entity', async () => {

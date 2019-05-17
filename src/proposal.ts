@@ -682,15 +682,12 @@ constructor(
     const errorHandler = async (error: Error) => {
       if (error.message.match(/revert/)) {
         const proposal = this
-        const prop = await votingMachine.methods.proposals(proposal.id).call()
-        if (prop.proposer === NULL_ADDRESS ) {
+        const proposalDataFromVotingMachine = await votingMachine.methods.proposals(proposal.id).call()
+        if (proposalDataFromVotingMachine.proposer === NULL_ADDRESS ) {
           return Error(`Error in vote(): unknown proposal with id ${proposal.id}`)
         }
 
-        const gpProtocol = this.context.getContract('GenesisProtocol')
-        const proposalDataFromGP = await gpProtocol.methods.proposals(this.id).call()
-
-        if (proposalDataFromGP.state === '2') {
+        if (proposalDataFromVotingMachine.state === '2') {
           const msg = `Error in vote(): proposal ${proposal.id} already executed`
           return Error(msg)
         }

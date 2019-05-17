@@ -7,7 +7,6 @@ import {
   IProposalType,
   Proposal
   } from '../src/proposal'
-import { getWeb3Options } from '../src/utils'
 import { createAProposal, getContractAddressesFromMigration, getTestDAO, newArc,
   voteToAcceptProposal, waitUntilTrue } from './utils'
 
@@ -34,8 +33,7 @@ describe('Proposal', () => {
     const addresses = await getContractAddressesFromMigration()
     const dao = await getTestDAO()
     const contractClass = require('@daostack/arc/build/contracts/ActionMock.json')
-    const opts = getWeb3Options(arc.web3)
-    const actionMock = new arc.web3.eth.Contract(contractClass.abi, addresses.base.ActionMock, opts)
+    const actionMock = new arc.web3.eth.Contract(contractClass.abi, addresses.base.ActionMock, {})
 
     const callData = await actionMock.methods.test2(dao.address).encodeABI()
 
@@ -63,7 +61,6 @@ describe('Proposal', () => {
     // accept the proposal by voting the hell out of it
     await voteToAcceptProposal(proposal)
 
-    await proposal.execute()
     await waitUntilTrue(() => (lastState().genericScheme as IGenericScheme).executed)
     expect(lastState()).toMatchObject({
       stage: IProposalStage.Executed

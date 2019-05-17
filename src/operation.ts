@@ -1,3 +1,4 @@
+const BN = require('bn.js')
 import { Observable, Observer } from 'rxjs'
 import { first, take } from 'rxjs/operators'
 import { Arc } from './arc'
@@ -65,15 +66,38 @@ export function sendTransaction<T>(
   const observable = Observable.create(async (observer: Observer<ITransactionUpdate<T>>) => {
     let transactionHash: string
     let result: any
-    let tx
+    let tx: any
     if (typeof transaction === 'function') {
       tx = await transaction()
     }  else {
       tx = transaction
     }
 
+    const from = await context.getAccount().pipe(first()).toPromise()
+    let gasEstimate: number = 0
+    try {
+      gasEstimate = await tx.estimateGas({ from })
+    } catch (error) {
+      let errToReturn: Error
+      try {
+        errToReturn = await errorHandler(error)
+      } catch (err) {
+        errToReturn = err
+      }
+      observer.error(errToReturn)
+      return
+    }
+    let gas: number
+    if (gasEstimate) {
+      gas = gasEstimate * 2
+    } else {
+      gas = 1000000
+    }
+    gas = new BN(Math.min(1000000, gas))
+    // gas = new BN(1000000)
     const options = {
-      from: await context.getAccount().pipe(first()).toPromise()
+      from,
+      gas
     }
     observer.next({
       state: ITransactionState.Sending
@@ -126,10 +150,10 @@ export function sendTransaction<T>(
       .on('error', async (error: Error) => {
         let errToReturn: Error
         try {
-          errToReturn = await errorHandler(error)
-        } catch (err) {
-          errToReturn = err
-        }
+            errToReturn = await errorHandler(error)
+          } catch (err) {
+            errToReturn = err
+          }
         observer.error(errToReturn)
       })
     }

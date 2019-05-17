@@ -26,9 +26,6 @@ describe('Stake on a ContributionReward', () => {
     const proposal = await createAProposal(dao)
     const stakingToken =  await proposal.stakingToken()
 
-    // const defaultAccount = web3.eth.defaultAccount
-    // await stakingToken.mint(defaultAccount, toWei('10000')).send()
-
     // approve the spend, for staking
     await stakingToken.approveForStaking(toWei('100')).send()
 
@@ -55,12 +52,13 @@ describe('Stake on a ContributionReward', () => {
     const dao = await getTestDAO()
     const stakingToken =  arc.getContract('GEN')
     const proposal = await createAProposal(dao)
-    await stakingToken.methods.mint(accounts[2].address, toWei('100').toString()).send()
+    await stakingToken.methods
+      .mint(accounts[2].address, toWei('100').toString())
+      .send({ gas: 1000000, from: accounts[0].address})
     proposal.context.web3.eth.defaultAccount = accounts[2].address
     await expect(proposal.stake(IProposalOutcome.Pass, toWei('100')).send()).rejects.toThrow(
       /insufficient allowance/i
     )
-
   })
 
   it('throws a meaningful error if then senders balance is too low', async () => {

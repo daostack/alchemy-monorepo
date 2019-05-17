@@ -3,6 +3,8 @@ import { Arc } from '../src/arc'
 import { IProposalStage, IProposalState, IProposalType, Proposal } from '../src/proposal'
 import { createAProposal, firstResult, getTestDAO, newArc, toWei, voteToAcceptProposal, waitUntilTrue } from './utils'
 
+jest.setTimeout(20000)
+
 describe('Claim rewards', () => {
   let arc: Arc
 

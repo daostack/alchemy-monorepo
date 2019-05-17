@@ -4,7 +4,7 @@ import { Observable, Observer, of, Subscription } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Address, Hash, IObservableWithFirst, IStateful, Web3Receipt } from './types'
-import { getWeb3Options, isAddress } from './utils'
+import { isAddress } from './utils'
 
 export interface ITokenState {
   address: Address
@@ -126,9 +126,8 @@ export class Token implements IStateful<ITokenState> {
    * get a web3 contract instance for this token
    */
   public contract() {
-    const opts = getWeb3Options(this.context.web3)
     const ReputationContractInfo = require('@daostack/arc/build/contracts/DAOToken.json')
-    return new this.context.web3.eth.Contract(ReputationContractInfo.abi, this.address, opts)
+    return new this.context.web3.eth.Contract(ReputationContractInfo.abi, this.address)
   }
 
   public mint(beneficiary: Address, amount: BN) {

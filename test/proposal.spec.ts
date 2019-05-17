@@ -7,6 +7,7 @@ import { IContributionReward, IExecutionState, IProposalOutcome, IProposalStage,
   Proposal } from '../src/proposal'
 import { createAProposal, fromWei, newArc, toWei, waitUntilTrue} from './utils'
 
+jest.setTimeout(10000)
 /**
  * Proposal test
  */
