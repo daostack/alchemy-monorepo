@@ -1,13 +1,13 @@
 import { first} from 'rxjs/operators'
-import { Arc, IContractAddresses } from '../src/arc'
+import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { Member } from '../src/member'
 import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Stake } from '../src/stake'
 import { Address } from '../src/types'
 import { Vote } from '../src/vote'
-import { createAProposal, fromWei, getContractAddressesFromMigration,
-  getTestDAO, IContractAddressesFromMigration, newArc, toWei, waitUntilTrue } from './utils'
+import { createAProposal, fromWei,
+  getTestDAO, newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
@@ -16,13 +16,11 @@ jest.setTimeout(10000)
  */
 describe('Member', () => {
 
-  let addresses: IContractAddressesFromMigration
   let arc: Arc
   let defaultAccount: Address
   let dao: DAO
 
   beforeAll(async () => {
-    addresses = getContractAddressesFromMigration()
     arc = await newArc()
     dao = await getTestDAO()
     defaultAccount = arc.web3.eth.defaultAccount
