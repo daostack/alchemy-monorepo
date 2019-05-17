@@ -1,10 +1,10 @@
 const DAOstackMigration = require('@daostack/migration')
-import { BN } from './utils'
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IContributionReward, IExecutionState, IProposalOutcome, IProposalStage, IProposalState,
   IProposalType,
   Proposal } from '../src/proposal'
+import { BN } from './utils'
 import { createAProposal, fromWei, newArc, toWei, waitUntilTrue} from './utils'
 
 jest.setTimeout(10000)

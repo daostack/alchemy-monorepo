@@ -1,6 +1,6 @@
-import { BN } from './utils'
 import { Arc } from '../src/arc'
 import { IProposalStage, IProposalState, IProposalType, Proposal } from '../src/proposal'
+import { BN } from './utils'
 import { createAProposal, firstResult, getTestDAO, newArc, toWei, voteToAcceptProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(20000)
@@ -55,9 +55,9 @@ describe('Claim rewards', () => {
 
     const daoState = await firstResult(dao.state())
     const prevNativeTokenBalance = await firstResult(daoState.token.balanceOf(beneficiary))
-    const reputationBalances: BN[] = []
+    const reputationBalances: Array<typeof BN> = []
 
-    daoState.reputation.reputationOf(beneficiary).subscribe((next: BN) => {
+    daoState.reputation.reputationOf(beneficiary).subscribe((next: typeof BN) => {
       reputationBalances.push(next)
     })
     const prevEthBalance = new BN(await arc.web3.eth.getBalance(beneficiary))

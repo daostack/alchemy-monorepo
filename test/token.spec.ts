@@ -1,8 +1,8 @@
-import { BN } from './utils'
 import { first} from 'rxjs/operators'
 import { Arc  } from '../src/arc'
 import { Token } from '../src/token'
 import { Address } from '../src/types'
+import { BN } from './utils'
 import { fromWei, getContractAddressesFromMigration, IContractAddressesFromMigration,
    newArc, toWei, waitUntilTrue } from './utils'
 
@@ -63,9 +63,9 @@ describe('Token', () => {
     const token = new Token(addresses.organs.DemoDAOToken, arc)
     const account = '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1'
     // check if the currentAccount is the owner of the contract
-    const balances: BN[] = []
+    const balances: Array<typeof BN> = []
     const amount = new BN('1234')
-    token.balanceOf(account).subscribe((next: BN) => balances.push(next))
+    token.balanceOf(account).subscribe((next: typeof BN) => balances.push(next))
     await token.mint(account, amount).send()
     await waitUntilTrue(() => balances.length > 1)
     expect(balances[1].sub(balances[0]).toString()).toEqual(amount.toString())
@@ -74,9 +74,9 @@ describe('Token', () => {
   it('balanceOf GEN token also works', async () => {
     const token = arc.GENToken()
     const account = '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1'
-    const balances: BN[] = []
+    const balances: Array<typeof BN> = []
     const amount = new BN('1234')
-    token.balanceOf(account).subscribe((next: BN) => balances.push(next))
+    token.balanceOf(account).subscribe((next: typeof BN) => balances.push(next))
     await waitUntilTrue(() => balances.length > 0)
     expect(typeof balances[0]).toEqual(typeof new BN(0))
     await token.mint(account, amount).send()
@@ -87,7 +87,7 @@ describe('Token', () => {
   it('approveForStaking() and allowance() work', async () => {
     const token = new Token(arc.getContract('GEN').options.address, arc)
     const amount = toWei('31415')
-    const allowances: BN[] = []
+    const allowances: Array<typeof BN> = []
     const genesisProtocol = arc.getContract('GenesisProtocol')
 
     token.allowance(arc.web3.eth.defaultAccount, genesisProtocol.options.address).subscribe(

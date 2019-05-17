@@ -1,7 +1,7 @@
-import { BN } from './utils'
 import { first } from 'rxjs/operators'
 import Arc from '../src/index'
 import { Address } from '../src/types'
+import { BN } from './utils'
 import { fromWei, newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
@@ -32,11 +32,11 @@ describe('Arc ', () => {
 
   it('arc.allowance() should work', async () => {
     const arc = await newArc()
-    const allowances: BN[] = []
+    const allowances: Array<typeof BN> = []
     const amount = toWei(1001)
     await arc.approveForStaking(amount).send()
     arc.allowance(arc.web3.eth.defaultAccount).subscribe(
-      (next: BN) => {
+      (next: typeof BN) => {
         allowances.push(next)
       }
     )
@@ -63,9 +63,9 @@ describe('Arc ', () => {
   it('arc.ethBalance() works with multiple subscriptions', async () => {
     const arc = await newArc()
     // observe two balances
-    const balances1: BN[] = []
-    const balances2: BN[] = []
-    const balances3: BN[] = []
+    const balances1: Array<typeof BN> = []
+    const balances2: Array<typeof BN> = []
+    const balances3: Array<typeof BN> = []
     const address1 = arc.web3.eth.accounts.wallet[1].address
     const address2 = arc.web3.eth.accounts.wallet[2].address
 
@@ -77,7 +77,7 @@ describe('Arc ', () => {
     })
     //
     // send some ether to the test accounts
-    async function sendEth(address: Address, amount: BN) {
+    async function sendEth(address: Address, amount: typeof BN) {
       await arc.web3.eth.sendTransaction({
         gas: 4000000,
         gasPrice: 100000000000,
