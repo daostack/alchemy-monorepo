@@ -24,6 +24,7 @@ export interface IRewardState {
 
 export interface IRewardQueryOptions extends ICommonQueryOptions {
   id?: string
+  beneficiary?: Address
   dao?: Address
   proposal?: string
   createdAtAfter?: Date
@@ -45,8 +46,8 @@ export class Reward implements IStateful<IRewardState> {
     for (const key of Object.keys(options)) {
       if (options[key] !== undefined) {
         if (key === 'beneficiary') {
-          isAddress(options[key])
-          options[key] = options[key].toLowerCase()
+          isAddress(options.beneficiary)
+          options[key] = (options[key] as Address).toLowerCase()
         }
         where += `${key}: "${options[key] as string}"\n`
       }
