@@ -19,7 +19,6 @@ export interface IStakeQueryOptions extends ICommonQueryOptions {
   proposal?: string
   staker?: Address
   createdAt?: number
-  [id: string]: any
 }
 
 export class Stake implements IStake {

@@ -90,7 +90,7 @@ describe('Reputation', () => {
 
     expect(reputations.length).toEqual(2)
 
-    let expectedAddresses = [
+    const expectedAddresses = [
       address,
       addresses.test.Reputation
     ]

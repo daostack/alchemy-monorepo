@@ -19,7 +19,6 @@ export interface IVoteQueryOptions extends ICommonQueryOptions {
   voter?: Address
   proposal?: string
   dao?: Address
-  [key: string]: any
 }
 
 export class Vote implements IVote {

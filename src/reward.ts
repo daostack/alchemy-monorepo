@@ -28,7 +28,6 @@ export interface IRewardQueryOptions extends ICommonQueryOptions {
   // beneficiary?: Address
   createdAtAfter?: Date
   createdAtBefore?: Date
-  [id: string]: any
 }
 
 export class Reward implements IStateful<IRewardState> {

@@ -846,7 +846,6 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
   // the options above should be ok for the current alchemy; will add more options as needed
   executedAfter?: Date
   executedBefore?: Date
-  [key: string]: any
 }
 
 export interface IProposalCreateOptions {
