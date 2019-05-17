@@ -5,21 +5,21 @@ import { Observable as ZenObservable } from 'apollo-link'
 import { HttpLink } from 'apollo-link-http'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import fetch from 'isomorphic-fetch'
 import * as WebSocket from 'isomorphic-ws'
 import { Observable, Observer } from 'rxjs'
 import { IContractAddresses } from './arc'
-import { Logger } from './logger'
 import { Address } from './types'
 const Web3 = require('web3')
 
-export function fromWei(amount: BN): string {
+export const BN = Web3.utils.BN
+
+export function fromWei(amount: typeof BN): string {
   return Web3.utils.fromWei(amount, 'ether')
 }
 
-export function toWei(amount: string | number): BN {
+export function toWei(amount: string | number): typeof BN {
   return Web3.utils.toWei(amount.toString(), 'ether')
 }
 
@@ -196,7 +196,7 @@ export async function getContractAddresses(graphqlHttpProvider: string, subgraph
  * @param  t a BN instance of a real number in the RealMath representation
  * @return  a BN
  */
-export function realMathToNumber(t: BN): number {
+export function realMathToNumber(t: typeof BN): number {
   const REAL_FBITS = 40
   const fraction = t.maskn(REAL_FBITS).toNumber() / Math.pow(2, REAL_FBITS)
   return t.shrn(REAL_FBITS).toNumber() + fraction

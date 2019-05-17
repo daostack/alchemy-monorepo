@@ -1,9 +1,9 @@
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Address, ICommonQueryOptions, IStateful } from './types'
+import { BN } from './utils'
 import { isAddress } from './utils'
 
 export interface IRewardState {
@@ -11,15 +11,15 @@ export interface IRewardState {
   beneficiary: Address
   createdAt: Date
   proposalId: string,
-  reputationForVoter: BN,
-  tokensForStaker: BN,
-  daoBountyForStaker: BN,
-  reputationForProposer: BN,
+  reputationForVoter: typeof BN,
+  tokensForStaker: typeof BN,
+  daoBountyForStaker: typeof BN,
+  reputationForProposer: typeof BN,
   tokenAddress: Address,
-  reputationForVoterRedeemedAt: BN,
-  tokensForStakerRedeemedAt: BN,
-  reputationForProposerRedeemedAt: BN,
-  daoBountyForStakerRedeemedAt: BN
+  reputationForVoterRedeemedAt: typeof BN,
+  tokensForStakerRedeemedAt: typeof BN,
+  reputationForProposerRedeemedAt: typeof BN,
+  daoBountyForStakerRedeemedAt: typeof BN
 }
 
 export interface IRewardQueryOptions extends ICommonQueryOptions {

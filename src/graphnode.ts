@@ -1,6 +1,6 @@
 import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { Observable as ZenObservable } from 'apollo-link'
-import BN = require('bn.js')
+import { BN } from './utils'
 import gql from 'graphql-tag'
 import { Observable, Observer } from 'rxjs'
 import { catchError, filter, first, map } from 'rxjs/operators'

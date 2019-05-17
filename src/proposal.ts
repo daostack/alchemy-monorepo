@@ -1,4 +1,3 @@
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
@@ -11,6 +10,7 @@ import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
+import { BN } from './utils'
 import { NULL_ADDRESS, realMathToNumber } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
@@ -56,7 +56,7 @@ export interface IProposalState {
   dao: DAO
   descriptionHash?: string
   description?: string
-  downStakeNeededToQueue: BN
+  downStakeNeededToQueue: typeof BN
   executedAt: Date
   executionState: IExecutionState
   expiresInQueueAt: Date
@@ -68,7 +68,7 @@ export interface IProposalState {
   queuedVotePeriodLimit: number // in seconds (?)
   preBoostedVotePeriodLimit: number
   limitExponentValue: number
-  proposingRepReward: BN // in REP
+  proposingRepReward: typeof BN // in REP
   preBoostedAt: Date
   proposer: Address
   queue: IQueueState
@@ -78,19 +78,19 @@ export interface IProposalState {
   resolvedAt: Date
   thresholdConst: number
   stage: IProposalStage
-  stakesFor: BN
-  stakesAgainst: BN
+  stakesFor: typeof BN
+  stakesAgainst: typeof BN
   title?: string
-  totalRepWhenExecuted: BN
+  totalRepWhenExecuted: typeof BN
   type: IProposalType,
-  upstakeNeededToPreBoost: BN
+  upstakeNeededToPreBoost: typeof BN
   url?: string
-  votesFor: BN
-  votesAgainst: BN
+  votesFor: typeof BN
+  votesAgainst: typeof BN
   votesCount: number
   winningOutcome: IProposalOutcome
   votersReputationLossRatio: number // in 1000's
-  minimumDaoBounty: BN // in GEN
+  minimumDaoBounty: typeof BN // in GEN
   daoBountyConst: number // ?
   activationTime: number
   voteOnBehalf: Address
@@ -98,13 +98,13 @@ export interface IProposalState {
 
 export interface IContributionReward {
   beneficiary: Address
-  externalTokenReward: BN
+  externalTokenReward: typeof BN
   externalToken: Address
-  ethReward: BN
-  nativeTokenReward: BN
+  ethReward: typeof BN
+  nativeTokenReward: typeof BN
   periods: number
   periodLength: number
-  reputationReward: BN
+  reputationReward: typeof BN
 }
 
 export interface IGenericScheme {
@@ -541,7 +541,7 @@ constructor(
       // upstakeNeededToPreBoost is the amount of tokens needed to upstake to move to the preboost queue
       // this is only non-zero for Queued proposals
       // note that the number can be negative!
-      let upstakeNeededToPreBoost: BN = new BN(0)
+      let upstakeNeededToPreBoost: typeof BN = new BN(0)
       const PRECISION = Math.pow(2, 40)
       if (stage === IProposalStage.Queued) {
         upstakeNeededToPreBoost = new BN(threshold * PRECISION)
@@ -552,7 +552,7 @@ constructor(
       // upstakeNeededToPreBoost is the amount of tokens needed to upstake to move to the Queued queue
       // this is only non-zero for Preboosted proposals
       // note that the number can be negative!
-      let downStakeNeededToQueue: BN = new BN(0)
+      let downStakeNeededToQueue: typeof BN = new BN(0)
       if (stage === IProposalStage.PreBoosted) {
         downStakeNeededToQueue = stakesFor.mul(new BN(PRECISION))
           .div(new BN(threshold * PRECISION))
@@ -707,7 +707,7 @@ constructor(
     return Stake.search(options, this.context)
   }
 
-  public stake(outcome: IProposalOutcome, amount: BN ): Operation < Stake > {
+  public stake(outcome: IProposalOutcome, amount: typeof BN ): Operation < Stake > {
     const stakeMethod = this.votingMachine().methods.stake(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
@@ -855,10 +855,10 @@ export interface IProposalCreateOptions {
   description?: string
   descriptionHash?: string
   callData?: string // for GenericSchemeProposal
-  nativeTokenReward?: BN // for ContributionRewardProposal
-  reputationReward?: BN // for ContributionRewardProposal
-  ethReward?: BN // for ContributionRewardProposal
-  externalTokenReward?: BN // for ContributionRewardProposal
+  nativeTokenReward?: typeof BN // for ContributionRewardProposal
+  reputationReward?: typeof BN // for ContributionRewardProposal
+  ethReward?: typeof BN // for ContributionRewardProposal
+  externalTokenReward?: typeof BN // for ContributionRewardProposal
   externalTokenAddress?: Address // for ContributionRewardProposal
   periodLength?: number // for ContributionRewardProposal
   periods?: any  // for ContributionRewardProposal

@@ -1,4 +1,3 @@
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
 import { map } from 'rxjs/operators'
@@ -8,6 +7,7 @@ import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { Token } from './token'
 import { Address, IPFSProvider, Web3Provider } from './types'
+import { BN } from './utils'
 import { isAddress } from './utils'
 const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
@@ -34,8 +34,8 @@ export class Arc extends GraphNodeObserver {
   // accounts obseved by ethBalance
   public blockHeaderSubscription: Subscription|undefined = undefined
   public observedAccounts: { [address: string]: {
-      observable?: Observable<BN>,
-      observer?: Observer<BN>,
+      observable?: Observable<typeof BN>,
+      observer?: Observer<typeof BN>,
       lastBalance?: number
       subscriptionsCount: number
     }
@@ -94,7 +94,7 @@ export class Arc extends GraphNodeObserver {
     ) as Observable<DAO[]>
   }
 
-  public ethBalance(owner: Address): Observable<BN> {
+  public ethBalance(owner: Address): Observable<typeof BN> {
     if (!this.observedAccounts[owner]) {
       this.observedAccounts[owner] = {
         subscriptionsCount: 1
@@ -102,16 +102,16 @@ export class Arc extends GraphNodeObserver {
     }
     if (this.observedAccounts[owner].observable) {
         this.observedAccounts[owner].subscriptionsCount += 1
-        return this.observedAccounts[owner].observable as Observable<BN>
+        return this.observedAccounts[owner].observable as Observable<typeof BN>
     }
 
-    const observable = Observable.create((observer: Observer<BN>) => {
+    const observable = Observable.create((observer: Observer<typeof BN>) => {
       this.observedAccounts[owner].observer = observer
 
       // get the current balance and return it
       this.web3.eth.getBalance(owner).then((currentBalance: number) => {
         const accInfo = this.observedAccounts[owner];
-        (accInfo.observer as Observer<BN>).next(new BN(currentBalance))
+        (accInfo.observer as Observer<typeof BN>).next(new BN(currentBalance))
         accInfo.lastBalance = currentBalance
       })
 
@@ -121,11 +121,11 @@ export class Arc extends GraphNodeObserver {
           Object.keys(this.observedAccounts).forEach((addr) => {
             const accInfo = this.observedAccounts[addr]
             if (err) {
-              (accInfo.observer as Observer<BN>).error(err)
+              (accInfo.observer as Observer<typeof BN>).error(err)
             } else {
               this.web3.eth.getBalance(addr).then((balance: any) => {
                 if (balance !== accInfo.lastBalance) {
-                  (accInfo.observer as Observer<BN>).next(new BN(balance))
+                  (accInfo.observer as Observer<typeof BN>).next(new BN(balance))
                   accInfo.lastBalance = balance
                 }
               })
@@ -271,7 +271,7 @@ export class Arc extends GraphNodeObserver {
     this.web3.eth.defaultAccount = address
   }
 
-  public approveForStaking(amount: BN) {
+  public approveForStaking(amount: typeof BN) {
     return this.GENToken().approveForStaking(amount)
   }
 
@@ -280,7 +280,7 @@ export class Arc extends GraphNodeObserver {
    * @param  owner owner for which to check the allowance
    * @return
    */
-  public allowance(owner: string): Observable<BN> {
+  public allowance(owner: string): Observable<typeof BN> {
     const genesisProtocol = this.getContract('GenesisProtocol')
     const spender = genesisProtocol.options.address
     return this.GENToken().allowance(owner, spender)

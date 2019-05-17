@@ -1,9 +1,9 @@
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Address, Hash, IObservableWithFirst, IStateful, Web3Receipt } from './types'
+import { BN } from './utils'
 import { isAddress } from './utils'
 
 export interface ITokenState {
@@ -11,7 +11,7 @@ export interface ITokenState {
   name: string
   owner: Address
   symbol: string
-  totalSupply: BN
+  totalSupply: typeof BN
 }
 
 export interface IApproval {
@@ -20,14 +20,14 @@ export interface IApproval {
   contract: Address
   owner: Address
   spender: Address
-  value: BN
+  value: typeof BN
 }
 
 export interface IAllowance {
   token: Address
   owner: Address
   spender: Address
-  amount: BN
+  amount: typeof BN
 }
 
 export class Token implements IStateful<ITokenState> {
@@ -67,8 +67,8 @@ export class Token implements IStateful<ITokenState> {
     return this.context.getObservableObject(query, itemMap) as Observable<ITokenState>
   }
 
-  public balanceOf(owner: string): IObservableWithFirst<BN> {
-    const observable = Observable.create(async (observer: Observer<BN>) => {
+  public balanceOf(owner: string): IObservableWithFirst<typeof BN> {
+    const observable = Observable.create(async (observer: Observer<typeof BN>) => {
       const contract = this.contract()
       let subscription: Subscription
       contract.methods.balanceOf(owner).call()
@@ -94,8 +94,8 @@ export class Token implements IStateful<ITokenState> {
     return observable
   }
 
-  public allowance(owner: Address, spender: Address): Observable<BN> {
-    return Observable.create(async (observer: Observer<BN>) => {
+  public allowance(owner: Address, spender: Address): Observable<typeof BN> {
+    return Observable.create(async (observer: Observer<typeof BN>) => {
       let subscription: Subscription
       const contract = this.contract()
       contract.methods.allowance(owner, spender).call()
@@ -130,21 +130,21 @@ export class Token implements IStateful<ITokenState> {
     return new this.context.web3.eth.Contract(ReputationContractInfo.abi, this.address)
   }
 
-  public mint(beneficiary: Address, amount: BN) {
+  public mint(beneficiary: Address, amount: typeof BN) {
     const contract = this.contract()
     const transaction = contract.methods.mint(beneficiary, amount.toString())
     const mapReceipt = (receipt: Web3Receipt) => receipt
     return this.context.sendTransaction(transaction, mapReceipt)
   }
 
-  public transfer(beneficiary: Address, amount: BN) {
+  public transfer(beneficiary: Address, amount: typeof BN) {
     const contract = this.contract()
     const transaction = contract.methods.transfer(beneficiary, amount.toString())
     const mapReceipt = (receipt: Web3Receipt) => receipt
     return this.context.sendTransaction(transaction, mapReceipt)
   }
 
-  public approveForStaking(amount: BN) {
+  public approveForStaking(amount: typeof BN) {
     const stakingToken = this.contract()
     const genesisProtocol = this.context.getContract('GenesisProtocol')
 

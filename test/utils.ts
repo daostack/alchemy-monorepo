@@ -1,4 +1,4 @@
-import BN = require('bn.js')
+import { BN } from './utils'
 import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { DAO } from '../src/dao'

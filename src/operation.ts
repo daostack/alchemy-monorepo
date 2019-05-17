@@ -1,9 +1,9 @@
-const BN = require('bn.js')
 import { Observable, Observer } from 'rxjs'
 import { first, take } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Logger } from './logger'
 import { Web3Receipt } from './types'
+import { BN } from './utils'
 
 export enum ITransactionState {
   Sending,
