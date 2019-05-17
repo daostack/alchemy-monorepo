@@ -70,12 +70,13 @@ export function createApolloClient(options: {
         Query: {
           dao: (_, args, { getCacheKey }) =>  getCacheKey({ __typename: 'DAO', id: args.id }),
           proposal: (_, args, { getCacheKey }) => {
-            console.log('cache key: ', [args, getCacheKey({ __typename: 'Proposal', id: args.id })])
+            // console.log('cache key: ', [args, getCacheKey({ __typename: 'Proposal', id: args.id })])
             return getCacheKey({ __typename: 'Proposal', id: args.id })
           }
         }
       }
     }),
+    connectToDevTools: true,
     link: wsOrHttpLink
   })
   return client
