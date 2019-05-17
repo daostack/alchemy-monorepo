@@ -65,7 +65,17 @@ export function createApolloClient(options: {
   //     wsorhttplink
   //   ])
   const client = new ApolloClient({
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      cacheRedirects: {
+        Query: {
+          dao: (_, args, { getCacheKey }) =>  getCacheKey({ __typename: 'DAO', id: args.id }),
+          proposal: (_, args, { getCacheKey }) => {
+            console.log('cache key: ', [args, getCacheKey({ __typename: 'Proposal', id: args.id })])
+            return getCacheKey({ __typename: 'Proposal', id: args.id })
+          }
+        }
+      }
+    }),
     link: wsOrHttpLink
   })
   return client
