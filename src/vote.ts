@@ -16,10 +16,10 @@ export interface IVote {
 }
 
 export interface IVoteQueryOptions extends ICommonQueryOptions {
+  id?: string
   voter?: Address
   proposal?: string
   dao?: Address
-  [key: string]: any
 }
 
 export class Vote implements IVote {
