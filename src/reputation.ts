@@ -1,11 +1,10 @@
 import { ApolloQueryResult } from 'apollo-client'
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { Address, ICommonQueryOptions, IStateful, Web3Receipt } from './types'
-import { isAddress } from './utils'
+import { BN, isAddress } from './utils'
 
 export interface IReputationState {
   address: Address
@@ -71,7 +70,7 @@ export class Reputation implements IStateful<IReputationState> {
     return this.context.getObservableObject(query, itemMap) as Observable<IReputationState>
   }
 
-  public reputationOf(address: Address): Observable<BN> {
+  public reputationOf(address: Address): Observable<typeof BN> {
     isAddress(address)
 
     const query = gql`{
@@ -100,7 +99,7 @@ export class Reputation implements IStateful<IReputationState> {
     return new this.context.web3.eth.Contract(ReputationContractInfo.abi, this.address)
   }
 
-  public mint(beneficiary: Address, amount: BN) {
+  public mint(beneficiary: Address, amount: typeof BN) {
     const contract = this.contract()
     const transaction = contract.methods.mint(beneficiary, amount.toString())
     const mapReceipt = (receipt: Web3Receipt) => receipt
