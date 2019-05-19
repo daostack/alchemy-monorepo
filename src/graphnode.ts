@@ -40,7 +40,7 @@ export class GraphNodeObserver {
       Logger.debug(query.loc.source.body)
 
       if (!apolloQueryOptions.fetchPolicy) {
-        apolloQueryOptions.fetchPolicy = 'network-only'
+        apolloQueryOptions.fetchPolicy = 'cache-first'
       }
 
       // subscriptionQuery subscribes to get notified of updates to the query
@@ -49,9 +49,10 @@ export class GraphNodeObserver {
         `
       // subscribe
       const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({
-        fetchPolicy: 'network-only',
+        fetchPolicy: 'cache-first',
         query: subscriptionQuery
        })
+
       zenObservable.subscribe((next: any) => {
           this.apolloClient.writeQuery({
             data: next.data,
@@ -61,7 +62,7 @@ export class GraphNodeObserver {
 
       const sub = zenToRxjsObservable(
         this.apolloClient.watchQuery({
-          fetchPolicy: 'cache-and-network',
+          fetchPolicy: 'cache-first',
           fetchResults: true,
           query
         })
