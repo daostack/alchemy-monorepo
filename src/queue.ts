@@ -1,8 +1,8 @@
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { Address } from './types'
+import { BN } from './utils'
 import { realMathToNumber } from './utils'
 
 export interface IQueueState {

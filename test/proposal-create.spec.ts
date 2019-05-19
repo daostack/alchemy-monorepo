@@ -1,4 +1,4 @@
-import BN = require('bn.js')
+import { BN } from './utils'
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IContributionReward, IProposalStage, IProposalType, Proposal } from '../src/proposal'

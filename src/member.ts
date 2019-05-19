@@ -1,8 +1,8 @@
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
+import { BN } from './utils'
 
 import { IProposalQueryOptions, Proposal } from './proposal'
 import { Reward } from './reward'
@@ -14,9 +14,9 @@ import { IVote, IVoteQueryOptions, Vote } from './vote'
 export interface IMemberState {
   address: Address
   dao: DAO,
-  reputation: BN
+  reputation: typeof BN
   // 'tokens' --> balance of address in dao.nativeToken.balanceOf
-  tokens: BN
+  tokens: typeof BN
 }
 
 /**
