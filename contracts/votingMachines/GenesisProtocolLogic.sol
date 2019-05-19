@@ -714,6 +714,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
                 if (proposal.state != ProposalState.QuietEndingPeriod) {
                     proposal.currentBoostedVotePeriodLimit = params.quietEndingPeriod;
                     proposal.state = ProposalState.QuietEndingPeriod;
+                    emit StateChange(_proposalId, proposal.state);
                 }
                 // solhint-disable-next-line not-rely-on-time
                 proposal.times[1] = now;

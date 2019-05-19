@@ -1352,7 +1352,11 @@ contract('GenesisProtocol', accounts => {
       await helpers.increaseTime(50); //get into the quite period
       assert.equal(await threshold(testSetup),2);
 
-      await testSetup.genesisProtocol.vote(proposalId,NO,0,helpers.NULL_ADDRESS,{from:accounts[0]}); //change winning vote
+      var tx = await testSetup.genesisProtocol.vote(proposalId,NO,0,helpers.NULL_ADDRESS,{from:accounts[0]}); //change winning vote
+
+      assert.equal(tx.logs[0].event, "StateChange");
+      assert.equal(tx.logs[0].args._proposalState, 6);
+
       assert.equal(await threshold(testSetup),2);
 
       proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
