@@ -75,7 +75,7 @@ describe('Claim rewards', () => {
     // (it could be higher because we may get rewards for voting)
     expect(Number(reputationBalances[1].sub(reputationBalances[0]).toString()))
       .toBeGreaterThanOrEqual(Number(reputationReward.toString()))
-  }, 10000)
+  })
 
   it('works for external token', async () => {
     const dao = await getTestDAO()
@@ -117,7 +117,7 @@ describe('Claim rewards', () => {
     const newTokenBalance = await firstResult(arc.GENToken().balanceOf(beneficiary))
     expect(newTokenBalance.sub(prevTokenBalance).toString()).toEqual(externalTokenReward.toString())
 
-  }, 10000)
+  })
 
   it('claimRewards should also work without providing a "beneficiary" argument', async () => {
     const proposal: Proposal = await createAProposal()

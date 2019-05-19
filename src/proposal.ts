@@ -311,7 +311,7 @@ export class Proposal implements IStateful<IProposalState> {
       if (key === 'stage' && value !== undefined) {
         where += `stage: "${IProposalStage[value as IProposalStage]}"\n`
       } else if (key === 'stage_in' && Array.isArray(value)) {
-        const stageValues = options[key].map((stage: number) => '"' + IProposalStage[stage as IProposalStage] + '"')
+        const stageValues = value.map((stage: number) => '"' + IProposalStage[stage as IProposalStage] + '"')
         where += `stage_in: [${stageValues.join(',')}]\n`
       } else if (key === 'type') {
         // TODO: we are not distinguishing between the schemeregisterpropose
@@ -837,16 +837,23 @@ enum ProposalQuerySortOptions {
 }
 
 export interface IProposalQueryOptions extends ICommonQueryOptions {
+  accountsWithUnclaimedRewards_contains?: Address[]
   active?: boolean
   boosted?: boolean
+  dao?: Address
+  expiresInQueueAt?: Date
+  expiresInQueueAt_gte?: Date
+  expiresInQueueAt_lte?: Date
+  expiresInQueueAt_gt?: Date
+  executedAfter?: Date
+  executedBefore?: Date
+  id?: string
   proposer?: Address
   proposalId?: string
   stage?: IProposalStage
+  stage_in?: IProposalStage[]
   orderBy?: ProposalQuerySortOptions
-  // the options above should be ok for the current alchemy; will add more options as needed
-  executedAfter?: Date
-  executedBefore?: Date
-  [key: string]: any
+  type?: IProposalType
 }
 
 export interface IProposalCreateOptions {

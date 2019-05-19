@@ -23,12 +23,12 @@ export interface IRewardState {
 }
 
 export interface IRewardQueryOptions extends ICommonQueryOptions {
+  id?: string
+  beneficiary?: Address
+  dao?: Address
   proposal?: string
-  // TODO: beneficiary is not a field on Reward - see issue https://github.com/daostack/subgraph/issues/60
-  // beneficiary?: Address
   createdAtAfter?: Date
   createdAtBefore?: Date
-  [id: string]: any
 }
 
 export class Reward implements IStateful<IRewardState> {
@@ -46,8 +46,8 @@ export class Reward implements IStateful<IRewardState> {
     for (const key of Object.keys(options)) {
       if (options[key] !== undefined) {
         if (key === 'beneficiary') {
-          isAddress(options[key])
-          options[key] = options[key].toLowerCase()
+          isAddress(options.beneficiary)
+          options[key] = (options[key] as Address).toLowerCase()
         }
         where += `${key}: "${options[key] as string}"\n`
       }

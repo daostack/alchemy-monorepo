@@ -12,14 +12,14 @@ export interface IStake {
   outcome: IProposalOutcome
   amount: typeof BN // amount staked
   proposalId: string
-  // dao: Address
 }
 
 export interface IStakeQueryOptions extends ICommonQueryOptions {
+  id?: string
+  dao?: Address
   proposal?: string
   staker?: Address
   createdAt?: number
-  [id: string]: any
 }
 
 export class Stake implements IStake {

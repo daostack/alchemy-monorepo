@@ -116,7 +116,10 @@ export function eventId(event: EthereumEvent): string {
   return hash
 }
 
-export function isAddress(address: Address) {
+export function isAddress(address: Address|undefined) {
+  if (!address) {
+    throw new Error(`Not a valid address: ${address}`)
+  }
   if (!Web3.utils.isAddress(address)) {
     throw new Error(`Not a valid address: ${address}`)
   }

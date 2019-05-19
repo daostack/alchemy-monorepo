@@ -137,5 +137,4 @@ export class Member implements IStateful<IMemberState> {
 export interface IMemberQueryOptions extends ICommonQueryOptions {
   address?: Address
   dao?: Address
-  [id: string]: any
 }
