@@ -1,10 +1,9 @@
-const DAOstackMigration = require('@daostack/migration')
-import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Proposal } from '../src/proposal'
 import { Scheme } from '../src/scheme'
-import { firstResult, getTestDAO, newArc } from './utils'
+import { firstResult, getContractAddressesFromMigration, getTestDAO,  IContractAddressesFromMigration,
+  newArc } from './utils'
 
 jest.setTimeout(10000)
 
@@ -14,9 +13,11 @@ jest.setTimeout(10000)
 describe('Scheme', () => {
 
   let arc: Arc
+  let addresses: IContractAddressesFromMigration
 
   beforeAll(async () => {
     arc = await newArc()
+    addresses = await getContractAddressesFromMigration()
   })
 
   it('Scheme is instantiable', () => {
@@ -74,8 +75,8 @@ describe('Scheme', () => {
   })
 
   it('Scheme.state() should be equal to proposal.state().scheme', async () => {
-    const { queuedProposalId } = DAOstackMigration.migration('private').test
-    const proposal = new Proposal(queuedProposalId, '', arc)
+    const { queuedProposalId } = addresses.test
+    const proposal = new Proposal(queuedProposalId, '', '', arc)
     const proposalState = await proposal.state().pipe(first()).toPromise()
     const schemes = await firstResult(Scheme.search({id: proposalState.scheme.id}, arc))
     const schemeState = await firstResult(schemes[0].state())

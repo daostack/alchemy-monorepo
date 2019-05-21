@@ -59,7 +59,7 @@ export type web3receipt = object
  */
 export function sendTransaction<T>(
   transaction: any,
-  map: (receipt: web3receipt) => T,
+  mapReceipt: (receipt: web3receipt) => T,
   errorHandler: (error: Error) => Promise<Error> | Error = (error) => error,
   context: Arc
 ): Operation<T> {
@@ -111,10 +111,10 @@ export function sendTransaction<T>(
           transactionHash
         })
       })
-      .once('receipt', (receipt: any) => {
+      .once('receipt', async (receipt: any) => {
         Logger.debug(`transaction mined!`)
         try {
-          result = map(receipt)
+          result = await mapReceipt(receipt)
         } catch (err) {
           observer.error(err)
         }
@@ -126,11 +126,11 @@ export function sendTransaction<T>(
           transactionHash
         })
       })
-      .on('confirmation', (confNumber: number, receipt: any) => {
+      .on('confirmation', async (confNumber: number, receipt: any) => {
         // result should have been set by previous call to 'receipt', but better be sure
         if (!result) {
           try {
-            result = map(receipt)
+            result = await mapReceipt(receipt)
           } catch (err) {
             observer.error(err)
           }

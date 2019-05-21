@@ -1,7 +1,7 @@
-import { BN } from './utils'
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
+import { BN } from './utils'
 import { fromWei, getTestDAO, newArc, toWei } from './utils'
 
 /**
@@ -50,15 +50,13 @@ describe('DAO', () => {
       'reputation',
       'reputationTotalSupply',
       'token',
-      'tokenBalance',
       'tokenName',
       'tokenSymbol',
       'tokenTotalSupply'
     ])
-    expect(typeof state.tokenBalance).toEqual(typeof new BN(0))
     expect(state.address).toEqual(dao.address)
     // the created DAO has 6 members but other tests may add rep
-    expect(state.memberCount).toBeGreaterThanOrEqual(6)
+    expect(state.memberCount).toBeGreaterThanOrEqual(5)
   })
 
   it('throws a reasonable error if the contract does not exist', async () => {

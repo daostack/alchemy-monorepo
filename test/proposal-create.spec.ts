@@ -56,7 +56,7 @@ describe('Create a ContributionReward proposal', () => {
     expect(fromWei(contributionReward.ethReward)).toEqual('300')
     expect(fromWei(contributionReward.nativeTokenReward)).toEqual('1')
     expect(fromWei(contributionReward.reputationReward)).toEqual('10')
-    expect(fromWei(proposalState.stakesAgainst)).toEqual('0.0000001') // TODO: why this amount?
+    expect(fromWei(proposalState.stakesAgainst)).toEqual('100') // TODO: why this amount?
     expect(fromWei(proposalState.stakesFor)).toEqual('0')
 
     expect(proposalState).toMatchObject({
@@ -99,7 +99,7 @@ describe('Create a ContributionReward proposal', () => {
       return proposals.length > 0
     }
     await waitUntilTrue(proposalIsIndexed)
-    const proposal2 = new Proposal(proposal.id, proposal.dao.address, arc)
+    const proposal2 = new Proposal(proposal.id, proposal.dao.address, '', arc)
     const proposalState = await proposal2.state().pipe(first()).toPromise()
     expect(proposalState.descriptionHash).toEqual('QmRg47CGnf8KgqTZheTejowoxt4SvfZFqi7KGzr2g163uL')
 

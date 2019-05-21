@@ -60,7 +60,7 @@ describe('Token', () => {
   })
 
   it('mint some new tokens', async () => {
-    const token = new Token(addresses.organs.DemoDAOToken, arc)
+    const token = new Token(addresses.test.organs.DemoDAOToken, arc)
     const account = '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1'
     // check if the currentAccount is the owner of the contract
     const balances: Array<typeof BN> = []
@@ -88,12 +88,12 @@ describe('Token', () => {
     const token = new Token(arc.getContract('GEN').options.address, arc)
     const amount = toWei('31415')
     const allowances: Array<typeof BN> = []
-    const genesisProtocol = arc.getContract('GenesisProtocol')
+    const genesisProtocolAddress = addresses.base.GenesisProtocol
 
-    token.allowance(arc.web3.eth.defaultAccount, genesisProtocol.options.address).subscribe(
+    token.allowance(arc.web3.eth.defaultAccount, genesisProtocolAddress).subscribe(
       (next: any) => allowances.push(next)
     )
-    await token.approveForStaking(amount).send()
+    await token.approveForStaking(genesisProtocolAddress, amount).send()
     const lastAllowance = () => allowances[allowances.length - 1]
     await waitUntilTrue(() => allowances.length > 0 && lastAllowance().gte(amount))
     expect(lastAllowance()).toMatchObject(amount)

@@ -191,11 +191,10 @@ export class Arc extends GraphNodeObserver {
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenericScheme, opts)
         this.contracts[name] = contract
         return contract
-      case 'GenesisProtocol':
-        contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenesisProtocol, opts)
-        this.contracts[name] = contract
-        return contract
+      // case 'GenesisProtocol':
+      //   contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
+      //   contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenesisProtocol, opts)
+      //   return contract
       case 'Redeemer':
         contractClass = require('@daostack/arc/build/contracts/Redeemer.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.Redeemer, opts)
@@ -271,18 +270,17 @@ export class Arc extends GraphNodeObserver {
     this.web3.eth.defaultAccount = address
   }
 
-  public approveForStaking(amount: typeof BN) {
-    return this.GENToken().approveForStaking(amount)
+  public approveForStaking(spender: Address, amount: typeof BN) {
+    return this.GENToken().approveForStaking(spender, amount)
   }
 
   /**
-   * How much GEN the genesisProtocol may spend on behalve of the owner
-   * @param  owner owner for which to check the allowance
+   * How much GEN  spander spend on behalve of the owner
+   * @param  owner Address of the owner of the tokens
+   * @param  spender Address of the spender
    * @return
    */
-  public allowance(owner: string): Observable<typeof BN> {
-    const genesisProtocol = this.getContract('GenesisProtocol')
-    const spender = genesisProtocol.options.address
+  public allowance(owner: Address, spender: Address): Observable<typeof BN> {
     return this.GENToken().allowance(owner, spender)
   }
 

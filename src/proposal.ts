@@ -1,6 +1,7 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
+import Web3 = require('web3')
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { Logger } from './logger'
@@ -9,8 +10,11 @@ import { IQueueState } from './queue'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { ISchemeState } from './scheme'
 import { IContributionReward } from './schemes/contributionReward'
+import * as ContributionReward from './schemes/contributionReward'
 import { IGenericScheme } from './schemes/genericScheme'
+import * as GenericScheme from './schemes/genericScheme'
 import { ISchemeRegistrar } from './schemes/schemeRegistrar'
+import * as SchemeRegistrar from './schemes/schemeRegistrar'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
@@ -18,13 +22,16 @@ import { BN } from './utils'
 import { NULL_ADDRESS, realMathToNumber } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
-export enum IProposalType {
-  ContributionReward = 'ContributionReward', // propose a contributionReward
-  GenericScheme = 'GenericScheme', // propose to execute a function call from a registered genericScheme
-  SchemeRegistrarAdd = 'SchemeRegistrarAdd', // propose to register to schme
-  SchemeRegistrarEdit = 'SchemeRegistrarEdit', // propose to edit a registered scheme
-  SchemeRegistrarRemove = 'SchemeRegistrarRemove' // propose to remove a registered scheme
+export const IProposalType = {
+  ...ContributionReward.IProposalType,
+  ...GenericScheme.IProposalType,
+  ...SchemeRegistrar.IProposalType
 }
+type IProposalType = (
+  ContributionReward.IProposalType |
+  GenericScheme.IProposalType |
+  SchemeRegistrar.IProposalType
+)
 
 export enum IProposalOutcome {
   None,
@@ -285,7 +292,8 @@ export class Proposal implements IStateful<IProposalState> {
 
     const map = (receipt: any) => {
       const proposalId = receipt.events[eventName].returnValues._proposalId
-      return new Proposal(proposalId, options.dao as string, context)
+      const votingMachineAddress = receipt.events[eventName].returnValues._intVoteInterface
+      return new Proposal(proposalId, options.dao as string, votingMachineAddress, context)
     }
 
     return context.sendTransaction(createTransaction, map)
@@ -350,13 +358,14 @@ export class Proposal implements IStateful<IProposalState> {
           dao {
             id
           }
+          votingMachine
         }
       }
     `
 
     return context.getObservableList(
       query,
-      (r: any) => new Proposal(r.id, r.dao.id, context),
+      (r: any) => new Proposal(r.id, r.dao.id, r.votingMachine, context),
       apolloQueryOptions
     ) as Observable<Proposal[]>
   }
@@ -368,17 +377,15 @@ export class Proposal implements IStateful<IProposalState> {
 
 constructor(
     public id: string,
-    public daoAddress: Address,
-    // public type: IProposalType = IProposalType.ContributionReward,
+    daoAddress: Address,
+    public votingMachineAddress: Address,
     context: Arc
   ) {
     this.id = id
     this.context = context
     this.dao = new DAO(daoAddress, context)
-    // this.type = type
   }
-
-  public state(): Observable<IProposalState> {
+  public state(): Observable < IProposalState > {
     const query = gql`
       {
         proposal(id: "${this.id}") {
@@ -477,7 +484,6 @@ constructor(
           }
           votesAgainst
           votesFor
-          votingMachine
           winningOutcome
         }
       }
@@ -655,7 +661,12 @@ constructor(
    * @return [description]
    */
   public votingMachine() {
-    return this.context.getContract('GenesisProtocol')
+    const votingMachineAddress = this.votingMachineAddress
+    if (!votingMachineAddress) {
+      throw Error('No votingmachine address known for this proposal')
+    }
+    const contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
+    return new this.context.web3.eth.Contract(contractClass.abi, votingMachineAddress)
   }
 
   public redeemerContract() {
@@ -835,13 +846,13 @@ constructor(
       }
     }
     const errorHandler = async (err: Error) => {
-      const gpProtocol = this.context.getContract('GenesisProtocol')
-      const proposalDataFromGP = await gpProtocol.methods.proposals(this.id).call()
+      const votingMachine = this.votingMachine()
+      const proposalDataFromVotingMachine = await votingMachine.methods.proposals(this.id).call()
 
-      if (proposalDataFromGP.callbacks === NULL_ADDRESS) {
+      if (proposalDataFromVotingMachine.callbacks === NULL_ADDRESS) {
         const msg = `Error in proposal.execute(): A proposal with id ${this.id} does not exist`
         return Error(msg)
-      } else if (proposalDataFromGP.state === '2') {
+      } else if (proposalDataFromVotingMachine.state === '2') {
         const msg = `Error in proposal.execute(): proposal ${this.id} already executed`
         return Error(msg)
       }

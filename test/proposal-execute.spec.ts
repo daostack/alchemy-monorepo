@@ -1,7 +1,7 @@
-import { BN } from './utils'
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IProposalOutcome, IProposalStage, IProposalState, IProposalType, Proposal } from '../src/proposal'
+import { BN } from './utils'
 import { createAProposal, fromWei, getTestDAO, newArc,
   timeTravel, toWei, voteToAcceptProposal, waitUntilTrue } from './utils'
 
@@ -28,12 +28,9 @@ describe('Proposal execute()', () => {
       reputationReward: toWei('1'),
       type: IProposalType.ContributionReward
     }
-    const response = await dao.createProposal(options).send()
-    const proposalId = (response.result as any).id
+    const proposal = await dao.createProposal(options).send()
 
-    const proposal = new Proposal(proposalId, dao.address, arc)
-
-    let proposalState
+    let proposalState: IProposalState
     let proposalIsIndexed: boolean = false
     const proposalStates: IProposalState[] = []
     proposal.state().subscribe(
@@ -94,7 +91,7 @@ describe('Proposal execute()', () => {
     const dao = await getTestDAO()
     // a non-existing proposal
     const proposal = new Proposal(
-      '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, arc
+      '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, '', arc
     )
     await expect(proposal.execute().send()).rejects.toThrow(
       /does not exist/i

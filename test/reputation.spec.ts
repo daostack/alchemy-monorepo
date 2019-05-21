@@ -55,7 +55,7 @@ describe('Reputation', () => {
   })
 
   it('mint() works', async () => {
-    const reputation = new Reputation(addresses.organs.DemoReputation, arc)
+    const reputation = new Reputation(addresses.test.organs.DemoReputation, arc)
     const reputationBefore = new BN(await reputation.contract().methods.balanceOf(accounts[3].address).call())
     await reputation.mint(accounts[3].address, toWei(1)).send()
     await reputation.mint(accounts[3].address, new BN('1')).send()
@@ -89,7 +89,7 @@ describe('Reputation', () => {
 
     await waitUntilTrue(() => reputations.length !== 0)
 
-    expect(reputations.length).toEqual(2)
+    expect(reputations.length).toBeGreaterThanOrEqual(2)
 
     const expectedAddresses = [
       address,

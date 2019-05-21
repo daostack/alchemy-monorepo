@@ -32,17 +32,18 @@ describe('Arc ', () => {
 
   it('arc.allowance() should work', async () => {
     const arc = await newArc()
+
     const allowances: Array<typeof BN> = []
+    const spender = '0xDb56f2e9369E0D7bD191099125a3f6C370F8ed15'
     const amount = toWei(1001)
-    await arc.approveForStaking(amount).send()
-    arc.allowance(arc.web3.eth.defaultAccount).subscribe(
+    await arc.approveForStaking(spender, amount).send()
+    arc.allowance(arc.web3.eth.defaultAccount, spender).subscribe(
       (next: typeof BN) => {
         allowances.push(next)
       }
     )
     const lastAllowance = () => allowances[allowances.length - 1]
     await waitUntilTrue(() => (allowances.length > 0))
-     // && lastAllowance().eq(amount)))
     expect(fromWei(lastAllowance())).toEqual('1001')
   })
 

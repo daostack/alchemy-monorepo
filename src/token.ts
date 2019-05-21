@@ -144,20 +144,10 @@ export class Token implements IStateful<ITokenState> {
     return this.context.sendTransaction(transaction, mapReceipt)
   }
 
-  public approveForStaking(amount: typeof BN) {
+  public approveForStaking(spender: Address, amount: typeof BN) {
     const stakingToken = this.contract()
-    const genesisProtocol = this.context.getContract('GenesisProtocol')
-
-    const transaction = stakingToken.methods.approve(genesisProtocol.options.address, amount.toString())
-
-    const mapReceipt = (receipt: Web3Receipt) => {
-      if (Object.keys(receipt.events).length  === 0) {
-        // this does not mean that anything failed,
-        return receipt
-      } else {
-        return receipt
-      }
-    }
+    const transaction = stakingToken.methods.approve(spender, amount.toString())
+    const mapReceipt = (receipt: Web3Receipt) => receipt
     return this.context.sendTransaction(transaction, mapReceipt)
   }
 }

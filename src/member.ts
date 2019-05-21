@@ -15,12 +15,10 @@ export interface IMemberState {
   address: Address
   dao: DAO,
   reputation: typeof BN
-  // 'tokens' --> balance of address in dao.nativeToken.balanceOf
-  tokens: typeof BN
 }
 
 /**
- * Represents a user of a DAO
+ * Represents an account that holds reputaion in a specific DAO
  */
 
 export class Member implements IStateful<IMemberState> {
@@ -37,7 +35,7 @@ export class Member implements IStateful<IMemberState> {
     }
 
     const query = gql`{
-      members(where: {
+      reputationHolders (where: {
         ${where}
       }) {
         id
@@ -68,7 +66,7 @@ export class Member implements IStateful<IMemberState> {
   public state(): Observable<IMemberState> {
     const query = gql`
       {
-        members (
+        reputationHolders (
           where: {
             address: "${this.address}"
             dao: "${this.daoAddress}"
@@ -79,8 +77,7 @@ export class Member implements IStateful<IMemberState> {
           dao {
             id
           }
-          reputation
-          tokens
+          balance
         }
       }
     `
@@ -90,18 +87,14 @@ export class Member implements IStateful<IMemberState> {
         return {
           address: this.address,
           dao: new DAO(this.daoAddress, this.context),
-          reputation: new BN(0),
-          // TODO: we did not find the member, so we do not know how many tokens she holds,
-          // cf. https://github.com/daostack/subgraph/issues/97
-          tokens: new BN(0)
+          reputation: new BN(0)
         }
       } else {
         const item = items[0]
         return {
           address: this.address,
           dao: new DAO(this.daoAddress, this.context),
-          reputation: new BN(item.reputation),
-          tokens: new BN(item.tokens)
+          reputation: new BN(item.balance)
         }
       }
     }

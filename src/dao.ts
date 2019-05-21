@@ -20,15 +20,14 @@ import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export interface IDAOState {
   address: Address // address of the avatar
-  memberCount: number
   name: string
   reputation: Reputation
-  reputationTotalSupply: typeof BN,
-  token: Token,
-  tokenBalance: typeof BN,
-  tokenName: string,
-  tokenSymbol: string,
-  tokenTotalSupply: typeof BN,
+  memberCount: number
+  reputationTotalSupply: typeof BN
+  token: Token
+  tokenName: string
+  tokenSymbol: string
+  tokenTotalSupply: typeof BN
 }
 
 export class DAO implements IStateful<IDAOState> {
@@ -45,11 +44,7 @@ export class DAO implements IStateful<IDAOState> {
         name
         nativeReputation { id, totalSupply }
         nativeToken { id, name, symbol, totalSupply }
-        membersCount
-        members (where: {address:"${this.address}"}) {
-         tokens
-         reputation
-        }
+        reputationHoldersCount
       }
     }`
 
@@ -59,12 +54,11 @@ export class DAO implements IStateful<IDAOState> {
       }
       return {
         address: item.id,
-        memberCount: Number(item.membersCount),
+        memberCount: Number(item.reputationHoldersCount),
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, this.context),
         reputationTotalSupply: new BN(item.nativeReputation.totalSupply),
         token: new Token(item.nativeToken.id, this.context),
-        tokenBalance: new BN(item.members[0].tokens || 0),
         tokenName: item.nativeToken.name,
         tokenSymbol: item.nativeToken.symbol,
         tokenTotalSupply: item.nativeToken.totalSupply
@@ -88,7 +82,7 @@ export class DAO implements IStateful<IDAOState> {
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
     const query = gql`{
-      members (where: {
+      reputationHolders (where: {
         dao: "${this.address}"
         address_not: "${this.address}"
         address_not: "${NULL_ADDRESS}"
@@ -105,13 +99,19 @@ export class DAO implements IStateful<IDAOState> {
     return new Member(address, this.address, this.context)
   }
 
+  /**
+   * create a new proposal in this DAO
+   * TODO: move this to the schemes - we should call proposal.scheme.createProposal
+   * @param  options [description]
+   * @return a Proposal instance
+   */
   public createProposal(options: IProposalCreateOptions) {
     options.dao = this.address
     return Proposal.create(options, this.context)
   }
 
   public proposal(id: string): Proposal {
-    return new Proposal(id, this.address, this.context)
+    return new Proposal(id, this.address, '', this.context)
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {

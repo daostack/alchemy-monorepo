@@ -5,7 +5,7 @@ import {
   IProposalType,
   Proposal
   } from '../src/proposal'
-
+import { IGenericScheme} from '../src/schemes/genericScheme'
 import { createAProposal, getContractAddressesFromMigration, getTestDAO, newArc,
   voteToAcceptProposal, waitUntilTrue } from './utils'
 

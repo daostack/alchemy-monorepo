@@ -35,7 +35,6 @@ describe('Member', () => {
     const member = new Member(defaultAccount, dao.address, arc)
     const memberState = await member.state().pipe(first()).toPromise()
     expect(Number(fromWei(memberState.reputation))).toBeGreaterThan(0)
-    expect(Number(fromWei(memberState.tokens))).toBeGreaterThan(0)
     expect(memberState.dao).toBeInstanceOf(DAO)
     expect(memberState.address).toEqual(defaultAccount)
     expect(memberState.dao.address).toBe(dao.address.toLowerCase())
@@ -51,7 +50,6 @@ describe('Member', () => {
 
   it('Member proposals() works', async () => {
     const member = new Member(defaultAccount, dao.address, arc)
-    const proposal = await createAProposal()
     let proposals: Proposal[] = []
     member.proposals().subscribe((next: Proposal[]) => proposals = next)
     // wait until the proposal has been indexed
@@ -70,7 +68,7 @@ describe('Member', () => {
       await stakingToken.mint(stakerAccount, toWei('10000')).send()
       // switch the defaultAccount to a fresh one
       stakingToken.context.web3.eth.defaultAccount = stakerAccount
-      await stakingToken.approveForStaking(toWei('1000')).send()
+      await stakingToken.approveForStaking(proposal.votingMachine().options.address, toWei('1000')).send()
 
       await proposal.stake(IProposalOutcome.Pass, toWei('99')).send()
       let stakes: Stake[] = []

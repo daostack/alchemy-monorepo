@@ -44,17 +44,27 @@ export function toWei(amount: string | number): typeof BN {
 export interface IContractAddressesFromMigration {
   base: { [key: string]: Address }
   dao: { [key: string]: Address }
-  organs: { [key: string]: Address }
-  test: { [key: string]: Address }
+  test: {
+    organs: { [key: string]: Address },
+    Avatar: Address,
+    boostedProposalId: Address,
+    executedProposalId: Address,
+    queuedProposalId: Address,
+    preBoostedProposalId: Address,
+    [key: string]: Address|{ [key: string]: Address }
+  }
 }
 
 export function getContractAddressesFromMigration(): IContractAddressesFromMigration {
   const path = '@daostack/migration/migration.json'
-  const addresses = require(path)
-  if (!addresses || addresses === {}) {
-    throw Error(`No addresses found, does the file at ${path} exist?`)
+  const migration = require(path).private
+  const version = '0.0.1-rc.19'
+  const addresses = {
+    base: migration.base[version],
+    dao: migration.dao[version],
+    test: migration.test[version]
   }
-  return addresses.private
+  return addresses
 }
 
 export async function getOptions(web3: any) {
@@ -85,7 +95,7 @@ export async function newArc() {
 export async function mintSomeReputation() {
   const arc = await newArc()
   const addresses = getContractAddressesFromMigration()
-  const token = new Reputation(addresses.organs.DemoReputation, arc)
+  const token = new Reputation(addresses.test.organs.DemoReputation, arc)
   const accounts = arc.web3.eth.accounts.wallet
   await token.mint(accounts[1].address, toWei('99')).send()
 }
@@ -108,6 +118,10 @@ export async function getTestDAO() {
   // we are using for testing
   const arc = await newArc()
   const contractAddressesfromMigration = await getContractAddressesFromMigration()
+  if (!contractAddressesfromMigration.test.Avatar) {
+    const msg = `Expected to find ".test.avatar" in the migration file, found ${contractAddressesfromMigration} instead`
+    throw Error(msg)
+  }
   return arc.dao(contractAddressesfromMigration.test.Avatar)
 }
 

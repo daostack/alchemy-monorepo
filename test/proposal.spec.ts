@@ -1,10 +1,12 @@
-const DAOstackMigration = require('@daostack/migration')
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IExecutionState, IProposalOutcome, IProposalStage, IProposalState,
   IProposalType,
   Proposal } from '../src/proposal'
-import { createAProposal, fromWei, newArc, toWei, waitUntilTrue} from './utils'
+import { IContributionReward } from '../src/schemes/contributionReward'
+import { BN } from './utils'
+import { createAProposal, fromWei, getContractAddressesFromMigration,
+  IContractAddressesFromMigration, newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 /**
@@ -12,19 +14,21 @@ jest.setTimeout(10000)
  */
 describe('Proposal', () => {
   let arc: Arc
+  let addresses: IContractAddressesFromMigration
 
   beforeAll(async () => {
     arc = await newArc()
+    addresses = await getContractAddressesFromMigration()
   })
 
   it('Proposal is instantiable', () => {
     const id = 'some-id'
-    const proposal = new Proposal(id, '', arc)
+    const proposal = new Proposal(id, '', '', arc)
     expect(proposal).toBeInstanceOf(Proposal)
   })
 
   it('get list of proposals', async () => {
-    const { Avatar, queuedProposalId } = DAOstackMigration.migration('private').test
+    const { Avatar, queuedProposalId } = addresses.test
     const dao = arc.dao(Avatar.toLowerCase())
     const proposals = dao.proposals()
     const proposalsList = await proposals.pipe(first()).toPromise()
@@ -55,11 +59,11 @@ describe('Proposal', () => {
   })
 
   it('proposal.search ignores case in address', async () => {
-    const { queuedProposalId } = DAOstackMigration.migration('private').test
-    const proposal = new Proposal(queuedProposalId, '', arc)
+    const { queuedProposalId } = addresses.test
+    const proposal = new Proposal(queuedProposalId, '', '', arc)
     const proposalState = await proposal.state().pipe(first()).toPromise()
     const proposer = proposalState.proposer
-    let result
+    let result: Proposal[]
 
     result = await Proposal.search({proposer, id: queuedProposalId}, arc).pipe(first()).toPromise()
     expect(result.length).toEqual(1)
@@ -79,7 +83,7 @@ describe('Proposal', () => {
   })
 
   it('dao.proposals() accepts different query arguments', async () => {
-    const { Avatar, queuedProposalId, executedProposalId } = DAOstackMigration.migration('private').test
+    const { Avatar, queuedProposalId, executedProposalId } = addresses.test
     const dao = arc.dao(Avatar.toLowerCase())
     const proposals = await dao.proposals({ stage: IProposalStage.Queued}).pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
@@ -89,7 +93,7 @@ describe('Proposal', () => {
   })
 
   it('get list of redeemable proposals for a user', async () => {
-    const { Avatar, executedProposalId } = DAOstackMigration.migration('private').test
+    const { Avatar, executedProposalId } = addresses.test
     const dao = arc.dao(Avatar.toLowerCase())
     // check if the executedProposalId indeed has the correct state
     const proposal = dao.proposal(executedProposalId)
@@ -110,10 +114,10 @@ describe('Proposal', () => {
   })
 
   it('get proposal dao', async () => {
-    const { Avatar, queuedProposalId } = DAOstackMigration.migration('private').test
+    const { Avatar, queuedProposalId } = addresses.test
 
     const dao = arc.dao(Avatar.toLowerCase()).address
-    const proposal = new Proposal(queuedProposalId, dao, arc)
+    const proposal = new Proposal(queuedProposalId, dao, '', arc)
     // const proposalDao = await proposal.dao.pipe(first()).toPromise()
     expect(proposal).toBeInstanceOf(Proposal)
     expect(proposal.dao.address).toBe(dao)
@@ -127,16 +131,16 @@ describe('Proposal', () => {
   })
 
   it('Check queued proposal state is correct', async () => {
-    const { queuedProposalId } = DAOstackMigration.migration('private').test
+    const { queuedProposalId } =  addresses.test
 
-    const proposal = new Proposal(queuedProposalId, '', arc)
+    const proposal = new Proposal(queuedProposalId, '', '', arc)
     const pState = await proposal.state().pipe(first()).toPromise()
     expect(proposal).toBeInstanceOf(Proposal)
 
     // TODO: these amounts seem odd, I guess not using WEI when proposal created?
     const contributionReward = pState.contributionReward as IContributionReward
     expect(fromWei(contributionReward.nativeTokenReward)).toEqual('10')
-    expect(fromWei(pState.stakesAgainst)).toEqual('0.0000001')
+    expect(fromWei(pState.stakesAgainst)).toEqual('100')
     expect(fromWei(pState.stakesFor)).toEqual('0')
     expect(fromWei(contributionReward.reputationReward)).toEqual('10')
     expect(fromWei(contributionReward.ethReward)).toEqual('10')
@@ -183,9 +187,9 @@ describe('Proposal', () => {
   })
 
   it('Check preboosted proposal state is correct', async () => {
-    const { preBoostedProposalId } = DAOstackMigration.migration('private').test
+    const { preBoostedProposalId } =  addresses.test
 
-    const proposal = new Proposal(preBoostedProposalId, '', arc)
+    const proposal = new Proposal(preBoostedProposalId, '', '', arc)
     const pState = await proposal.state().pipe(first()).toPromise()
     expect(proposal).toBeInstanceOf(Proposal)
 
@@ -201,8 +205,9 @@ describe('Proposal', () => {
   })
 
   it('get proposal rewards', async () => {
-    const { queuedProposalId } = DAOstackMigration.migration('private').test
-    const proposal = new Proposal(queuedProposalId, '', arc)
+    const { queuedProposalId } = addresses.test
+
+    const proposal = new Proposal(queuedProposalId, '', '', arc)
     const rewards = await proposal.rewards().pipe(first()).toPromise()
     expect(rewards.length).toEqual(0)
     // TODO: write a test for a proposal that actually has rewards
@@ -215,7 +220,7 @@ describe('Proposal', () => {
 
     const stakeAmount = toWei('18')
     await proposal.stakingToken().mint(arc.web3.eth.defaultAccount, stakeAmount).send()
-    await arc.approveForStaking(stakeAmount).send()
+    await arc.approveForStaking(proposal.votingMachine().options.address, stakeAmount).send()
     await proposal.stake(IProposalOutcome.Pass, stakeAmount).send()
 
     // wait until we have the we received the stake update

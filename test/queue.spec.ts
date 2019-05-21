@@ -1,11 +1,10 @@
-const DAOstackMigration = require('@daostack/migration')
-import { BN } from './utils'
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { Proposal } from '../src/proposal'
 import { Queue } from '../src/queue'
-import { getTestDAO, newArc } from './utils'
+import { BN } from './utils'
+import { getContractAddressesFromMigration, getTestDAO, IContractAddressesFromMigration,  newArc } from './utils'
 
 jest.setTimeout(10000)
 
@@ -14,13 +13,15 @@ jest.setTimeout(10000)
  */
 describe('Queue', () => {
 
-  let arc: Arc
+    let arc: Arc
+    let addresses: IContractAddressesFromMigration
 
-  beforeAll(async () => {
-    arc = await newArc()
-  })
+    beforeAll(async () => {
+      arc = await newArc()
+      addresses = await getContractAddressesFromMigration()
+    })
 
-  it('Queue is instantiable', () => {
+    it('Queue is instantiable', () => {
     const queue = new Queue(
       '0x1234id',
       new DAO('0x124daoAddress', arc),
@@ -30,7 +31,7 @@ describe('Queue', () => {
     expect(queue).toBeInstanceOf(Queue)
   })
 
-  it('Queues are searchable', async () => {
+    it('Queues are searchable', async () => {
     const dao = await getTestDAO()
     let result: Queue[]
     result = await Queue.search({dao: dao.address}, arc)
@@ -58,7 +59,7 @@ describe('Queue', () => {
     expect(result.length).toEqual(1)
   })
 
-  it('Queue.state() is working', async () => {
+    it('Queue.state() is working', async () => {
     const dao = await getTestDAO()
     const result = await Queue.search({dao: dao.address, name: 'SchemeRegistrar'}, arc)
         .pipe(first()).toPromise()
@@ -73,9 +74,9 @@ describe('Queue', () => {
 
   })
 
-  it('Queue.state() should be equal to proposal.state().queue', async () => {
-    const { queuedProposalId } = DAOstackMigration.migration('private').test
-    const proposal = new Proposal(queuedProposalId, '', arc)
+    it('Queue.state() should be equal to proposal.state().queue', async () => {
+    const { queuedProposalId } = addresses.test
+    const proposal = new Proposal(queuedProposalId, '', '', arc)
     const proposalState = await proposal.state().pipe(first()).toPromise()
     const queue = new Queue(proposalState.queue.id, proposalState.queue.dao, '(name)', arc)
     const queueState = await queue.state().pipe(first()).toPromise()

@@ -22,3 +22,7 @@ export interface IProposalCreateContributionRewardOptions {
   periodLength?: number
   periods?: any
 }
+
+export enum IProposalType {
+  ContributionReward = 'ContributionReward' // propose a contributionReward
+}
