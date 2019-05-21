@@ -78,7 +78,6 @@ export class Scheme {
   }
 
   public state(): Observable<ISchemeState> {
-    //
     const query = gql`
       {
         controllerScheme (id: "${this.id}") {

@@ -68,16 +68,16 @@ export interface IProposalState {
   expiresInQueueAt: Date
   genericScheme: IGenericScheme|null
   id: string
+  limitExponentValue: number
   organizationId: string
   paramsHash: string
+  preBoostedAt: Date
+  preBoostedVotePeriodLimit: number
+  proposer: Address
+  proposingRepReward: typeof BN // in REP
   queuedVoteRequiredPercentage: number
   queuedVotePeriodLimit: number // in seconds (?)
-  preBoostedVotePeriodLimit: number
-  limitExponentValue: number
-  proposingRepReward: typeof BN // in REP
-  preBoostedAt: Date
-  proposer: Address
-  queue: IQueueState,
+  queue: IQueueState
   quietEndingPeriod: number
   quietEndingPeriodBeganAt: Date
   schemeRegistrar: ISchemeRegistrar|null

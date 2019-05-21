@@ -23,9 +23,7 @@ export class Queue {
     for (const key of Object.keys(options)) {
       const value = (options as any)[key]
       if (value !== undefined) {
-        if (key === 'dao')  {
-          where += `dao: "${value}"\n`
-        } else if (key !== 'name') {
+        if (key !== 'name') {
           where += `${key}: "${value}"\n`
         }
       }
@@ -55,7 +53,6 @@ export class Queue {
         address
       }
     }`
-    console.log(query.loc.source.body)
     const itemMap = (item: any): Queue|null => {
       const scheme = item
       const name = scheme.name || context.getContractName(scheme.address)
@@ -110,7 +107,6 @@ export class Queue {
     `
 
     const itemMap = (item: any): IQueueState => {
-      console.log(item)
       const threshold = realMathToNumber(new BN(item.threshold))
       const schemeName = item.scheme.name || this.context.getContractName(item.scheme.address)
       return {
