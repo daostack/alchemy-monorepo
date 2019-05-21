@@ -206,6 +206,9 @@ export async function getContractAddresses(graphqlHttpProvider: string, subgraph
     console.log(err)
     throw err
   }
+  if (response.data.subgraphs.length === 0) {
+    throw Error(`Could not find a subgraph with this name: "${subgraphName}" -- does it exist?`)
+  }
   const dataSources = response.data.subgraphs[0].currentVersion.deployment.manifest.dataSources
   const result: IContractAddresses = {}
   for (const record of dataSources) {
