@@ -56,7 +56,7 @@ describe('apolloClient', () => {
       }
     `
     // client.subcribe returns a zenObservable
-    const zenObservable = await client.subscribe({ query })
+    const zenObservable = await client.subscribe({ query, fetchPolicy: 'no-cache' })
     // cast it to an rxjs observable
     const observable = Observable.create((observer: Observer<any>) =>
       zenObservable.subscribe(observer)
@@ -88,8 +88,10 @@ describe('apolloClient', () => {
 
   it('getObservable works', async () => {
     const arc = new Arc({
+      contractAddresses: {},
       graphqlHttpProvider,
       graphqlWsProvider,
+      ipfsProvider: '',
       web3Provider: 'ws://127.0.0.1:8545'
     })
     const query = gql`{

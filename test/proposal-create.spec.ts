@@ -1,8 +1,7 @@
-import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { Logger } from '../src/logger'
 import { IContributionReward, IProposalStage, IProposalType, Proposal } from '../src/proposal'
+
 import {
   fromWei,
   getContractAddressesFromMigration,
@@ -12,7 +11,7 @@ import {
   waitUntilTrue
 } from './utils'
 
-Logger.setLevel(Logger.OFF)
+jest.setTimeout(10000)
 
 describe('Create a ContributionReward proposal', () => {
   let arc: Arc
@@ -73,9 +72,7 @@ describe('Create a ContributionReward proposal', () => {
       beneficiary: options.beneficiary
     })
 
-    expect(proposalState.dao).toMatchObject({
-      address: dao.address
-    })
+    expect(proposalState.dao.address).toEqual(dao.address)
   })
 
   it('saves title etc on ipfs', async () => {

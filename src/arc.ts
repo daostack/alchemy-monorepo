@@ -1,4 +1,3 @@
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
 import { map } from 'rxjs/operators'
@@ -8,7 +7,8 @@ import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { Token } from './token'
 import { Address, IPFSProvider, Web3Provider } from './types'
-import { getWeb3Options, isAddress } from './utils'
+import { BN } from './utils'
+import { isAddress } from './utils'
 const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
 
@@ -28,53 +28,41 @@ export class Arc extends GraphNodeObserver {
   /**
    * a mapping of contrct names to contract addresses
    */
-  public contractAddresses: IContractAddresses | undefined
+  public contractAddresses: IContractAddresses
+  public contracts: {[key: string]: any} = {}
 
   // accounts obseved by ethBalance
   public blockHeaderSubscription: Subscription|undefined = undefined
   public observedAccounts: { [address: string]: {
-      observable?: Observable<BN>,
-      observer?: Observer<BN>,
+      observable?: Observable<typeof BN>,
+      observer?: Observer<typeof BN>,
       lastBalance?: number
       subscriptionsCount: number
     }
   } = {}
 
   constructor(options: {
+    contractAddresses: IContractAddresses
     graphqlHttpProvider: string
     graphqlWsProvider: string
-    web3Provider?: string
-    ipfsProvider?: IPFSProvider
-    contractAddresses?: IContractAddresses
+    ipfsProvider: IPFSProvider
+    web3Provider: string
   }) {
     super({
       graphqlHttpProvider: options.graphqlHttpProvider,
       graphqlWsProvider: options.graphqlWsProvider
     })
-    this.ipfsProvider = options.ipfsProvider || ''
+    this.ipfsProvider = options.ipfsProvider
 
-    let web3provider: any
-
-    // TODO: this is probably better to handle explicitly in the frontend
-    // check if we have a web3 provider set in the window object (in the browser)
-    // cf. https://metamask.github.io/metamask-docs/API_Reference/Ethereum_Provider
-    if (typeof window !== 'undefined' &&
-      (typeof (window as any).ethereum !== 'undefined' || typeof (window as any).web3 !== 'undefined')
-    ) {
-      // Web3 browser user detected. You can now use the provider.
-      web3provider = (window as any).ethereum || (window as any).web3.currentProvider
-    } else {
-      web3provider = Web3.givenProvider || options.web3Provider
-    }
+    const web3provider = options.web3Provider
 
     if (web3provider) {
       this.web3 = new Web3(web3provider)
     }
 
-    if (!options.contractAddresses) {
+    this.contractAddresses = options.contractAddresses
+    if (!this.contractAddresses) {
       Logger.warn('No contract addresses given to the Arc.constructor: expect most write operations to fail!')
-    } else {
-      this.contractAddresses = options.contractAddresses
     }
 
     if (this.ipfsProvider) {
@@ -106,7 +94,7 @@ export class Arc extends GraphNodeObserver {
     ) as Observable<DAO[]>
   }
 
-  public ethBalance(owner: Address): Observable<BN> {
+  public ethBalance(owner: Address): Observable<typeof BN> {
     if (!this.observedAccounts[owner]) {
       this.observedAccounts[owner] = {
         subscriptionsCount: 1
@@ -114,29 +102,30 @@ export class Arc extends GraphNodeObserver {
     }
     if (this.observedAccounts[owner].observable) {
         this.observedAccounts[owner].subscriptionsCount += 1
-        return this.observedAccounts[owner].observable as Observable<BN>
+        return this.observedAccounts[owner].observable as Observable<typeof BN>
     }
 
-    const observable = Observable.create((observer: Observer<BN>) => {
+    const observable = Observable.create((observer: Observer<typeof BN>) => {
       this.observedAccounts[owner].observer = observer
 
       // get the current balance and return it
       this.web3.eth.getBalance(owner).then((currentBalance: number) => {
         const accInfo = this.observedAccounts[owner];
-        (accInfo.observer as Observer<BN>).next(new BN(currentBalance))
+        (accInfo.observer as Observer<typeof BN>).next(new BN(currentBalance))
         accInfo.lastBalance = currentBalance
       })
+
       // set up the blockheadersubscription if it does not exist yet
       if (!this.blockHeaderSubscription) {
         this.blockHeaderSubscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error) => {
           Object.keys(this.observedAccounts).forEach((addr) => {
             const accInfo = this.observedAccounts[addr]
             if (err) {
-            (accInfo.observer as Observer<BN>).error(err)
+              (accInfo.observer as Observer<typeof BN>).error(err)
             } else {
               this.web3.eth.getBalance(addr).then((balance: any) => {
                 if (balance !== accInfo.lastBalance) {
-                  (accInfo.observer as Observer<BN>).next(new BN(balance))
+                  (accInfo.observer as Observer<typeof BN>).next(new BN(balance))
                   accInfo.lastBalance = balance
                 }
               })
@@ -168,11 +157,11 @@ export class Arc extends GraphNodeObserver {
    * @return a web3 Contract instance
    */
   public getContract(name: string) {
-    // TODO: we are taking the default contracts from the migration repo and assume
-    // that they are the ones used by the current DAO. This assumption is only valid
-    // on our controlled test environment. Should get the correct contracts instead
-    const opts = getWeb3Options(this.web3)
     const addresses = this.contractAddresses
+    const opts = {}
+    if (this.contracts[name]) {
+      return this.contracts[name]
+    }
     if (!addresses) {
       throw new Error(`Cannot get contract: no contractAddress set`)
     }
@@ -185,33 +174,54 @@ export class Arc extends GraphNodeObserver {
       case 'AbsoluteVote':
         contractClass = require('@daostack/arc/build/contracts/AbsoluteVote.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.AbsoluteVote, opts)
+        this.contracts[name] = contract
         return contract
       case 'ContributionReward':
         contractClass = require('@daostack/arc/build/contracts/ContributionReward.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.ContributionReward, opts)
+        this.contracts[name] = contract
         return contract
       case 'GEN':
         contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.GEN, opts)
+        this.contracts[name] = contract
         return contract
       case 'GenericScheme':
         contractClass = require('@daostack/arc/build/contracts/GenericScheme.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenericScheme, opts)
+        this.contracts[name] = contract
         return contract
       case 'GenesisProtocol':
         contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenesisProtocol, opts)
+        this.contracts[name] = contract
         return contract
       case 'Redeemer':
         contractClass = require('@daostack/arc/build/contracts/Redeemer.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.Redeemer, opts)
+        this.contracts[name] = contract
         return contract
       case 'SchemeRegistrar':
         contractClass = require('@daostack/arc/build/contracts/SchemeRegistrar.json')
         contract = new this.web3.eth.Contract(contractClass.abi, addresses.SchemeRegistrar, opts)
+        this.contracts[name] = contract
         return contract
       default:
         throw Error(`Unknown contract: ${name}`)
+    }
+  }
+
+  /**
+   * get the name of the contract, given an address
+   * @param  address An ethereum address
+   * @return        The name of the contract, if the address is known, undefined otherwise
+   */
+  public getContractName(address: Address): string|undefined {
+    isAddress(address)
+    for (const key of Object.keys(this.contractAddresses)) {
+      if (this.contractAddresses[key].toLowerCase() === address.toLowerCase()) {
+        return key
+      }
     }
   }
 
@@ -223,7 +233,7 @@ export class Arc extends GraphNodeObserver {
     }
   }
 
-  public getAccount(): Observable < Address > {
+  public getAccount(): Observable<Address> {
     // this complex logic is to get the correct account both from the Web3 as well as from the Metamaask provider
     // Polling is Evil!
     // cf. https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#ear-listening-for-selected-account-changes
@@ -261,7 +271,7 @@ export class Arc extends GraphNodeObserver {
     this.web3.eth.defaultAccount = address
   }
 
-  public approveForStaking(amount: BN) {
+  public approveForStaking(amount: typeof BN) {
     return this.GENToken().approveForStaking(amount)
   }
 
@@ -270,7 +280,7 @@ export class Arc extends GraphNodeObserver {
    * @param  owner owner for which to check the allowance
    * @return
    */
-  public allowance(owner: string): Observable<BN> {
+  public allowance(owner: string): Observable<typeof BN> {
     const genesisProtocol = this.getContract('GenesisProtocol')
     const spender = genesisProtocol.options.address
     return this.GENToken().allowance(owner, spender)

@@ -3,8 +3,10 @@ import { first, take } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Logger } from './logger'
 import { Web3Receipt } from './types'
+import { BN } from './utils'
 
 export enum ITransactionState {
+  Sending,
   Sent,
   Mined
 }
@@ -14,7 +16,7 @@ export enum ITransactionState {
  */
 export interface ITransactionUpdate<T> {
   state: ITransactionState
-  transactionHash: string
+  transactionHash?: string
   receipt?: object
   /**
    *  number of confirmations
@@ -64,19 +66,43 @@ export function sendTransaction<T>(
   const observable = Observable.create(async (observer: Observer<ITransactionUpdate<T>>) => {
     let transactionHash: string
     let result: any
-    let tx
+    let tx: any
     if (typeof transaction === 'function') {
       tx = await transaction()
     }  else {
       tx = transaction
     }
 
-    const options = {
-      from: await context.getAccount().pipe(first()).toPromise()
+    const from = await context.getAccount().pipe(first()).toPromise()
+    let gasEstimate: number = 0
+    try {
+      gasEstimate = await tx.estimateGas({ from })
+    } catch (error) {
+      let errToReturn: Error
+      try {
+        errToReturn = await errorHandler(error)
+      } catch (err) {
+        errToReturn = err
+      }
+      observer.error(errToReturn)
+      return
     }
-    const emitter = tx.send(options)
-
-    emitter
+    let gas: number
+    if (gasEstimate) {
+      gas = gasEstimate * 2
+    } else {
+      gas = 1000000
+    }
+    gas = new BN(Math.min(1000000, gas))
+    // gas = new BN(1000000)
+    const options = {
+      from,
+      gas
+    }
+    observer.next({
+      state: ITransactionState.Sending
+    })
+    tx.send(options)
       .once('transactionHash', (hash: string) => {
         Logger.debug('Sending transaction..')
         transactionHash = hash
@@ -124,14 +150,15 @@ export function sendTransaction<T>(
       .on('error', async (error: Error) => {
         let errToReturn: Error
         try {
-          errToReturn = await errorHandler(error)
-        } catch (err) {
-          errToReturn = err
-        }
+            errToReturn = await errorHandler(error)
+          } catch (err) {
+            errToReturn = err
+          }
         observer.error(errToReturn)
       })
     }
   )
-  observable.send = () => observable.pipe(take(2)).toPromise()
+  // the 3rd update we get from the observable is the confirmation that it is mined
+  observable.send = () => observable.pipe(take(3)).toPromise()
   return observable
 }

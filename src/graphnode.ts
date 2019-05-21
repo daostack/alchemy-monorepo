@@ -1,6 +1,5 @@
 import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { Observable as ZenObservable } from 'apollo-link'
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable, Observer } from 'rxjs'
 import { catchError, filter, first, map } from 'rxjs/operators'
@@ -41,7 +40,7 @@ export class GraphNodeObserver {
       Logger.debug(query.loc.source.body)
 
       if (!apolloQueryOptions.fetchPolicy) {
-        apolloQueryOptions.fetchPolicy = 'network-only'
+        apolloQueryOptions.fetchPolicy = 'cache-first'
       }
 
       // subscriptionQuery subscribes to get notified of updates to the query
@@ -50,9 +49,10 @@ export class GraphNodeObserver {
         `
       // subscribe
       const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({
-        fetchPolicy: 'network-only',
+        fetchPolicy: 'cache-first',
         query: subscriptionQuery
        })
+
       zenObservable.subscribe((next: any) => {
           this.apolloClient.writeQuery({
             data: next.data,
@@ -62,7 +62,7 @@ export class GraphNodeObserver {
 
       const sub = zenToRxjsObservable(
         this.apolloClient.watchQuery({
-          fetchPolicy: 'cache-and-network',
+          fetchPolicy: 'cache-first',
           fetchResults: true,
           query
         })
@@ -114,7 +114,7 @@ export class GraphNodeObserver {
         }
         return r.data[entity]
       }),
-      map((rs: object[]) => rs.map(itemMap))
+      map((rs: object[]) => rs.map(itemMap).filter((x) => x !== null))
     )
   }
 

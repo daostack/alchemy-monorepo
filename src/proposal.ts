@@ -1,4 +1,3 @@
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
@@ -8,17 +7,23 @@ import { Logger } from './logger'
 import { Operation } from './operation'
 import { IQueueState } from './queue'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
+import { ISchemeState } from './scheme'
+import { IContributionReward } from './schemes/contributionReward'
+import { IGenericScheme } from './schemes/genericScheme'
+import { ISchemeRegistrar } from './schemes/schemeRegistrar'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
+import { BN } from './utils'
 import { NULL_ADDRESS, realMathToNumber } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export enum IProposalType {
   ContributionReward = 'ContributionReward', // propose a contributionReward
   GenericScheme = 'GenericScheme', // propose to execute a function call from a registered genericScheme
-  SchemeRegistrarPropose = 'SchemeRegistrarPropose', // propose to register to schme
-  SchemeRegistrarProposeToRemove = 'SchemeRegistrarProposeToRemove' // propose to remove a registered scheme
+  SchemeRegistrarAdd = 'SchemeRegistrarAdd', // propose to register to schme
+  SchemeRegistrarEdit = 'SchemeRegistrarEdit', // propose to edit a registered scheme
+  SchemeRegistrarRemove = 'SchemeRegistrarRemove' // propose to remove a registered scheme
 }
 
 export enum IProposalOutcome {
@@ -47,63 +52,64 @@ export enum IExecutionState {
 
 export interface IProposalState {
   accountsWithUnclaimedRewards: Address[],
+  activationTime: number
   boostedAt: Date
   boostedVotePeriodLimit: number
   contributionReward: IContributionReward|null
   confidenceThreshold: number
   createdAt: Date
   dao: DAO
+  daoBountyConst: number // ?
   descriptionHash?: string
   description?: string
-  downStakeNeededToQueue: BN
+  downStakeNeededToQueue: typeof BN
   executedAt: Date
   executionState: IExecutionState
   expiresInQueueAt: Date
   genericScheme: IGenericScheme|null
   id: string
+  limitExponentValue: number
   organizationId: string
   paramsHash: string
+  preBoostedAt: Date
+  preBoostedVotePeriodLimit: number
+  proposer: Address
+  proposingRepReward: typeof BN // in REP
   queuedVoteRequiredPercentage: number
   queuedVotePeriodLimit: number // in seconds (?)
-  preBoostedVotePeriodLimit: number
-  limitExponentValue: number
-  proposingRepReward: BN // in REP
-  preBoostedAt: Date
-  proposer: Address
   queue: IQueueState
   quietEndingPeriod: number
   quietEndingPeriodBeganAt: Date
   schemeRegistrar: ISchemeRegistrar|null
   resolvedAt: Date
-  thresholdConst: number
+  scheme: ISchemeState
   stage: IProposalStage
-  stakesFor: BN
-  stakesAgainst: BN
+  stakesFor: typeof BN
+  stakesAgainst: typeof BN
+  thresholdConst: number
   title?: string
-  totalRepWhenExecuted: BN
+  totalRepWhenExecuted: typeof BN
   type: IProposalType,
-  upstakeNeededToPreBoost: BN
+  upstakeNeededToPreBoost: typeof BN
   url?: string
-  votesFor: BN
-  votesAgainst: BN
+  votesFor: typeof BN
+  votesAgainst: typeof BN
   votesCount: number
+  voteOnBehalf: Address
   winningOutcome: IProposalOutcome
   votersReputationLossRatio: number // in 1000's
-  minimumDaoBounty: BN // in GEN
-  daoBountyConst: number // ?
-  activationTime: number
-  voteOnBehalf: Address
+  minimumDaoBounty: typeof BN // in GEN
 }
 
 export interface IContributionReward {
   beneficiary: Address
-  externalTokenReward: BN
+  externalTokenReward: typeof BN
   externalToken: Address
-  ethReward: BN
-  nativeTokenReward: BN
+  ethReward: typeof BN
+  nativeTokenReward: typeof BN
   periods: number
   periodLength: number
-  reputationReward: BN
+  reputationReward: typeof BN
 }
 
 export interface IGenericScheme {
@@ -206,10 +212,10 @@ export class Proposal implements IStateful<IProposalState> {
       case IProposalType.GenericScheme:
         eventName = 'NewCallProposal'
         if (!options.callData) {
-          throw new Error(`Missing argument "callData" for GenericScheme`)
+          throw new Error(`Missing argument "callData" for GenericScheme in Proposal.create()`)
         }
         if (options.value === undefined) {
-          throw new Error(`Missing argument "value" for GenericScheme`)
+          throw new Error(`Missing argument "value" for GenericScheme in Proposal.create()`)
         }
         createTransaction = async () => {
           options.descriptionHash = await saveIPFSData()
@@ -226,18 +232,19 @@ export class Proposal implements IStateful<IProposalState> {
         break
 
       // SchemeRegistrar
-      case IProposalType.SchemeRegistrarPropose:
+      case IProposalType.SchemeRegistrarAdd:
+      case IProposalType.SchemeRegistrarEdit:
         eventName = 'NewSchemeProposal'
         if (!options.scheme) {
-          msg = `Missing argument "scheme" for SchemeRegistrar`
+          msg = `Missing argument "scheme" for SchemeRegistrar in Proposal.create()`
           throw Error(msg)
         }
         if (!options.parametersHash) {
-          msg = `Missing argument "parametersHash" for SchemeRegistrar`
+          msg = `Missing argument "parametersHash" for SchemeRegistrar in Proposal.create()`
           throw Error(msg)
         }
         if (!options.permissions) {
-          msg = `Missing argument "permissions" for SchemeRegistrar`
+          msg = `Missing argument "permissions" for SchemeRegistrar in Proposal.create()`
           throw Error(msg)
         }
         createTransaction = async () => {
@@ -254,7 +261,7 @@ export class Proposal implements IStateful<IProposalState> {
           return transaction
         }
         break
-      case IProposalType.SchemeRegistrarProposeToRemove:
+      case IProposalType.SchemeRegistrarRemove:
         eventName = 'RemoveSchemeProposal'
         if (!options.scheme) {
           msg = `Missing argument "scheme" for SchemeRegistrar`
@@ -309,7 +316,7 @@ export class Proposal implements IStateful<IProposalState> {
       if (key === 'stage' && value !== undefined) {
         where += `stage: "${IProposalStage[value as IProposalStage]}"\n`
       } else if (key === 'stage_in' && Array.isArray(value)) {
-        const stageValues = options[key].map((stage: number) => '"' + IProposalStage[stage as IProposalStage] + '"')
+        const stageValues = value.map((stage: number) => '"' + IProposalStage[stage as IProposalStage] + '"')
         where += `stage_in: [${stageValues.join(',')}]\n`
       } else if (key === 'type') {
         // TODO: we are not distinguishing between the schemeregisterpropose
@@ -396,6 +403,10 @@ constructor(
           createdAt
           dao {
             id
+            schemes {
+              id
+              address
+            }
           }
           daoBountyConst
           description
@@ -413,12 +424,19 @@ constructor(
           gpRewards {
             id
           }
+          scheme {
+            id
+            paramsHash
+            name
+            address
+            canDelegateCall
+            canManageGlobalConstraints
+            canRegisterSchemes
+            canUpgradeController
+            name
+          }
           gpQueue {
             id
-            scheme {
-              id
-              paramsHash
-            }
             threshold
             votingMachine
           }
@@ -498,9 +516,15 @@ constructor(
         }
       } else if (item.schemeRegistrar) {
         if (item.schemeRegistrar.schemeToRegister) {
-          type = IProposalType.SchemeRegistrarPropose
+          // TODO: this is failing bc of https://github.com/daostack/subgraph/issues/224
+          if (item.dao.schemes.map((s: any) => s.address.toLowerCase())
+            .includes(item.schemeRegistrar.schemeToRegister.toLowerCase())) {
+            type = IProposalType.SchemeRegistrarEdit
+          } else {
+            type = IProposalType.SchemeRegistrarAdd
+          }
         } else if (item.schemeRegistrar.schemeToRemove) {
-          type = IProposalType.SchemeRegistrarProposeToRemove
+          type = IProposalType.SchemeRegistrarRemove
         } else {
           throw Error(`Unknown proposal type: schemeRegistrar without a scheme to register or to remove`)
         }
@@ -515,7 +539,7 @@ constructor(
           schemeToRemove: item.schemeRegistrar.schemeToRemove
         }
       } else {
-        throw Error(`Unknown propsal type`)
+        throw Error(`Unknown proposal type`)
       }
       // the  formule to enter into the preboosted state is:
       // (S+/S-) > AlphaConstant^NumberOfBoostedProposal.
@@ -528,9 +552,10 @@ constructor(
       // upstakeNeededToPreBoost is the amount of tokens needed to upstake to move to the preboost queue
       // this is only non-zero for Queued proposals
       // note that the number can be negative!
-      let upstakeNeededToPreBoost: BN = new BN(0)
+      let upstakeNeededToPreBoost: typeof BN = new BN(0)
       const PRECISION = Math.pow(2, 40)
       if (stage === IProposalStage.Queued) {
+
         upstakeNeededToPreBoost = new BN(threshold * PRECISION)
           .mul(stakesAgainst)
           .div(new BN(PRECISION))
@@ -539,19 +564,33 @@ constructor(
       // upstakeNeededToPreBoost is the amount of tokens needed to upstake to move to the Queued queue
       // this is only non-zero for Preboosted proposals
       // note that the number can be negative!
-      let downStakeNeededToQueue: BN = new BN(0)
+      let downStakeNeededToQueue: typeof BN = new BN(0)
       if (stage === IProposalStage.PreBoosted) {
         downStakeNeededToQueue = stakesFor.mul(new BN(PRECISION))
           .div(new BN(threshold * PRECISION))
           .sub(stakesAgainst)
       }
       const thresholdConst = realMathToNumber(new BN(item.thresholdConst))
-      const dao = new DAO(item.dao.id, this.context)
-
+      const scheme = item.scheme
+      const schemeName = scheme.name || this.context.getContractName(scheme.address)
       const gpQueue = item.gpQueue
-      const queue: IQueueState = {
+
+      const schemeState: ISchemeState = {
+        address: scheme.address,
+        canDelegateCall: scheme.canDelegateCall,
+        canManageGlobalConstraints: scheme.canManageGlobalConstraints,
+        canRegisterSchemes: scheme.canRegisterSchemes,
+        canUpgradeController: scheme.canUpgradeController,
+        dao: item.dao.id,
+        id: scheme.id,
+        name: schemeName,
+        paramsHash: scheme.paramsHash
+      }
+      const queueState: IQueueState = {
         dao: item.dao.id,
         id: gpQueue.id,
+        name: schemeName,
+        scheme: schemeState,
         threshold,
         votingMachine: gpQueue.votingMachine
       }
@@ -564,7 +603,7 @@ constructor(
         confidenceThreshold: Number(item.confidenceThreshold),
         contributionReward,
         createdAt: Number(item.createdAt),
-        dao,
+        dao: new DAO(item.dao.id, this.context),
         daoBountyConst: Number(item.daoBountyConst),
         description: item.description,
         descriptionHash: item.descriptionHash,
@@ -582,12 +621,13 @@ constructor(
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposer: item.proposer,
         proposingRepReward: new BN(item.proposingRepReward),
-        queue,
+        queue: queueState,
         queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
         queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
         quietEndingPeriod: Number(item.quietEndingPeriod),
         quietEndingPeriodBeganAt: Number(item.quietEndingPeriodBeganAt),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : 0,
+        scheme: schemeState,
         schemeRegistrar,
         stage,
         stakesAgainst,
@@ -634,7 +674,7 @@ constructor(
    *  all the sender's rep will be used
    * @return  an observable Operation<Vote>
    */
-  public vote(outcome: IProposalOutcome, amount: number = 0): Operation < Vote | null > {
+  public vote(outcome: IProposalOutcome, amount: number = 0): Operation<Vote|null> {
 
     const votingMachine = this.votingMachine()
 
@@ -667,26 +707,13 @@ constructor(
     const errorHandler = async (error: Error) => {
       if (error.message.match(/revert/)) {
         const proposal = this
-        const prop = await votingMachine.methods.proposals(proposal.id).call()
-        if (prop.proposer === NULL_ADDRESS ) {
-          return Error(`Unknown proposal with id ${proposal.id}`)
+        const proposalDataFromVotingMachine = await votingMachine.methods.proposals(proposal.id).call()
+        if (proposalDataFromVotingMachine.proposer === NULL_ADDRESS ) {
+          return Error(`Error in vote(): unknown proposal with id ${proposal.id}`)
         }
-        const contributionReward = this.context.getContract('ContributionReward')
-        const proposalDataOnChain = await contributionReward.methods
-          .organizationsProposals(this.dao.address, this.id).call()
 
-        // requirement from ContributionReward.sol
-        // require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0);
-        if (Number(proposalDataOnChain.executionTime) !== 0) {
-          const msg = `proposal ${proposal.id} already executed`
-          return Error(msg)
-        }
-        const gpProtocol = this.context.getContract('GenesisProtocol')
-        const proposalDataFromGP = await gpProtocol.methods
-          .proposals(this.id).call()
-
-        if (Number(proposalDataFromGP.state) === IProposalStage.Executed) {
-          const msg = `proposal ${proposal.id} already executed`
+        if (proposalDataFromVotingMachine.state === '2') {
+          const msg = `Error in vote(): proposal ${proposal.id} already executed`
           return Error(msg)
         }
       }
@@ -705,7 +732,7 @@ constructor(
     return Stake.search(options, this.context)
   }
 
-  public stake(outcome: IProposalOutcome, amount: BN ): Operation < Stake > {
+  public stake(outcome: IProposalOutcome, amount: typeof BN ): Operation < Stake > {
     const stakeMethod = this.votingMachine().methods.stake(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
@@ -808,31 +835,22 @@ constructor(
       }
     }
     const errorHandler = async (err: Error) => {
-      let msg: string = ''
-      const contributionReward = this.context.getContract('ContributionReward')
-      const proposalDataOnChain = await contributionReward.methods
-        .organizationsProposals(this.dao.address, this.id).call()
+      const gpProtocol = this.context.getContract('GenesisProtocol')
+      const proposalDataFromGP = await gpProtocol.methods.proposals(this.id).call()
 
-      // requirement from ContributionReward.sol
-      // require(organizationsProposals[address(proposal.avatar)][_proposalId].executionTime == 0);
-      if (Number(proposalDataOnChain.executionTime) !== 0) {
-        msg = `proposal already executed`
+      if (proposalDataFromGP.callbacks === NULL_ADDRESS) {
+        const msg = `Error in proposal.execute(): A proposal with id ${this.id} does not exist`
+        return Error(msg)
+      } else if (proposalDataFromGP.state === '2') {
+        const msg = `Error in proposal.execute(): proposal ${this.id} already executed`
+        return Error(msg)
       }
-
-      // requirement from ContributionReward.sol
       // require(organizationsProposals[address(proposal.avatar)][_proposalId].beneficiary != address(0));
-      if (proposalDataOnChain.periodLength === '0' && proposalDataOnChain.numberOfPeriods === '0') {
-        msg = `A proposal with id ${this.id} does not exist`
-      } else if (proposalDataOnChain.beneficiary === NULL_ADDRESS) {
-        msg = `beneficiary is ${NULL_ADDRESS}`
-      }
+      // else if (proposalDataOnChain.beneficiary === NULL_ADDRESS) {
+      //   const msg = `beneficiary is ${NULL_ADDRESS}`
+      // }
 
-      if (msg) {
-        return Error(`Proposal execution failed: ${msg}`)
-      } else {
-        return err
-      }
-
+      return err
     }
     return this.context.sendTransaction(transaction, map, errorHandler)
   }
@@ -844,28 +862,36 @@ enum ProposalQuerySortOptions {
 }
 
 export interface IProposalQueryOptions extends ICommonQueryOptions {
+  accountsWithUnclaimedRewards_contains?: Address[]
   active?: boolean
   boosted?: boolean
+  dao?: Address
+  expiresInQueueAt?: Date
+  expiresInQueueAt_gte?: Date
+  expiresInQueueAt_lte?: Date
+  expiresInQueueAt_gt?: Date
+  executedAfter?: Date
+  executedBefore?: Date
+  id?: string
   proposer?: Address
   proposalId?: string
   stage?: IProposalStage
+  stage_in?: IProposalStage[]
   orderBy?: ProposalQuerySortOptions
-  // the options above should be ok for the current alchemy; will add more options as needed
-  executedAfter?: Date
-  executedBefore?: Date
-  [key: string]: any
+  type?: IProposalType
 }
 
+// TODO: refactor out the options that belong to different schemes
 export interface IProposalCreateOptions {
   beneficiary?: Address  // for ContributionRewardProposal
   dao?: Address
   description?: string
   descriptionHash?: string
   callData?: string // for GenericSchemeProposal
-  nativeTokenReward?: BN // for ContributionRewardProposal
-  reputationReward?: BN // for ContributionRewardProposal
-  ethReward?: BN // for ContributionRewardProposal
-  externalTokenReward?: BN // for ContributionRewardProposal
+  nativeTokenReward?: typeof BN // for ContributionRewardProposal
+  reputationReward?: typeof BN // for ContributionRewardProposal
+  ethReward?: typeof BN // for ContributionRewardProposal
+  externalTokenReward?: typeof BN // for ContributionRewardProposal
   externalTokenAddress?: Address // for ContributionRewardProposal
   periodLength?: number // for ContributionRewardProposal
   periods?: any  // for ContributionRewardProposal

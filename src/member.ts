@@ -1,8 +1,8 @@
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
-import { Arc } from './arc'
+import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
+import { BN } from './utils'
 
 import { IProposalQueryOptions, Proposal } from './proposal'
 import { Reward } from './reward'
@@ -14,9 +14,9 @@ import { IVote, IVoteQueryOptions, Vote } from './vote'
 export interface IMemberState {
   address: Address
   dao: DAO,
-  reputation: BN
+  reputation: typeof BN
   // 'tokens' --> balance of address in dao.nativeToken.balanceOf
-  tokens: BN
+  tokens: typeof BN
 }
 
 /**
@@ -24,6 +24,36 @@ export interface IMemberState {
  */
 
 export class Member implements IStateful<IMemberState> {
+  public static search(
+    options: IMemberQueryOptions,
+    context: Arc,
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Member[]> {
+    let where = ''
+    for (const key of Object.keys(options)) {
+      if (options[key] !== undefined) {
+        where += `${key}: "${options[key] as string}"\n`
+      }
+    }
+
+    const query = gql`{
+      members(where: {
+        ${where}
+      }) {
+        id
+        address
+        dao {
+          id
+        }
+      }
+    }`
+
+    return context.getObservableList(
+      query,
+      (r: any) => new Member(r.address, r.dao.id, context),
+      apolloQueryOptions
+    )
+  }
 
   /**
    * @param address addresssof the member

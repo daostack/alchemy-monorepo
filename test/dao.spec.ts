@@ -1,4 +1,4 @@
-import BN = require('bn.js')
+import { BN } from './utils'
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
@@ -74,7 +74,7 @@ describe('DAO', () => {
     const members = await dao.members().pipe(first()).toPromise()
     expect(typeof members).toEqual(typeof [])
     expect(members.length).toBeGreaterThanOrEqual(6)
-    const member = members[0]
+    const member = members[3]
     const memberState = await member.state().pipe(first()).toPromise()
     expect(Number(fromWei(memberState.reputation))).toBeGreaterThan(0)
   })

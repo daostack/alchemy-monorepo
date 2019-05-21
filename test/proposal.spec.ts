@@ -1,12 +1,12 @@
 const DAOstackMigration = require('@daostack/migration')
-import BN = require('bn.js')
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { IContributionReward, IExecutionState, IProposalOutcome, IProposalStage, IProposalState,
+import { IExecutionState, IProposalOutcome, IProposalStage, IProposalState,
   IProposalType,
   Proposal } from '../src/proposal'
 import { createAProposal, fromWei, newArc, toWei, waitUntilTrue} from './utils'
 
+jest.setTimeout(10000)
 /**
  * Proposal test
  */
@@ -48,9 +48,9 @@ describe('Proposal', () => {
     expect(ls.length).toBeGreaterThan(0)
     ls = await Proposal.search({type: IProposalType.GenericScheme }, arc).pipe(first()).toPromise()
     expect(ls.length).toBeGreaterThan(0)
-    ls = await Proposal.search({type: IProposalType.SchemeRegistrarPropose}, arc).pipe(first()).toPromise()
+    ls = await Proposal.search({type: IProposalType.SchemeRegistrarAdd}, arc).pipe(first()).toPromise()
     // expect(ls.length).toEqual(0)
-    ls = await Proposal.search({type: IProposalType.SchemeRegistrarProposeToRemove}, arc).pipe(first()).toPromise()
+    ls = await Proposal.search({type: IProposalType.SchemeRegistrarRemove}, arc).pipe(first()).toPromise()
     // expect(ls.length).toEqual(0)
   })
 
@@ -79,12 +79,13 @@ describe('Proposal', () => {
   })
 
   it('dao.proposals() accepts different query arguments', async () => {
-    const { Avatar, queuedProposalId } = DAOstackMigration.migration('private').test
+    const { Avatar, queuedProposalId, executedProposalId } = DAOstackMigration.migration('private').test
     const dao = arc.dao(Avatar.toLowerCase())
     const proposals = await dao.proposals({ stage: IProposalStage.Queued}).pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
     expect(proposals.length).toBeGreaterThan(0)
-    expect(proposals[proposals.length - 1].id).toBe(queuedProposalId)
+    expect(proposals.map((p: Proposal) => p.id)).toContain(queuedProposalId)
+    // expect(proposals.map((p: Proposal) => p.id)).(executedProposalId)
   })
 
   it('get list of redeemable proposals for a user', async () => {
@@ -105,7 +106,7 @@ describe('Proposal', () => {
       id: proposal.id
     }).pipe(first()).toPromise()
 
-    expect(shouldBeJustThisExecutedProposal.map((p) => p.id)).toEqual([proposal.id])
+    expect(shouldBeJustThisExecutedProposal.map((p: Proposal) => p.id)).toEqual([proposal.id])
   })
 
   it('get proposal dao', async () => {

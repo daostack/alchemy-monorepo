@@ -1,7 +1,9 @@
-import BN = require('bn.js')
 import { Arc } from '../src/arc'
 import { IProposalStage, IProposalState, IProposalType, Proposal } from '../src/proposal'
+import { BN } from './utils'
 import { createAProposal, firstResult, getTestDAO, newArc, toWei, voteToAcceptProposal, waitUntilTrue } from './utils'
+
+jest.setTimeout(20000)
 
 describe('Claim rewards', () => {
   let arc: Arc
@@ -53,9 +55,9 @@ describe('Claim rewards', () => {
 
     const daoState = await firstResult(dao.state())
     const prevNativeTokenBalance = await firstResult(daoState.token.balanceOf(beneficiary))
-    const reputationBalances: BN[] = []
+    const reputationBalances: Array<typeof BN> = []
 
-    daoState.reputation.reputationOf(beneficiary).subscribe((next: BN) => {
+    daoState.reputation.reputationOf(beneficiary).subscribe((next: typeof BN) => {
       reputationBalances.push(next)
     })
     const prevEthBalance = new BN(await arc.web3.eth.getBalance(beneficiary))
@@ -73,7 +75,7 @@ describe('Claim rewards', () => {
     // (it could be higher because we may get rewards for voting)
     expect(Number(reputationBalances[1].sub(reputationBalances[0]).toString()))
       .toBeGreaterThanOrEqual(Number(reputationReward.toString()))
-  }, 10000)
+  })
 
   it('works for external token', async () => {
     const dao = await getTestDAO()
@@ -115,7 +117,7 @@ describe('Claim rewards', () => {
     const newTokenBalance = await firstResult(arc.GENToken().balanceOf(beneficiary))
     expect(newTokenBalance.sub(prevTokenBalance).toString()).toEqual(externalTokenReward.toString())
 
-  }, 10000)
+  })
 
   it('claimRewards should also work without providing a "beneficiary" argument', async () => {
     const proposal: Proposal = await createAProposal()
