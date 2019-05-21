@@ -2,16 +2,19 @@ import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IProposalOutcome, IProposalStage, IProposalState, IProposalType, Proposal } from '../src/proposal'
 import { BN } from './utils'
-import { createAProposal, fromWei, getTestDAO, newArc,
-  timeTravel, toWei, voteToAcceptProposal, waitUntilTrue } from './utils'
+import { createAProposal, fromWei, getContractAddressesFromMigration, getTestDAO,
+  IContractAddressesFromMigration, newArc, timeTravel, toWei,
+  voteToAcceptProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
 describe('Proposal execute()', () => {
   let arc: Arc
+  let addresses: IContractAddressesFromMigration
 
   beforeAll(async () => {
     arc = await newArc()
+    addresses = await getContractAddressesFromMigration()
   })
 
   it('runs correctly through the stages', async () => {
@@ -28,23 +31,21 @@ describe('Proposal execute()', () => {
       reputationReward: toWei('1'),
       type: IProposalType.ContributionReward
     }
-    const proposal = await dao.createProposal(options).send()
 
     let proposalState: IProposalState
-    let proposalIsIndexed: boolean = false
     const proposalStates: IProposalState[] = []
+    const lastState = () => proposalStates[proposalStates.length - 1]
+
+    const proposal = (await dao.createProposal(options).send()).result
+
     proposal.state().subscribe(
       (next: IProposalState) => {
-        if (next) {
-          proposalIsIndexed = true
-        }
         proposalStates.push(next)
       },
       (error: Error) => { throw error }
     )
-    const lastState = () => proposalStates[proposalStates.length - 1]
-    await waitUntilTrue(() => proposalIsIndexed)
-    // check the state right after creation
+
+    // wait until the propsal is indexed
     await waitUntilTrue(() => proposalStates.length > 1)
     expect(proposalStates[1].stage).toEqual(IProposalStage.Queued)
 
@@ -64,10 +65,10 @@ describe('Proposal execute()', () => {
     expect(Number(fromWei(proposalState.votesFor))).toBeGreaterThan(0)
     expect(fromWei(proposalState.votesAgainst)).toEqual('0')
 
-    await proposal.stakingToken().mint(accounts[0].address, toWei('1000')).send()
-    await proposal.stakingToken().approveForStaking(toWei('1000')).send()
-
-    await proposal.stake(IProposalOutcome.Pass, toWei('200')).send()
+    const amountToStakeFor = toWei(10000)
+    await proposal.stakingToken().mint(accounts[0].address, amountToStakeFor).send()
+    await proposal.stakingToken().approveForStaking(proposal.votingMachineAddress, amountToStakeFor).send()
+    await proposal.stake(IProposalOutcome.Pass, amountToStakeFor).send()
 
     await waitUntilTrue(() => lastState().stakesFor.gt(new BN(0)))
     proposalState = lastState()
@@ -85,13 +86,14 @@ describe('Proposal execute()', () => {
       return lastState().stage === IProposalStage.Boosted
     })
     expect(lastState().stage).toEqual(IProposalStage.Boosted)
-  }, 10000)
+  })
 
   it('throws a meaningful error if the proposal does not exist', async () => {
     const dao = await getTestDAO()
+    const { GenesisProtocol }  = addresses.base
     // a non-existing proposal
     const proposal = new Proposal(
-      '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, '', arc
+      '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, GenesisProtocol, arc
     )
     await expect(proposal.execute().send()).rejects.toThrow(
       /does not exist/i

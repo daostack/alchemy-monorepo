@@ -369,13 +369,11 @@ export class Proposal implements IStateful<IProposalState> {
       apolloQueryOptions
     ) as Observable<Proposal[]>
   }
-  /**
-   * `state` is an observable of the proposal state
-   */
+
   public context: Arc
   public dao: DAO
 
-constructor(
+  constructor(
     public id: string,
     daoAddress: Address,
     public votingMachineAddress: Address,
@@ -385,6 +383,9 @@ constructor(
     this.context = context
     this.dao = new DAO(daoAddress, context)
   }
+  /**
+   * `state` is an observable of the proposal state
+   */
   public state(): Observable < IProposalState > {
     const query = gql`
       {
