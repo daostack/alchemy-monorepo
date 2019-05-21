@@ -3,17 +3,21 @@ import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Vote } from '../src/vote'
-import { createAProposal, firstResult, getTestDAO, newArc, waitUntilTrue } from './utils'
-const DAOstackMigration = require('@daostack/migration')
+import { createAProposal, firstResult,
+  getContractAddressesFromMigration, getTestDAO, IContractAddressesFromMigration,
+  newArc, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
 describe('Vote on a ContributionReward', () => {
+
   let arc: Arc
+  let addresses: IContractAddressesFromMigration
   let dao: DAO
 
   beforeAll(async () => {
     arc = await newArc()
+    addresses = await getContractAddressesFromMigration()
     dao = await getTestDAO()
   })
 
@@ -73,9 +77,9 @@ describe('Vote on a ContributionReward', () => {
 
   it('throws a meaningful error if the proposal does not exist', async () => {
     // a non-existing proposal
-    const { GenesisProtocol } = DAOstackMigration.migration('private').base
+    const { GenesisProtocol } = addresses.base
     const proposal = new Proposal(
-      '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, GensisProtocol, arc
+      '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, GenesisProtocol, arc
     )
     proposal.context.web3.eth.defaultAccount = arc.web3.eth.accounts.wallet[2].address
     await expect(proposal.vote(IProposalOutcome.Pass).send()).rejects.toThrow(
@@ -84,8 +88,8 @@ describe('Vote on a ContributionReward', () => {
   })
 
   it('throws a meaningful error if the proposal was already executed', async () => {
-    const { Avatar, executedProposalId } = DAOstackMigration.migration('private').test
-    const { GenesisProtocol } = DAOstackMigration.migration('private').base
+    const { Avatar, executedProposalId } = addresses.test
+    const { GenesisProtocol } = addresses.base
     const proposal = new Proposal(executedProposalId, Avatar, GenesisProtocol, arc)
 
     await expect(proposal.execute().send()).rejects.toThrow(
