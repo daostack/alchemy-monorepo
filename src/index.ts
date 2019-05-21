@@ -9,7 +9,7 @@ export { IExecutionState, Proposal, IProposalCreateOptions, IProposalState,
 export { IQueueState, Queue } from './queue'
 export { Reputation, IReputationState } from './reputation'
 export { IRewardState, Reward } from './reward'
-export { IScheme, Scheme } from './scheme'
+export { ISchemeState, Scheme } from './scheme'
 export { Token, ITokenState } from './token'
 export { Stake, IStake, IStakeQueryOptions } from './stake'
 export { Vote, IVote, IVoteQueryOptions } from './vote'
