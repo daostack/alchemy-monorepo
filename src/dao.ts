@@ -1,4 +1,3 @@
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { first, map } from 'rxjs/operators'
@@ -15,6 +14,7 @@ import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
+import { BN } from './utils'
 import { NULL_ADDRESS } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
@@ -23,12 +23,12 @@ export interface IDAOState {
   memberCount: number
   name: string
   reputation: Reputation
-  reputationTotalSupply: BN,
+  reputationTotalSupply: typeof BN,
   token: Token,
-  tokenBalance: BN,
+  tokenBalance: typeof BN,
   tokenName: string,
   tokenSymbol: string,
-  tokenTotalSupply: BN,
+  tokenTotalSupply: typeof BN,
 }
 
 export class DAO implements IStateful<IDAOState> {
@@ -114,27 +114,27 @@ export class DAO implements IStateful<IDAOState> {
     return new Proposal(id, this.address, this.context)
   }
 
-  public proposals(options: IProposalQueryOptions = {}): Observable < Proposal[] > {
+  public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
     options.dao = this.address
     return Proposal.search(options, this.context)
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
+  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
     options.dao = this.address
     return Reward.search(options, this.context)
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
+  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
     options.dao = this.address
     return Vote.search(options, this.context)
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
+  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
     options.dao = this.address
     return Stake.search(options, this.context)
   }
 
-  public ethBalance(): Observable < BN > {
+  public ethBalance(): Observable<typeof BN> {
     return this.context.ethBalance(this.address)
   }
 }

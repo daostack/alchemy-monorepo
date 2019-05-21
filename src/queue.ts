@@ -1,10 +1,10 @@
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc } from './arc'
 import { DAO } from './dao'
 import { ISchemeState } from './scheme'
 import { Address } from './types'
+import { BN } from './utils'
 import { realMathToNumber } from './utils'
 
 export interface IQueueState {

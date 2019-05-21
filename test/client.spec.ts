@@ -56,7 +56,7 @@ describe('apolloClient', () => {
       }
     `
     // client.subcribe returns a zenObservable
-    const zenObservable = await client.subscribe({ query })
+    const zenObservable = await client.subscribe({ query, fetchPolicy: 'no-cache' })
     // cast it to an rxjs observable
     const observable = Observable.create((observer: Observer<any>) =>
       zenObservable.subscribe(observer)

@@ -1,4 +1,4 @@
-import BN = require('bn.js')
+import { BN } from './utils'
 import { realMathToNumber  } from '../src/utils'
 
 /**

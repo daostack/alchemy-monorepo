@@ -1,13 +1,12 @@
 const DAOstackMigration = require('@daostack/migration')
-import BN = require('bn.js')
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { IExecutionState, IProposalOutcome, IProposalStage, IProposalState,
   IProposalType,
   Proposal } from '../src/proposal'
-import { IContributionReward } from '../src/schemes/contributionReward'
 import { createAProposal, fromWei, newArc, toWei, waitUntilTrue} from './utils'
 
+jest.setTimeout(10000)
 /**
  * Proposal test
  */
@@ -49,9 +48,9 @@ describe('Proposal', () => {
     expect(ls.length).toBeGreaterThan(0)
     ls = await Proposal.search({type: IProposalType.GenericScheme }, arc).pipe(first()).toPromise()
     expect(ls.length).toBeGreaterThan(0)
-    ls = await Proposal.search({type: IProposalType.SchemeRegistrarPropose}, arc).pipe(first()).toPromise()
+    ls = await Proposal.search({type: IProposalType.SchemeRegistrarAdd}, arc).pipe(first()).toPromise()
     // expect(ls.length).toEqual(0)
-    ls = await Proposal.search({type: IProposalType.SchemeRegistrarProposeToRemove}, arc).pipe(first()).toPromise()
+    ls = await Proposal.search({type: IProposalType.SchemeRegistrarRemove}, arc).pipe(first()).toPromise()
     // expect(ls.length).toEqual(0)
   })
 

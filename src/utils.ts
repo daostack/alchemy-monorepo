@@ -5,21 +5,21 @@ import { Observable as ZenObservable } from 'apollo-link'
 import { HttpLink } from 'apollo-link-http'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import fetch from 'isomorphic-fetch'
 import * as WebSocket from 'isomorphic-ws'
 import { Observable, Observer } from 'rxjs'
 import { IContractAddresses } from './arc'
-import { Logger } from './logger'
 import { Address } from './types'
 const Web3 = require('web3')
 
-export function fromWei(amount: BN): string {
+export const BN = Web3.utils.BN
+
+export function fromWei(amount: typeof BN): string {
   return Web3.utils.fromWei(amount, 'ether')
 }
 
-export function toWei(amount: string | number): BN {
+export function toWei(amount: string | number): typeof BN {
   return Web3.utils.toWei(amount.toString(), 'ether')
 }
 
@@ -65,7 +65,18 @@ export function createApolloClient(options: {
   //     wsorhttplink
   //   ])
   const client = new ApolloClient({
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      cacheRedirects: {
+        Query: {
+          dao: (_, args, { getCacheKey }) =>  getCacheKey({ __typename: 'DAO', id: args.id }),
+          proposal: (_, args, { getCacheKey }) => {
+            // console.log('cache key: ', [args, getCacheKey({ __typename: 'Proposal', id: args.id })])
+            return getCacheKey({ __typename: 'Proposal', id: args.id })
+          }
+        }
+      }
+    }),
+    connectToDevTools: true,
     link: wsOrHttpLink
   })
   return client
@@ -93,29 +104,6 @@ export function checkWebsocket(options: { url: string }) {
   }
 }
 
-export async function getOptionsFromChain(web3Instance: any) {
-  if (web3Instance.eth.defaultAccount === null) {
-    Logger.warn(`No defaultAccount was set -- cannot send transaction`)
-  }
-  const block = await web3Instance.eth.getBlock('latest')
-  return {
-    from: web3Instance.eth.defaultAccount,
-    gas: block.gasLimit - 100000
-  }
-}
-
-export function getWeb3Options(web3Instance: any) {
-  const defaultAccount = web3Instance.eth.defaultAccount
-  if (!defaultAccount) {
-    const msg = `No defaultAccount was set -- cannot send transaction`
-    Logger.warn(msg)
-  }
-  return {
-    from: defaultAccount,
-    gas: 6000000
-  }
-}
-
 // function lifted and adapted from @daostack/subgraph/src/utils to generate unique ids
 export function concat(a: Uint8Array, b: Uint8Array): Uint8Array {
 
@@ -139,7 +127,10 @@ export function eventId(event: EthereumEvent): string {
   return hash
 }
 
-export function isAddress(address: Address) {
+export function isAddress(address: Address|undefined) {
+  if (!address) {
+    throw new Error(`Not a valid address: ${address}`)
+  }
   if (!Web3.utils.isAddress(address)) {
     throw new Error(`Not a valid address: ${address}`)
   }
@@ -219,7 +210,7 @@ export async function getContractAddresses(graphqlHttpProvider: string, subgraph
  * @param  t a BN instance of a real number in the RealMath representation
  * @return  a BN
  */
-export function realMathToNumber(t: BN): number {
+export function realMathToNumber(t: typeof BN): number {
   const REAL_FBITS = 40
   const fraction = t.maskn(REAL_FBITS).toNumber() / Math.pow(2, REAL_FBITS)
   return t.shrn(REAL_FBITS).toNumber() + fraction
