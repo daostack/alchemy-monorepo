@@ -893,25 +893,17 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
   type?: IProposalType
 }
 
-// TODO: refactor out the options that belong to different schemes
-export interface IProposalCreateOptions {
-  beneficiary?: Address  // for ContributionRewardProposal
+interface IProposalBaseCreateOptions {
   dao?: Address
   description?: string
   descriptionHash?: string
-  callData?: string // for GenericSchemeProposal
-  nativeTokenReward?: typeof BN // for ContributionRewardProposal
-  reputationReward?: typeof BN // for ContributionRewardProposal
-  ethReward?: typeof BN // for ContributionRewardProposal
-  externalTokenReward?: typeof BN // for ContributionRewardProposal
-  externalTokenAddress?: Address // for ContributionRewardProposal
-  periodLength?: number // for ContributionRewardProposal
-  periods?: any  // for ContributionRewardProposal
-  parametersHash?: string // for schemeRegistrar Proposal
-  permissions?: string // for schemeRegistrar Proposal
-  scheme?: Address // for schemeRegistrar Proposal
   title?: string
   type: IProposalType
   url?: string
-  value?: number // for GenericSchemeProposal
 }
+
+export type IProposalCreateOptions = IProposalBaseCreateOptions & (
+  GenericScheme.IProposalCreateOptions |
+  SchemeRegistrar.IProposalCreateOptions |
+  ContributionReward.IProposalCreateOptions
+)

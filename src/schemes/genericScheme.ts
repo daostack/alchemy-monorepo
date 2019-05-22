@@ -8,9 +8,9 @@ export interface IGenericScheme {
   returnValue: string
 }
 
-export interface IProposalCreateGenericSchemeOptions {
-  callData?: string
-  value?: number
+export interface IProposalCreateOptions {
+  callData: string
+  value: number
 }
 export enum IProposalType {
   GenericScheme = 'GenericScheme' // propose a contributionReward
