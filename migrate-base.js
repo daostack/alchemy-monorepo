@@ -9,6 +9,7 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
   async function deploy ({ contractName, abi, bytecode, deployedBytecode }, deps, ...args) {
     deps = deps || []
     for (let existing in previousMigration.base) {
+      existing = previousMigration.base[existing]
       const sameDeps = deps.reduce((acc, dep) => addresses[dep] === existing[dep] && acc, true)
 
       const entryName = (contractName === 'DAOToken') ? contractName = 'GEN' : contractName
