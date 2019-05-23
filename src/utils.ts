@@ -127,7 +127,7 @@ export function eventId(event: EthereumEvent): string {
   return hash
 }
 
-export function isAddress(address: Address|undefined) {
+export function isAddress(address: Address) {
   if (!address) {
     throw new Error(`Not a valid address: ${address}`)
   }

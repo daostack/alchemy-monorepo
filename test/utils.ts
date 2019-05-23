@@ -2,7 +2,7 @@ import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { DAO } from '../src/dao'
 import Arc from '../src/index'
-import { IProposalOutcome, IProposalType, Proposal } from '../src/proposal'
+import { IProposalCreateOptions, IProposalOutcome, Proposal } from '../src/proposal'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
 import { BN } from '../src/utils'
@@ -125,12 +125,16 @@ export async function getTestDAO() {
   return arc.dao(contractAddressesfromMigration.test.Avatar)
 }
 
-export async function createAProposal(dao?: DAO, options: any = {}) {
+export async function createAProposal(
+  dao?: DAO,
+  options: IProposalCreateOptions | { scheme?: Address, dao?: Address} = {}
+) {
   if (!dao) {
     dao = await getTestDAO()
   }
 
-  options = {
+  const contributionRewardAddress = dao.context.contractAddresses.ContributionReward
+  options   = {
     beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
     ethReward: toWei('300'),
     externalTokenAddress: undefined,
@@ -139,11 +143,11 @@ export async function createAProposal(dao?: DAO, options: any = {}) {
     periodLength: 0,
     periods: 1,
     reputationReward: toWei('10'),
-    type: IProposalType.ContributionReward,
+    scheme: contributionRewardAddress,
     ...options
   }
 
-  const response = await dao.createProposal(options).send()
+  const response = await dao.createProposal(options as IProposalCreateOptions).send()
   return response.result as Proposal
 }
 

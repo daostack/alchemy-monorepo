@@ -153,6 +153,10 @@ export class Proposal implements IStateful<IProposalState> {
       throw Error(`Proposal.create(options): options must include an address for "dao"`)
     }
 
+    const schemeName = context.getContractName(options.scheme)
+    if (!schemeName) {
+      throw new Error(`Unknown scheme at ${options.scheme} - cannot create a proposal`)
+    }
     let ipfsDataToSave: object = {}
 
     const saveIPFSData = async () => {
@@ -189,9 +193,9 @@ export class Proposal implements IStateful<IProposalState> {
     let createTransaction: () => any = () => null
 
     let eventName: string
-    switch (options.type) {
+    switch (schemeName) {
     // ContributionReward
-      case IProposalType.ContributionReward:
+      case 'ContributionReward':
         eventName = 'NewContributionProposal'
         const contributionReward = context.getContract('ContributionReward')
 
@@ -216,7 +220,7 @@ export class Proposal implements IStateful<IProposalState> {
         break
 
       // GenericScheme
-      case IProposalType.GenericScheme:
+      case 'GenericScheme':
         eventName = 'NewCallProposal'
         if (!options.callData) {
           throw new Error(`Missing argument "callData" for GenericScheme in Proposal.create()`)
@@ -268,7 +272,7 @@ export class Proposal implements IStateful<IProposalState> {
           return transaction
         }
         break
-      case IProposalType.SchemeRegistrarRemove:
+      case 'SchemeRegistrarRemove':
         eventName = 'RemoveSchemeProposal'
         if (!options.scheme) {
           msg = `Missing argument "scheme" for SchemeRegistrar`
@@ -286,7 +290,7 @@ export class Proposal implements IStateful<IProposalState> {
         }
         break
       default:
-        msg = `Unknown proposal type: "${options.type}" (did you use IProposalType.TypeOfProposal?)`
+        msg = `Unknown proposal scheme: "${schemeName}}"`
         throw Error(msg)
     }
 
@@ -894,16 +898,22 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
 }
 
 interface IProposalBaseCreateOptions {
-  dao?: Address
+  dao: Address
   description?: string
   descriptionHash?: string
   title?: string
-  type: IProposalType
+  scheme: Address
+  // type: IProposalType
   url?: string
+  // data: (
+  //   ContributionReward.IProposalCreateOptions |
+  //   GenericScheme.IProposalCreateOptions1 |
+  //   SchemeRegistrar.IProposalCreateOptions
+  // )
 }
 
 export type IProposalCreateOptions = IProposalBaseCreateOptions & (
-  GenericScheme.IProposalCreateOptions |
-  SchemeRegistrar.IProposalCreateOptions |
+  GenericScheme.IProposalCreateOptions  &
+  SchemeRegistrar.IProposalCreateOptions  &
   ContributionReward.IProposalCreateOptions
 )
