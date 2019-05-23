@@ -23,7 +23,7 @@ describe('Proposal execute()', () => {
     executedProposal = await dao.proposal(executedProposalId)
   })
 
-  it.only('runs correctly through the stages', async () => {
+  it('runs correctly through the stages', async () => {
 
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const accounts = arc.web3.eth.accounts.wallet

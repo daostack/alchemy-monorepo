@@ -55,7 +55,7 @@ describe('Stake on a ContributionReward', () => {
   })
 
   it('throws a meaningful error if an insufficient amount tokens is approved for staking', async () => {
-    const stakingToken =  arc.getContract('GEN')
+    const stakingToken =  arc.GENToken().contract()
     const proposal = await createAProposal(dao)
     await stakingToken.methods
       .mint(accounts[2].address, toWei('100').toString())

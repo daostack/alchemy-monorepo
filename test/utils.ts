@@ -113,7 +113,8 @@ export async function createAProposal(
     dao = await getTestDAO()
   }
 
-  const contributionRewardScheme = (dao as DAO).schemes({name: 'ContributionReward'})[0]
+  const observable = (dao as DAO).schemes({name: 'ContributionReward'})
+  const contributionRewardScheme = (await observable.pipe(first()).toPromise())[0]
   if (contributionRewardScheme) {
     options   = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',

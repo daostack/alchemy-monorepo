@@ -31,7 +31,7 @@ describe('Scheme', () => {
     expect(scheme).toBeInstanceOf(Scheme)
   })
 
-  it.only('Scheme are searchable', async () => {
+  it('Scheme are searchable', async () => {
     const dao = await getTestDAO()
     let result: Scheme[]
     result = await Scheme.search({dao: dao.address}, arc, { fetchPolicy: 'no-cache' })

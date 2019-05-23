@@ -197,7 +197,7 @@ export class Proposal implements IStateful<IProposalState> {
     // ContributionReward
       case 'ContributionReward':
         eventName = 'NewContributionProposal'
-        const contributionReward = context.getContract('ContributionReward')
+        const contributionReward = context.getContract(options.scheme)
 
         createTransaction = async () => {
           options.descriptionHash = await saveIPFSData()
@@ -749,7 +749,7 @@ export class Proposal implements IStateful<IProposalState> {
   }
 
   public stakingToken() {
-    return new Token(this.context.getContract('GEN').options.address, this.context)
+    return this.context.GENToken()
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
