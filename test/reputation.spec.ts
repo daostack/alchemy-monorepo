@@ -3,7 +3,7 @@ import { Arc } from '../src/arc'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
 import { BN } from '../src/utils'
-import { fromWei, getContractAddressesFromMigration, newArc, toWei, waitUntilTrue } from './utils'
+import { fromWei, getTestAddresses, newArc, toWei, waitUntilTrue } from './utils'
 
 /**
  * Reputation test
@@ -16,7 +16,7 @@ describe('Reputation', () => {
   let accounts: any
 
   beforeAll(async () => {
-    addresses = getContractAddressesFromMigration()
+    addresses = getTestAddresses()
     address = addresses.dao.Reputation
     arc = await newArc()
     accounts = arc.web3.eth.accounts.wallet

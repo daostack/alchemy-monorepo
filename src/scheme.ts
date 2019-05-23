@@ -1,7 +1,7 @@
-import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
+import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './proposal'
 import { Address } from './types'
 
 export interface ISchemeState {
@@ -16,14 +16,17 @@ export interface ISchemeState {
   paramsHash: string
 }
 
+export interface ISchemeQueryOptions {
+  id?: string,
+  address?: Address,
+  dao?: Address,
+  name?: string
+
+}
+
 export class Scheme {
   public static search(
-    options: {
-      id?: string,
-      address?: Address,
-      dao?: Address,
-      name?: string
-    },
+    options: ISchemeQueryOptions,
     context: Arc,
     apolloQueryOptions: IApolloQueryOptions = {}
 ): Observable<Scheme[]> {
@@ -111,4 +114,21 @@ export class Scheme {
     }
     return this.context.getObservableObject(query, itemMap) as Observable<ISchemeState>
   }
+
+    /**
+     * create a new proposal in this DAO
+     * TODO: move this to the schemes - we should call proposal.scheme.createProposal
+     * @param  options [description ]
+     * @return a Proposal instance
+     */
+    public createProposal(options: IProposalCreateOptions) {
+      options.dao = this.address
+      return Proposal.create(options, this.context)
+    }
+
+    public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
+      options.scheme = this.address
+      return Proposal.search(options, this.context)
+    }
+
 }

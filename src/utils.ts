@@ -9,6 +9,7 @@ import gql from 'graphql-tag'
 import fetch from 'isomorphic-fetch'
 import * as WebSocket from 'isomorphic-ws'
 import { Observable, Observer } from 'rxjs'
+import { IContractInfo } from '../src/arc'
 import { IContractAddresses } from './arc'
 import { Address } from './types'
 const Web3 = require('web3')
@@ -220,3 +221,21 @@ export function realMathToNumber(t: typeof BN): number {
 }
 
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
+
+export function getContractAddressesFromMigration(): IContractInfo[] {
+  const path = '@daostack/migration/migration.json'
+  const migration = require(path).private
+  const contracts: IContractInfo[] = []
+  for (const version of Object.keys( migration.base)) {
+    for (const name of Object.keys(migration.base[version])) {
+      contracts.push({
+        address: migration.base[version][name],
+        id: migration.base[version][name],
+        name,
+        version
+      })
+    }
+
+  }
+  return contracts
+}

@@ -1,9 +1,10 @@
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
+import { DAO } from '../src/dao'
 import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Stake } from '../src/stake'
 import { BN } from './utils'
-import { createAProposal, getContractAddressesFromMigration, getTestDAO, IContractAddressesFromMigration, newArc,
+import { createAProposal, getTestAddresses, getTestDAO, ITestAddresses, newArc,
   toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
@@ -12,17 +13,21 @@ describe('Stake on a ContributionReward', () => {
   let arc: Arc
   let web3: any
   let accounts: any
-  let addresses: IContractAddressesFromMigration
+  let addresses: ITestAddresses
+  let dao: DAO
+  let executedProposal: Proposal
 
   beforeAll(async () => {
     arc = await newArc()
     web3 = arc.web3
     accounts = web3.eth.accounts.wallet
-    addresses = getContractAddressesFromMigration()
+    addresses = getTestAddresses()
+    dao = await getTestDAO()
+    const { executedProposalId} = addresses.test
+    executedProposal = await dao.proposal(executedProposalId)
   })
 
   it('works and gets indexed', async () => {
-    const dao = await getTestDAO()
 
     const proposal = await createAProposal(dao)
     const stakingToken =  await proposal.stakingToken()
@@ -50,7 +55,6 @@ describe('Stake on a ContributionReward', () => {
   })
 
   it('throws a meaningful error if an insufficient amount tokens is approved for staking', async () => {
-    const dao = await getTestDAO()
     const stakingToken =  arc.getContract('GEN')
     const proposal = await createAProposal(dao)
     await stakingToken.methods
@@ -63,7 +67,6 @@ describe('Stake on a ContributionReward', () => {
   })
 
   it('throws a meaningful error if then senders balance is too low', async () => {
-    const dao = await getTestDAO()
     const proposal = await createAProposal(dao)
     proposal.context.web3.eth.defaultAccount = accounts[4].address
     await expect(proposal.stake(IProposalOutcome.Pass, toWei('10000000')).send()).rejects.toThrow(
@@ -72,12 +75,15 @@ describe('Stake on a ContributionReward', () => {
   })
 
   it('throws a meaningful error if the proposal does not exist', async () => {
-    const dao = await getTestDAO()
-    const genesisProtocol = addresses.base.GenesisProtocol
     // a non-existing proposal
     const proposal = new Proposal(
-      '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, genesisProtocol, arc
+      '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2',
+      dao.address,
+      executedProposal.schemeAddress,
+      executedProposal.votingMachineAddress,
+      arc
     )
+
     proposal.context.web3.eth.defaultAccount = accounts[2].address
     await expect(proposal.stake(IProposalOutcome.Pass, toWei('10000000')).send()).rejects.toThrow(
       /unknown proposal/i

@@ -2,7 +2,7 @@ import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { Proposal } from '../src/proposal'
 import { Scheme } from '../src/scheme'
-import { firstResult, getContractAddressesFromMigration, getTestDAO,  IContractAddressesFromMigration,
+import { firstResult, getTestAddresses, getTestDAO,  ITestAddresses,
   newArc } from './utils'
 
 jest.setTimeout(10000)
@@ -13,11 +13,11 @@ jest.setTimeout(10000)
 describe('Scheme', () => {
 
   let arc: Arc
-  let addresses: IContractAddressesFromMigration
+  let addresses: ITestAddresses
 
   beforeAll(async () => {
     arc = await newArc()
-    addresses = await getContractAddressesFromMigration()
+    addresses = await getTestAddresses()
   })
 
   it('Scheme is instantiable', () => {

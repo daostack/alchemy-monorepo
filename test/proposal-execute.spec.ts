@@ -1,35 +1,44 @@
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
+import { DAO } from '../src/dao'
 import { IProposalOutcome, IProposalStage, IProposalState, IProposalType, Proposal } from '../src/proposal'
 import { BN } from './utils'
-import { createAProposal, fromWei, getContractAddressesFromMigration, getTestDAO,
-  IContractAddressesFromMigration, newArc, timeTravel, toWei,
+import { createAProposal, fromWei, getTestAddresses, getTestDAO, ITestAddresses,
+  newArc, timeTravel, toWei,
   voteToAcceptProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
 
 describe('Proposal execute()', () => {
   let arc: Arc
-  let addresses: IContractAddressesFromMigration
+  let addresses: ITestAddresses
+  let dao: DAO
+  let executedProposal: Proposal
 
   beforeAll(async () => {
     arc = await newArc()
-    addresses = await getContractAddressesFromMigration()
+    addresses = await getTestAddresses()
+    const { Avatar, executedProposalId} = addresses.test
+    dao = arc.dao(Avatar.toLowerCase())
+    executedProposal = await dao.proposal(executedProposalId)
   })
 
-  it('runs correctly through the stages', async () => {
+  it.only('runs correctly through the stages', async () => {
 
-    const dao = await getTestDAO()
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const accounts = arc.web3.eth.accounts.wallet
+    const schemeAddress = executedProposal.schemeAddress
+    console.log('schemeAddress', schemeAddress)
+
     const options = {
       beneficiary,
+      dao: dao.address,
       ethReward: toWei('4'),
       externalTokenAddress: undefined,
       externalTokenReward: toWei('3'),
       nativeTokenReward: toWei('2'),
       reputationReward: toWei('1'),
-      type: IProposalType.ContributionReward
+      scheme: schemeAddress
     }
 
     let proposalState: IProposalState
@@ -89,11 +98,13 @@ describe('Proposal execute()', () => {
   })
 
   it('throws a meaningful error if the proposal does not exist', async () => {
-    const dao = await getTestDAO()
-    const { GenesisProtocol }  = addresses.base
     // a non-existing proposal
     const proposal = new Proposal(
-      '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, GenesisProtocol, arc
+      '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2',
+      dao.address,
+      executedProposal.schemeAddress,
+      executedProposal.votingMachineAddress,
+      arc
     )
     await expect(proposal.execute().send()).rejects.toThrow(
       /does not exist/i
@@ -101,7 +112,6 @@ describe('Proposal execute()', () => {
   })
 
   it('execute a proposal by voting only', async () => {
-    const dao = await getTestDAO()
     arc = dao.context
     // daoBalance
     const daoState = await dao.state().pipe(first()).toPromise()

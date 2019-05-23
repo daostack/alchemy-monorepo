@@ -297,7 +297,7 @@ export class Proposal implements IStateful<IProposalState> {
     const map = (receipt: any) => {
       const proposalId = receipt.events[eventName].returnValues._proposalId
       const votingMachineAddress = receipt.events[eventName].returnValues._intVoteInterface
-      return new Proposal(proposalId, options.dao as string, votingMachineAddress, context)
+      return new Proposal(proposalId, options.dao as string, options.scheme, votingMachineAddress, context)
     }
 
     return context.sendTransaction(createTransaction, map)
@@ -363,13 +363,16 @@ export class Proposal implements IStateful<IProposalState> {
             id
           }
           votingMachine
+          scheme {
+            address
+          }
         }
       }
     `
 
     return context.getObservableList(
       query,
-      (r: any) => new Proposal(r.id, r.dao.id, r.votingMachine, context),
+      (r: any) => new Proposal(r.id, r.dao.id, r.scheme.address, r.votingMachine, context),
       apolloQueryOptions
     ) as Observable<Proposal[]>
   }
@@ -380,9 +383,13 @@ export class Proposal implements IStateful<IProposalState> {
   constructor(
     public id: string,
     daoAddress: Address,
+    public schemeAddress: Address,
     public votingMachineAddress: Address,
     context: Arc
   ) {
+    if (!schemeAddress) {
+      throw Error('No schemeAddress provided..')
+    }
     this.id = id
     this.context = context
     this.dao = new DAO(daoAddress, context)
@@ -661,17 +668,19 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.getObservableObject(query, itemMap) as Observable<IProposalState>
   }
 
+  public scheme() {
+    const abi = this.context.getABI(this.schemeAddress)
+    // TODO: create the contract in the constructor (do not create a new contract instance on each call)
+    return new this.context.web3.eth.Contract(abi, this.schemeAddress)
+  }
   /**
    * [votingMachine description]
    * @return [description]
    */
   public votingMachine() {
-    const votingMachineAddress = this.votingMachineAddress
-    if (!votingMachineAddress) {
-      throw Error('No votingmachine address known for this proposal')
-    }
-    const contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
-    return new this.context.web3.eth.Contract(contractClass.abi, votingMachineAddress)
+    const abi = this.context.getABI(this.votingMachineAddress)
+    // TODO: create the contract in the constructor (do not create a new contract on instance on each call)
+    return new this.context.web3.eth.Contract(abi, this.votingMachineAddress)
   }
 
   public redeemerContract() {
@@ -893,6 +902,7 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
   proposalId?: string
   stage?: IProposalStage
   stage_in?: IProposalStage[]
+  scheme?: Address
   orderBy?: ProposalQuerySortOptions
   type?: IProposalType
 }

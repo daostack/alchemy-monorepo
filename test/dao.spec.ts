@@ -67,6 +67,12 @@ describe('DAO', () => {
     )
   })
 
+  it('dao.member() should work', async () => {
+    const dao = await getTestDAO()
+    const member = await dao.member(arc.web3.eth.defaultAccount)
+    expect(typeof member).toEqual(typeof [])
+  })
+
   it('dao.members() should work', async () => {
     const dao = await getTestDAO()
     const members = await dao.members().pipe(first()).toPromise()
@@ -77,10 +83,13 @@ describe('DAO', () => {
     expect(Number(fromWei(memberState.reputation))).toBeGreaterThan(0)
   })
 
-  it('dao.member() should work', async () => {
+  it('dao.schemes() should work', async () => {
     const dao = await getTestDAO()
-    const member = await dao.member(arc.web3.eth.defaultAccount)
-    expect(typeof member).toEqual(typeof [])
+    let schemes = await dao.schemes().pipe(first()).toPromise()
+    expect(typeof schemes).toEqual(typeof [])
+    expect(schemes.length).toBeGreaterThanOrEqual(3)
+    schemes = await dao.schemes({name: 'ContributionReward'}).pipe(first()).toPromise()
+    expect(schemes.length).toBeGreaterThanOrEqual(1)
   })
 
   it('dao.ethBalance() should work', async () => {

@@ -3,7 +3,7 @@ import { Arc  } from '../src/arc'
 import { Token } from '../src/token'
 import { Address } from '../src/types'
 import { BN } from './utils'
-import { fromWei, getContractAddressesFromMigration, IContractAddressesFromMigration,
+import { fromWei, getTestAddresses, ITestAddresses,
    newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
@@ -11,13 +11,13 @@ jest.setTimeout(10000)
  * Token test
  */
 describe('Token', () => {
-  let addresses: IContractAddressesFromMigration
+  let addresses: ITestAddresses
   let arc: Arc
   let address: Address
 
   beforeAll(async () => {
     arc = await newArc()
-    addresses = getContractAddressesFromMigration()
+    addresses = getTestAddresses()
     address = addresses.dao.DAOToken
   })
 

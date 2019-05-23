@@ -6,7 +6,7 @@ import {
   Proposal
   } from '../src/proposal'
 import { IGenericScheme} from '../src/schemes/genericScheme'
-import { createAProposal, getContractAddressesFromMigration, getTestDAO, newArc,
+import { createAProposal, getTestAddresses, getTestDAO, newArc,
   voteToAcceptProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(20000)
@@ -29,7 +29,7 @@ describe('Proposal', () => {
   })
 
   it('Check proposal state is correct', async () => {
-    const addresses = await getContractAddressesFromMigration()
+    const addresses = await getTestAddresses()
     const dao = await getTestDAO()
     const contractClass = require('@daostack/arc/build/contracts/ActionMock.json')
     const actionMock = new arc.web3.eth.Contract(contractClass.abi, addresses.base.ActionMock, {})

@@ -30,31 +30,23 @@ export class Queue {
     }
 
     // use the following query once https://github.com/daostack/subgraph/issues/217 is resolved
-    // const query = gql`
-    //   {
-    //     gpqueues (where: {${where}}) {
-    //       id
-    //       dao {
-    //         id
-    //       }
-    //       scheme {
-    //         id
-    //         address
-    //         name
-    //       }
-    //     }
-    //   }
-    // `
-    const query = gql`{
-      controllerSchemes (where: {${where}}) {
-        id
-        dao { id }
-        name
-        address
+    const query = gql`
+      {
+        gpqueues (where: {${where}}) {
+          id
+          dao {
+            id
+          }
+          scheme {
+            id
+            address
+            name
+          }
+        }
       }
-    }`
+    `
     const itemMap = (item: any): Queue|null => {
-      const scheme = item
+      const scheme = item.scheme
       const name = scheme.name || context.getContractName(scheme.address)
       // we must filter explictly by name as the subgraph does not return the name
       if (options.name && options.name !== name) {
@@ -107,6 +99,9 @@ export class Queue {
     `
 
     const itemMap = (item: any): IQueueState => {
+      if (!item) {
+        throw Error(`No gpQueue with id ${this.id} was found`)
+      }
       const threshold = realMathToNumber(new BN(item.threshold))
       const schemeName = item.scheme.name || this.context.getContractName(item.scheme.address)
       return {

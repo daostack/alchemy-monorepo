@@ -5,8 +5,7 @@ import Arc from '../src/index'
 import { IProposalCreateOptions, IProposalOutcome, Proposal } from '../src/proposal'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
-import { BN } from '../src/utils'
-import { getContractAddresses } from '../src/utils'
+import { BN, getContractAddressesFromMigration } from '../src/utils'
 const Web3 = require('web3')
 
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack'
@@ -14,6 +13,8 @@ export const graphqlHttpMetaProvider: string = 'http://127.0.0.1:8000/subgraphs'
 export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/daostack'
 export const web3Provider: string = 'ws://127.0.0.1:8545'
 export const ipfsProvider: string = '/ip4/127.0.0.1/tcp/5001'
+
+export const LATEST_ARC_VERSION = '0.0.1-rc.19'
 
 export { BN }
 
@@ -41,8 +42,8 @@ export function toWei(amount: string | number): typeof BN {
   return new BN(Web3.utils.toWei(amount.toString(), 'ether'))
 }
 
-export interface IContractAddressesFromMigration {
-  base: { [key: string]: Address }
+export interface ITestAddresses {
+  // base: { [key: string]: Address }
   dao: { [key: string]: Address }
   test: {
     organs: { [key: string]: Address },
@@ -55,18 +56,16 @@ export interface IContractAddressesFromMigration {
   }
 }
 
-export function getContractAddressesFromMigration(): IContractAddressesFromMigration {
+export function getTestAddresses(): ITestAddresses {
   const path = '@daostack/migration/migration.json'
   const migration = require(path).private
   const version = '0.0.1-rc.19'
   const addresses = {
-    base: migration.base[version],
     dao: migration.dao[version],
     test: migration.test[version]
   }
   return addresses
 }
-
 export async function getOptions(web3: any) {
   const block = await web3.eth.getBlock('latest')
   return {
@@ -77,7 +76,8 @@ export async function getOptions(web3: any) {
 
 export async function newArc() {
   const arc = new Arc({
-    contractAddresses: await getContractAddresses(graphqlHttpMetaProvider, 'daostack'),
+    // contractAddresses: await getContractAddresses(graphqlHttpMetaProvider, 'daostack'),
+    contractAddresses: await getContractAddressesFromMigration(),
     graphqlHttpProvider,
     graphqlWsProvider,
     ipfsProvider,
@@ -92,9 +92,52 @@ export async function newArc() {
   return arc
 }
 
+export async function getTestDAO() {
+  // we have two indexed daos with the same name, but one has 6 members, and that is the one
+  // we are using for testing
+  const arc = await newArc()
+  const addresses = await getTestAddresses()
+  if (!addresses.test.Avatar) {
+    const msg = `Expected to find ".test.avatar" in the migration file, found ${addresses} instead`
+    throw Error(msg)
+  }
+  return arc.dao(addresses.test.Avatar)
+}
+
+export async function createAProposal(
+  dao?: DAO,
+  options?: any
+  // IProposalCreateOptions | { scheme?: Address, dao?: Address} = {}
+) {
+  if (!dao) {
+    dao = await getTestDAO()
+  }
+
+  const contributionRewardScheme = (dao as DAO).schemes({name: 'ContributionReward'})[0]
+  if (contributionRewardScheme) {
+    options   = {
+      beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+      ethReward: toWei('300'),
+      externalTokenAddress: undefined,
+      externalTokenReward: toWei('0'),
+      nativeTokenReward: toWei('1'),
+      periodLength: 0,
+      periods: 1,
+      reputationReward: toWei('10'),
+      scheme: contributionRewardScheme.address,
+      ...options
+    }
+  } else {
+    throw Error('Could not find contributionReward scheme at this dao')
+  }
+
+  const response = await (dao as DAO).createProposal(options as IProposalCreateOptions).send()
+  return response.result as Proposal
+}
+
 export async function mintSomeReputation() {
   const arc = await newArc()
-  const addresses = getContractAddressesFromMigration()
+  const addresses = getTestAddresses()
   const token = new Reputation(addresses.test.organs.DemoReputation, arc)
   const accounts = arc.web3.eth.accounts.wallet
   await token.mint(accounts[1].address, toWei('99')).send()
@@ -111,44 +154,6 @@ export async function waitUntilTrue(test: () => Promise<boolean> | boolean) {
       setTimeout(waitForIt, 30)
     })()
   })
-}
-
-export async function getTestDAO() {
-  // we have two indexed daos with the same name, but one has 6 members, and that is the one
-  // we are using for testing
-  const arc = await newArc()
-  const contractAddressesfromMigration = await getContractAddressesFromMigration()
-  if (!contractAddressesfromMigration.test.Avatar) {
-    const msg = `Expected to find ".test.avatar" in the migration file, found ${contractAddressesfromMigration} instead`
-    throw Error(msg)
-  }
-  return arc.dao(contractAddressesfromMigration.test.Avatar)
-}
-
-export async function createAProposal(
-  dao?: DAO,
-  options: IProposalCreateOptions | { scheme?: Address, dao?: Address} = {}
-) {
-  if (!dao) {
-    dao = await getTestDAO()
-  }
-
-  const contributionRewardAddress = dao.context.contractAddresses.ContributionReward
-  options   = {
-    beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
-    ethReward: toWei('300'),
-    externalTokenAddress: undefined,
-    externalTokenReward: toWei('0'),
-    nativeTokenReward: toWei('1'),
-    periodLength: 0,
-    periods: 1,
-    reputationReward: toWei('10'),
-    scheme: contributionRewardAddress,
-    ...options
-  }
-
-  const response = await dao.createProposal(options as IProposalCreateOptions).send()
-  return response.result as Proposal
 }
 
 // Vote and vote and vote for proposal until it is accepted

@@ -12,7 +12,7 @@ jest.setTimeout(10000)
 describe('Arc ', () => {
   it('Arc is instantiable', () => {
     const arc = new Arc({
-      contractAddresses: {},
+      contractAddresses: [],
       graphqlHttpProvider: 'https://graphql.provider',
       graphqlWsProvider: 'https://graphql.provider',
       ipfsProvider: {
@@ -23,11 +23,6 @@ describe('Arc ', () => {
       web3Provider: 'wss://web3.provider'
     })
     expect(arc).toBeInstanceOf(Arc)
-  })
-
-  it('arc.getContract() works', async () => {
-    const arc = await newArc()
-    expect(arc.getContract('ContributionReward')).toBeInstanceOf(arc.web3.eth.Contract)
   })
 
   it('arc.allowance() should work', async () => {

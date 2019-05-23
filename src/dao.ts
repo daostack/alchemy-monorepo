@@ -3,19 +3,14 @@ import { Observable } from 'rxjs'
 import { first, map } from 'rxjs/operators'
 import { Arc } from './arc'
 import { IMemberQueryOptions, Member } from './member'
-import {
-  IProposalCreateOptions,
-  IProposalQueryOptions,
-  Proposal
-} from './proposal'
-import { Queue } from './queue'
+import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './proposal'
 import { Reputation } from './reputation'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
+import { ISchemeQueryOptions, Scheme } from './scheme'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
 import { BN } from './utils'
-import { NULL_ADDRESS } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export interface IDAOState {
@@ -75,17 +70,28 @@ export class DAO implements IStateful<IDAOState> {
     return this.state().pipe(first()).pipe(map((r) => r.reputation))
   }
 
-  public queues(options: any = {}): Observable<Queue[]> {
+  public schemes(options: ISchemeQueryOptions = {}): Observable<Scheme[]> {
     options.dao = this.address
-    return Queue.search(options, this.context)
+    return Scheme.search(options, this.context)
   }
 
+  public async scheme(options: ISchemeQueryOptions): Promise<Scheme> {
+    const schemes = await this.schemes(options).pipe(first()).toPromise()
+    if (schemes.length === 1) {
+      return schemes[0]
+    } else {
+      throw Error('Could not find a unique scheme satisfying these options')
+    }
+  }
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
+    let where = ''
+    options.dao = this.address
+    for (const key of Object.keys(options)) {
+      where += `${key}: "${options[key]}"\n`
+    }
     const query = gql`{
       reputationHolders (where: {
-        dao: "${this.address}"
-        address_not: "${this.address}"
-        address_not: "${NULL_ADDRESS}"
+        ${where}
       }){
         id
         address
@@ -110,16 +116,19 @@ export class DAO implements IStateful<IDAOState> {
     return Proposal.create(options, this.context)
   }
 
-  // TODO: remove this function, as it does not know how to get the votingMachine
-  public proposal(id: string): Proposal {
-    return new Proposal(id, this.address, '', this.context)
-  }
-
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
     options.dao = this.address
     return Proposal.search(options, this.context)
   }
 
+  public async proposal(proposalId: string): Promise<Proposal> {
+    const proposals =  await this.proposals({id: proposalId}).pipe(first()).toPromise()
+    if (proposals) {
+      return proposals[0]
+    } else {
+      throw new Error(`No proposal with id ${proposalId} could be found`)
+    }
+  }
   public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
     options.dao = this.address
     return Reward.search(options, this.context)

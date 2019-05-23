@@ -28,7 +28,7 @@ export class Arc extends GraphNodeObserver {
   /**
    * a mapping of contrct names to contract addresses
    */
-  public contractAddresses: IContractAddresses
+  public contractAddresses: IContractInfo[]
   public contracts: {[key: string]: any} = {}
 
   // accounts obseved by ethBalance
@@ -42,7 +42,7 @@ export class Arc extends GraphNodeObserver {
   } = {}
 
   constructor(options: {
-    contractAddresses: IContractAddresses
+    contractAddresses: IContractInfo[]
     graphqlHttpProvider: string
     graphqlWsProvider: string
     ipfsProvider: IPFSProvider
@@ -152,63 +152,93 @@ export class Arc extends GraphNodeObserver {
   }
 
   /**
-   * get a web3 contract instance for the deployed contract with the given name
-   * @param  name [description]
-   * @return a web3 Contract instance
+   * return information about the contract
+   * @param  address [description]
+   * @return      an IContractInfo instance
    */
-  public getContract(name: string) {
-    const addresses = this.contractAddresses
-    const opts = {}
-    if (this.contracts[name]) {
-      return this.contracts[name]
+  public getContractInfo(address: Address) {
+    for (const contractInfo of this.contractAddresses) {
+      if (contractInfo.address.toLowerCase() === address.toLowerCase()) {
+        return contractInfo
+      }
     }
-    if (!addresses) {
-      throw new Error(`Cannot get contract: no contractAddress set`)
-    }
-    if (!addresses[name]) {
-      throw new Error(`No contract named ${name} could be found in the provided contract addresses`)
-    }
-    let contractClass
-    let contract
-    switch (name) {
-      case 'AbsoluteVote':
-        contractClass = require('@daostack/arc/build/contracts/AbsoluteVote.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.AbsoluteVote, opts)
-        this.contracts[name] = contract
-        return contract
-      case 'ContributionReward':
-        contractClass = require('@daostack/arc/build/contracts/ContributionReward.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.ContributionReward, opts)
-        this.contracts[name] = contract
-        return contract
-      case 'GEN':
-        contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.GEN, opts)
-        this.contracts[name] = contract
-        return contract
-      case 'GenericScheme':
-        contractClass = require('@daostack/arc/build/contracts/GenericScheme.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenericScheme, opts)
-        this.contracts[name] = contract
-        return contract
-      // case 'GenesisProtocol':
-      //   contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
-      //   contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenesisProtocol, opts)
-      //   return contract
-      case 'Redeemer':
-        contractClass = require('@daostack/arc/build/contracts/Redeemer.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.Redeemer, opts)
-        this.contracts[name] = contract
-        return contract
-      case 'SchemeRegistrar':
-        contractClass = require('@daostack/arc/build/contracts/SchemeRegistrar.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.SchemeRegistrar, opts)
-        this.contracts[name] = contract
-        return contract
-      default:
-        throw Error(`Unknown contract: ${name}`)
-    }
+    throw Error(`No contract with address ${address} is known`)
   }
+
+  public getABI(address: Address) {
+    const contractInfo = this.getContractInfo(address)
+    let abiName = contractInfo.name
+    if (abiName === 'GEN') {
+      abiName = 'ERC20'
+    }
+
+    const abi = require(`@daostack/migration/abis/${contractInfo.version}/${abiName}.json`)
+    return abi
+  }
+
+  public getContract(address: Address) {
+    const abi = this.getABI(address)
+    return new this.web3.eth.Contract(abi, address)
+
+  }
+  // /**
+  //  * get a web3 contract instance for the deployed contract with the given name
+  //  * @param  name [description]
+  //  * @return a web3 Contract instance
+  //  */
+  // public xgetContract(name: string) {
+  //   const addresses = this.contractAddresses
+  //   const opts = {}
+  //   if (this.contracts[name]) {
+  //     return this.contracts[name]
+  //   }
+  //   if (!addresses) {
+  //     throw new Error(`Cannot get contract: no contractAddress set`)
+  //   }
+  //   if (!addresses[name]) {
+  //     throw new Error(`No contract named ${name} could be found in the provided contract addresses`)
+  //   }
+  //   let contractClass
+  //   let contract
+  //   switch (name) {
+  //     case 'AbsoluteVote':
+  //       contractClass = require('@daostack/arc/build/contracts/AbsoluteVote.json')
+  //       contract = new this.web3.eth.Contract(contractClass.abi, addresses.AbsoluteVote, opts)
+  //       this.contracts[name] = contract
+  //       return contract
+  //     case 'ContributionReward':
+  //       contractClass = require('@daostack/arc/build/contracts/ContributionReward.json')
+  //       contract = new this.web3.eth.Contract(contractClass.abi, addresses.ContributionReward, opts)
+  //       this.contracts[name] = contract
+  //       return contract
+  //     case 'GEN':
+  //       contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
+  //       contract = new this.web3.eth.Contract(contractClass.abi, addresses.GEN, opts)
+  //       this.contracts[name] = contract
+  //       return contract
+  //     case 'GenericScheme':
+  //       contractClass = require('@daostack/arc/build/contracts/GenericScheme.json')
+  //       contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenericScheme, opts)
+  //       this.contracts[name] = contract
+  //       return contract
+  //     // case 'GenesisProtocol':
+  //     //   contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
+  //     //   contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenesisProtocol, opts)
+  //     //   return contract
+  //     case 'Redeemer':
+  //       contractClass = require('@daostack/arc/build/contracts/Redeemer.json')
+  //       contract = new this.web3.eth.Contract(contractClass.abi, addresses.Redeemer, opts)
+  //       this.contracts[name] = contract
+  //       return contract
+  //     case 'SchemeRegistrar':
+  //       contractClass = require('@daostack/arc/build/contracts/SchemeRegistrar.json')
+  //       contract = new this.web3.eth.Contract(contractClass.abi, addresses.SchemeRegistrar, opts)
+  //       this.contracts[name] = contract
+  //       return contract
+  //     default:
+  //       throw Error(`Unknown contract: ${name}`)
+  //   }
+  // }
 
   /**
    * get the name of the contract, given an address
@@ -216,20 +246,18 @@ export class Arc extends GraphNodeObserver {
    * @return        The name of the contract, if the address is known, undefined otherwise
    */
   public getContractName(address: Address): string|undefined {
-    isAddress(address)
-    for (const key of Object.keys(this.contractAddresses)) {
-      if (this.contractAddresses[key].toLowerCase() === address.toLowerCase()) {
-        return key
-      }
-    }
+    return this.getContractInfo(address).name
   }
 
   public GENToken() {
     if (this.contractAddresses) {
-      return new Token(this.contractAddresses.GEN, this)
-    } else {
-      throw Error(`Cannot get GEN Token because no contract addresses were provided`)
+      for (const contractInfo of this.contractAddresses) {
+        if (contractInfo.name === 'GEN') {
+          return new Token(contractInfo.address, this)
+        }
+      }
     }
+    throw Error(`Cannot find address of GEN Token`)
   }
 
   public getAccount(): Observable<Address> {
@@ -307,4 +335,11 @@ export interface IApolloQueryOptions {
 
 export interface IContractAddresses {
   [key: string]: Address
+}
+
+export interface IContractInfo {
+  id: string
+  version: string
+  address: Address
+  name: string
 }

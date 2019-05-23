@@ -4,7 +4,7 @@ import { DAO } from '../src/dao'
 import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Vote } from '../src/vote'
 import { createAProposal, firstResult,
-  getContractAddressesFromMigration, getTestDAO, IContractAddressesFromMigration,
+  getTestAddresses, getTestDAO, ITestAddresses,
   newArc, waitUntilTrue } from './utils'
 
 jest.setTimeout(10000)
@@ -12,12 +12,12 @@ jest.setTimeout(10000)
 describe('Vote on a ContributionReward', () => {
 
   let arc: Arc
-  let addresses: IContractAddressesFromMigration
+  let addresses: ITestAddresses
   let dao: DAO
 
   beforeAll(async () => {
     arc = await newArc()
-    addresses = await getContractAddressesFromMigration()
+    addresses = await getTestAddresses()
     dao = await getTestDAO()
   })
 
