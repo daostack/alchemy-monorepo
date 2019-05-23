@@ -364,6 +364,7 @@ export class Proposal implements IStateful<IProposalState> {
           }
           votingMachine
           scheme {
+            id
             address
           }
         }
