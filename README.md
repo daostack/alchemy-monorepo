@@ -5,12 +5,12 @@
 
 # DAOstack Migration
 
-A repo for handeling the migration of DAOstack contracts and DAOs. This repo is packaged both as an
+A repo for handling the migration of DAOstack contracts and DAOs. This repo is packaged both as an
 [npm package](https://www.npmjs.com/package/@daostack/migration) and a
 [Docker image](https://hub.docker.com/r/daostack/migration/) that exposes a pre-migrated ganache instance and other
 utilities related to migration.
 
-Migration is seperated into two phases:
+Migration is separated into two phases:
 
 1. Base migration - of universal contracts from the [`@daostack/arc`](https://www.npmjs.com/package/@daostack/arc)
    package.
@@ -65,7 +65,7 @@ const options = {
 			// overide defaults on private network
 		},
 		kovan: {
-			// overide defaults on kovan
+			// override defaults on kovan
 		},
 	},
 };
@@ -107,7 +107,7 @@ Options:
   --version          Show version number                                                                       [boolean]
   --provider, -p     web3 provider url                                       [string] [default: "http://localhost:8545"]
   --gas-price, -g    gas price in GWei. If not specified, will use an automatically suggested price.            [number]
-  --quiet, -q        surpress console output                                                  [boolean] [default: false]
+  --quiet, -q        suppress console output                                                  [boolean] [default: false]
   --force, -f        disable confirmation messages                                            [boolean] [default: false]
   --output, -o       filepath to output the migration results                       [string] [default: "migration.json"]
   --params, -i       path to the file containing the migration parameters           [string] [default: "migration-params.json"]
@@ -128,7 +128,7 @@ Options:
 
 4. Customize `your-new-dao-params.json` by setting up the DAO name, token, founders, schemes etc. To learn more about the customization options for the parameters please see the [Migration parameters](#migration-parameters) section below.
 
-5. Obtain a URL of an Ethereum node connected to your desired netwrok. You can also use [Infure](https://infura.io) for that.
+5. Obtain a URL of an Ethereum node connected to your desired network. You can also use [Infure](https://infura.io) for that.
 
 6. Get some ether in your Ethereum account to pay for the mining fee of deploying the DAO. Make sure you have the private key for the account.
 
@@ -244,14 +244,14 @@ Example migration parameters object:
 
   // Needed only if you would like to use Contribution Reward scheme in your DAO
   "ContributionReward": {
-    "voteParams": 0 // The index of the parameters in the vting machines parameters array
+    "voteParams": 0 // The index of the parameters in the voting machines parameters array
   },
   // Needed only if you would like to use Generic Scheme scheme in your DAO
   "GenericScheme": {
     // The address of the contract the Generic Scheme can call.
     "targetContract": "0x0000000000000000000000000000000000000000"
     "votingMachine": "0x00000000000000000000votingmachineaddress" // The address of your voting machine (default is Genesis Protocol address)
-    "voteParams": 1 // The index of the parameters in the vting machines parameters array (default is 0)
+    "voteParams": 1 // The index of the parameters in the voting machines parameters array (default is 0)
   },
   // Parameters list your DAO will use with the voting machines
   // You can add here either Genesis Protocol parameters which will set the parameters in the GP voting machine or add a pre-set parameters hash to any voting machine
@@ -282,8 +282,8 @@ Example migration parameters object:
     "GlobalConstraintRegistrar": true,
     "UpgradeScheme": true
   },
-  // If true, the permission of the account which was used to deploy the DAO will 
-  // be revoked at the end of the deplyment process
+  // If true, the permission of the account which was used to deploy the DAO will
+  // be revoked at the end of the deployment process
   "unregisterOwner": true,
   // True if should use Universal Controller (default false).
   "useUController": false,
@@ -357,8 +357,8 @@ In order to release a version:
 
    1. Make sure you have the required `.env` variables set (`kovan_provider`, `kovan_private_key`, `rinkeby_provider`,
       `rinkeby_private_key`, `mainnet_provider`, `mainnet_private_key`).
-   2. Make sure you are not on the `master` branch. If needed, create a new branch for the relase process.
-   3. `npm run prepare-release` - This will perform all the nesserary steps to update version and prepare for a new release. The changes made here will be committed to the git branch.
+   2. Make sure you are not on the `master` branch. If needed, create a new branch for the release process.
+   3. `npm run prepare-release` - This will perform all the necessary steps to update version and prepare for a new release. The changes made here will be committed to the git branch.
    4. Create a PR and merge the new branch with the changes into `master`.
    5. Make sure that you have a Dockerhub ID with permission to push an image to the `daostack` organization.
    6. Make sure that you have an `npm` account with permission to push an image to the `daostack` organization.
