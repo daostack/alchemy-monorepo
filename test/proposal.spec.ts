@@ -83,7 +83,7 @@ describe('Proposal', () => {
   })
 
   it('dao.proposals() accepts different query arguments', async () => {
-    const { Avatar, queuedProposalId, executedProposalId } = addresses.test
+    const { Avatar, queuedProposalId } = addresses.test
     const dao = arc.dao(Avatar.toLowerCase())
     const proposals = await dao.proposals({ stage: IProposalStage.Queued}).pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])

@@ -110,6 +110,7 @@ export class DAO implements IStateful<IDAOState> {
     return Proposal.create(options, this.context)
   }
 
+  // TODO: remove this function, as it does not know how to get the votingMachine
   public proposal(id: string): Proposal {
     return new Proposal(id, this.address, '', this.context)
   }
