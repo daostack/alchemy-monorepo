@@ -85,16 +85,18 @@ describe('Token', () => {
   })
 
   it('approveForStaking() and allowance() work', async () => {
-    const token = new Token(arc.getContract('GEN').options.address, arc)
+    const token = arc.GENToken()
     const amount = toWei('31415')
     const allowances: Array<typeof BN> = []
-    const genesisProtocolAddress = addresses.base.GenesisProtocol
+    const lastAllowance = () => allowances[allowances.length - 1]
+    const someAddress = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
 
-    token.allowance(arc.web3.eth.defaultAccount, genesisProtocolAddress).subscribe(
+    token.allowance(arc.web3.eth.defaultAccount, someAddress).subscribe(
       (next: any) => allowances.push(next)
     )
-    await token.approveForStaking(genesisProtocolAddress, amount).send()
-    const lastAllowance = () => allowances[allowances.length - 1]
+
+    await token.approveForStaking(someAddress, amount).send()
+
     await waitUntilTrue(() => allowances.length > 0 && lastAllowance().gte(amount))
     expect(lastAllowance()).toMatchObject(amount)
   })
