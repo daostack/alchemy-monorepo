@@ -25,6 +25,7 @@ async function migrate (opts) {
 
 const defaults = {
   quiet: false,
+  disableconfs: false,
   force: false,
   provider: 'http://localhost:8545',
   // this is the private key used by ganache when running with `--deterministic`
@@ -38,7 +39,7 @@ const defaults = {
  * A wrapper function that performs tasks common to all migration commands.
  */
 const wrapCommand = fn => async options => {
-  let { quiet, force, provider, gasPrice, privateKey, mnemonic, prevmigration, output, params } = { ...defaults, ...options }
+  let { quiet, disableconfs, force, provider, gasPrice, privateKey, mnemonic, prevmigration, output, params } = { ...defaults, ...options }
   const emptySpinner = new Proxy({}, { get: () => () => { } }) // spinner that does nothing
   const spinner = quiet ? emptySpinner : ora()
 
@@ -49,6 +50,8 @@ const wrapCommand = fn => async options => {
 
   const confirm = async (msg, def) => {
     if (force) {
+      return true
+    } else if (disableconfs) {
       return def === undefined ? true : def
     } else {
       const { confirmation } = await inquirer.prompt([
@@ -167,9 +170,15 @@ function cli () {
       type: 'boolean',
       default: defaults.quiet
     })
+    .option('disable-confs', {
+      alias: 'd',
+      describe: 'disable confirmation messages',
+      type: 'boolean',
+      default: defaults.disableconfs
+    })
     .option('force', {
       alias: 'f',
-      describe: 'disable confirmation messages',
+      describe: 'force deploy everything',
       type: 'boolean',
       default: defaults.force
     })

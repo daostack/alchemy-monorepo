@@ -49,6 +49,8 @@ const options = {
   // surpress console output
   quiet: true,
   // disable confirmation messages
+  disable-confs: true,
+  // force deploy everything
   force: true,
   // filepath to output the migration results
   output: 'migration.json',
