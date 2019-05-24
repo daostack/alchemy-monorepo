@@ -157,6 +157,7 @@ export class Arc extends GraphNodeObserver {
    * @return      an IContractInfo instance
    */
   public getContractInfo(address: Address) {
+    isAddress(address)
     for (const contractInfo of this.contractAddresses) {
       if (contractInfo.address.toLowerCase() === address.toLowerCase()) {
         return contractInfo
@@ -250,9 +251,12 @@ export class Arc extends GraphNodeObserver {
   }
 
   public GENToken() {
+    // TODO: remove this reference to LATEST_ARC_VERSION
+    // (it's aworkaround for https://github.com/daostack/migration/issues/144)
+    const LATEST_ARC_VERSION = '0.0.1-rc.19'
     if (this.contractAddresses) {
       for (const contractInfo of this.contractAddresses) {
-        if (contractInfo.name === 'GEN') {
+        if (contractInfo.name === 'GEN' && contractInfo.version === LATEST_ARC_VERSION) {
           return new Token(contractInfo.address, this)
         }
       }
