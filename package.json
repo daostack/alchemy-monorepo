@@ -65,7 +65,7 @@
     ]
   },
   "devDependencies": {
-    "@daostack/migration": "0.0.1-rc.19-v0",
+    "@daostack/migration": "0.0.1-rc.19-v3",
     "@types/graphql": "^14.0.3",
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/jest": "^24.0.11",
@@ -99,7 +99,6 @@
     "u": "^0.1.0"
   },
   "dependencies": {
-    "@daostack/arc": "0.0.1-rc.18",
     "apollo-cache-inmemory": "^1.5.1",
     "apollo-client": "^2.5.1",
     "apollo-client-ws": "^2.4.0",
