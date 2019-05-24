@@ -1,9 +1,7 @@
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { Proposal } from '../src/proposal'
 import { Scheme } from '../src/scheme'
-import { firstResult, getTestAddresses, getTestDAO,  ITestAddresses,
-  newArc } from './utils'
+import { firstResult, getTestAddresses, getTestDAO,  ITestAddresses, newArc } from './utils'
 
 jest.setTimeout(10000)
 
@@ -13,11 +11,11 @@ jest.setTimeout(10000)
 describe('Scheme', () => {
 
   let arc: Arc
-  let addresses: ITestAddresses
+  let testAddresses: ITestAddresses
 
   beforeAll(async () => {
     arc = await newArc()
-    addresses = await getTestAddresses()
+    testAddresses = await getTestAddresses()
   })
 
   it('Scheme is instantiable', () => {
@@ -66,8 +64,8 @@ describe('Scheme', () => {
 
     const scheme = result[0]
     const state = await scheme.state().pipe(first()).toPromise()
-    expect(state).toEqual({
-      address: arc.contractAddresses.SchemeRegistrar,
+    expect(state).toMatchObject({
+      address: testAddresses.base.SchemeRegistrar.toLowerCase(),
       id: scheme.id,
       name: 'SchemeRegistrar'
     })
@@ -75,8 +73,9 @@ describe('Scheme', () => {
   })
 
   it('Scheme.state() should be equal to proposal.state().scheme', async () => {
-    const { queuedProposalId } = addresses.test
-    const proposal = new Proposal(queuedProposalId, '', '', arc)
+    const { queuedProposalId } = testAddresses.test
+    const dao = await getTestDAO()
+    const proposal = await dao.proposal(queuedProposalId)
     const proposalState = await proposal.state().pipe(first()).toPromise()
     const schemes = await firstResult(Scheme.search({id: proposalState.scheme.id}, arc))
     const schemeState = await firstResult(schemes[0].state())

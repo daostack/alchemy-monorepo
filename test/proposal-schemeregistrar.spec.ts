@@ -7,7 +7,8 @@ import {
   Proposal
   } from '../src/proposal'
 import { Scheme } from '../src/scheme'
-import { createAProposal, firstResult, getTestDAO, newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
+import { createAProposal, firstResult, getTestAddresses, getTestDAO,
+  newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(30000)
 
@@ -23,19 +24,18 @@ describe('Proposal', () => {
 
   it('Check proposal state is correct', async () => {
     const dao = await getTestDAO()
-    const schemeToRegister = arc.web3.eth.accounts.wallet[3].address
+    const schemeToRegister = arc.web3.eth.accounts.create().address.toLowerCase()
+    const proposalToAddStates: IProposalState[] = []
+    const lastProposalToAddState = (): IProposalState => proposalToAddStates[proposalToAddStates.length - 1]
+
     const proposalToAdd = await createAProposal(dao, {
       descriptionHash: '',
       parametersHash: '0x0000000000000000000000000000000000000000000000000000000000001234',
       permissions: '0x0000001f',
-      scheme: schemeToRegister,
+      scheme: getTestAddresses().base.SchemeRegistrar,
+      schemeToRegister,
       type: IProposalType.SchemeRegistrarAdd
     })
-
-    expect(proposalToAdd).toBeInstanceOf(Proposal)
-    const proposalToAddStates: IProposalState[] = []
-    const lastProposalToAddState = (): IProposalState => proposalToAddStates[proposalToAddStates.length - 1]
-
     proposalToAdd.state().subscribe((pState: IProposalState) => {
       proposalToAddStates.push(pState)
     })
@@ -46,7 +46,7 @@ describe('Proposal', () => {
       decision: null,
       schemeRegistered: null,
       schemeRemoved: null,
-      schemeToRegister:  schemeToRegister.toLowerCase(),
+      schemeToRegister,
       schemeToRegisterParamsHash: '0x0000000000000000000000000000000000000000000000000000000000001234',
       schemeToRegisterPermission: '0x0000001f',
       schemeToRemove: null
@@ -69,7 +69,7 @@ describe('Proposal', () => {
 
     // we now expect our new scheme to appear in the schemes collection
     const registeredSchemes = await firstResult(Scheme.search({ dao: dao.address }, arc))
-    expect(registeredSchemes.map((x: Scheme) => arc.web3.utils.toChecksumAddress(x.address)))
+    expect(registeredSchemes.map((x: Scheme) => x.address))
       .toContain(schemeToRegister)
 
     // we create a new proposal now to edit the scheme
@@ -77,7 +77,8 @@ describe('Proposal', () => {
       descriptionHash: '',
       parametersHash: '0x0000000000000000000000000000000000000000000000000000000000001234',
       permissions: '0x0000001f',
-      scheme: schemeToRegister,
+      scheme: getTestAddresses().base.SchemeRegistrar,
+      schemeToRegister: schemeToRegister.toLowerCase(),
       type: IProposalType.SchemeRegistrarEdit
     })
     const proposalToEditStates: IProposalState[]  = []
@@ -93,7 +94,7 @@ describe('Proposal', () => {
       // id: '0x11272ed228de85c4fd14ab467f1f8c6d6936ce3854e240f9a93c9deb95f243e6',
       schemeRegistered: null,
       schemeRemoved: null,
-      schemeToRegister: schemeToRegister.toLowerCase(),
+      schemeToRegister,
       schemeToRegisterParamsHash: '0x0000000000000000000000000000000000000000000000000000000000001234',
       schemeToRegisterPermission: '0x0000001f',
       schemeToRemove: null
@@ -102,7 +103,8 @@ describe('Proposal', () => {
 
     // we now uregister the new scheme
     const proposalToRemove = await createAProposal(dao, {
-      scheme: schemeToRegister,
+      scheme: getTestAddresses().base.SchemeRegistrar,
+      schemeToRegister,
       type: IProposalType.SchemeRegistrarRemove
     })
     expect(proposalToRemove).toBeInstanceOf(Proposal)

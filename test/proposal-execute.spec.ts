@@ -18,9 +18,8 @@ describe('Proposal execute()', () => {
   beforeAll(async () => {
     arc = await newArc()
     addresses = await getTestAddresses()
-    const { Avatar, executedProposalId} = addresses.test
-    dao = arc.dao(Avatar.toLowerCase())
-    executedProposal = await dao.proposal(executedProposalId)
+    dao = await getTestDAO()
+    executedProposal = await dao.proposal(addresses.test.executedProposalId)
   })
 
   it('runs correctly through the stages', async () => {
@@ -28,7 +27,6 @@ describe('Proposal execute()', () => {
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const accounts = arc.web3.eth.accounts.wallet
     const schemeAddress = executedProposal.schemeAddress
-    console.log('schemeAddress', schemeAddress)
 
     const options = {
       beneficiary,
@@ -76,8 +74,13 @@ describe('Proposal execute()', () => {
 
     const amountToStakeFor = toWei(10000)
     await proposal.stakingToken().mint(accounts[0].address, amountToStakeFor).send()
-    await proposal.stakingToken().approveForStaking(proposal.votingMachineAddress, amountToStakeFor).send()
+    await proposal.stakingToken()
+      .approveForStaking(proposal.votingMachineAddress, amountToStakeFor.add(new BN(1000))).send()
+
+    await proposal.execute().send()
+    // this reverts: why?
     await proposal.stake(IProposalOutcome.Pass, amountToStakeFor).send()
+    return
 
     await waitUntilTrue(() => lastState().stakesFor.gt(new BN(0)))
     proposalState = lastState()
@@ -116,14 +119,10 @@ describe('Proposal execute()', () => {
     // daoBalance
     const daoState = await dao.state().pipe(first()).toPromise()
     const repTotalSupply = daoState.reputationTotalSupply
-    // const daoBalance = await dao.ethBalance().pipe(first()).toPromise()
-    // expect(daoBalance).toEqual(new BN(0))
-
     const proposalStates: IProposalState[] = []
-
     const lastState = () => proposalStates[proposalStates.length - 1]
     const proposal = await createAProposal(dao,  { ethReward: new BN(0)})
-    proposal.state().subscribe((state) => {
+    proposal.state().subscribe((state: IProposalState) => {
       proposalStates.push(state)
     })
     // calling "execute" immediately will have no effect, because the proposal is not

@@ -43,7 +43,7 @@ export function toWei(amount: string | number): typeof BN {
 }
 
 export interface ITestAddresses {
-  // base: { [key: string]: Address }
+  base: { [key: string]: Address }
   dao: { [key: string]: Address }
   test: {
     organs: { [key: string]: Address },
@@ -59,8 +59,9 @@ export interface ITestAddresses {
 export function getTestAddresses(): ITestAddresses {
   const path = '@daostack/migration/migration.json'
   const migration = require(path).private
-  const version = '0.0.1-rc.19'
+  const version = LATEST_ARC_VERSION
   const addresses = {
+    base: migration.base[version],
     dao: migration.dao[version],
     test: migration.test[version]
   }
@@ -106,30 +107,24 @@ export async function getTestDAO() {
 
 export async function createAProposal(
   dao?: DAO,
-  options?: any
-  // IProposalCreateOptions | { scheme?: Address, dao?: Address} = {}
+  options: any = {}
+  // options: IProposalCreateOptions | { scheme?: Address, dao?: Address} = {}
 ) {
   if (!dao) {
     dao = await getTestDAO()
   }
 
-  const observable = (dao as DAO).schemes({name: 'ContributionReward'})
-  const contributionRewardScheme = (await observable.pipe(first()).toPromise())[0]
-  if (contributionRewardScheme) {
-    options   = {
-      beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
-      ethReward: toWei('300'),
-      externalTokenAddress: undefined,
-      externalTokenReward: toWei('0'),
-      nativeTokenReward: toWei('1'),
-      periodLength: 0,
-      periods: 1,
-      reputationReward: toWei('10'),
-      scheme: contributionRewardScheme.address,
-      ...options
-    }
-  } else {
-    throw Error('Could not find contributionReward scheme at this dao')
+  options   = {
+    beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+    ethReward: toWei('300'),
+    externalTokenAddress: undefined,
+    externalTokenReward: toWei('0'),
+    nativeTokenReward: toWei('1'),
+    periodLength: 0,
+    periods: 1,
+    reputationReward: toWei('10'),
+    scheme: getTestAddresses().base.ContributionReward,
+    ...options
   }
 
   const response = await (dao as DAO).createProposal(options as IProposalCreateOptions).send()
@@ -141,7 +136,7 @@ export async function mintSomeReputation() {
   const addresses = getTestAddresses()
   const token = new Reputation(addresses.test.organs.DemoReputation, arc)
   const accounts = arc.web3.eth.accounts.wallet
-  await token.mint(accounts[1].address, toWei('99')).send()
+  await token.mint(accounts[1].address, new BN('99')).send()
 }
 
 export function mineANewBlock() {

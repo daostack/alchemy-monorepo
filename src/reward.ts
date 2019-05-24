@@ -46,7 +46,7 @@ export class Reward implements IStateful<IRewardState> {
     for (const key of Object.keys(options)) {
       if (options[key] !== undefined) {
         if (key === 'beneficiary') {
-          isAddress(options.beneficiary)
+          isAddress(options.beneficiary as string)
           options[key] = (options[key] as Address).toLowerCase()
         }
         where += `${key}: "${options[key] as string}"\n`

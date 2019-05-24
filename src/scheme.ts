@@ -1,7 +1,11 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
+import { Operation } from './operation'
 import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './proposal'
+import * as ContributionReward from './schemes/contributionReward'
+import * as GenericScheme from './schemes/genericScheme'
+import * as SchemeRegistrar from './schemes/schemeRegistrar'
 import { Address } from './types'
 
 export interface ISchemeState {
@@ -50,11 +54,19 @@ export class Scheme {
       }
     }`
     const itemMap = (item: any): Scheme|null => {
-      const name = item.name || context.getContractName(item.address)
-      // we must filter explictly by name as the subgraph does not return the name
+      // TODO: remove next lines after resolution of https://github.com/daostack/subgraph/issues/238
+      let name = item.name
+      if (!name) {
+        try {
+          name = context.getContractName(item.address)
+        } catch (err) {
+          // pass
+        }
+      }
       if (options.name && options.name !== name) {
         return null
       }
+      // we must filter explictly by name as the subgraph does not return the name
       return new Scheme(
         item.id,
         item.dao.id,
@@ -121,9 +133,37 @@ export class Scheme {
      * @param  options [description ]
      * @return a Proposal instance
      */
-    public createProposal(options: IProposalCreateOptions) {
-      options.dao = this.address
-      return Proposal.create(options, this.context)
+    public createProposal(options: IProposalCreateOptions): Operation<Proposal>  {
+      let msg: string
+      const context = this.context
+      let createTransaction: () => any = () => null
+      let map: any
+
+      switch (this.name) {
+      // ContributionReward
+        case 'ContributionReward':
+          createTransaction  = ContributionReward.createTransaction(options, this.context)
+          map = ContributionReward.createTransactionMap(options, this.context)
+          break
+
+        // GenericScheme
+        case 'GenericScheme':
+          createTransaction  = GenericScheme.createTransaction(options, this.context)
+          map = GenericScheme.createTransactionMap(options, this.context)
+          break
+
+        // SchemeRegistrar
+        case 'SchemeRegistrar':
+          createTransaction  = SchemeRegistrar.createTransaction(options, this.context)
+          map = SchemeRegistrar.createTransactionMap(options, this.context)
+          break
+
+        default:
+          msg = `Unknown proposal scheme: "${this.name}"`
+          throw Error(msg)
+      }
+
+      return context.sendTransaction(createTransaction, map)
     }
 
     public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {

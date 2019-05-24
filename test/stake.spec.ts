@@ -27,11 +27,12 @@ describe('Stake', () => {
     let result: any
     const proposal = await createAProposal()
     const stakes: any[] = []
-    proposal.stakes().subscribe((next) => stakes.push(next))
 
     const stakeAmount = toWei('18')
     await proposal.stakingToken().mint(arc.web3.eth.defaultAccount, stakeAmount).send()
     await arc.approveForStaking(proposal.votingMachine().options.address, stakeAmount).send()
+
+    proposal.stakes().subscribe((next) => stakes.push(next))
     await proposal.stake(IProposalOutcome.Pass, stakeAmount).send()
 
     // wait until we have the we received the stake update

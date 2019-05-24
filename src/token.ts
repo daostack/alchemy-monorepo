@@ -115,7 +115,6 @@ export class Token implements IStateful<ITokenState> {
         .catch((err: Error) => { observer.error(err)})
       return () => {
         if (subscription) {
-          console.log('close allowance subscription')
           subscription.unsubscribe()
         }
       }
@@ -126,8 +125,10 @@ export class Token implements IStateful<ITokenState> {
    * get a web3 contract instance for this token
    */
   public contract() {
-    const ReputationContractInfo = require('@daostack/arc/build/contracts/DAOToken.json')
-    return new this.context.web3.eth.Contract(ReputationContractInfo.abi, this.address)
+    // TODO: this a  bit hacky - we shuld have this contractInfo in our "contractAddresses" registry
+    const LATEST_ARC_VERSION = '0.0.1-rc.19'
+    const DAOTokenABI = require(`@daostack/migration/abis/${LATEST_ARC_VERSION}/DAOToken.json`)
+    return new this.context.web3.eth.Contract(DAOTokenABI, this.address)
   }
 
   public mint(beneficiary: Address, amount: typeof BN) {

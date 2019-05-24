@@ -1,22 +1,21 @@
 import gql from 'graphql-tag'
+const Web3 = require('web3')
 import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
-import Web3 = require('web3')
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
-import { Logger } from './logger'
 import { Operation } from './operation'
 import { IQueueState } from './queue'
 import { IRewardQueryOptions, IRewardState, Reward } from './reward'
 import { ISchemeState } from './scheme'
-import { IContributionReward } from './schemes/contributionReward'
+import { Scheme } from './scheme'
 import * as ContributionReward from './schemes/contributionReward'
-import { IGenericScheme } from './schemes/genericScheme'
+import { IContributionReward } from './schemes/contributionReward'
 import * as GenericScheme from './schemes/genericScheme'
+import { IGenericScheme } from './schemes/genericScheme'
 import { ISchemeRegistrar } from './schemes/schemeRegistrar'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
-import { Token } from './token'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
 import { BN } from './utils'
 import { NULL_ADDRESS, realMathToNumber } from './utils'
@@ -148,159 +147,32 @@ export class Proposal implements IStateful<IProposalState> {
    */
   public static create(options: IProposalCreateOptions, context: Arc): Operation<Proposal> {
 
-    let msg: string // used for error messages
     if (!options.dao) {
       throw Error(`Proposal.create(options): options must include an address for "dao"`)
     }
-
-    const schemeName = context.getContractName(options.scheme)
-    if (!schemeName) {
-      throw new Error(`Unknown scheme at ${options.scheme} - cannot create a proposal`)
+    if (!options.scheme) {
+      throw Error(`Proposal.create(options): options must include an address for "scheme"`)
     }
-    let ipfsDataToSave: object = {}
 
-    const saveIPFSData = async () => {
-      if (options.title || options.url || options.description) {
-        if (!context.ipfsProvider) {
-          throw Error(`No ipfsProvider set on Arc instance - cannot save data on IPFS`)
-        }
-        ipfsDataToSave = {
-          description: options.description,
-          title: options.title,
-          url: options.url
-        }
-        if (options.descriptionHash) {
-          msg = `Proposal.create() takes a descriptionHash, or values for title, url and description; not both`
-          throw Error(msg)
-        }
-      }
-      if (ipfsDataToSave !== {}) {
-        Logger.debug('Saving data on IPFS...')
-        let descriptionHash: string = ''
-        try {
-          const ipfsResponse = await context.ipfs.add(Buffer.from(JSON.stringify(ipfsDataToSave)))
-          descriptionHash = ipfsResponse[0].path
-          // pin the file
-          await context.ipfs.pin.add(descriptionHash)
-        } catch (error) {
-          throw error
-        }
-        Logger.debug(`Data saved successfully as ${options.descriptionHash}`)
-        return descriptionHash
+    let schemeName: string
+    try {
+      schemeName = context.getContractName(options.scheme)
+    } catch (err) {
+      if (err.message.match(/is known/)) {
+        throw new Error(`Unknown scheme at ${options.scheme} - cannot create a proposal`)
+      } else {
+        throw err
       }
     }
 
-    let createTransaction: () => any = () => null
-
-    let eventName: string
-    switch (schemeName) {
-    // ContributionReward
-      case 'ContributionReward':
-        eventName = 'NewContributionProposal'
-        const contributionReward = context.getContract(options.scheme)
-
-        createTransaction = async () => {
-          options.descriptionHash = await saveIPFSData()
-          const transaction = contributionReward.methods.proposeContributionReward(
-              options.dao,
-              options.descriptionHash || '',
-              options.reputationReward && options.reputationReward.toString() || 0,
-              [
-                options.nativeTokenReward && options.nativeTokenReward.toString() || 0,
-                options.ethReward && options.ethReward.toString() || 0,
-                options.externalTokenReward && options.externalTokenReward.toString() || 0,
-                options.periodLength || 0,
-                options.periods || 1
-              ],
-              options.externalTokenAddress || NULL_ADDRESS,
-              options.beneficiary
-          )
-          return transaction
-        }
-        break
-
-      // GenericScheme
-      case 'GenericScheme':
-        eventName = 'NewCallProposal'
-        if (!options.callData) {
-          throw new Error(`Missing argument "callData" for GenericScheme in Proposal.create()`)
-        }
-        if (options.value === undefined) {
-          throw new Error(`Missing argument "value" for GenericScheme in Proposal.create()`)
-        }
-        createTransaction = async () => {
-          options.descriptionHash = await saveIPFSData()
-
-          const genericScheme = context.getContract('GenericScheme')
-          const transaction = genericScheme.methods.proposeCall(
-            options.dao,
-            options.callData,
-            options.value,
-            options.descriptionHash
-          )
-          return transaction
-        }
-        break
-
-      // SchemeRegistrar
-      case IProposalType.SchemeRegistrarAdd:
-      case IProposalType.SchemeRegistrarEdit:
-        eventName = 'NewSchemeProposal'
-        if (!options.scheme) {
-          msg = `Missing argument "scheme" for SchemeRegistrar in Proposal.create()`
-          throw Error(msg)
-        }
-        if (!options.parametersHash) {
-          msg = `Missing argument "parametersHash" for SchemeRegistrar in Proposal.create()`
-          throw Error(msg)
-        }
-        if (!options.permissions) {
-          msg = `Missing argument "permissions" for SchemeRegistrar in Proposal.create()`
-          throw Error(msg)
-        }
-        createTransaction = async () => {
-          const schemeRegistrar = context.getContract('SchemeRegistrar')
-          options.descriptionHash = await saveIPFSData()
-
-          const transaction = schemeRegistrar.methods.proposeScheme(
-            options.dao,
-            options.scheme,
-            options.parametersHash,
-            options.permissions,
-            options.descriptionHash
-          )
-          return transaction
-        }
-        break
-      case 'SchemeRegistrarRemove':
-        eventName = 'RemoveSchemeProposal'
-        if (!options.scheme) {
-          msg = `Missing argument "scheme" for SchemeRegistrar`
-          throw Error(msg)
-        }
-        createTransaction = async () => {
-          const schemeRegistrar = context.getContract('SchemeRegistrar')
-          options.descriptionHash = await saveIPFSData()
-          const transaction = schemeRegistrar.methods.proposeToRemoveScheme(
-            options.dao,
-            options.scheme,
-            options.descriptionHash
-          )
-          return transaction
-        }
-        break
-      default:
-        msg = `Unknown proposal scheme: "${schemeName}}"`
-        throw Error(msg)
-    }
-
-    const map = (receipt: any) => {
-      const proposalId = receipt.events[eventName].returnValues._proposalId
-      const votingMachineAddress = receipt.events[eventName].returnValues._intVoteInterface
-      return new Proposal(proposalId, options.dao as string, options.scheme, votingMachineAddress, context)
-    }
-
-    return context.sendTransaction(createTransaction, map)
+    const scheme = new Scheme(
+      options.scheme, // id
+      options.dao, // dao
+      schemeName,
+      options.scheme, // address
+      context
+    )
+    return scheme.createProposal(options)
   }
 
   /**
@@ -380,6 +252,7 @@ export class Proposal implements IStateful<IProposalState> {
 
   public context: Arc
   public dao: DAO
+  private votingMachineContract: typeof Web3.eth.Contract
 
   constructor(
     public id: string,
@@ -394,6 +267,9 @@ export class Proposal implements IStateful<IProposalState> {
     this.id = id
     this.context = context
     this.dao = new DAO(daoAddress, context)
+    const abi = this.context.getABI(this.votingMachineAddress)
+    this.votingMachineContract = new this.context.web3.eth.Contract(abi, this.votingMachineAddress)
+
   }
   /**
    * `state` is an observable of the proposal state
@@ -676,16 +552,20 @@ export class Proposal implements IStateful<IProposalState> {
   }
   /**
    * [votingMachine description]
-   * @return [description]
+   * @return a web3 Contract instance
    */
   public votingMachine() {
-    const abi = this.context.getABI(this.votingMachineAddress)
-    // TODO: create the contract in the constructor (do not create a new contract on instance on each call)
-    return new this.context.web3.eth.Contract(abi, this.votingMachineAddress)
+    return this.votingMachineContract
   }
 
+  /**
+   * [redeemerContract description]
+   * @return a web3 Contract instance
+   */
   public redeemerContract() {
-    return this.context.getContract('Redeemer')
+    const contractInfoOfScheme = this.context.getContractInfo(this.schemeAddress)
+    const contractInfo = this.context.getContractInfoByName('Redeemer', contractInfoOfScheme.version)
+    return this.context.getContract(contractInfo.address)
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
@@ -788,6 +668,8 @@ export class Proposal implements IStateful<IProposalState> {
       if (error.message.match(/revert/)) {
         const proposal = this
         const stakingToken = this.stakingToken()
+        // TODO: check if we have the correct stakingTokenAddress (should not happen, but ok)
+        // const stakingTokenAddress = this.votingMachine().methods.stakingToken().call()
         const prop = await this.votingMachine().methods.proposals(proposal.id).call()
         if (prop.proposer === NULL_ADDRESS ) {
           return new Error(`Unknown proposal with id ${proposal.id}`)
@@ -914,13 +796,7 @@ interface IProposalBaseCreateOptions {
   descriptionHash?: string
   title?: string
   scheme: Address
-  // type: IProposalType
   url?: string
-  // data: (
-  //   ContributionReward.IProposalCreateOptions |
-  //   GenericScheme.IProposalCreateOptions1 |
-  //   SchemeRegistrar.IProposalCreateOptions
-  // )
 }
 
 export type IProposalCreateOptions = IProposalBaseCreateOptions & (

@@ -195,7 +195,6 @@ export async function getContractAddresses(graphqlHttpProvider: string, subgraph
   try {
     response = await client.query({query}) as ApolloQueryResult<{ subgraphs: any[]}>
   } catch (err) {
-    console.log(err)
     throw err
   }
   if (response.data.subgraphs.length === 0) {

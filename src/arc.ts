@@ -166,6 +166,15 @@ export class Arc extends GraphNodeObserver {
     throw Error(`No contract with address ${address} is known`)
   }
 
+  public getContractInfoByName(name: string, version: string) {
+  for (const contractInfo of this.contractAddresses) {
+      if (contractInfo.name === name && contractInfo.version === version) {
+        return contractInfo
+      }
+    }
+  throw Error(`No contract with name ${name}  and version ${version} is known`)
+  }
+
   public getABI(address: Address) {
     const contractInfo = this.getContractInfo(address)
     let abiName = contractInfo.name
@@ -243,10 +252,11 @@ export class Arc extends GraphNodeObserver {
 
   /**
    * get the name of the contract, given an address
+   * the function will thorw an error if the contract cannot be found
    * @param  address An ethereum address
    * @return        The name of the contract, if the address is known, undefined otherwise
    */
-  public getContractName(address: Address): string|undefined {
+  public getContractName(address: Address): string {
     return this.getContractInfo(address).name
   }
 
@@ -329,6 +339,38 @@ export class Arc extends GraphNodeObserver {
     errorHandler: (error: Error) => Promise<Error> | Error = (error) => error
   ): Operation<T> {
     return sendTransaction(transaction, mapToObject, errorHandler, this)
+  }
+
+  public async saveIPFSData(options: { title: string, url: string, description: string}) {
+    let ipfsDataToSave: object = {}
+    if (options.title || options.url || options.description) {
+      if (!this.ipfsProvider) {
+        throw Error(`No ipfsProvider set on Arc instance - cannot save data on IPFS`)
+      }
+      ipfsDataToSave = {
+        description: options.description,
+        title: options.title,
+        url: options.url
+      }
+      // if (options.descriptionHash) {
+      //   msg = `Proposal.create() takes a descriptionHash, or values for title, url and description; not both`
+      //   throw Error(msg)
+      // }
+    }
+    if (ipfsDataToSave !== {}) {
+      Logger.debug('Saving data on IPFS...')
+      let descriptionHash: string = ''
+      try {
+        const ipfsResponse = await this.ipfs.add(Buffer.from(JSON.stringify(ipfsDataToSave)))
+        descriptionHash = ipfsResponse[0].path
+        // pin the file
+        await this.ipfs.pin.add(descriptionHash)
+      } catch (error) {
+        throw error
+      }
+      Logger.debug(`Data saved successfully as ${descriptionHash}`)
+      return descriptionHash
+    }
   }
 
 }

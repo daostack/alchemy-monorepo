@@ -118,7 +118,7 @@ describe('Proposal', () => {
     // const proposalDao = await proposal.dao.pipe(first()).toPromise()
     const proposal = executedProposal
     expect(proposal).toBeInstanceOf(Proposal)
-    expect(proposal.dao.address).toBe(dao)
+    expect(proposal.dao.address).toEqual(dao.address)
   })
 
   it('state should be available before the data is indexed', async () => {

@@ -1,11 +1,13 @@
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { IContributionReward, IProposalStage, IProposalType, Proposal } from '../src/proposal'
+import { DAO } from '../src/dao'
+import { IContributionReward, IProposalStage, Proposal } from '../src/proposal'
 
 import {
   fromWei,
   getTestAddresses,
   getTestDAO,
+  ITestAddresses,
   newArc,
   toWei,
   waitUntilTrue
@@ -17,24 +19,28 @@ describe('Create a ContributionReward proposal', () => {
   let arc: Arc
   let web3: any
   let accounts: any
+  let testAddresses: ITestAddresses
+  let dao: DAO
 
   beforeAll(async () => {
     arc = await newArc()
     web3 = arc.web3
     accounts = web3.eth.accounts.wallet
     web3.eth.defaultAccount = accounts[0].address
+    testAddresses = getTestAddresses()
+    dao = await getTestDAO()
   })
 
   it('is properly indexed', async () => {
-    const dao = await getTestDAO()
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+      dao: dao.address,
       ethReward: toWei('300'),
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
       nativeTokenReward: toWei('1'),
       reputationReward: toWei('10'),
-      type: IProposalType.ContributionReward
+      scheme: testAddresses.base.ContributionReward
     }
 
     const response = await dao.createProposal(options).send()
@@ -76,16 +82,16 @@ describe('Create a ContributionReward proposal', () => {
   })
 
   it('saves title etc on ipfs', async () => {
-    const dao = await getTestDAO()
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+      dao: dao.address,
       description: 'Just eat them',
       ethReward: toWei('300'),
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
       nativeTokenReward: toWei('1'),
+      scheme: testAddresses.base.ContributionReward,
       title: 'A modest proposal',
-      type: IProposalType.ContributionReward,
       url: 'http://swift.org/modest'
     }
 
@@ -99,7 +105,7 @@ describe('Create a ContributionReward proposal', () => {
       return proposals.length > 0
     }
     await waitUntilTrue(proposalIsIndexed)
-    const proposal2 = new Proposal(proposal.id, proposal.dao.address, '', arc)
+    const proposal2 = await dao.proposal(proposal.id)
     const proposalState = await proposal2.state().pipe(first()).toPromise()
     expect(proposalState.descriptionHash).toEqual('QmRg47CGnf8KgqTZheTejowoxt4SvfZFqi7KGzr2g163uL')
 
@@ -119,19 +125,20 @@ describe('Create a ContributionReward proposal', () => {
     const arcWithoutIPFS = await newArc()
     arcWithoutIPFS.ipfsProvider = ''
     const contractAddresses = await getTestAddresses()
-    const dao = arcWithoutIPFS.dao(contractAddresses.dao.Avatar)
+    const anotherDAO = arcWithoutIPFS.dao(contractAddresses.dao.Avatar)
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+      dao: anotherDAO.address,
       description: 'Just eat them',
       ethReward: toWei('300'),
       externalTokenAddress: undefined,
       nativeTokenReward: toWei('1'),
+      scheme: testAddresses.base.ContributionReward,
       title: 'A modest proposal',
-      type: IProposalType.ContributionReward,
       url: 'http://swift.org/modest'
     }
 
-    expect(dao.createProposal(options).send()).rejects.toThrowError(
+    expect(anotherDAO.createProposal(options).send()).rejects.toThrowError(
       /no ipfsProvider set/i
     )
   })
