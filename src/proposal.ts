@@ -767,7 +767,7 @@ constructor(
     return this.context.sendTransaction(stakeMethod, map, errorHandler)
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
+  public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
     options.proposal = this.id
     return Reward.search(options, this.context)
   }

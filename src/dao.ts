@@ -10,7 +10,7 @@ import {
 } from './proposal'
 import { Queue } from './queue'
 import { Reputation } from './reputation'
-import { IRewardQueryOptions, IRewardState, Reward } from './reward'
+import { IRewardQueryOptions, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
@@ -119,7 +119,7 @@ export class DAO implements IStateful<IDAOState> {
     return Proposal.search(options, this.context)
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable<IRewardState[]> {
+  public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
     options.dao = this.address
     return Reward.search(options, this.context)
   }

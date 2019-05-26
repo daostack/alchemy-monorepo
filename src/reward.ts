@@ -1,7 +1,6 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
-import { map } from 'rxjs/operators'
-import { Arc } from './arc'
+import { Arc, IApolloQueryOptions } from './arc'
 import { Address, ICommonQueryOptions, IStateful } from './types'
 import { BN } from './utils'
 import { isAddress } from './utils'
@@ -33,15 +32,17 @@ export interface IRewardQueryOptions extends ICommonQueryOptions {
 
 export class Reward implements IStateful<IRewardState> {
 
-  // TODO: Reward.search returns a list of IRewardState instances (not Reward instances)
-  // this is much more conveient client side, but the behavior is not consistent with the other `serach` implementations
   /**
    * Reward.search(context, options) searches for reward entities
    * @param  context an Arc instance that provides connection information
    * @param  options the query options, cf. IRewardQueryOptions
    * @return         an observable of IRewardState objects
    */
-  public static search(options: IRewardQueryOptions, context: Arc): Observable<IRewardState[]> {
+  public static search(
+    options: IRewardQueryOptions,
+    context: Arc,
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Reward[]> {
     let where = ''
     for (const key of Object.keys(options)) {
       if (options[key] !== undefined) {
@@ -55,6 +56,29 @@ export class Reward implements IStateful<IRewardState> {
 
     const query = gql`{
       gprewards (where: {${where}}) {
+        id
+      }
+    }`
+
+    return context.getObservableList(
+      query,
+      (r: any) => new Reward(r.id, context),
+      apolloQueryOptions
+    ) as Observable<Reward[]>
+  }
+
+  constructor(public id: string, public context: Arc) {
+    this.id = id
+    this.context = context
+  }
+
+  public state(): Observable<IRewardState> {
+
+    const query = gql`{
+      gpreward (where: {
+        id: "${this.id}"
+      }
+      ) {
         id
         createdAt
         dao {
@@ -74,7 +98,7 @@ export class Reward implements IStateful<IRewardState> {
         tokensForStakerRedeemedAt
         daoBountyForStakerRedeemedAt
       }
-    } `
+    }`
 
     const itemMap = (item: any): IRewardState => {
       return {
@@ -95,25 +119,6 @@ export class Reward implements IStateful<IRewardState> {
       }
     }
 
-    return context.getObservableList(query, itemMap) as Observable<IRewardState[]>
-  }
-
-  constructor(public id: string, public context: Arc) {
-    this.id = id
-    this.context = context
-  }
-
-  public state(): Observable<IRewardState> {
-    return Reward.search({id: this.id}, this.context).pipe(
-      map((rewards) => {
-        if (rewards.length === 0) {
-          throw Error(`No reward with id ${this.id} found`)
-        } else if (rewards.length > 1) {
-          throw Error(`This should never happen`)
-        } else {
-          return rewards[0]
-        }
-      })
-    )
+    return this.context.getObservableObject(query, itemMap)
   }
 }
