@@ -23,6 +23,13 @@ export interface IStakeQueryOptions extends ICommonQueryOptions {
 }
 
 export class Stake implements IStake {
+
+  /**
+   * Stake.search(context, options) searches for stake entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. IStakeQueryOptions
+   * @return         an observable of IStakeState objects
+   */
   public static search(
     options: IStakeQueryOptions = {},
     context: Arc,
