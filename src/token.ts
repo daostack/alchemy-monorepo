@@ -1,8 +1,8 @@
 import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
 import { first } from 'rxjs/operators'
-import { Arc } from './arc'
-import { Address, Hash, IObservableWithFirst, IStateful, Web3Receipt } from './types'
+import { Arc, IApolloQueryOptions } from './arc'
+import { Address, Hash, IObservableWithFirst, IStateful, Web3Receipt, ICommonQueryOptions } from './types'
 import { BN } from './utils'
 import { isAddress } from './utils'
 
@@ -12,6 +12,13 @@ export interface ITokenState {
   owner: Address
   symbol: string
   totalSupply: typeof BN
+}
+
+export interface ITokenQueryOptions extends ICommonQueryOptions {
+  address?: Address
+  name?: string
+  owner?: Address
+  symbol?: string
 }
 
 export interface IApproval {
@@ -31,6 +38,41 @@ export interface IAllowance {
 }
 
 export class Token implements IStateful<ITokenState> {
+
+  /**
+  * Token.search(context, options) searches for token entities
+  * @param  context an Arc instance that provides connection information
+  * @param  options the query options, cf. ITokenQueryOptions
+  * @return         an observable of IRewardState objects
+  */
+  public static search(
+    options: ITokenQueryOptions,
+    context: Arc,
+    apolloQueryOptions: IApolloQueryOptions
+  ): Observable<Token[]> {
+    let where = ''
+    for (const key of Object.keys(options)) {
+      if (options[key] !== undefined) {
+        if (options[key] !== undefined) {
+          where += `${key}: "${options[key] as string}"\n`
+        }
+      }
+    }
+
+    const query = gql`{
+      tokens(where: {
+        ${where}
+      }) {
+        id
+      }
+    }`
+
+    return context.getObservableList(
+      query,
+      (r: any) => new Token(r.id, context),
+      apolloQueryOptions
+    )
+  }
 
   constructor(public address: Address, public context: Arc) {
     if (!address) {

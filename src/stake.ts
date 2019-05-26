@@ -27,7 +27,7 @@ export class Stake implements IStake {
     options: IStakeQueryOptions = {},
     context: Arc,
     apolloQueryOptions: IApolloQueryOptions = {}
-  ): Observable <IStake[]> {
+  ): Observable <Stake[]> {
 
     let where = ''
     for (const key of Object.keys(options)) {
@@ -70,7 +70,7 @@ export class Stake implements IStake {
         return new Stake(r.id, r.staker, r.createdAt, outcome, new BN(r.amount || 0), r.proposal.id)
       },
       apolloQueryOptions
-    ) as Observable<IStake[]>
+    ) as Observable<Stake[]>
   }
 
   constructor(

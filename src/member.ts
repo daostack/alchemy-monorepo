@@ -19,11 +19,23 @@ export interface IMemberState {
   tokens: typeof BN
 }
 
+export interface IMemberQueryOptions extends ICommonQueryOptions {
+  address?: Address
+  dao?: Address
+}
+
 /**
  * Represents a user of a DAO
  */
 
 export class Member implements IStateful<IMemberState> {
+
+  /**
+  * Member.search(context, options) searches for member entities
+  * @param  context an Arc instance that provides connection information
+  * @param  options the query options, cf. IMemberQueryOptions
+  * @return         an observable of IRewardState objects
+  */
   public static search(
     options: IMemberQueryOptions,
     context: Arc,
@@ -132,9 +144,4 @@ export class Member implements IStateful<IMemberState> {
     options.voter = this.address
     return Vote.search( options, this.context)
   }
-}
-
-export interface IMemberQueryOptions extends ICommonQueryOptions {
-  address?: Address
-  dao?: Address
 }

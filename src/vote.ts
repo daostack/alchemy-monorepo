@@ -28,7 +28,7 @@ export class Vote implements IVote {
     options: IVoteQueryOptions = {},
     context: Arc,
     apolloQueryOptions: IApolloQueryOptions = {}
-  ): Observable <IVote[]> {
+  ): Observable <Vote[]> {
     let where = ''
     let daoFilter: (r: any) => boolean
     daoFilter = () => true
@@ -74,7 +74,7 @@ export class Vote implements IVote {
       },
       daoFilter,
       apolloQueryOptions
-    ) as Observable<IVote[]>
+    ) as Observable<Vote[]>
   }
 
   constructor(
