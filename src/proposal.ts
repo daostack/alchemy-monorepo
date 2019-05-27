@@ -26,6 +26,7 @@ export const IProposalType = {
   ...GenericScheme.IProposalType,
   ...SchemeRegistrar.IProposalType
 }
+
 type IProposalType = (
   ContributionReward.IProposalType |
   GenericScheme.IProposalType |
@@ -107,36 +108,6 @@ export interface IProposalState {
   minimumDaoBounty: typeof BN // in GEN
 }
 
-export interface IContributionReward {
-  beneficiary: Address
-  externalTokenReward: typeof BN
-  externalToken: Address
-  ethReward: typeof BN
-  nativeTokenReward: typeof BN
-  periods: number
-  periodLength: number
-  reputationReward: typeof BN
-}
-
-export interface IGenericScheme {
-  id: string
-  contractToCall: Address
-  callData: string
-  executed: boolean
-  returnValue: string
-}
-
-export interface ISchemeRegistrar {
-  id: string
-  schemeToRegister: Address
-  schemeToRegisterParamsHash: string
-  schemeToRegisterPermission: string
-  schemeToRemove: string
-  decision: number
-  schemeRegistered: boolean
-  schemeRemoved: boolean
-}
-
 export class Proposal implements IStateful<IProposalState> {
 
   /**
@@ -191,9 +162,6 @@ export class Proposal implements IStateful<IProposalState> {
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Proposal[]> {
     let where = ''
-
-    // default options
-    options.type = options.type || IProposalType.ContributionReward
 
     for (const key of Object.keys(options)) {
       const value = options[key]
@@ -753,11 +721,6 @@ export class Proposal implements IStateful<IProposalState> {
         const msg = `Error in proposal.execute(): proposal ${this.id} already executed`
         return Error(msg)
       }
-      // require(organizationsProposals[address(proposal.avatar)][_proposalId].beneficiary != address(0));
-      // else if (proposalDataOnChain.beneficiary === NULL_ADDRESS) {
-      //   const msg = `beneficiary is ${NULL_ADDRESS}`
-      // }
-
       return err
     }
     return this.context.sendTransaction(transaction, map, errorHandler)

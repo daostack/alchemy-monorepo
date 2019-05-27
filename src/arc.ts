@@ -175,19 +175,22 @@ export class Arc extends GraphNodeObserver {
   throw Error(`No contract with name ${name}  and version ${version} is known`)
   }
 
-  public getABI(address: Address) {
-    const contractInfo = this.getContractInfo(address)
-    let abiName = contractInfo.name
-    if (abiName === 'GEN') {
-      abiName = 'ERC20'
+  public getABI(address: Address, abiName: string = '', version: string = '') {
+    if (!abiName || !version) {
+      const contractInfo = this.getContractInfo(address)
+      abiName = contractInfo.name
+      version = contractInfo.version
+      if (abiName === 'GEN') {
+        abiName = 'ERC20'
+      }
     }
 
-    const abi = require(`@daostack/migration/abis/${contractInfo.version}/${abiName}.json`)
+    const abi = require(`@daostack/migration/abis/${version}/${abiName}.json`)
     return abi
   }
 
-  public getContract(address: Address) {
-    const abi = this.getABI(address)
+  public getContract(address: Address, abiName: string = '', version: string = '') {
+    const abi = this.getABI(address, abiName, version)
     return new this.web3.eth.Contract(abi, address)
 
   }

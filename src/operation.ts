@@ -59,7 +59,7 @@ export type web3receipt = object
  */
 export function sendTransaction<T>(
   transaction: any,
-  mapReceipt: (receipt: web3receipt) => T,
+  mapReceipt: (receipt: web3receipt) => T|Promise<T>,
   errorHandler: (error: Error) => Promise<Error> | Error = (error) => error,
   context: Arc
 ): Operation<T> {
