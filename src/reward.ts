@@ -39,19 +39,23 @@ export class Reward implements IStateful<IRewardState> {
    * @return         an observable of Reward objects
    */
   public static search(
-    options: IRewardQueryOptions,
     context: Arc,
+    options: IRewardQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Reward[]> {
     let where = ''
     for (const key of Object.keys(options)) {
-      if (options[key] !== undefined) {
-        if (key === 'beneficiary') {
-          isAddress(options.beneficiary)
-          options[key] = (options[key] as Address).toLowerCase()
-        }
-        where += `${key}: "${options[key] as string}"\n`
+      if (options[key] === undefined) {
+        continue
       }
+
+      if (key === 'beneficiary' || key === 'dao') {
+        const option = options[key] as string
+        isAddress(option)
+        options[key] = option.toLowerCase()
+      }
+
+      where += `${key}: "${options[key] as string}"\n`
     }
 
     const query = gql`{

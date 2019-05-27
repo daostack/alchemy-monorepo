@@ -3,6 +3,7 @@ import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { Address } from './types'
+import { isAddress } from './utils';
 
 export interface IScheme {
   address: Address
@@ -37,16 +38,23 @@ export class Scheme implements IScheme {
    * @return         an observable of Scheme objects
    */
   public static search(
-    options: ISchemeQueryOptions,
     context: Arc,
-    apolloQueryOptions: IApolloQueryOptions
+    options: ISchemeQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Scheme[]> {
     let where = ''
     for (const key of Object.keys(options)) {
-      const value = options[key]
-      if (value !== undefined) {
-        where += `${key}: "${value as string}"\n`
+      if (options[key] === undefined) {
+        continue
       }
+
+      if (key === 'address' || key === 'dao') {
+        const option = options[key] as string
+        isAddress(option)
+        options[key] = option.toLowerCase()
+      }
+
+      where += `${key}: "${options[key] as string}"\n`
     }
 
     const query = gql` {
@@ -62,6 +70,7 @@ export class Scheme implements IScheme {
        paramsHash
      }
     }`
+
     const itemMap = (item: any): Scheme => {
       return new Scheme(
         item.id,

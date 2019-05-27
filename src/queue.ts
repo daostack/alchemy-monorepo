@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { Address } from './types'
-import { BN } from './utils'
+import { BN, isAddress } from './utils'
 import { realMathToNumber } from './utils'
 
 export interface IQueueState {
@@ -30,17 +30,23 @@ export class Queue {
    * @return         an observable of Queue objects
    */
   public static search(
-    options: IQueueQueryOptions,
     context: Arc,
+    options: IQueueQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
 ): Observable<Queue[]> {
     let where = ''
     for (const key of Object.keys(options)) {
-      const value = (options as any)[key]
-      // querying by'name' will not be predicable as the name is not always populated
-      if (value !== undefined && value !== 'name') {
-        where += `${key}: "${value}"\n`
+      if (options[key] === undefined) {
+        continue
       }
+
+      if (key === 'dao' || key === 'votingMaching' || key === 'scheme') {
+        const option = options[key] as string
+        isAddress(option)
+        options[key] = option.toLowerCase()
+      }
+
+      where += `${key}: "${options[key] as string}"\n`
     }
 
     const query = gql` {

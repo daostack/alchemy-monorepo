@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { IProposalOutcome } from './proposal'
 import { Address, Date, ICommonQueryOptions } from './types'
-import { BN } from './utils'
+import { BN, isAddress } from './utils'
 
 export interface IVote {
   id: string|undefined
@@ -32,8 +32,8 @@ export class Vote implements IVote {
    * @return         an observable of Vote objects
    */
   public static search(
-    options: IVoteQueryOptions = {},
     context: Arc,
+    options: IVoteQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable <Vote[]> {
     let where = ''
@@ -46,7 +46,9 @@ export class Vote implements IVote {
       }
 
       if (key === 'voter' || key === 'dao') {
-        options[key] = (options[key] as string).toLowerCase()
+        const option = options[key] = options[key] as string
+        isAddress(option)
+        options[key] = option.toLowerCase()
       }
 
       if (key === 'outcome') {

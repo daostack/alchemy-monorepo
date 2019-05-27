@@ -46,9 +46,9 @@ export class Token implements IStateful<ITokenState> {
   * @return         an observable of Token objects
   */
   public static search(
-    options: ITokenQueryOptions,
     context: Arc,
-    apolloQueryOptions: IApolloQueryOptions
+    options: ITokenQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Token[]> {
     let where = ''
     for (const key of Object.keys(options)) {
@@ -57,7 +57,9 @@ export class Token implements IStateful<ITokenState> {
       }
 
       if (key === 'token' || key === 'owner' || key === 'spender') {
-        options[key] = (options[key] as string).toLowerCase()
+        const option = options[key] as string
+        isAddress(option)
+        options[key] = option.toLowerCase()
       }
 
       where += `${key}: "${options[key] as string}"\n`

@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { IProposalOutcome} from './proposal'
 import { Address, ICommonQueryOptions } from './types'
-import { BN } from './utils'
+import { BN, isAddress } from './utils'
 
 export interface IStake {
   id: string|undefined
@@ -31,19 +31,24 @@ export class Stake implements IStake {
    * @return         an observable of Stake objects
    */
   public static search(
-    options: IStakeQueryOptions = {},
     context: Arc,
+    options: IStakeQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable <Stake[]> {
 
     let where = ''
     for (const key of Object.keys(options)) {
-      if (options[key] !== undefined) {
-        if (key === 'staker' || key === 'dao') {
-          options[key] = (options[key] as string).toLowerCase()
-        }
-        where += `${key}: "${options[key] as string}"\n`
+      if (options[key] === undefined) {
+        continue
       }
+
+      if (key === 'staker' || key === 'dao') {
+        const option = options[key] as string
+        isAddress(option)
+        options[key] = option.toLowerCase()
+      }
+
+      where += `${key}: "${options[key] as string}"\n`
     }
 
     const query = gql`

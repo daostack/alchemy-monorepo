@@ -102,7 +102,7 @@ describe('Member', () => {
   it('Members are searchable', async () => {
     let members: Member[] = []
 
-    Member.search({}, arc)
+    Member.search(arc)
       .subscribe((result) => members = result)
 
     await waitUntilTrue(() => members.length !== 0)

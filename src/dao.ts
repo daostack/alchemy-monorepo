@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { first, map } from 'rxjs/operators'
-import { Arc } from './arc'
+import { Arc, IApolloQueryOptions } from './arc'
 import { IMemberQueryOptions, Member } from './member'
 import {
   IProposalCreateOptions,
@@ -14,7 +14,7 @@ import { IRewardQueryOptions, Reward } from './reward'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
-import { BN } from './utils'
+import { BN, isAddress } from './utils'
 import { NULL_ADDRESS } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
@@ -31,7 +31,53 @@ export interface IDAOState {
   tokenTotalSupply: typeof BN,
 }
 
+export interface IDAOQueryOptions extends ICommonQueryOptions {
+  address?: Address
+  name?: string
+}
+
 export class DAO implements IStateful<IDAOState> {
+
+  /**
+  * DAO.search(context, options) searches for DAO entities
+  * @param  context an Arc instance that provides connection information
+  * @param  options the query options, cf. IDAOQueryOptions
+  * @return         an observable of DAO objects
+  */
+  public static search(
+    context: Arc,
+    options: IDAOQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<DAO[]> {
+    let where = ''
+    for (const key of Object.keys(options)) {
+      if (options[key] === undefined) {
+        continue
+      }
+
+      if (key === 'address') {
+        const option = options[key] as string
+        isAddress(option)
+        options[key] = option.toLowerCase()
+      }
+
+      where += `${key}: "${options[key] as string}"\n`
+    }
+
+    const query = gql`{
+      daos(where: {
+        ${where}
+      }) {
+        id
+      }
+    }`
+
+    return context.getObservableList(
+      query,
+      (r: any) => new DAO(r.id, context),
+      apolloQueryOptions
+    )
+  }
 
   constructor(public address: Address, public context: Arc) {
     this.address = address.toLowerCase()
@@ -83,7 +129,7 @@ export class DAO implements IStateful<IDAOState> {
 
   public queues(options: any = {}): Observable<Queue[]> {
     options.dao = this.address
-    return Queue.search(options, this.context)
+    return Queue.search(this.context, options)
   }
 
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
@@ -116,30 +162,25 @@ export class DAO implements IStateful<IDAOState> {
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
     options.dao = this.address
-    return Proposal.search(options, this.context)
+    return Proposal.search(this.context, options)
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
     options.dao = this.address
-    return Reward.search(options, this.context)
+    return Reward.search(this.context, options)
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
     options.dao = this.address
-    return Vote.search(options, this.context)
+    return Vote.search(this.context, options)
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
     options.dao = this.address
-    return Stake.search(options, this.context)
+    return Stake.search(this.context, options)
   }
 
   public ethBalance(): Observable<typeof BN> {
     return this.context.ethBalance(this.address)
   }
-}
-
-export interface IDAOQueryOptions extends ICommonQueryOptions {
-  address?: Address
-  name?: string
 }
