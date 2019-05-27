@@ -10,7 +10,7 @@ export interface IGenericScheme {
   returnValue: string
 }
 
-export interface IProposalCreateOptions {
+export interface IProposalCreateOptionsGS {
   callData?: string
   value?: number
 }

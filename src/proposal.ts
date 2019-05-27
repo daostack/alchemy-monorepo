@@ -760,7 +760,7 @@ interface IProposalBaseCreateOptions {
 }
 
 export type IProposalCreateOptions = IProposalBaseCreateOptions & (
-  GenericScheme.IProposalCreateOptions  &
-  SchemeRegistrar.IProposalCreateOptions  &
-  ContributionReward.IProposalCreateOptions
+  GenericScheme.IProposalCreateOptionsGS  &
+  SchemeRegistrar.IProposalCreateOptionsSR  &
+  ContributionReward.IProposalCreateOptionsCR
 )

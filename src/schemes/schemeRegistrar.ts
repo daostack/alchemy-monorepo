@@ -13,7 +13,7 @@ export interface ISchemeRegistrar {
   schemeRemoved: boolean
 }
 
-export interface IProposalCreateOptions {
+export interface IProposalCreateOptionsSR {
   parametersHash?: string
   permissions?: string
   schemeToRegister?: Address

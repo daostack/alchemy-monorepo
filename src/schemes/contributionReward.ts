@@ -15,7 +15,7 @@ export interface IContributionReward {
   reputationReward: BN
 }
 
-export interface IProposalCreateOptions {
+export interface IProposalCreateOptionsCR {
   beneficiary: Address
   nativeTokenReward?: BN
   reputationReward?: BN
