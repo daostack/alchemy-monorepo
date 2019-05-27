@@ -2,11 +2,8 @@ import { ApolloClient } from 'apollo-client'
 import gql from 'graphql-tag'
 import { Observable, Observer } from 'rxjs'
 import { Arc } from '../src/arc'
-import { Logger } from '../src/logger'
 import { createApolloClient, getContractAddressesFromMigration } from '../src/utils'
 import { graphqlHttpProvider, graphqlWsProvider, mintSomeReputation, waitUntilTrue } from './utils'
-
-Logger.setLevel(Logger.OFF)
 
 function getClient() {
   const apolloClient = createApolloClient({
@@ -16,12 +13,12 @@ function getClient() {
   return apolloClient
 }
 
+jest.setTimeout(20000)
 /**
  * Token test
  */
 describe('apolloClient', () => {
-  let client
-  jest.setTimeout(20000)
+  let client: any
 
   it('can be instantiated', () => {
     client = getClient()
@@ -124,5 +121,4 @@ describe('apolloClient', () => {
     // expect(cntr).toEqual(3)
     subscription.unsubscribe()
   })
-
 })
