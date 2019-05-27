@@ -33,7 +33,7 @@ describe('Queue', () => {
   it.only('Queues are searchable', async () => {
     const dao = await getTestDAO()
     let result: Queue[]
-    result = await Queue.search({dao: dao.address}, arc, { fetchPolicy: 'no-cache' })
+    result = await Queue.search(arc, {dao: dao.address}, { fetchPolicy: 'no-cache' })
         .pipe(first()).toPromise()
     // TODO: we should expect 3 queus here, see https://github.com/daostack/subgraph/issues/195
     expect(result.length).toEqual(3)
@@ -47,12 +47,12 @@ describe('Queue', () => {
     // result = await Queue.search({dao: dao.address, name: 'ContributionReward'}, arc, { fetchPolicy: 'no-cache' })
     //     .pipe(first()).toPromise()
     // expect(result.length).toEqual(1)
-    result = await Queue.search({dao: dao.address, name: 'GenericScheme'}, arc, { fetchPolicy: 'no-cache' })
+    result = await Queue.search(arc, {dao: dao.address, name: 'GenericScheme'}, { fetchPolicy: 'no-cache' })
         .pipe(first()).toPromise()
 
     expect(result.length).toEqual(1)
 
-    result = await Queue.search({dao: dao.address, name: 'SchemeRegistrar'}, arc, { fetchPolicy: 'no-cache' })
+    result = await Queue.search(arc, {dao: dao.address, name: 'SchemeRegistrar'}, { fetchPolicy: 'no-cache' })
         .pipe(first()).toPromise()
 
     expect(result.length).toEqual(1)
@@ -60,7 +60,7 @@ describe('Queue', () => {
 
   it('Queue.state() is working', async () => {
     const dao = await getTestDAO()
-    const result = await Queue.search({dao: dao.address, name: 'SchemeRegistrar'}, arc, { fetchPolicy: 'no-cache' })
+    const result = await Queue.search(arc, {dao: dao.address, name: 'SchemeRegistrar'}, { fetchPolicy: 'no-cache' })
         .pipe(first()).toPromise()
 
     const queue = result[0]

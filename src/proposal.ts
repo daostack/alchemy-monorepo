@@ -297,8 +297,8 @@ export class Proposal implements IStateful<IProposalState> {
    *    Proposal.search({ stage: IProposalStage.Queued})
    */
   public static search(
-    options: IProposalQueryOptions,
     context: Arc,
+    options: IProposalQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Proposal[]> {
     let where = ''
@@ -639,7 +639,7 @@ constructor(
 
   public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
     options.proposal = this.id
-    return Vote.search(options, this.context)
+    return Vote.search(this.context, options)
   }
 
   /**
@@ -704,7 +704,7 @@ constructor(
 
   public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
     options.proposal = this.id
-    return Stake.search(options, this.context)
+    return Stake.search(this.context, options)
   }
 
   public stake(outcome: IProposalOutcome, amount: typeof BN ): Operation < Stake > {
@@ -767,9 +767,9 @@ constructor(
     return this.context.sendTransaction(stakeMethod, map, errorHandler)
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
+  public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
     options.proposal = this.id
-    return Reward.search(options, this.context)
+    return Reward.search(this.context, options)
   }
 
   /**

@@ -19,21 +19,41 @@ export interface IMemberState {
   tokens: typeof BN
 }
 
+export interface IMemberQueryOptions extends ICommonQueryOptions {
+  address?: Address
+  dao?: Address
+}
+
 /**
  * Represents a user of a DAO
  */
 
 export class Member implements IStateful<IMemberState> {
+
+  /**
+   * Member.search(context, options) searches for member entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. IMemberQueryOptions
+   * @return         an observable of IRewardState objects
+   */
   public static search(
-    options: IMemberQueryOptions,
     context: Arc,
+    options: IMemberQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Member[]> {
     let where = ''
     for (const key of Object.keys(options)) {
-      if (options[key] !== undefined) {
-        where += `${key}: "${options[key] as string}"\n`
+      if (options[key] === undefined) {
+        continue
       }
+
+      if (key === 'address' || key === 'dao') {
+        const option = options[key] as string
+        isAddress(option)
+        options[key] = option.toLowerCase()
+      }
+
+      where += `${key}: "${options[key] as string}"\n`
     }
 
     const query = gql`{
@@ -130,11 +150,6 @@ export class Member implements IStateful<IMemberState> {
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
     options.voter = this.address
-    return Vote.search( options, this.context)
+    return Vote.search(this.context, options)
   }
-}
-
-export interface IMemberQueryOptions extends ICommonQueryOptions {
-  address?: Address
-  dao?: Address
 }

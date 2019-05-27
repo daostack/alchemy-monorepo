@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { IProposalOutcome } from './proposal'
 import { Address, Date, ICommonQueryOptions } from './types'
-import { BN } from './utils'
+import { BN, isAddress } from './utils'
 
 export interface IVote {
   id: string|undefined
@@ -18,26 +18,44 @@ export interface IVote {
 export interface IVoteQueryOptions extends ICommonQueryOptions {
   id?: string
   voter?: Address
+  outcome?: IProposalOutcome
   proposal?: string
   dao?: Address
 }
 
 export class Vote implements IVote {
 
+  /**
+   * Vote.search(context, options) searches for vote entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. IVoteQueryOptions
+   * @return         an observable of Vote objects
+   */
   public static search(
-    options: IVoteQueryOptions = {},
     context: Arc,
+    options: IVoteQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
-  ): Observable <IVote[]> {
+  ): Observable <Vote[]> {
     let where = ''
     let daoFilter: (r: any) => boolean
     daoFilter = () => true
 
     for (const key of Object.keys(options)) {
-      if (key === 'voter') {
-        options[key] = (options[key] as string).toLowerCase()
+      if (options[key] === undefined) {
+        continue
       }
-      where += `${key}: "${options[key] as string}"\n`
+
+      if (key === 'voter' || key === 'dao') {
+        const option = options[key] = options[key] as string
+        isAddress(option)
+        options[key] = option.toLowerCase()
+      }
+
+      if (key === 'outcome') {
+        where += `${key}: "${IProposalOutcome[options[key] as number]}"\n`
+      } else {
+        where += `${key}: "${options[key] as string}"\n`
+      }
     }
 
     const query = gql`
@@ -74,7 +92,7 @@ export class Vote implements IVote {
       },
       daoFilter,
       apolloQueryOptions
-    ) as Observable<IVote[]>
+    ) as Observable<Vote[]>
   }
 
   constructor(

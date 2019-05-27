@@ -28,7 +28,7 @@ describe('Vote on a ContributionReward', () => {
 
     const voteIsIndexed = async () => {
       // we pass no-cache to make sure we hit the server on each request
-      votes = await Vote.search({proposal: proposal.id}, arc, { fetchPolicy: 'no-cache' })
+      votes = await Vote.search(arc, {proposal: proposal.id}, { fetchPolicy: 'no-cache' })
         .pipe(first()).toPromise()
       return votes.length > 0
     }
@@ -51,7 +51,7 @@ describe('Vote on a ContributionReward', () => {
     const proposal = await createAProposal()
 
     const voteHistory: Vote[][] = []
-    Vote.search({proposal: proposal.id}, arc).subscribe((next: Vote[]) => {
+    Vote.search(arc, {proposal: proposal.id}).subscribe((next: Vote[]) => {
       voteHistory.push(next)
     })
     const lastVotes = () => {

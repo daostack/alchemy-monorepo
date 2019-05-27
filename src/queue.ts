@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { Address } from './types'
-import { BN } from './utils'
+import { BN, isAddress } from './utils'
 import { realMathToNumber } from './utils'
 
 export interface IQueueState {
@@ -14,22 +14,39 @@ export interface IQueueState {
   scheme: Address
 }
 
+export interface IQueueQueryOptions {
+  name?: string
+  dao?: Address,
+  votingMachine?: Address
+  scheme?: Address
+}
+
 export class Queue {
+
+  /**
+   * Queue.search(context, options) searches for queue entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. IQueueQueryOptions
+   * @return         an observable of Queue objects
+   */
   public static search(
-    options: {
-      dao?: Address,
-      name?: string
-    },
     context: Arc,
+    options: IQueueQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
 ): Observable<Queue[]> {
     let where = ''
     for (const key of Object.keys(options)) {
-      const value = (options as any)[key]
-      // querying by'name' will not be predicable as the name is not always populated
-      if (value !== undefined && value !== 'name') {
-        where += `${key}: "${value}"\n`
+      if (options[key] === undefined) {
+        continue
       }
+
+      if (key === 'dao' || key === 'votingMaching' || key === 'scheme') {
+        const option = options[key] as string
+        isAddress(option)
+        options[key] = option.toLowerCase()
+      }
+
+      where += `${key}: "${options[key] as string}"\n`
     }
 
     const query = gql` {
@@ -39,7 +56,7 @@ export class Queue {
        name
        address
      }
-   }`
+    }`
     const itemMap = (item: any): Queue|null => {
       const name = item.name || context.getContractName(item.address)
       if (options.name && options.name !== name) {

@@ -40,22 +40,22 @@ describe('Stake', () => {
     const stake = stakes[stakes.length - 1][0]
 
     // search for a stakes in an invalid proposal
-    result = await Stake.search({proposal: '0x12345'}, arc)
+    result = await Stake.search(arc, {proposal: '0x12345'})
       .pipe(first()).toPromise()
     expect(result).toEqual([])
 
-    result = await Stake.search({proposal: proposal.id}, arc)
+    result = await Stake.search(arc, {proposal: proposal.id})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
     expect(result[0].outcome).toEqual(IProposalOutcome.Pass)
 
     result = await Stake
-      .search({staker: stake.staker, proposal: proposal.id}, arc)
+      .search(arc, {staker: stake.staker, proposal: proposal.id})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
     result = await Stake
-      .search({staker: arc.web3.utils.toChecksumAddress(stake.staker), proposal: proposal.id}, arc)
+      .search(arc, {staker: arc.web3.utils.toChecksumAddress(stake.staker), proposal: proposal.id})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
   })

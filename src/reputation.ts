@@ -18,16 +18,31 @@ export interface IReputationQueryOptions extends ICommonQueryOptions {
 }
 
 export class Reputation implements IStateful<IReputationState> {
+
+  /**
+   * Reputation.search(context, options) searches for reputation entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. IReputationQueryOptions
+   * @return         an observable of Reputation objects
+   */
   public static search(
-    options: IReputationQueryOptions,
     context: Arc,
+    options: IReputationQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Reputation[]> {
     let where = ''
     for (const key of Object.keys(options)) {
-      if (options[key] !== undefined) {
-        where += `${key}: "${options[key] as string}"\n`
+      if (options[key] === undefined) {
+        continue
       }
+
+      if (key === 'dao') {
+        const option = options[key] as string
+        isAddress(option)
+        options[key] = option.toLowerCase()
+      }
+
+      where += `${key}: "${options[key] as string}"\n`
     }
 
     const query = gql`{
