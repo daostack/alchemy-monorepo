@@ -40,7 +40,7 @@ describe('vote', () => {
 
     const voteIsIndexed = async () => {
       // we pass no-cache to make sure we hit the server on each request
-      result = await Vote.search({proposal: proposal.id}, arc, { fetchPolicy: 'no-cache' })
+      result = await Vote.search(arc, {proposal: proposal.id}, { fetchPolicy: 'no-cache' })
         .pipe(first()).toPromise()
       return result.length > 0
     }
@@ -51,23 +51,23 @@ describe('vote', () => {
     }
     const vote = result[0]
 
-    result = await Vote.search({}, arc)
+    result = await Vote.search(arc)
       .pipe(first()).toPromise()
     expect(Array.isArray(result)).toBe(true)
 
-    result = await Vote.search({proposal: '0x12345doesnotexist'}, arc)
+    result = await Vote.search(arc, {proposal: '0x12345doesnotexist'})
       .pipe(first()).toPromise()
     expect(result).toEqual([])
 
-    result = await Vote.search({id: '0x12345doesnotexist'}, arc)
+    result = await Vote.search(arc, {id: '0x12345doesnotexist'})
       .pipe(first()).toPromise()
     expect(result).toEqual([])
 
-    result = await Vote.search({id: vote.id}, arc)
+    result = await Vote.search(arc, {id: vote.id})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
-    result = await Vote.search({id: vote.id, voter: arc.web3.utils.toChecksumAddress(vote.voter)}, arc)
+    result = await Vote.search(arc, {id: vote.id, voter: arc.web3.utils.toChecksumAddress(vote.voter)})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 

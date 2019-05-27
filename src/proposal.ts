@@ -6,14 +6,11 @@ import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { Operation } from './operation'
 import { IQueueState } from './queue'
-import { IRewardQueryOptions, IRewardState, Reward } from './reward'
+import { IRewardQueryOptions, Reward } from './reward'
 import { ISchemeState } from './scheme'
 import { Scheme } from './scheme'
 import * as ContributionReward from './schemes/contributionReward'
-import { IContributionReward } from './schemes/contributionReward'
 import * as GenericScheme from './schemes/genericScheme'
-import { IGenericScheme } from './schemes/genericScheme'
-import { ISchemeRegistrar } from './schemes/schemeRegistrar'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
@@ -62,7 +59,7 @@ export interface IProposalState {
   activationTime: number
   boostedAt: Date
   boostedVotePeriodLimit: number
-  contributionReward: IContributionReward|null
+  contributionReward: ContributionReward.IContributionReward|null
   confidenceThreshold: number
   createdAt: Date
   dao: DAO
@@ -73,7 +70,7 @@ export interface IProposalState {
   executedAt: Date
   executionState: IExecutionState
   expiresInQueueAt: Date
-  genericScheme: IGenericScheme|null
+  genericScheme: GenericScheme.IGenericScheme|null
   id: string
   limitExponentValue: number
   organizationId: string
@@ -87,7 +84,7 @@ export interface IProposalState {
   queue: IQueueState
   quietEndingPeriod: number
   quietEndingPeriodBeganAt: Date
-  schemeRegistrar: ISchemeRegistrar|null
+  schemeRegistrar: SchemeRegistrar.ISchemeRegistrar|null
   resolvedAt: Date
   scheme: ISchemeState
   stage: IProposalStage
@@ -157,8 +154,8 @@ export class Proposal implements IStateful<IProposalState> {
    *    Proposal.search({ stage: IProposalStage.Queued})
    */
   public static search(
-    options: IProposalQueryOptions,
     context: Arc,
+    options: IProposalQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Proposal[]> {
     let where = ''
@@ -352,10 +349,10 @@ export class Proposal implements IStateful<IProposalState> {
         return null
       }
 
-      let contributionReward: IContributionReward|null = null
+      let contributionReward: ContributionReward.IContributionReward|null = null
       let type: IProposalType
-      let genericScheme: IGenericScheme|null = null
-      let schemeRegistrar: ISchemeRegistrar|null = null
+      let genericScheme: GenericScheme.IGenericScheme|null = null
+      let schemeRegistrar: SchemeRegistrar.ISchemeRegistrar|null = null
       if (item.contributionReward) {
         type = IProposalType.ContributionReward
         contributionReward = {
@@ -538,7 +535,7 @@ export class Proposal implements IStateful<IProposalState> {
 
   public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
     options.proposal = this.id
-    return Vote.search(options, this.context)
+    return Vote.search(this.context, options)
   }
 
   /**
@@ -603,7 +600,7 @@ export class Proposal implements IStateful<IProposalState> {
 
   public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
     options.proposal = this.id
-    return Stake.search(options, this.context)
+    return Stake.search(this.context, options)
   }
 
   public stake(outcome: IProposalOutcome, amount: typeof BN ): Operation < Stake > {
@@ -668,9 +665,9 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.sendTransaction(stakeMethod, map, errorHandler)
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable < IRewardState[] > {
+  public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
     options.proposal = this.id
-    return Reward.search(options, this.context)
+    return Reward.search(this.context, options)
   }
 
   /**

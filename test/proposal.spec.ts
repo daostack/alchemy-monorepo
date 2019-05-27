@@ -43,23 +43,23 @@ describe('Proposal', () => {
   })
 
   it('proposal.search() accepts expiresInQueueAt argument', async () => {
-    const l1 = await Proposal.search({expiresInQueueAt_gt: 0}, arc).pipe(first()).toPromise()
+    const l1 = await Proposal.search(arc, {expiresInQueueAt_gt: 0}).pipe(first()).toPromise()
     expect(l1.length).toBeGreaterThan(0)
 
     const expiryDate = (await l1[0].state().pipe(first()).toPromise()).expiresInQueueAt
-    const l2 = await Proposal.search({expiresInQueueAt_gt: expiryDate}, arc).pipe(first()).toPromise()
+    const l2 = await Proposal.search(arc, {expiresInQueueAt_gt: expiryDate}).pipe(first()).toPromise()
     expect(l2.length).toBeLessThan(l1.length)
   })
 
   it('proposal.search() accepts type argument', async () => {
     let ls: Proposal[]
-    ls = await Proposal.search({type: IProposalType.ContributionReward}, arc).pipe(first()).toPromise()
+    ls = await Proposal.search(arc, {type: IProposalType.ContributionReward}).pipe(first()).toPromise()
     expect(ls.length).toBeGreaterThan(0)
-    ls = await Proposal.search({type: IProposalType.GenericScheme }, arc).pipe(first()).toPromise()
+    ls = await Proposal.search(arc, {type: IProposalType.GenericScheme}).pipe(first()).toPromise()
     expect(ls.length).toBeGreaterThan(0)
-    ls = await Proposal.search({type: IProposalType.SchemeRegistrarAdd}, arc).pipe(first()).toPromise()
+    ls = await Proposal.search(arc, {type: IProposalType.SchemeRegistrarAdd}).pipe(first()).toPromise()
     // expect(ls.length).toEqual(0)
-    ls = await Proposal.search({type: IProposalType.SchemeRegistrarRemove}, arc).pipe(first()).toPromise()
+    ls = await Proposal.search(arc, {type: IProposalType.SchemeRegistrarRemove}).pipe(first()).toPromise()
     // expect(ls.length).toEqual(0)
   })
 
@@ -68,19 +68,19 @@ describe('Proposal', () => {
     const proposer = proposalState.proposer
     let result: Proposal[]
 
-    result = await Proposal.search({proposer, id: queuedProposal.id}, arc).pipe(first()).toPromise()
+    result = await Proposal.search(arc, {proposer, id: queuedProposal.id}).pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
-    result = await Proposal.search({proposer: proposer.toUpperCase(), id: queuedProposal.id}, arc)
+    result = await Proposal.search(arc, {proposer: proposer.toUpperCase(), id: queuedProposal.id})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
-    result = await Proposal.search({proposer: arc.web3.utils.toChecksumAddress(proposer), id: queuedProposal.id}, arc)
+    result = await Proposal.search(arc, {proposer: arc.web3.utils.toChecksumAddress(proposer), id: queuedProposal.id})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
     result = await Proposal
-      .search({dao: arc.web3.utils.toChecksumAddress(proposalState.dao.address), id: queuedProposal.id}, arc)
+      .search(arc, {dao: arc.web3.utils.toChecksumAddress(arc, proposalState.dao.address), id: queuedProposal.id})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
   })

@@ -84,7 +84,7 @@ describe('Reputation', () => {
   it('Reputations are searchable', async () => {
     let reputations: Reputation[] = []
 
-    Reputation.search({}, arc)
+    Reputation.search(arc)
       .subscribe((result) => reputations = result)
 
     await waitUntilTrue(() => reputations.length !== 0)

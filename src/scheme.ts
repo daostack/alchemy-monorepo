@@ -7,6 +7,7 @@ import * as ContributionReward from './schemes/contributionReward'
 import * as GenericScheme from './schemes/genericScheme'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
 import { Address } from './types'
+import { isAddress } from './utils'
 
 export interface ISchemeState {
   id: string
@@ -21,27 +22,43 @@ export interface ISchemeState {
 }
 
 export interface ISchemeQueryOptions {
-  id?: string,
-  address?: Address,
-  dao?: Address,
+  address?: Address
+  canDelegateCall?: boolean
+  canRegisterSchemes?: boolean
+  canUpgradeController?: boolean
+  canManageGlobalConstraints?: boolean
+  dao?: Address
+  id?: string
   name?: string
-
+  paramsHash?: string
 }
 
 export class Scheme {
+
+  /**
+   * Scheme.search(context, options) searches for scheme entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. ISchemeQueryOptions
+   * @return         an observable of Scheme objects
+   */
   public static search(
-    options: ISchemeQueryOptions,
     context: Arc,
+    options: ISchemeQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
-): Observable<Scheme[]> {
+  ): Observable<Scheme[]> {
     let where = ''
     for (const key of Object.keys(options)) {
-      const value = (options as any)[key]
-
-      // querying by'name' will not work as the name is not always populated
-      if (value !== undefined && key !== 'name') {
-        where += `${key}: "${value}"\n`
+      if (options[key] === undefined) {
+        continue
       }
+
+      if (key === 'address' || key === 'dao') {
+        const option = options[key] as string
+        isAddress(option)
+        options[key] = option.toLowerCase()
+      }
+
+      where += `${key}: "${options[key] as string}"\n`
     }
 
     const query = gql`{
@@ -76,7 +93,11 @@ export class Scheme {
       )
     }
 
-    return context.getObservableList(query, itemMap, apolloQueryOptions) as Observable<Scheme[]>
+    return context.getObservableList(
+      query,
+      itemMap,
+      apolloQueryOptions
+    ) as Observable<Scheme[]>
   }
 
   public address: Address
@@ -168,7 +189,7 @@ export class Scheme {
 
     public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
       options.scheme = this.address
-      return Proposal.search(options, this.context)
+      return Proposal.search(this.context, options)
     }
 
 }

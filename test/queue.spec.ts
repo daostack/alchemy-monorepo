@@ -35,7 +35,7 @@ describe('Queue', () => {
 
     it('Queues are searchable', async () => {
       let result: Queue[]
-      result = await Queue.search({dao: dao.address}, arc)
+      result = await Queue.search(arc, {dao: dao.address})
           .pipe(first()).toPromise()
       // TODO: we should expect 3 queus here, see https://github.com/daostack/subgraph/issues/195
       expect(result.length).toBeGreaterThanOrEqual(2)
@@ -43,19 +43,19 @@ describe('Queue', () => {
       expect((result.map((r) => r.name)).sort()).toContain('GenericScheme')
       expect((result.map((r) => r.name)).sort()).toContain('ContributionReward')
 
-      result = await Queue.search({dao: dao.address, name: 'GenericScheme'}, arc)
+      result = await Queue.search(arc, {dao: dao.address, name: 'GenericScheme'})
           .pipe(first()).toPromise()
 
       expect(result.length).toEqual(1)
 
-      result = await Queue.search({dao: dao.address, name: 'DoesNotExist'}, arc)
+      result = await Queue.search(arc, {dao: dao.address, name: 'DoesNotExist'})
           .pipe(first()).toPromise()
 
       expect(result.length).toEqual(0)
     })
 
     it('Queue.state() is working', async () => {
-      const result = await Queue.search({dao: dao.address, name: 'GenericScheme'}, arc)
+      const result = await Queue.search(arc, {dao: dao.address, name: 'GenericScheme'})
           .pipe(first()).toPromise()
 
       const queue = result[0]

@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { IProposalOutcome} from './proposal'
 import { Address, ICommonQueryOptions } from './types'
-import { BN } from './utils'
+import { BN, isAddress } from './utils'
 
 export interface IStake {
   id: string|undefined
@@ -16,27 +16,39 @@ export interface IStake {
 
 export interface IStakeQueryOptions extends ICommonQueryOptions {
   id?: string
+  staker?: Address
   dao?: Address
   proposal?: string
-  staker?: Address
   createdAt?: number
 }
 
 export class Stake implements IStake {
+
+  /**
+   * Stake.search(context, options) searches for stake entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. IStakeQueryOptions
+   * @return         an observable of Stake objects
+   */
   public static search(
-    options: IStakeQueryOptions = {},
     context: Arc,
+    options: IStakeQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
-  ): Observable <IStake[]> {
+  ): Observable <Stake[]> {
 
     let where = ''
     for (const key of Object.keys(options)) {
-      if (options[key] !== undefined) {
-        if (key === 'staker') {
-          options[key] = (options[key] as string).toLowerCase()
-        }
-        where += `${key}: "${options[key] as string}"\n`
+      if (options[key] === undefined) {
+        continue
       }
+
+      if (key === 'staker' || key === 'dao') {
+        const option = options[key] as string
+        isAddress(option)
+        options[key] = option.toLowerCase()
+      }
+
+      where += `${key}: "${options[key] as string}"\n`
     }
 
     const query = gql`
@@ -70,7 +82,7 @@ export class Stake implements IStake {
         return new Stake(r.id, r.staker, r.createdAt, outcome, new BN(r.amount || 0), r.proposal.id)
       },
       apolloQueryOptions
-    ) as Observable<IStake[]>
+    ) as Observable<Stake[]>
   }
 
   constructor(

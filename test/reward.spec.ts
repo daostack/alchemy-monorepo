@@ -43,8 +43,8 @@ describe('Reward', () => {
 
     expect(proposal).toBeDefined()
 
-    let result: any[]
-    result = await Reward.search({}, arc)
+    let result
+    result = await Reward.search(arc)
         .pipe(first()).toPromise()
     expect(result.length).toBeGreaterThan(0)
     //
@@ -53,15 +53,15 @@ describe('Reward', () => {
     // expect(result.length).toEqual(1)
 
     // search does not care about case in the address
-    result = await Reward.search({beneficiary}, arc)
+    result = await Reward.search(arc, {beneficiary})
         .pipe(first()).toPromise()
     expect(result.length).toBeGreaterThan(0)
 
-    result = await Reward.search({beneficiary: arc.web3.utils.toChecksumAddress(beneficiary)}, arc)
+    result = await Reward.search(arc, {beneficiary: arc.web3.utils.toChecksumAddress(beneficiary)})
         .pipe(first()).toPromise()
     expect(result.length).toBeGreaterThan(0)
 
-    expect(() => Reward.search({beneficiary: ''}, arc)).toThrowError(
+    expect(() => Reward.search(arc, {beneficiary: ''})).toThrowError(
       /not a valid address/i
     )
 

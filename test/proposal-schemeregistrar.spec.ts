@@ -3,10 +3,10 @@ import {
   IProposalStage,
   IProposalState,
   IProposalType,
-  ISchemeRegistrar,
   Proposal
   } from '../src/proposal'
 import { Scheme } from '../src/scheme'
+import { ISchemeRegistrar } from '../src/schemes/schemeRegistrar'
 import { createAProposal, firstResult, getTestAddresses, getTestDAO,
   newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
 
@@ -68,7 +68,7 @@ describe('Proposal', () => {
     })
 
     // we now expect our new scheme to appear in the schemes collection
-    const registeredSchemes = await firstResult(Scheme.search({ dao: dao.address }, arc))
+    const registeredSchemes = await firstResult(Scheme.search(arc, { dao: dao.address }))
     expect(registeredSchemes.map((x: Scheme) => x.address))
       .toContain(schemeToRegister)
 

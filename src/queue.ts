@@ -1,10 +1,10 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
-import { Arc } from './arc'
+import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { ISchemeState } from './scheme'
 import { Address } from './types'
-import { BN } from './utils'
+import { BN, isAddress } from './utils'
 import { realMathToNumber } from './utils'
 
 export interface IQueueState {
@@ -16,17 +16,39 @@ export interface IQueueState {
   votingMachine: Address
 }
 
+export interface IQueueQueryOptions {
+  name?: string
+  dao?: Address,
+  votingMachine?: Address
+  scheme?: Address
+}
+
 export class Queue {
 
-  public static search(options: {dao?: Address, name?: string}, context: Arc): Observable<Queue[]> {
+  /**
+   * Queue.search(context, options) searches for queue entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. IQueueQueryOptions
+   * @return         an observable of Queue objects
+   */
+  public static search(
+    context: Arc,
+    options: IQueueQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+): Observable<Queue[]> {
     let where = ''
     for (const key of Object.keys(options)) {
-      const value = (options as any)[key]
-      if (value !== undefined) {
-        if (key !== 'name') {
-          where += `${key}: "${value}"\n`
-        }
+      if (options[key] === undefined) {
+        continue
       }
+
+      if (key === 'dao' || key === 'votingMaching' || key === 'scheme') {
+        const option = options[key] as string
+        isAddress(option)
+        options[key] = option.toLowerCase()
+      }
+
+      where += `${key}: "${options[key] as string}"\n`
     }
 
     // use the following query once https://github.com/daostack/subgraph/issues/217 is resolved
@@ -60,7 +82,7 @@ export class Queue {
       )
     }
 
-    return context.getObservableList(query, itemMap) as Observable<Queue[]>
+    return context.getObservableList(query, itemMap, apolloQueryOptions) as Observable<Queue[]>
   }
 
   constructor(
