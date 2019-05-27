@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { Address } from './types'
-import { isAddress } from './utils';
+import { isAddress } from './utils'
 
 export interface IScheme {
   address: Address

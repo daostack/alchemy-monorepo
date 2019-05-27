@@ -31,11 +31,11 @@ export interface IMemberQueryOptions extends ICommonQueryOptions {
 export class Member implements IStateful<IMemberState> {
 
   /**
-  * Member.search(context, options) searches for member entities
-  * @param  context an Arc instance that provides connection information
-  * @param  options the query options, cf. IMemberQueryOptions
-  * @return         an observable of IRewardState objects
-  */
+   * Member.search(context, options) searches for member entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. IMemberQueryOptions
+   * @return         an observable of IRewardState objects
+   */
   public static search(
     context: Arc,
     options: IMemberQueryOptions = {},

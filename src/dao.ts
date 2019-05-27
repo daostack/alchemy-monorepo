@@ -39,11 +39,11 @@ export interface IDAOQueryOptions extends ICommonQueryOptions {
 export class DAO implements IStateful<IDAOState> {
 
   /**
-  * DAO.search(context, options) searches for DAO entities
-  * @param  context an Arc instance that provides connection information
-  * @param  options the query options, cf. IDAOQueryOptions
-  * @return         an observable of DAO objects
-  */
+   * DAO.search(context, options) searches for DAO entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. IDAOQueryOptions
+   * @return         an observable of DAO objects
+   */
   public static search(
     context: Arc,
     options: IDAOQueryOptions = {},

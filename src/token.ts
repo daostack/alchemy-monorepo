@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
-import { Address, Hash, IObservableWithFirst, IStateful, Web3Receipt, ICommonQueryOptions } from './types'
+import { Address, Hash, ICommonQueryOptions, IObservableWithFirst, IStateful, Web3Receipt } from './types'
 import { BN } from './utils'
 import { isAddress } from './utils'
 
@@ -40,11 +40,11 @@ export interface IAllowance {
 export class Token implements IStateful<ITokenState> {
 
   /**
-  * Token.search(context, options) searches for token entities
-  * @param  context an Arc instance that provides connection information
-  * @param  options the query options, cf. ITokenQueryOptions
-  * @return         an observable of Token objects
-  */
+   * Token.search(context, options) searches for token entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. ITokenQueryOptions
+   * @return         an observable of Token objects
+   */
   public static search(
     context: Arc,
     options: ITokenQueryOptions = {},
