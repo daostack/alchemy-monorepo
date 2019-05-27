@@ -85,8 +85,14 @@ export class GraphNodeObserver {
   /**
    * Returns an observable that:
    * - sends a query over http and returns the current list of results
-   * - subscribes over a websocket to changes, and returns the updated list
-   * example:
+   * - subscribes over a websocket to changes, and returns the updated list.
+   *
+   * @param query The query to be run
+   * @param  entity  name of the graphql entity to be queried.
+   * @param  itemMap (optional) a function that takes elements of the list and creates new objects
+   * @return an Observable
+   * @example:
+   * ```
    *    const query = gql`
    *    {
    *      daos {
@@ -95,11 +101,7 @@ export class GraphNodeObserver {
    *      }
    *    }`
    *    getObservableList(query, (r:any) => new DAO(r.address))
-   *
-   * @param query The query to be run
-   * @param  entity  name of the graphql entity to be queried.
-   * @param  itemMap (optional) a function that takes elements of the list and creates new objects
-   * @return
+   * ```
    */
   public getObservableList(
     query: any,

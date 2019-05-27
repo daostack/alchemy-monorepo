@@ -75,7 +75,7 @@ export class Scheme {
       let name = item.name
       if (!name) {
         try {
-          name = context.getContractName(item.address)
+          name = context.getContractInfo(item.address).name
         } catch (err) {
           // pass
         }
@@ -132,7 +132,7 @@ export class Scheme {
 
     const itemMap = (item: any): ISchemeState|null => {
 
-      const name = item.name || this.context.getContractName(item.address)
+      const name = item.name || this.context.getContractInfo(item.address).name
       return {
         address: item.address,
         canDelegateCall: item.canDelegateCall,

@@ -162,15 +162,15 @@ export class Arc extends GraphNodeObserver {
   }
 
   public getContractInfoByName(name: string, version: string) {
-  for (const contractInfo of this.contractAddresses) {
-      if (contractInfo.name === name && contractInfo.version === version) {
-        return contractInfo
+    for (const contractInfo of this.contractAddresses) {
+        if (contractInfo.name === name && contractInfo.version === version) {
+          return contractInfo
+        }
       }
-    }
-  throw Error(`No contract with name ${name}  and version ${version} is known`)
+    throw Error(`No contract with name ${name}  and version ${version} is known`)
   }
 
-  public getABI(address: Address, abiName: string = '', version: string = '') {
+  public getABI(address: Address, abiName?: string, version?: string) {
     if (!abiName || !version) {
       const contractInfo = this.getContractInfo(address)
       abiName = contractInfo.name
@@ -184,80 +184,22 @@ export class Arc extends GraphNodeObserver {
     return abi
   }
 
-  public getContract(address: Address, abiName: string = '', version: string = '') {
+  /**
+   * return a web3 Contract instance.
+   * @param  address address of the contract to look up in self.contractAddresses
+   * @param  [abiName] (optional) name of the ABI (i.e. 'Avatar' or 'SchemeRegistrar').
+   * @param  [version] (optional) Arc version of contract (https://www.npmjs.com/package/@daostack/arc)
+   * @return   a web3 contract instance
+   */
+  public getContract(address: Address, abiName?: string, version?: string) {
     const abi = this.getABI(address, abiName, version)
     return new this.web3.eth.Contract(abi, address)
-
   }
-  // /**
-  //  * get a web3 contract instance for the deployed contract with the given name
-  //  * @param  name [description]
-  //  * @return a web3 Contract instance
-  //  */
-  // public xgetContract(name: string) {
-  //   const addresses = this.contractAddresses
-  //   const opts = {}
-  //   if (this.contracts[name]) {
-  //     return this.contracts[name]
-  //   }
-  //   if (!addresses) {
-  //     throw new Error(`Cannot get contract: no contractAddress set`)
-  //   }
-  //   if (!addresses[name]) {
-  //     throw new Error(`No contract named ${name} could be found in the provided contract addresses`)
-  //   }
-  //   let contractClass
-  //   let contract
-  //   switch (name) {
-  //     case 'AbsoluteVote':
-  //       contractClass = require('@daostack/arc/build/contracts/AbsoluteVote.json')
-  //       contract = new this.web3.eth.Contract(contractClass.abi, addresses.AbsoluteVote, opts)
-  //       this.contracts[name] = contract
-  //       return contract
-  //     case 'ContributionReward':
-  //       contractClass = require('@daostack/arc/build/contracts/ContributionReward.json')
-  //       contract = new this.web3.eth.Contract(contractClass.abi, addresses.ContributionReward, opts)
-  //       this.contracts[name] = contract
-  //       return contract
-  //     case 'GEN':
-  //       contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
-  //       contract = new this.web3.eth.Contract(contractClass.abi, addresses.GEN, opts)
-  //       this.contracts[name] = contract
-  //       return contract
-  //     case 'GenericScheme':
-  //       contractClass = require('@daostack/arc/build/contracts/GenericScheme.json')
-  //       contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenericScheme, opts)
-  //       this.contracts[name] = contract
-  //       return contract
-  //     // case 'GenesisProtocol':
-  //     //   contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
-  //     //   contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenesisProtocol, opts)
-  //     //   return contract
-  //     case 'Redeemer':
-  //       contractClass = require('@daostack/arc/build/contracts/Redeemer.json')
-  //       contract = new this.web3.eth.Contract(contractClass.abi, addresses.Redeemer, opts)
-  //       this.contracts[name] = contract
-  //       return contract
-  //     case 'SchemeRegistrar':
-  //       contractClass = require('@daostack/arc/build/contracts/SchemeRegistrar.json')
-  //       contract = new this.web3.eth.Contract(contractClass.abi, addresses.SchemeRegistrar, opts)
-  //       this.contracts[name] = contract
-  //       return contract
-  //     default:
-  //       throw Error(`Unknown contract: ${name}`)
-  //   }
-  // }
 
   /**
-   * get the name of the contract, given an address
-   * the function will thorw an error if the contract cannot be found
-   * @param  address An ethereum address
-   * @return        The name of the contract, if the address is known, undefined otherwise
+   * get the GEN Token
+   * @return a Token instance
    */
-  public getContractName(address: Address): string {
-    return this.getContractInfo(address).name
-  }
-
   public GENToken() {
     // TODO: remove this reference to LATEST_ARC_VERSION
     // (it's aworkaround for https://github.com/daostack/migration/issues/144)
@@ -274,7 +216,7 @@ export class Arc extends GraphNodeObserver {
 
   public getAccount(): Observable<Address> {
     // this complex logic is to get the correct account both from the Web3 as well as from the Metamaask provider
-    // Polling is Evil!
+    // This polls for changes. But polling is Evil!
     // cf. https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#ear-listening-for-selected-account-changes
     return Observable.create((observer: any) => {
       const interval = 1000 /// poll once a second
@@ -315,7 +257,7 @@ export class Arc extends GraphNodeObserver {
   }
 
   /**
-   * How much GEN  spander spend on behalve of the owner
+   * How much GEN spender may spend on behalve of the owner
    * @param  owner Address of the owner of the tokens
    * @param  spender Address of the spender
    * @return
@@ -339,7 +281,12 @@ export class Arc extends GraphNodeObserver {
     return sendTransaction(transaction, mapToObject, errorHandler, this)
   }
 
-  public async saveIPFSData(options: { title: string, url: string, description: string}) {
+  /**
+   * save data of a proposal to IPFS, return  the IPFS hash
+   * @param  options an Object to save. This object must have title, url and desction defined
+   * @return  a Promise that resolves in the IPFS Hash where the file is saved
+   */
+  public async saveIPFSData(options: { title: string, url: string, description: string}): Promise<string> {
     let ipfsDataToSave: object = {}
     if (options.title || options.url || options.description) {
       if (!this.ipfsProvider) {
@@ -350,27 +297,20 @@ export class Arc extends GraphNodeObserver {
         title: options.title,
         url: options.url
       }
-      // if (options.descriptionHash) {
-      //   msg = `Proposal.create() takes a descriptionHash, or values for title, url and description; not both`
-      //   throw Error(msg)
-      // }
     }
-    if (ipfsDataToSave !== {}) {
-      Logger.debug('Saving data on IPFS...')
-      let descriptionHash: string = ''
-      try {
-        const ipfsResponse = await this.ipfs.add(Buffer.from(JSON.stringify(ipfsDataToSave)))
-        descriptionHash = ipfsResponse[0].path
-        // pin the file
-        await this.ipfs.pin.add(descriptionHash)
-      } catch (error) {
-        throw error
-      }
-      Logger.debug(`Data saved successfully as ${descriptionHash}`)
-      return descriptionHash
+    Logger.debug('Saving data on IPFS...')
+    let descriptionHash: string = ''
+    try {
+      const ipfsResponse = await this.ipfs.add(Buffer.from(JSON.stringify(ipfsDataToSave)))
+      descriptionHash = ipfsResponse[0].path
+      // pin the file
+      await this.ipfs.pin.add(descriptionHash)
+    } catch (error) {
+      throw error
     }
+    Logger.debug(`Data saved successfully as ${descriptionHash}`)
+    return descriptionHash
   }
-
 }
 
 export interface IApolloQueryOptions {

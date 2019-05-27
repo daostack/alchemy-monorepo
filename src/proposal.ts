@@ -124,7 +124,7 @@ export class Proposal implements IStateful<IProposalState> {
 
     let schemeName: string
     try {
-      schemeName = context.getContractName(options.scheme)
+      schemeName = context.getContractInfo(options.scheme).name
     } catch (err) {
       if (err.message.match(/is known/)) {
         throw new Error(`Unknown scheme at ${options.scheme} - cannot create a proposal`)
@@ -432,7 +432,7 @@ export class Proposal implements IStateful<IProposalState> {
       }
       const thresholdConst = realMathToNumber(new BN(item.thresholdConst))
       const scheme = item.scheme
-      const schemeName = scheme.name || this.context.getContractName(scheme.address)
+      const schemeName = scheme.name || this.context.getContractInfo(scheme.address).name
       const gpQueue = item.gpQueue
 
       const schemeState: ISchemeState = {

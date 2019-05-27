@@ -118,7 +118,7 @@ export class Queue {
         throw Error(`No gpQueue with id ${this.id} was found`)
       }
       const threshold = realMathToNumber(new BN(item.threshold))
-      const schemeName = item.scheme.name || this.context.getContractName(item.scheme.address)
+      const schemeName = item.scheme.name || this.context.getContractInfo(item.scheme.address).name
       return {
         dao: item.dao.id,
         id: item.id,

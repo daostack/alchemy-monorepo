@@ -154,7 +154,6 @@ export class DAO implements IStateful<IDAOState> {
 
   /**
    * create a new proposal in this DAO
-   * TODO: move this to the schemes - we should call proposal.scheme.createProposal
    * @param  options [description]
    * @return a Proposal instance
    */

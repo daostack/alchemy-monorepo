@@ -1,8 +1,8 @@
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { BN } from './utils'
-import { fromWei, getTestDAO, newArc, toWei } from './utils'
+import { Proposal } from '../src/proposal'
+import { fromWei, getTestAddresses, getTestDAO, newArc, toWei, waitUntilTrue } from './utils'
 
 /**
  * DAO test
@@ -91,6 +91,30 @@ describe('DAO', () => {
     expect(Number(fromWei(memberState.reputation))).toBeGreaterThan(0)
   })
 
+  it('createProposal should work', async () => {
+    const dao = await getTestDAO()
+    const options = {
+      beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+      dao: dao.address,
+      ethReward: toWei('300'),
+      externalTokenAddress: undefined,
+      externalTokenReward: toWei('0'),
+      nativeTokenReward: toWei('1'),
+      reputationReward: toWei('10'),
+      scheme: getTestAddresses().base.ContributionReward
+    }
+
+    const response = await dao.createProposal(options).send()
+    const proposal = response.result as Proposal
+    let proposals: Proposal[] = []
+    const proposalIsIndexed = async () => {
+      proposals = await Proposal.search(arc, {id: proposal.id}).pipe(first()).toPromise()
+      return proposals.length > 0
+    }
+    await waitUntilTrue(proposalIsIndexed)
+    expect(proposal.id).toBeDefined()
+
+  })
   it('dao.schemes() should work', async () => {
     const dao = await getTestDAO()
     let schemes = await dao.schemes().pipe(first()).toPromise()
