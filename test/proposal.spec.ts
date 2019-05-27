@@ -80,7 +80,7 @@ describe('Proposal', () => {
     expect(result.length).toEqual(1)
 
     result = await Proposal
-      .search(arc, {dao: arc.web3.utils.toChecksumAddress(arc, proposalState.dao.address), id: queuedProposal.id})
+      .search(arc, {dao: arc.web3.utils.toChecksumAddress(proposalState.dao.address), id: queuedProposal.id})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
   })
