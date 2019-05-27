@@ -1,4 +1,5 @@
 ```js
+// "Arc" is the main class that handles configuration and connections to various services
 const Arc = require('@daostack/client').Arc
 
 // create an Arc instanc with the right settings
@@ -8,7 +9,7 @@ const arc = new Arc({
   web3Provider: 'ws://url.to.web3.node/',
 })
 
-// get an Observable for list of DAOs
+// get an Observable for list of DAOs.
 const daoObservable = arc.daos()
 // we get the first return item from the obervable
 const { first } = require('rxjs/operators')

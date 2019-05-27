@@ -14,10 +14,18 @@ describe('DAO', () => {
     arc = await newArc()
 })
 
-  it('DAO is instantiable', () => {
+  it('is instantiable', () => {
     const address = '0x12345'
     const dao = new DAO(address, arc)
     expect(dao).toBeInstanceOf(DAO)
+  })
+
+  it('collection is searchable', async () => {
+    let result: DAO[]
+    result = await DAO.search(arc).pipe(first()).toPromise()
+    expect(result.length).toBeGreaterThan(1)
+    result = await DAO.search(arc, { register: 'unRegistered'}).pipe(first()).toPromise()
+    expect(result.length).toEqual(0)
   })
 
   it('should be possible to get the token balance of the DAO', async () => {

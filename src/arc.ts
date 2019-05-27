@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { DAO } from './dao'
+import { DAO, IDAOQueryOptions } from './dao'
 import { GraphNodeObserver } from './graphnode'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
@@ -71,7 +71,7 @@ export class Arc extends GraphNodeObserver {
   }
 
   /**
-   * [dao description]
+   * get a DAO instance from an address
    * @param  address address of the dao Avatar
    * @return an instance of a DAO
    */
@@ -80,18 +80,13 @@ export class Arc extends GraphNodeObserver {
     return new DAO(address, this)
   }
 
-  public daos(): Observable < DAO[] > {
-    const query = gql`
-      {
-        daos {
-          id
-        }
-      }
-    `
-    return this.getObservableList(
-      query,
-      (r: any) => new DAO(r.id, this)
-    ) as Observable<DAO[]>
+  /**
+   * return an observable of the list of DAOs
+   * @param options options to pass on to the query
+   * @return [description]
+   */
+  public daos(options: IDAOQueryOptions = {}): Observable<DAO[]> {
+    return DAO.search(this, options)
   }
 
   public ethBalance(owner: Address): Observable<typeof BN> {
