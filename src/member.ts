@@ -36,6 +36,7 @@ export class Member implements IStateful<IMemberState> {
 
     const query = gql`{
       reputationHolders (where: {
+        dao_not: null
         ${where}
       }) {
         id
