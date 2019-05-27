@@ -18,6 +18,13 @@ export interface IReputationQueryOptions extends ICommonQueryOptions {
 }
 
 export class Reputation implements IStateful<IReputationState> {
+
+  /**
+   * Reputation.search(context, options) searches for reputation entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. IReputationQueryOptions
+   * @return         an observable of Reputation objects
+   */
   public static search(
     options: IReputationQueryOptions,
     context: Arc,

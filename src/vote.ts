@@ -18,12 +18,19 @@ export interface IVote {
 export interface IVoteQueryOptions extends ICommonQueryOptions {
   id?: string
   voter?: Address
+  outcome?: IProposalOutcome
   proposal?: string
   dao?: Address
 }
 
 export class Vote implements IVote {
 
+  /**
+   * Vote.search(context, options) searches for vote entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. IVoteQueryOptions
+   * @return         an observable of Vote objects
+   */
   public static search(
     options: IVoteQueryOptions = {},
     context: Arc,
@@ -34,10 +41,19 @@ export class Vote implements IVote {
     daoFilter = () => true
 
     for (const key of Object.keys(options)) {
-      if (key === 'voter') {
+      if (options[key] === undefined) {
+        continue
+      }
+
+      if (key === 'voter' || key === 'dao') {
         options[key] = (options[key] as string).toLowerCase()
       }
-      where += `${key}: "${options[key] as string}"\n`
+
+      if (key === 'outcome') {
+        where += `${key}: "${IProposalOutcome[options[key] as number]}"\n`
+      } else {
+        where += `${key}: "${options[key] as string}"\n`
+      }
     }
 
     const query = gql`

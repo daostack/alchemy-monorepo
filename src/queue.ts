@@ -14,12 +14,23 @@ export interface IQueueState {
   scheme: Address
 }
 
+export interface IQueueQueryOptions {
+  name?: string
+  dao?: Address,
+  votingMachine?: Address
+  scheme?: Address
+}
+
 export class Queue {
+
+  /**
+   * Queue.search(context, options) searches for queue entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. IQueueQueryOptions
+   * @return         an observable of Queue objects
+   */
   public static search(
-    options: {
-      dao?: Address,
-      name?: string
-    },
+    options: IQueueQueryOptions,
     context: Arc,
     apolloQueryOptions: IApolloQueryOptions = {}
 ): Observable<Queue[]> {
@@ -39,7 +50,7 @@ export class Queue {
        name
        address
      }
-   }`
+    }`
     const itemMap = (item: any): Queue|null => {
       const name = item.name || context.getContractName(item.address)
       if (options.name && options.name !== name) {

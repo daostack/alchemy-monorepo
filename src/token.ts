@@ -43,7 +43,7 @@ export class Token implements IStateful<ITokenState> {
   * Token.search(context, options) searches for token entities
   * @param  context an Arc instance that provides connection information
   * @param  options the query options, cf. ITokenQueryOptions
-  * @return         an observable of IRewardState objects
+  * @return         an observable of Token objects
   */
   public static search(
     options: ITokenQueryOptions,
@@ -52,11 +52,15 @@ export class Token implements IStateful<ITokenState> {
   ): Observable<Token[]> {
     let where = ''
     for (const key of Object.keys(options)) {
-      if (options[key] !== undefined) {
-        if (options[key] !== undefined) {
-          where += `${key}: "${options[key] as string}"\n`
-        }
+      if (options[key] === undefined) {
+        continue
       }
+
+      if (key === 'token' || key === 'owner' || key === 'spender') {
+        options[key] = (options[key] as string).toLowerCase()
+      }
+
+      where += `${key}: "${options[key] as string}"\n`
     }
 
     const query = gql`{
@@ -71,7 +75,7 @@ export class Token implements IStateful<ITokenState> {
       query,
       (r: any) => new Token(r.id, context),
       apolloQueryOptions
-    )
+    ) as Observable<Token[]>
   }
 
   constructor(public address: Address, public context: Arc) {

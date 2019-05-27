@@ -16,9 +16,9 @@ export interface IStake {
 
 export interface IStakeQueryOptions extends ICommonQueryOptions {
   id?: string
+  staker?: Address
   dao?: Address
   proposal?: string
-  staker?: Address
   createdAt?: number
 }
 
@@ -28,7 +28,7 @@ export class Stake implements IStake {
    * Stake.search(context, options) searches for stake entities
    * @param  context an Arc instance that provides connection information
    * @param  options the query options, cf. IStakeQueryOptions
-   * @return         an observable of IStakeState objects
+   * @return         an observable of Stake objects
    */
   public static search(
     options: IStakeQueryOptions = {},
@@ -39,7 +39,7 @@ export class Stake implements IStake {
     let where = ''
     for (const key of Object.keys(options)) {
       if (options[key] !== undefined) {
-        if (key === 'staker') {
+        if (key === 'staker' || key === 'dao') {
           options[key] = (options[key] as string).toLowerCase()
         }
         where += `${key}: "${options[key] as string}"\n`

@@ -1,6 +1,6 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
-import { Arc } from './arc'
+import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { Address } from './types'
 
@@ -16,18 +16,36 @@ export interface IScheme {
   paramsHash: string
 }
 
+export interface ISchemeQueryOptions {
+  address?: Address
+  canDelegateCall?: boolean
+  canRegisterSchemes?: boolean
+  canUpgradeController?: boolean
+  canManageGlobalConstraints?: boolean
+  dao?: Address
+  id?: string
+  name?: string
+  paramsHash?: string
+}
+
 export class Scheme implements IScheme {
 
-  public static search(options: {dao?: Address}, context: Arc): Observable<Scheme[]> {
+  /**
+   * Scheme.search(context, options) searches for scheme entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. ISchemeQueryOptions
+   * @return         an observable of Scheme objects
+   */
+  public static search(
+    options: ISchemeQueryOptions,
+    context: Arc,
+    apolloQueryOptions: IApolloQueryOptions
+  ): Observable<Scheme[]> {
     let where = ''
     for (const key of Object.keys(options)) {
-      const value = (options as any)[key]
+      const value = options[key]
       if (value !== undefined) {
-        if (key === 'dao')  {
-          where += `dao: "${value}"\n`
-        } else {
-          where += `${key}: "${value}"\n`
-        }
+        where += `${key}: "${value as string}"\n`
       }
     }
 
@@ -43,7 +61,7 @@ export class Scheme implements IScheme {
        name
        paramsHash
      }
-   }`
+    }`
     const itemMap = (item: any): Scheme => {
       return new Scheme(
         item.id,
@@ -59,7 +77,11 @@ export class Scheme implements IScheme {
       )
     }
 
-    return context.getObservableList(query, itemMap) as Observable<Scheme[]>
+    return context.getObservableList(
+      query,
+      itemMap,
+      apolloQueryOptions
+    ) as Observable<Scheme[]>
   }
 
   constructor(

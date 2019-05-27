@@ -36,7 +36,7 @@ export class Reward implements IStateful<IRewardState> {
    * Reward.search(context, options) searches for reward entities
    * @param  context an Arc instance that provides connection information
    * @param  options the query options, cf. IRewardQueryOptions
-   * @return         an observable of IRewardState objects
+   * @return         an observable of Reward objects
    */
   public static search(
     options: IRewardQueryOptions,
