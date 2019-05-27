@@ -13,7 +13,7 @@ import {
   waitUntilTrue
 } from './utils'
 
-jest.setTimeout(10000)
+jest.setTimeout(20000)
 
 describe('Create a ContributionReward proposal', () => {
   let arc: Arc

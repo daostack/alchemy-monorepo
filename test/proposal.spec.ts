@@ -11,7 +11,7 @@ import { createAProposal,
   getTestAddresses,
   ITestAddresses, newArc, toWei, waitUntilTrue } from './utils'
 
-jest.setTimeout(10000)
+jest.setTimeout(20000)
 /**
  * Proposal test
  */

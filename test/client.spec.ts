@@ -21,7 +21,7 @@ function getClient() {
  */
 describe('apolloClient', () => {
   let client
-  jest.setTimeout(10000)
+  jest.setTimeout(20000)
 
   it('can be instantiated', () => {
     client = getClient()

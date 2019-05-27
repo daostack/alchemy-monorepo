@@ -7,7 +7,7 @@ import { BN } from './utils'
 import { createAProposal, getTestAddresses, getTestDAO, ITestAddresses, newArc,
   toWei, waitUntilTrue } from './utils'
 
-jest.setTimeout(10000)
+jest.setTimeout(20000)
 
 describe('Stake on a ContributionReward', () => {
   let arc: Arc

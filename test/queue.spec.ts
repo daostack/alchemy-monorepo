@@ -6,7 +6,7 @@ import { Queue } from '../src/queue'
 import { BN } from './utils'
 import { getTestAddresses, getTestDAO, ITestAddresses,  newArc } from './utils'
 
-jest.setTimeout(10000)
+jest.setTimeout(20000)
 
 /**
  * Queue test

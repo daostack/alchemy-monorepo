@@ -3,7 +3,7 @@ import { Arc } from '../src/arc'
 import { Scheme } from '../src/scheme'
 import { firstResult, getTestAddresses, getTestDAO,  ITestAddresses, newArc } from './utils'
 
-jest.setTimeout(10000)
+jest.setTimeout(20000)
 
 /**
  * Scheme test

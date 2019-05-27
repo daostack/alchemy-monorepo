@@ -4,7 +4,7 @@ import { Address } from '../src/types'
 import { BN } from './utils'
 import { fromWei, newArc, toWei, waitUntilTrue } from './utils'
 
-jest.setTimeout(10000)
+jest.setTimeout(20000)
 
 /**
  * Arc test

@@ -4,7 +4,7 @@ import { IProposalOutcome} from '../src/proposal'
 import { Stake } from '../src/stake'
 import { createAProposal, newArc, toWei, waitUntilTrue } from './utils'
 
-jest.setTimeout(10000)
+jest.setTimeout(20000)
 
 /**
  * Stake test

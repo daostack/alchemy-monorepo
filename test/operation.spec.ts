@@ -2,7 +2,7 @@ import { ITransactionState, ITransactionUpdate } from '../src/operation'
 import { IProposalType, Proposal } from '../src/proposal'
 import { getTestAddresses, getTestDAO, mineANewBlock, newArc, toWei, waitUntilTrue } from './utils'
 
-jest.setTimeout(10000)
+jest.setTimeout(20000)
 
 describe('Operation', () => {
 

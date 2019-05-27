@@ -6,7 +6,7 @@ import { BN } from './utils'
 import { fromWei, getTestAddresses, ITestAddresses,
    newArc, toWei, waitUntilTrue } from './utils'
 
-jest.setTimeout(10000)
+jest.setTimeout(20000)
 /**
  * Token test
  */
