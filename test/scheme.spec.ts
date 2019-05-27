@@ -32,7 +32,7 @@ describe('Scheme', () => {
   it('Scheme are searchable', async () => {
     const dao = await getTestDAO()
     let result: Scheme[]
-    result = await Scheme.search({dao: dao.address}, arc, { fetchPolicy: 'no-cache' })
+    result = await Scheme.search(arc, {dao: dao.address})
         .pipe(first()).toPromise()
 
     // TODO: we should expect 3 queus here, see https://github.com/daostack/subgraph/issues/195
@@ -43,15 +43,15 @@ describe('Scheme', () => {
       'ContributionReward',
       'SchemeRegistrar'
     ].sort())
-    result = await Scheme.search({dao: dao.address, name: 'ContributionReward'}, arc)
+    result = await Scheme.search(arc, {dao: dao.address, name: 'ContributionReward'})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
-    result = await Scheme.search({dao: dao.address, name: 'GenericScheme'}, arc)
+    result = await Scheme.search(arc, {dao: dao.address, name: 'GenericScheme'})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
-    result = await Scheme.search({dao: dao.address, name: 'SchemeRegistrar'}, arc)
+    result = await Scheme.search(arc, {dao: dao.address, name: 'SchemeRegistrar'})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
   })
@@ -59,7 +59,7 @@ describe('Scheme', () => {
   it('Scheme.state() is working', async () => {
     const dao = await getTestDAO()
     const result = await Scheme
-      .search({dao: dao.address, name: 'SchemeRegistrar'}, arc)
+      .search(arc, {dao: dao.address, name: 'SchemeRegistrar'})
       .pipe(first()).toPromise()
 
     const scheme = result[0]
@@ -77,7 +77,7 @@ describe('Scheme', () => {
     const dao = await getTestDAO()
     const proposal = await dao.proposal(queuedProposalId)
     const proposalState = await proposal.state().pipe(first()).toPromise()
-    const schemes = await firstResult(Scheme.search({id: proposalState.scheme.id}, arc))
+    const schemes = await firstResult(Scheme.search(arc, {id: proposalState.scheme.id}))
     const schemeState = await firstResult(schemes[0].state())
     expect(proposalState.scheme).toEqual(schemeState)
   })

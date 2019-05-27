@@ -17,7 +17,6 @@ export interface IQueueState {
 }
 
 export interface IQueueQueryOptions {
-  name?: string
   dao?: Address,
   votingMachine?: Address
   scheme?: Address
@@ -68,16 +67,11 @@ export class Queue {
       }
     `
     const itemMap = (item: any): Queue|null => {
-      const scheme = item.scheme
-      const name = scheme.name || context.getContractName(scheme.address)
       // we must filter explictly by name as the subgraph does not return the name
-      if (options.name && options.name !== name) {
-        return null
-      }
+
       return new Queue(
         item.id,
         new DAO(item.dao.id, context),
-        name,
         context
       )
     }
@@ -88,7 +82,6 @@ export class Queue {
   constructor(
     public id: string,
     public dao: DAO,
-    public name: string,
     public context: Arc
   ) {
     this.context = context
