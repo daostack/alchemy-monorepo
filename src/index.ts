@@ -14,3 +14,6 @@ export { Vote, IVote, IVoteQueryOptions } from './vote'
 export { Address } from './types'
 import { Arc } from './arc'
 export default Arc
+
+import * as utils from './utils'
+export { utils }

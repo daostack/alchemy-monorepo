@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
-import { Address, Hash, ICommonQueryOptions, IObservableWithFirst, IStateful, Web3Receipt } from './types'
+import { Address, Hash, ICommonQueryOptions, IStateful, Web3Receipt } from './types'
 import { BN } from './utils'
 import { isAddress } from './utils'
 
@@ -115,7 +115,7 @@ export class Token implements IStateful<ITokenState> {
     return this.context.getObservableObject(query, itemMap) as Observable<ITokenState>
   }
 
-  public balanceOf(owner: string): IObservableWithFirst<typeof BN> {
+  public balanceOf(owner: string): Observable<typeof BN> {
     const observable = Observable.create(async (observer: Observer<typeof BN>) => {
       const contract = this.contract()
       let subscription: Subscription

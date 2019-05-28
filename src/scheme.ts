@@ -83,7 +83,6 @@ export class Scheme {
       if (options.name && options.name !== name) {
         return null
       }
-      // we must filter explictly by name as the subgraph does not return the name
       return new Scheme(
         item.id,
         item.dao.id,

@@ -85,7 +85,7 @@ describe('apolloClient', () => {
 
   it.skip('getObservable works', async () => {
     const arc = new Arc({
-      contractAddresses: getContractAddressesFromMigration(),
+      contractAddresses: getContractAddressesFromMigration('private'),
       graphqlHttpProvider,
       graphqlWsProvider,
       ipfsProvider: '',

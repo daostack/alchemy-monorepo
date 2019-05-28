@@ -221,9 +221,8 @@ export function realMathToNumber(t: typeof BN): number {
 
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
-export function getContractAddressesFromMigration(): IContractInfo[] {
-  const path = '@daostack/migration/migration.json'
-  const migration = require(path).private
+export function getContractAddressesFromMigration(environment: 'private'|'rinkeby'|'mainnet'): IContractInfo[] {
+  const migration = require('@daostack/migration/migration.json')[environment]
   const contracts: IContractInfo[] = []
   for (const version of Object.keys( migration.base)) {
     for (const name of Object.keys(migration.base[version])) {

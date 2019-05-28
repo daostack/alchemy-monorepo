@@ -1,3 +1,4 @@
+import { IContractInfo } from '../src/arc'
 import { getContractAddressesFromMigration, realMathToNumber  } from '../src/utils'
 import { BN } from './utils'
 
@@ -13,7 +14,12 @@ describe('Utils', () => {
   })
 
   it('getTestAddresses works', () => {
-    const addresses = getContractAddressesFromMigration()
+    let addresses: IContractInfo[]
+    addresses = getContractAddressesFromMigration('private')
+    expect(addresses.length).toBeGreaterThan(0)
+    addresses = getContractAddressesFromMigration('rinkeby')
+    expect(addresses.length).toBeGreaterThan(0)
+    addresses = getContractAddressesFromMigration('mainnet')
     expect(addresses.length).toBeGreaterThan(0)
   })
 

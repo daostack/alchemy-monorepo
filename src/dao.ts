@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import { Observable } from 'rxjs'
+import { Observable, of } from 'rxjs'
 import { first, map } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { IMemberQueryOptions, Member } from './member'
@@ -80,6 +80,10 @@ export class DAO implements IStateful<IDAOState> {
     this.context = context
   }
 
+  /**
+   * get the current state of the DAO
+   * @return an Observable of IDAOState
+   */
   public state(): Observable<IDAOState> {
     const query = gql`{
       dao(id: "${this.address}") {

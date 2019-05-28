@@ -175,6 +175,9 @@ export class Proposal implements IStateful<IProposalState> {
         if (value.toString().includes('SchemeRegistrar')) {
           where += `schemeRegistrar_not: null\n`
         } else {
+          if (IProposalType[value] === undefined) {
+            throw Error(`Unknown value for "type" in proposals query: ${value}`)
+          }
           const apolloKey = IProposalType[value][0].toLowerCase() + IProposalType[value].slice(1)
           where += `${apolloKey}_not: null\n`
         }

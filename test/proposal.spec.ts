@@ -51,6 +51,12 @@ describe('Proposal', () => {
     expect(l2.length).toBeLessThan(l1.length)
   })
 
+  it('proposal.search() accepts scheme argument', async () => {
+    const state = await queuedProposal.state().pipe(first()).toPromise()
+    const l1 = await Proposal.search(arc, { scheme: state.scheme.id}).pipe(first()).toPromise()
+    expect(l1.length).toBeGreaterThan(0)
+  })
+
   it('proposal.search() accepts type argument', async () => {
     let ls: Proposal[]
     ls = await Proposal.search(arc, {type: IProposalType.ContributionReward}).pipe(first()).toPromise()

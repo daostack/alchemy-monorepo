@@ -1,10 +1,11 @@
-import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
-import { map } from 'rxjs/operators'
+import { first, map } from 'rxjs/operators'
 import { DAO, IDAOQueryOptions } from './dao'
 import { GraphNodeObserver } from './graphnode'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
+import { IProposalQueryOptions, Proposal } from './proposal'
+import { ISchemeQueryOptions, Scheme } from './scheme'
 import { Token } from './token'
 import { Address, IPFSProvider, Web3Provider } from './types'
 import { BN } from './utils'
@@ -87,6 +88,22 @@ export class Arc extends GraphNodeObserver {
    */
   public daos(options: IDAOQueryOptions = {}): Observable<DAO[]> {
     return DAO.search(this, options)
+  }
+
+  public async scheme(id: string): Promise<Scheme> {
+    const schemes = await Scheme.search(this, { id }).pipe(first()).toPromise()
+    if (schemes.length === 0) {
+      throw Error(`No scheme with id ${id} is known`)
+    }
+    return schemes[0]
+  }
+
+  public schemes(options: ISchemeQueryOptions = {}): Observable<Scheme[]> {
+    return Scheme.search(this, options)
+  }
+
+  public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
+    return Proposal.search(this, options)
   }
 
   public ethBalance(owner: Address): Observable<typeof BN> {

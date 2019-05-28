@@ -78,7 +78,7 @@ export async function getOptions(web3: any) {
 export async function newArc() {
   const arc = new Arc({
     // contractAddresses: await getContractAddresses(graphqlHttpMetaProvider, 'daostack'),
-    contractAddresses: await getContractAddressesFromMigration(),
+    contractAddresses: await getContractAddressesFromMigration('private'),
     graphqlHttpProvider,
     graphqlWsProvider,
     ipfsProvider,
