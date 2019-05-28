@@ -15,9 +15,10 @@ import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export interface IDAOState {
   address: Address // address of the avatar
+  dao: DAO
+  memberCount: number
   name: string
   reputation: Reputation
-  memberCount: number
   reputationTotalSupply: typeof BN
   token: Token
   tokenName: string
@@ -96,6 +97,7 @@ export class DAO implements IStateful<IDAOState> {
       }
       return {
         address: item.id,
+        dao: this,
         memberCount: Number(item.reputationHoldersCount),
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, this.context),

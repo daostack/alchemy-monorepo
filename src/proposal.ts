@@ -77,6 +77,7 @@ export interface IProposalState {
   paramsHash: string
   preBoostedAt: Date
   preBoostedVotePeriodLimit: number
+  proposal: Proposal
   proposer: Address
   proposingRepReward: typeof BN // in REP
   queuedVoteRequiredPercentage: number
@@ -100,8 +101,9 @@ export interface IProposalState {
   votesAgainst: typeof BN
   votesCount: number
   voteOnBehalf: Address
-  winningOutcome: IProposalOutcome
   votersReputationLossRatio: number // in 1000's
+  votingMachine: Address
+  winningOutcome: IProposalOutcome
   minimumDaoBounty: typeof BN // in GEN
 }
 
@@ -338,6 +340,7 @@ export class Proposal implements IStateful<IProposalState> {
           }
           votesAgainst
           votesFor
+          votingMachine
           winningOutcome
         }
       }
@@ -479,6 +482,7 @@ export class Proposal implements IStateful<IProposalState> {
         paramsHash: item.paramsHash,
         preBoostedAt: Number(item.preBoostedAt),
         preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
+        proposal: this,
         proposer: item.proposer,
         proposingRepReward: new BN(item.proposingRepReward),
         queue: queueState,
@@ -503,6 +507,7 @@ export class Proposal implements IStateful<IProposalState> {
         votesAgainst: new BN(item.votesAgainst),
         votesCount: item.votes.length,
         votesFor: new BN(item.votesFor),
+        votingMachine: item.votingMachine,
         winningOutcome: IProposalOutcome[item.winningOutcome] as any
       }
     }
@@ -759,8 +764,8 @@ interface IProposalBaseCreateOptions {
   url?: string
 }
 
-export type IProposalCreateOptions = IProposalBaseCreateOptions & (
-  GenericScheme.IProposalCreateOptionsGS  &
-  SchemeRegistrar.IProposalCreateOptionsSR  &
-  ContributionReward.IProposalCreateOptionsCR
+export type IProposalCreateOptions = (
+  (IProposalBaseCreateOptions & GenericScheme.IProposalCreateOptionsGS ) |
+  (IProposalBaseCreateOptions & SchemeRegistrar.IProposalCreateOptionsSR) |
+  (IProposalBaseCreateOptions & ContributionReward.IProposalCreateOptionsCR)
 )
