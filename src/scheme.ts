@@ -33,6 +33,9 @@ export interface ISchemeQueryOptions {
   paramsHash?: string
 }
 
+/**
+ * A Scheme represents a scheme instance that is registered at a DAO
+ */
 export class Scheme {
 
   /**
