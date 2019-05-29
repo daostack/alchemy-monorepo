@@ -6,6 +6,8 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
   let arcVersion = require('./package.json').dependencies['@daostack/arc']
 
   const addresses = {}
+  const network = await web3.eth.net.getNetworkType()
+
   async function deploy ({ contractName, abi, bytecode, deployedBytecode }, deps, ...args) {
     deps = deps || []
     for (let existing in previousMigration.base) {
@@ -21,7 +23,7 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
         entryName === 'GEN' &&
         existing[entryName] &&
         code !== '0x' &&
-        !(await confirm(`Found existing GEN (DAOToken) contract, Deploy new instance?`, false))
+        (!(await confirm(`Found existing GEN (DAOToken) contract, Deploy new instance?`, false)) || network === 'private')
       ) {
         addresses[entryName] = existing[entryName]
         return existing[entryName]
@@ -54,7 +56,6 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
     return c.options.address
   }
 
-  const network = await web3.eth.net.getNetworkType()
   let GENToken = '0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf'
 
   if (network === 'private') {
