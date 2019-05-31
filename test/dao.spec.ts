@@ -53,6 +53,7 @@ describe('DAO', () => {
     const state = await dao.state().pipe(first()).toPromise()
     expect(Object.keys(state)).toEqual([
       'address',
+      'dao',
       'memberCount',
       'name',
       'reputation',
