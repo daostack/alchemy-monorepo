@@ -22,7 +22,7 @@ describe('Proposal execute()', () => {
     executedProposal = await dao.proposal(addresses.test.executedProposalId)
   })
 
-  it('runs correctly through the stages', async () => {
+  it.only('runs correctly through the stages', async () => {
 
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const accounts = arc.web3.eth.accounts.wallet
@@ -80,7 +80,6 @@ describe('Proposal execute()', () => {
     await proposal.execute().send()
     // this reverts: why?
     await proposal.stake(IProposalOutcome.Pass, amountToStakeFor).send()
-    return
 
     await waitUntilTrue(() => lastState().stakesFor.gt(new BN(0)))
     proposalState = lastState()
