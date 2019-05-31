@@ -56,14 +56,11 @@ export enum IExecutionState {
 
 export interface IProposalState {
   accountsWithUnclaimedRewards: Address[],
-  activationTime: number
   boostedAt: Date
-  boostedVotePeriodLimit: number
   contributionReward: ContributionReward.IContributionReward|null
   confidenceThreshold: number
   createdAt: Date
   dao: DAO
-  daoBountyConst: number // ?
   descriptionHash?: string
   description?: string
   downStakeNeededToQueue: typeof BN
@@ -71,19 +68,27 @@ export interface IProposalState {
   executionState: IExecutionState
   expiresInQueueAt: Date
   genericScheme: GenericScheme.IGenericScheme|null
+  genesisProtocolParams: {
+    activationTime: number
+    boostedVotePeriodLimit: number
+    daoBountyConst: number // ?
+    limitExponentValue: number
+    minimumDaoBounty: typeof BN // in GEN
+    preBoostedVotePeriodLimit: number
+    proposingRepReward: typeof BN // in REP
+    queuedVoteRequiredPercentage: number
+    queuedVotePeriodLimit: number // in seconds (?)
+    quietEndingPeriod: number
+    thresholdConst: number
+    votersReputationLossRatio: number // in 1000's
+  }
   id: string
-  limitExponentValue: number
   organizationId: string
   paramsHash: string
   preBoostedAt: Date
-  preBoostedVotePeriodLimit: number
   proposal: Proposal
   proposer: Address
-  proposingRepReward: typeof BN // in REP
-  queuedVoteRequiredPercentage: number
-  queuedVotePeriodLimit: number // in seconds (?)
   queue: IQueueState
-  quietEndingPeriod: number
   quietEndingPeriodBeganAt: Date
   schemeRegistrar: SchemeRegistrar.ISchemeRegistrar|null
   resolvedAt: Date
@@ -91,7 +96,6 @@ export interface IProposalState {
   stage: IProposalStage
   stakesFor: typeof BN
   stakesAgainst: typeof BN
-  thresholdConst: number
   title?: string
   totalRepWhenExecuted: typeof BN
   type: IProposalType,
@@ -101,10 +105,8 @@ export interface IProposalState {
   votesAgainst: typeof BN
   votesCount: number
   voteOnBehalf: Address
-  votersReputationLossRatio: number // in 1000's
   votingMachine: Address
   winningOutcome: IProposalOutcome
-  minimumDaoBounty: typeof BN // in GEN
 }
 
 export class Proposal implements IStateful<IProposalState> {
@@ -249,10 +251,8 @@ export class Proposal implements IStateful<IProposalState> {
       {
         proposal(id: "${this.id}") {
           id
-          activationTime
           accountsWithUnclaimedRewards
           boostedAt
-          boostedVotePeriodLimit
           confidenceThreshold
           contributionReward {
             id
@@ -274,7 +274,6 @@ export class Proposal implements IStateful<IProposalState> {
               address
             }
           }
-          daoBountyConst
           description
           descriptionHash
           executedAt
@@ -286,6 +285,20 @@ export class Proposal implements IStateful<IProposalState> {
             callData
             executed
             returnValue
+          }
+          genesisProtocolParams {
+            activationTime
+            boostedVotePeriodLimit
+            daoBountyConst
+            limitExponentValue
+            minimumDaoBounty
+            preBoostedVotePeriodLimit
+            proposingRepReward
+            queuedVotePeriodLimit
+            queuedVoteRequiredPercentage
+            quietEndingPeriod
+            thresholdConst
+            votersReputationLossRatio
           }
           gpRewards {
             id
@@ -306,17 +319,9 @@ export class Proposal implements IStateful<IProposalState> {
             threshold
             votingMachine
           }
-          limitExponentValue
-          minimumDaoBounty
           organizationId
           preBoostedAt
-          preBoostedVotePeriodLimit
           proposer
-          proposingRepReward
-          queuedVotePeriodLimit
-          queuedVoteRequiredPercentage
-          quietEndingPeriod
-          thresholdConst
           quietEndingPeriodBeganAt
           schemeRegistrar {
             id
@@ -337,7 +342,6 @@ export class Proposal implements IStateful<IProposalState> {
           totalRepWhenExecuted
           title
           url
-          votersReputationLossRatio
           votes {
             id
           }
@@ -436,7 +440,7 @@ export class Proposal implements IStateful<IProposalState> {
           .div(new BN(threshold * PRECISION))
           .sub(stakesAgainst)
       }
-      const thresholdConst = realMathToNumber(new BN(item.thresholdConst))
+      const thresholdConst = realMathToNumber(new BN(item.genesisProtocolParams.thresholdConst))
       const scheme = item.scheme
       const schemeName = scheme.name || this.context.getContractInfo(scheme.address).name
       const gpQueue = item.gpQueue
@@ -463,14 +467,11 @@ export class Proposal implements IStateful<IProposalState> {
 
       return {
         accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
-        activationTime: Number(item.activationTime),
         boostedAt: Number(item.boostedAt),
-        boostedVotePeriodLimit: Number(item.boostedVotePeriodLimit),
         confidenceThreshold: Number(item.confidenceThreshold),
         contributionReward,
         createdAt: Number(item.createdAt),
         dao: new DAO(item.dao.id, this.context),
-        daoBountyConst: Number(item.daoBountyConst),
         description: item.description,
         descriptionHash: item.descriptionHash,
         downStakeNeededToQueue,
@@ -478,20 +479,27 @@ export class Proposal implements IStateful<IProposalState> {
         executionState: IExecutionState[item.executionState] as any,
         expiresInQueueAt: Number(item.expiresInQueueAt),
         genericScheme,
+        genesisProtocolParams: {
+          activationTime: Number(item.genesisProtocolParams.activationTime),
+          boostedVotePeriodLimit: Number(item.genesisProtocolParams.boostedVotePeriodLimit),
+          daoBountyConst: Number(item.genesisProtocolParams.daoBountyConst),
+          limitExponentValue: Number(item.genesisProtocolParams.limitExponentValue),
+          minimumDaoBounty: new BN(item.genesisProtocolParams.minimumDaoBounty),
+          preBoostedVotePeriodLimit: Number(item.genesisProtocolParams.preBoostedVotePeriodLimit),
+          proposingRepReward: new BN(item.genesisProtocolParams.proposingRepReward),
+          queuedVotePeriodLimit: Number(item.genesisProtocolParams.queuedVotePeriodLimit),
+          queuedVoteRequiredPercentage: Number(item.genesisProtocolParams.queuedVoteRequiredPercentage),
+          quietEndingPeriod: Number(item.genesisProtocolParams.quietEndingPeriod),
+          thresholdConst,
+          votersReputationLossRatio: Number(item.genesisProtocolParams.votersReputationLossRatio)
+        },
         id: item.id,
-        limitExponentValue: Number(item.limitExponentValue),
-        minimumDaoBounty: new BN(item.minimumDaoBounty),
         organizationId: item.organizationId,
         paramsHash: item.paramsHash,
         preBoostedAt: Number(item.preBoostedAt),
-        preBoostedVotePeriodLimit: Number(item.preBoostedVotePeriodLimit),
         proposal: this,
         proposer: item.proposer,
-        proposingRepReward: new BN(item.proposingRepReward),
         queue: queueState,
-        queuedVotePeriodLimit: Number(item.queuedVotePeriodLimit),
-        queuedVoteRequiredPercentage: Number(item.queuedVoteRequiredPercentage),
-        quietEndingPeriod: Number(item.quietEndingPeriod),
         quietEndingPeriodBeganAt: Number(item.quietEndingPeriodBeganAt),
         resolvedAt: item.resolvedAt !== undefined ? Number(item.resolvedAt) : 0,
         scheme: schemeState,
@@ -499,14 +507,12 @@ export class Proposal implements IStateful<IProposalState> {
         stage,
         stakesAgainst,
         stakesFor,
-        thresholdConst,
         title: item.title,
         totalRepWhenExecuted: new BN(item.totalRepWhenExecuted),
         type,
         upstakeNeededToPreBoost,
         url: item.url,
         voteOnBehalf: item.voteOnBehalf,
-        votersReputationLossRatio: Number(item.votersReputationLossRatio),
         votesAgainst: new BN(item.votesAgainst),
         votesCount: item.votes.length,
         votesFor: new BN(item.votesFor),
