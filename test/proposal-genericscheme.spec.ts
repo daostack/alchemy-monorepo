@@ -1,14 +1,13 @@
-import { BN } from './utils'
+import { DAO } from '../src//dao'
 import { Arc } from '../src/arc'
 import {
-  IGenericScheme,
   IProposalStage,
   IProposalState,
-  IProposalType,
   Proposal
   } from '../src/proposal'
-import { createAProposal, getContractAddressesFromMigration, getTestDAO, newArc,
-  voteToAcceptProposal, waitUntilTrue } from './utils'
+import { IGenericScheme} from '../src/schemes/genericScheme'
+import { createAProposal, getTestAddresses, getTestDAO, ITestAddresses, LATEST_ARC_VERSION,
+  newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(20000)
 
@@ -17,34 +16,36 @@ jest.setTimeout(20000)
  */
 describe('Proposal', () => {
   let arc: Arc
+  let testAddresses: ITestAddresses
+  let dao: DAO
 
   beforeAll(async () => {
     arc = await newArc()
+    testAddresses = getTestAddresses()
+    dao = await getTestDAO()
   })
 
   it('the calldata argument must be provided', async () => {
-    const dao = await getTestDAO()
-    expect(createAProposal(dao, {
-      type: IProposalType.GenericScheme
+    await expect(createAProposal(dao, {
+      scheme: testAddresses.base.GenericScheme
     })).rejects.toThrow(/missing argument "callData"/i)
   })
 
   it('Check proposal state is correct', async () => {
-    const addresses = await getContractAddressesFromMigration()
-    const dao = await getTestDAO()
-    const contractClass = require('@daostack/arc/build/contracts/ActionMock.json')
-    const actionMock = new arc.web3.eth.Contract(contractClass.abi, addresses.base.ActionMock, {})
+    const states: IProposalState[] = []
+    const lastState = (): IProposalState => states[states.length - 1]
 
+    const actionMockABI = require(`@daostack/migration/abis/${LATEST_ARC_VERSION}/ActionMock.json`)
+    const actionMock = new arc.web3.eth.Contract(actionMockABI, testAddresses.test.ActionMock)
     const callData = await actionMock.methods.test2(dao.address).encodeABI()
 
     const proposal = await createAProposal(dao, {
       callData,
-      type: IProposalType.GenericScheme,
+      scheme: testAddresses.base.GenericScheme,
+      schemeToRegister: actionMock.options.address,
       value: 0
     })
     expect(proposal).toBeInstanceOf(Proposal)
-    const states: IProposalState[] = []
-    const lastState = (): IProposalState => states[states.length - 1]
 
     proposal.state().subscribe((pState: IProposalState) => {
       states.push(pState)

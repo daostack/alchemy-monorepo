@@ -1,8 +1,8 @@
-import { BN } from './utils'
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { fromWei, getTestDAO, newArc, toWei } from './utils'
+import { Proposal } from '../src/proposal'
+import { fromWei, getTestAddresses, getTestDAO, newArc, toWei, waitUntilTrue } from './utils'
 
 /**
  * DAO test
@@ -14,10 +14,18 @@ describe('DAO', () => {
     arc = await newArc()
 })
 
-  it('DAO is instantiable', () => {
+  it('is instantiable', () => {
     const address = '0x12345'
     const dao = new DAO(address, arc)
     expect(dao).toBeInstanceOf(DAO)
+  })
+
+  it('collection is searchable', async () => {
+    let result: DAO[]
+    result = await DAO.search(arc).pipe(first()).toPromise()
+    expect(result.length).toBeGreaterThan(1)
+    result = await DAO.search(arc, { register: 'unRegistered'}).pipe(first()).toPromise()
+    expect(result.length).toEqual(0)
   })
 
   it('should be possible to get the token balance of the DAO', async () => {
@@ -45,20 +53,19 @@ describe('DAO', () => {
     const state = await dao.state().pipe(first()).toPromise()
     expect(Object.keys(state)).toEqual([
       'address',
+      'dao',
       'memberCount',
       'name',
       'reputation',
       'reputationTotalSupply',
       'token',
-      'tokenBalance',
       'tokenName',
       'tokenSymbol',
       'tokenTotalSupply'
     ])
-    expect(typeof state.tokenBalance).toEqual(typeof new BN(0))
     expect(state.address).toEqual(dao.address)
     // the created DAO has 6 members but other tests may add rep
-    expect(state.memberCount).toBeGreaterThanOrEqual(6)
+    expect(state.memberCount).toBeGreaterThanOrEqual(5)
   })
 
   it('throws a reasonable error if the contract does not exist', async () => {
@@ -67,6 +74,12 @@ describe('DAO', () => {
     await expect(reputation.state().toPromise()).rejects.toThrow(
       'Could not find a DAO with address 0xfake'
     )
+  })
+
+  it('dao.member() should work', async () => {
+    const dao = await getTestDAO()
+    const member = await dao.member(arc.web3.eth.defaultAccount)
+    expect(typeof member).toEqual(typeof [])
   })
 
   it('dao.members() should work', async () => {
@@ -79,10 +92,50 @@ describe('DAO', () => {
     expect(Number(fromWei(memberState.reputation))).toBeGreaterThan(0)
   })
 
-  it('dao.member() should work', async () => {
+  it('dao.proposal() should work', async () => {
     const dao = await getTestDAO()
-    const member = await dao.member(arc.web3.eth.defaultAccount)
-    expect(typeof member).toEqual(typeof [])
+    const proposal = await dao.proposal(getTestAddresses().test.executedProposalId)
+    expect(proposal).toBeInstanceOf(Proposal)
+  })
+
+  it('dao.proposals() should work', async () => {
+    const dao = await getTestDAO()
+    const proposals = await dao.proposals().pipe(first()).toPromise()
+    expect(typeof proposals).toEqual(typeof [])
+    expect(proposals.length).toBeGreaterThanOrEqual(6)
+  })
+
+  it('createProposal should work', async () => {
+    const dao = await getTestDAO()
+    const options = {
+      beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+      dao: dao.address,
+      ethReward: toWei('300'),
+      externalTokenAddress: undefined,
+      externalTokenReward: toWei('0'),
+      nativeTokenReward: toWei('1'),
+      reputationReward: toWei('10'),
+      scheme: getTestAddresses().base.ContributionReward
+    }
+
+    const response = await dao.createProposal(options).send()
+    const proposal = response.result as Proposal
+    let proposals: Proposal[] = []
+    const proposalIsIndexed = async () => {
+      proposals = await Proposal.search(arc, {id: proposal.id}).pipe(first()).toPromise()
+      return proposals.length > 0
+    }
+    await waitUntilTrue(proposalIsIndexed)
+    expect(proposal.id).toBeDefined()
+
+  })
+  it('dao.schemes() should work', async () => {
+    const dao = await getTestDAO()
+    let schemes = await dao.schemes().pipe(first()).toPromise()
+    expect(typeof schemes).toEqual(typeof [])
+    expect(schemes.length).toBeGreaterThanOrEqual(3)
+    schemes = await dao.schemes({name: 'ContributionReward'}).pipe(first()).toPromise()
+    expect(schemes.length).toBeGreaterThanOrEqual(1)
   })
 
   it('dao.ethBalance() should work', async () => {

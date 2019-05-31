@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
-import { Address, Hash, ICommonQueryOptions, IObservableWithFirst, IStateful, Web3Receipt } from './types'
+import { Address, Hash, ICommonQueryOptions, IStateful, Web3Receipt } from './types'
 import { BN } from './utils'
 import { isAddress } from './utils'
 
@@ -115,7 +115,7 @@ export class Token implements IStateful<ITokenState> {
     return this.context.getObservableObject(query, itemMap) as Observable<ITokenState>
   }
 
-  public balanceOf(owner: string): IObservableWithFirst<typeof BN> {
+  public balanceOf(owner: string): Observable<typeof BN> {
     const observable = Observable.create(async (observer: Observer<typeof BN>) => {
       const contract = this.contract()
       let subscription: Subscription
@@ -163,7 +163,6 @@ export class Token implements IStateful<ITokenState> {
         .catch((err: Error) => { observer.error(err)})
       return () => {
         if (subscription) {
-          console.log('close allowance subscription')
           subscription.unsubscribe()
         }
       }
@@ -174,8 +173,10 @@ export class Token implements IStateful<ITokenState> {
    * get a web3 contract instance for this token
    */
   public contract() {
-    const ReputationContractInfo = require('@daostack/arc/build/contracts/DAOToken.json')
-    return new this.context.web3.eth.Contract(ReputationContractInfo.abi, this.address)
+    // TODO: this a  bit hacky - we shuld have this contractInfo in our "contractAddresses" registry
+    const LATEST_ARC_VERSION = '0.0.1-rc.19'
+    const DAOTokenABI = require(`@daostack/migration/abis/${LATEST_ARC_VERSION}/DAOToken.json`)
+    return new this.context.web3.eth.Contract(DAOTokenABI, this.address)
   }
 
   public mint(beneficiary: Address, amount: typeof BN) {
@@ -192,20 +193,10 @@ export class Token implements IStateful<ITokenState> {
     return this.context.sendTransaction(transaction, mapReceipt)
   }
 
-  public approveForStaking(amount: typeof BN) {
+  public approveForStaking(spender: Address, amount: typeof BN) {
     const stakingToken = this.contract()
-    const genesisProtocol = this.context.getContract('GenesisProtocol')
-
-    const transaction = stakingToken.methods.approve(genesisProtocol.options.address, amount.toString())
-
-    const mapReceipt = (receipt: Web3Receipt) => {
-      if (Object.keys(receipt.events).length  === 0) {
-        // this does not mean that anything failed,
-        return receipt
-      } else {
-        return receipt
-      }
-    }
+    const transaction = stakingToken.methods.approve(spender, amount.toString())
+    const mapReceipt = (receipt: Web3Receipt) => receipt
     return this.context.sendTransaction(transaction, mapReceipt)
   }
 }

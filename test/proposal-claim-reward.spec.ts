@@ -1,23 +1,30 @@
 import { Arc } from '../src/arc'
+import { DAO } from '../src/dao'
 import { IProposalStage, IProposalState, IProposalType, Proposal } from '../src/proposal'
 import { BN } from './utils'
-import { createAProposal, firstResult, getTestDAO, newArc, toWei, voteToAcceptProposal, waitUntilTrue } from './utils'
+import { createAProposal, firstResult, getTestAddresses, getTestDAO, ITestAddresses, newArc, toWei,
+  voteToAcceptProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(20000)
 
 describe('Claim rewards', () => {
   let arc: Arc
+  let testAddresses: ITestAddresses
+  let dao: DAO
 
   beforeAll(async () => {
     arc = await newArc()
+    testAddresses = getTestAddresses()
+    dao = await getTestDAO()
   })
 
   it('works for ether and native token', async () => {
-    const dao = await getTestDAO()
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const ethReward = new BN(12345)
     const nativeTokenReward = toWei('271828')
     const reputationReward = toWei('8008')
+    const states: IProposalState[] = []
+    const lastState = () => states[states.length - 1]
 
     // make sure that the DAO has enough Ether to pay forthe reward
     await arc.web3.eth.sendTransaction({
@@ -31,12 +38,13 @@ describe('Claim rewards', () => {
 
     const options = {
       beneficiary,
+      dao: dao.address,
       ethReward,
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
       nativeTokenReward,
       reputationReward,
-      type: IProposalType.ContributionReward
+      scheme: testAddresses.base.ContributionReward
     }
 
     const response = await dao.createProposal(options).send()
@@ -45,9 +53,8 @@ describe('Claim rewards', () => {
     // vote for the proposal with all the votest
     await voteToAcceptProposal(proposal)
     // check if prposal is indeed accepted etc
-    const states: IProposalState[] = []
-    dao.proposal(proposal.id).state().subscribe(((next) => states.push(next)))
-    const lastState = () => states[states.length - 1]
+
+    proposal.state().subscribe(((next) => states.push(next)))
 
     await waitUntilTrue(() => {
       return lastState() && lastState().stage === IProposalStage.Executed
@@ -78,9 +85,8 @@ describe('Claim rewards', () => {
   })
 
   it('works for external token', async () => {
-    const dao = await getTestDAO()
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
-    const externalTokenAddress = arc.getContract('GEN').options.address
+    const externalTokenAddress = testAddresses.base.GEN
     const externalTokenReward = new BN(12345)
 
     await arc.GENToken().transfer(dao.address, externalTokenReward).send()
@@ -88,12 +94,13 @@ describe('Claim rewards', () => {
     expect(Number(daoBalance.toString())).toBeGreaterThanOrEqual(Number(externalTokenReward.toString()))
     const options = {
       beneficiary,
+      dao: dao.address,
       ethReward: new BN(0),
       externalTokenAddress,
       externalTokenReward,
       nativeTokenReward: new BN(0),
       reputationReward: new BN(0),
-      type: IProposalType.ContributionReward
+      scheme: testAddresses.base.ContributionReward
     }
 
     const response = await dao.createProposal(options).send()
@@ -103,7 +110,7 @@ describe('Claim rewards', () => {
     await voteToAcceptProposal(proposal)
     // check if prposal is indeed accepted etc
     const states: IProposalState[] = []
-    dao.proposal(proposal.id).state().subscribe(((next) => states.push(next)))
+    proposal.state().subscribe(((next) => states.push(next)))
     const lastState = () => states[states.length - 1]
 
     await waitUntilTrue(() => {

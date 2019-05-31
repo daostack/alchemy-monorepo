@@ -3,21 +3,21 @@ import { Arc  } from '../src/arc'
 import { Token } from '../src/token'
 import { Address } from '../src/types'
 import { BN } from './utils'
-import { fromWei, getContractAddressesFromMigration, IContractAddressesFromMigration,
+import { fromWei, getTestAddresses, ITestAddresses,
    newArc, toWei, waitUntilTrue } from './utils'
 
-jest.setTimeout(10000)
+jest.setTimeout(20000)
 /**
  * Token test
  */
 describe('Token', () => {
-  let addresses: IContractAddressesFromMigration
+  let addresses: ITestAddresses
   let arc: Arc
   let address: Address
 
   beforeAll(async () => {
     arc = await newArc()
-    addresses = getContractAddressesFromMigration()
+    addresses = getTestAddresses()
     address = addresses.dao.DAOToken
   })
 
@@ -60,7 +60,7 @@ describe('Token', () => {
   })
 
   it('mint some new tokens', async () => {
-    const token = new Token(addresses.organs.DemoDAOToken, arc)
+    const token = new Token(addresses.test.organs.DemoDAOToken, arc)
     const account = '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1'
     // check if the currentAccount is the owner of the contract
     const balances: Array<typeof BN> = []
@@ -85,16 +85,18 @@ describe('Token', () => {
   })
 
   it('approveForStaking() and allowance() work', async () => {
-    const token = new Token(arc.getContract('GEN').options.address, arc)
+    const token = arc.GENToken()
     const amount = toWei('31415')
     const allowances: Array<typeof BN> = []
-    const genesisProtocol = arc.getContract('GenesisProtocol')
+    const lastAllowance = () => allowances[allowances.length - 1]
+    const someAddress = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
 
-    token.allowance(arc.web3.eth.defaultAccount, genesisProtocol.options.address).subscribe(
+    token.allowance(arc.web3.eth.defaultAccount, someAddress).subscribe(
       (next: any) => allowances.push(next)
     )
-    await token.approveForStaking(amount).send()
-    const lastAllowance = () => allowances[allowances.length - 1]
+
+    await token.approveForStaking(someAddress, amount).send()
+
     await waitUntilTrue(() => allowances.length > 0 && lastAllowance().gte(amount))
     expect(lastAllowance()).toMatchObject(amount)
   })

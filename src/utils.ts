@@ -9,6 +9,7 @@ import gql from 'graphql-tag'
 import fetch from 'isomorphic-fetch'
 import * as WebSocket from 'isomorphic-ws'
 import { Observable, Observer } from 'rxjs'
+import { IContractInfo } from '../src/arc'
 import { IContractAddresses } from './arc'
 import { Address } from './types'
 const Web3 = require('web3')
@@ -127,7 +128,7 @@ export function eventId(event: EthereumEvent): string {
   return hash
 }
 
-export function isAddress(address: Address|undefined) {
+export function isAddress(address: Address) {
   if (!address) {
     throw new Error(`Not a valid address: ${address}`)
   }
@@ -194,8 +195,10 @@ export async function getContractAddresses(graphqlHttpProvider: string, subgraph
   try {
     response = await client.query({query}) as ApolloQueryResult<{ subgraphs: any[]}>
   } catch (err) {
-    console.log(err)
     throw err
+  }
+  if (response.data.subgraphs.length === 0) {
+    throw Error(`Could not find a subgraph with this name: "${subgraphName}" -- does it exist?`)
   }
   const dataSources = response.data.subgraphs[0].currentVersion.deployment.manifest.dataSources
   const result: IContractAddresses = {}
@@ -217,3 +220,20 @@ export function realMathToNumber(t: typeof BN): number {
 }
 
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
+
+export function getContractAddressesFromMigration(environment: 'private'|'rinkeby'|'mainnet'): IContractInfo[] {
+  const migration = require('@daostack/migration/migration.json')[environment]
+  const contracts: IContractInfo[] = []
+  for (const version of Object.keys( migration.base)) {
+    for (const name of Object.keys(migration.base[version])) {
+      contracts.push({
+        address: migration.base[version][name],
+        id: migration.base[version][name],
+        name,
+        version
+      })
+    }
+
+  }
+  return contracts
+}

@@ -4,7 +4,7 @@ import { IProposalOutcome} from '../src/proposal'
 import { Stake } from '../src/stake'
 import { createAProposal, newArc, toWei, waitUntilTrue } from './utils'
 
-jest.setTimeout(10000)
+jest.setTimeout(20000)
 
 /**
  * Stake test
@@ -24,14 +24,15 @@ describe('Stake', () => {
   })
 
   it('Stakes are searchable', async () => {
-    let result
+    let result: any
     const proposal = await createAProposal()
     const stakes: any[] = []
-    proposal.stakes().subscribe((next) => stakes.push(next))
 
     const stakeAmount = toWei('18')
     await proposal.stakingToken().mint(arc.web3.eth.defaultAccount, stakeAmount).send()
-    await arc.approveForStaking(stakeAmount).send()
+    await arc.approveForStaking(proposal.votingMachine().options.address, stakeAmount).send()
+
+    proposal.stakes().subscribe((next) => stakes.push(next))
     await proposal.stake(IProposalOutcome.Pass, stakeAmount).send()
 
     // wait until we have the we received the stake update

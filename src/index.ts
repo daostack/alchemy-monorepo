@@ -1,6 +1,4 @@
-import { Arc } from './arc'
-export { Arc }
-export default Arc
+export { Arc, IContractInfo } from './arc'
 export { DAO, IDAOState } from './dao'
 export { Member, IMemberState } from './member'
 export { ITransactionUpdate, ITransactionState } from './operation'
@@ -9,8 +7,13 @@ export { IExecutionState, Proposal, IProposalCreateOptions, IProposalState,
 export { IQueueState, Queue } from './queue'
 export { Reputation, IReputationState } from './reputation'
 export { IRewardState, Reward } from './reward'
-export { IScheme, Scheme } from './scheme'
+export { ISchemeState, Scheme } from './scheme'
 export { Token, ITokenState } from './token'
 export { Stake, IStake, IStakeQueryOptions } from './stake'
 export { Vote, IVote, IVoteQueryOptions } from './vote'
 export { Address } from './types'
+import { Arc } from './arc'
+export default Arc
+
+import * as utils from './utils'
+export { utils }

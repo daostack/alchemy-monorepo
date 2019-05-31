@@ -3,7 +3,7 @@ import { Arc } from '../src/arc'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
 import { BN } from '../src/utils'
-import { fromWei, getContractAddressesFromMigration, newArc, toWei, waitUntilTrue } from './utils'
+import { fromWei, getTestAddresses, newArc, toWei, waitUntilTrue } from './utils'
 
 /**
  * Reputation test
@@ -16,7 +16,7 @@ describe('Reputation', () => {
   let accounts: any
 
   beforeAll(async () => {
-    addresses = getContractAddressesFromMigration()
+    addresses = getTestAddresses()
     address = addresses.dao.Reputation
     arc = await newArc()
     accounts = arc.web3.eth.accounts.wallet
@@ -55,7 +55,7 @@ describe('Reputation', () => {
   })
 
   it('mint() works', async () => {
-    const reputation = new Reputation(addresses.organs.DemoReputation, arc)
+    const reputation = new Reputation(addresses.test.organs.DemoReputation, arc)
     const reputationBefore = new BN(await reputation.contract().methods.balanceOf(accounts[3].address).call())
     await reputation.mint(accounts[3].address, toWei(1)).send()
     await reputation.mint(accounts[3].address, new BN('1')).send()
@@ -89,7 +89,7 @@ describe('Reputation', () => {
 
     await waitUntilTrue(() => reputations.length !== 0)
 
-    expect(reputations.length).toEqual(2)
+    expect(reputations.length).toBeGreaterThanOrEqual(2)
 
     const expectedAddresses = [
       address,

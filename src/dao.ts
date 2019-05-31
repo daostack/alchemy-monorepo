@@ -1,39 +1,35 @@
 import gql from 'graphql-tag'
-import { Observable } from 'rxjs'
+import { Observable, of } from 'rxjs'
 import { first, map } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { IMemberQueryOptions, Member } from './member'
-import {
-  IProposalCreateOptions,
-  IProposalQueryOptions,
-  Proposal
-} from './proposal'
-import { Queue } from './queue'
+import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './proposal'
 import { Reputation } from './reputation'
 import { IRewardQueryOptions, Reward } from './reward'
+import { ISchemeQueryOptions, Scheme } from './scheme'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
 import { BN, isAddress } from './utils'
-import { NULL_ADDRESS } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export interface IDAOState {
   address: Address // address of the avatar
+  dao: DAO
   memberCount: number
   name: string
   reputation: Reputation
-  reputationTotalSupply: typeof BN,
-  token: Token,
-  tokenBalance: typeof BN,
-  tokenName: string,
-  tokenSymbol: string,
-  tokenTotalSupply: typeof BN,
+  reputationTotalSupply: typeof BN
+  token: Token
+  tokenName: string
+  tokenSymbol: string
+  tokenTotalSupply: typeof BN
 }
 
 export interface IDAOQueryOptions extends ICommonQueryOptions {
   address?: Address
   name?: string
+  register?: 'na'|'proposed'|'registered'|'unRegistered'
 }
 
 export class DAO implements IStateful<IDAOState> {
@@ -84,6 +80,10 @@ export class DAO implements IStateful<IDAOState> {
     this.context = context
   }
 
+  /**
+   * get the current state of the DAO
+   * @return an Observable of IDAOState
+   */
   public state(): Observable<IDAOState> {
     const query = gql`{
       dao(id: "${this.address}") {
@@ -91,11 +91,7 @@ export class DAO implements IStateful<IDAOState> {
         name
         nativeReputation { id, totalSupply }
         nativeToken { id, name, symbol, totalSupply }
-        membersCount
-        members (where: {address:"${this.address}"}) {
-         tokens
-         reputation
-        }
+        reputationHoldersCount
       }
     }`
 
@@ -105,12 +101,12 @@ export class DAO implements IStateful<IDAOState> {
       }
       return {
         address: item.id,
-        memberCount: Number(item.membersCount),
+        dao: this,
+        memberCount: Number(item.reputationHoldersCount),
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, this.context),
         reputationTotalSupply: new BN(item.nativeReputation.totalSupply),
         token: new Token(item.nativeToken.id, this.context),
-        tokenBalance: new BN(item.members[0].tokens || 0),
         tokenName: item.nativeToken.name,
         tokenSymbol: item.nativeToken.symbol,
         tokenTotalSupply: item.nativeToken.totalSupply
@@ -127,17 +123,28 @@ export class DAO implements IStateful<IDAOState> {
     return this.state().pipe(first()).pipe(map((r) => r.reputation))
   }
 
-  public queues(options: any = {}): Observable<Queue[]> {
+  public schemes(options: ISchemeQueryOptions = {}): Observable<Scheme[]> {
     options.dao = this.address
-    return Queue.search(this.context, options)
+    return Scheme.search(this.context, options)
   }
 
+  public async scheme(options: ISchemeQueryOptions): Promise<Scheme> {
+    const schemes = await this.schemes(options).pipe(first()).toPromise()
+    if (schemes.length === 1) {
+      return schemes[0]
+    } else {
+      throw Error('Could not find a unique scheme satisfying these options')
+    }
+  }
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
+    let where = ''
+    options.dao = this.address
+    for (const key of Object.keys(options)) {
+      where += `${key}: "${options[key]}"\n`
+    }
     const query = gql`{
-      members (where: {
-        dao: "${this.address}"
-        address_not: "${this.address}"
-        address_not: "${NULL_ADDRESS}"
+      reputationHolders (where: {
+        ${where}
       }){
         id
         address
@@ -151,18 +158,28 @@ export class DAO implements IStateful<IDAOState> {
     return new Member(address, this.address, this.context)
   }
 
+  /**
+   * create a new proposal in this DAO
+   * @param  options [description]
+   * @return a Proposal instance
+   */
   public createProposal(options: IProposalCreateOptions) {
     options.dao = this.address
     return Proposal.create(options, this.context)
   }
 
-  public proposal(id: string): Proposal {
-    return new Proposal(id, this.address, this.context)
-  }
-
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
     options.dao = this.address
     return Proposal.search(this.context, options)
+  }
+
+  public async proposal(proposalId: string): Promise<Proposal> {
+    const proposals =  await this.proposals({id: proposalId}).pipe(first()).toPromise()
+    if (proposals) {
+      return proposals[0]
+    } else {
+      throw new Error(`No proposal with id ${proposalId} could be found`)
+    }
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {

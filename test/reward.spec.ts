@@ -1,8 +1,9 @@
-import { first, take } from 'rxjs/operators'
+import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
+import { DAO } from '../src/dao'
 import { IProposalType, Proposal } from '../src/proposal'
 import { Reward } from '../src/reward'
-import { getTestDAO, newArc, toWei } from './utils'
+import { getTestAddresses, getTestDAO, ITestAddresses, newArc, toWei } from './utils'
 
 /**
  * Reward test
@@ -10,9 +11,13 @@ import { getTestDAO, newArc, toWei } from './utils'
 describe('Reward', () => {
 
   let arc: Arc
+  let testAddresses: ITestAddresses
+  let dao: DAO
 
   beforeAll(async () => {
     arc = await newArc()
+    testAddresses = getTestAddresses()
+    dao = await getTestDAO()
   })
 
   it('Reward is instantiable', () => {
@@ -24,15 +29,15 @@ describe('Reward', () => {
   it('Rewards are searchable', async () => {
 
     // create a proposal with some rewards
-    const dao = await getTestDAO()
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const state = await dao.createProposal({
       beneficiary,
+      dao: dao.address,
       ethReward: toWei('300'),
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
       nativeTokenReward: toWei('1'),
-      type: IProposalType.ContributionReward
+      scheme: testAddresses.base.ContributionReward
     }).send()
     const proposal = state.result as Proposal
 

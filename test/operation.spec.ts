@@ -1,8 +1,8 @@
 import { ITransactionState, ITransactionUpdate } from '../src/operation'
 import { IProposalType, Proposal } from '../src/proposal'
-import { getTestDAO, mineANewBlock, newArc, toWei, waitUntilTrue } from './utils'
+import { getTestAddresses, getTestDAO, mineANewBlock, newArc, toWei, waitUntilTrue } from './utils'
 
-jest.setTimeout(10000)
+jest.setTimeout(20000)
 
 describe('Operation', () => {
 
@@ -10,11 +10,12 @@ describe('Operation', () => {
     const dao = await getTestDAO()
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+      dao: dao.address,
       ethReward: toWei('300'),
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
       nativeTokenReward: toWei('1'),
-      type: IProposalType.ContributionReward
+      scheme: getTestAddresses().base.ContributionReward
     }
 
     // collect the first 4 results of the observable in a a listOfUpdates array

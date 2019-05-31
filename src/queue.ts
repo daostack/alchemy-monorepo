@@ -1,21 +1,22 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
+import { DAO } from './dao'
+import { ISchemeState } from './scheme'
 import { Address } from './types'
 import { BN, isAddress } from './utils'
 import { realMathToNumber } from './utils'
 
 export interface IQueueState {
+  dao: DAO
   id: string
   name: string
+  scheme: ISchemeState
   threshold: number
-  dao: Address
   votingMachine: Address
-  scheme: Address
 }
 
 export interface IQueueQueryOptions {
-  name?: string
   dao?: Address,
   votingMachine?: Address
   scheme?: Address
@@ -49,45 +50,45 @@ export class Queue {
       where += `${key}: "${options[key] as string}"\n`
     }
 
-    const query = gql` {
-     controllerSchemes (where: {${where}}) {
-       id
-       dao { id }
-       name
-       address
-     }
-    }`
-    const itemMap = (item: any): Queue|null => {
-      const name = item.name || context.getContractName(item.address)
-      if (options.name && options.name !== name) {
-        return null
+    // use the following query once https://github.com/daostack/subgraph/issues/217 is resolved
+    const query = gql`
+      {
+        gpqueues (where: {${where}}) {
+          id
+          dao {
+            id
+          }
+          scheme {
+            id
+            address
+            name
+          }
+        }
       }
+    `
+    const itemMap = (item: any): Queue|null => {
+      // we must filter explictly by name as the subgraph does not return the name
 
       return new Queue(
         item.id,
-        item.dao.id,
-        name,
-        item.address,
+        new DAO(item.dao.id, context),
         context
       )
     }
 
     return context.getObservableList(query, itemMap, apolloQueryOptions) as Observable<Queue[]>
   }
-  public id: Address
-  public dao: Address
-  public name: string
-  public scheme: Address
 
-  constructor(id: Address, dao: Address, name: string, scheme: Address, public context: Arc) {
+  constructor(
+    public id: string,
+    public dao: DAO,
+    public context: Arc
+  ) {
     this.context = context
-    this.id = id
-    this.dao = dao
-    this.name = name
-    this.scheme = scheme
   }
 
   public state(): Observable<IQueueState> {
+    //
     const query = gql`
       {
         gpqueue (id: "${this.id}") {
@@ -112,26 +113,27 @@ export class Queue {
       }
     `
 
-    const itemMap = (item: any): IQueueState|null => {
-      if (item === null) {
-        // no queue was found - we construct one with basic default values
-        return {
-          dao: this.dao,
-          id: this.id,
-          name: this.name,
-          scheme: this.scheme,
-          threshold: 1,
-          votingMachine: this.context.contractAddresses.GenesisProtocol
-        }
+    const itemMap = (item: any): IQueueState => {
+      if (!item) {
+        throw Error(`No gpQueue with id ${this.id} was found`)
       }
-
       const threshold = realMathToNumber(new BN(item.threshold))
-
+      const schemeName = item.scheme.name || this.context.getContractInfo(item.scheme.address).name
       return {
         dao: item.dao.id,
         id: item.id,
-        name: item.queue.name,
-        scheme: item.scheme.address,
+        name: schemeName,
+        scheme: {
+          address: item.scheme.address,
+          canDelegateCall: item.scheme.canDelegateCall,
+          canManageGlobalConstraints: item.scheme.canManageGlobalConstraints,
+          canRegisterSchemes: item.scheme.canRegisterSchemes,
+          canUpgradeController: item.scheme.canUpgradeController,
+          dao: item.dao.id,
+          id: item.scheme.id,
+          name: schemeName,
+          paramsHash: item.scheme.paramsHash
+        },
         threshold,
         votingMachine: item.votingMachine
       }

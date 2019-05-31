@@ -1,10 +1,11 @@
-import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
-import { map } from 'rxjs/operators'
-import { DAO } from './dao'
+import { first, map } from 'rxjs/operators'
+import { DAO, IDAOQueryOptions } from './dao'
 import { GraphNodeObserver } from './graphnode'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
+import { IProposalQueryOptions, Proposal } from './proposal'
+import { ISchemeQueryOptions, Scheme } from './scheme'
 import { Token } from './token'
 import { Address, IPFSProvider, Web3Provider } from './types'
 import { BN } from './utils'
@@ -28,7 +29,7 @@ export class Arc extends GraphNodeObserver {
   /**
    * a mapping of contrct names to contract addresses
    */
-  public contractAddresses: IContractAddresses
+  public contractAddresses: IContractInfo[]
   public contracts: {[key: string]: any} = {}
 
   // accounts obseved by ethBalance
@@ -42,7 +43,7 @@ export class Arc extends GraphNodeObserver {
   } = {}
 
   constructor(options: {
-    contractAddresses: IContractAddresses
+    contractAddresses: IContractInfo[]
     graphqlHttpProvider: string
     graphqlWsProvider: string
     ipfsProvider: IPFSProvider
@@ -71,7 +72,7 @@ export class Arc extends GraphNodeObserver {
   }
 
   /**
-   * [dao description]
+   * get a DAO instance from an address
    * @param  address address of the dao Avatar
    * @return an instance of a DAO
    */
@@ -80,18 +81,37 @@ export class Arc extends GraphNodeObserver {
     return new DAO(address, this)
   }
 
-  public daos(): Observable < DAO[] > {
-    const query = gql`
-      {
-        daos {
-          id
-        }
-      }
-    `
-    return this.getObservableList(
-      query,
-      (r: any) => new DAO(r.id, this)
-    ) as Observable<DAO[]>
+  /**
+   * return an observable of the list of DAOs
+   * @param options options to pass on to the query
+   * @return [description]
+   */
+  public daos(options: IDAOQueryOptions = {}): Observable<DAO[]> {
+    return DAO.search(this, options)
+  }
+
+  public async scheme(id: string): Promise<Scheme> {
+    const schemes = await Scheme.search(this, { id }).pipe(first()).toPromise()
+    if (schemes.length === 0) {
+      throw Error(`No scheme with id ${id} is known`)
+    }
+    return schemes[0]
+  }
+
+  public schemes(options: ISchemeQueryOptions = {}): Observable<Scheme[]> {
+    return Scheme.search(this, options)
+  }
+
+  public async proposal(id: string): Promise<Proposal> {
+    const proposals = await Proposal.search(this, {id }).pipe(first()).toPromise()
+    if (proposals.length === 0) {
+      throw Error(`No proposal with id ${id} was found`)
+    }
+    return proposals[0]
+  }
+
+  public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
+    return Proposal.search(this, options)
   }
 
   public ethBalance(owner: Address): Observable<typeof BN> {
@@ -152,90 +172,76 @@ export class Arc extends GraphNodeObserver {
   }
 
   /**
-   * get a web3 contract instance for the deployed contract with the given name
-   * @param  name [description]
-   * @return a web3 Contract instance
+   * return information about the contract
+   * @param  address [description]
+   * @return      an IContractInfo instance
    */
-  public getContract(name: string) {
-    const addresses = this.contractAddresses
-    const opts = {}
-    if (this.contracts[name]) {
-      return this.contracts[name]
+  public getContractInfo(address: Address) {
+    isAddress(address)
+    for (const contractInfo of this.contractAddresses) {
+      if (contractInfo.address.toLowerCase() === address.toLowerCase()) {
+        return contractInfo
+      }
     }
-    if (!addresses) {
-      throw new Error(`Cannot get contract: no contractAddress set`)
+    throw Error(`No contract with address ${address} is known`)
+  }
+
+  public getContractInfoByName(name: string, version: string) {
+    for (const contractInfo of this.contractAddresses) {
+        if (contractInfo.name === name && contractInfo.version === version) {
+          return contractInfo
+        }
+      }
+    throw Error(`No contract with name ${name}  and version ${version} is known`)
+  }
+
+  public getABI(address: Address, abiName?: string, version?: string) {
+    if (!abiName || !version) {
+      const contractInfo = this.getContractInfo(address)
+      abiName = contractInfo.name
+      version = contractInfo.version
+      if (abiName === 'GEN') {
+        abiName = 'ERC20'
+      }
     }
-    if (!addresses[name]) {
-      throw new Error(`No contract named ${name} could be found in the provided contract addresses`)
-    }
-    let contractClass
-    let contract
-    switch (name) {
-      case 'AbsoluteVote':
-        contractClass = require('@daostack/arc/build/contracts/AbsoluteVote.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.AbsoluteVote, opts)
-        this.contracts[name] = contract
-        return contract
-      case 'ContributionReward':
-        contractClass = require('@daostack/arc/build/contracts/ContributionReward.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.ContributionReward, opts)
-        this.contracts[name] = contract
-        return contract
-      case 'GEN':
-        contractClass = require('@daostack/arc/build/contracts/DAOToken.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.GEN, opts)
-        this.contracts[name] = contract
-        return contract
-      case 'GenericScheme':
-        contractClass = require('@daostack/arc/build/contracts/GenericScheme.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenericScheme, opts)
-        this.contracts[name] = contract
-        return contract
-      case 'GenesisProtocol':
-        contractClass = require('@daostack/arc/build/contracts/GenesisProtocol.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.GenesisProtocol, opts)
-        this.contracts[name] = contract
-        return contract
-      case 'Redeemer':
-        contractClass = require('@daostack/arc/build/contracts/Redeemer.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.Redeemer, opts)
-        this.contracts[name] = contract
-        return contract
-      case 'SchemeRegistrar':
-        contractClass = require('@daostack/arc/build/contracts/SchemeRegistrar.json')
-        contract = new this.web3.eth.Contract(contractClass.abi, addresses.SchemeRegistrar, opts)
-        this.contracts[name] = contract
-        return contract
-      default:
-        throw Error(`Unknown contract: ${name}`)
-    }
+
+    const abi = require(`@daostack/migration/abis/${version}/${abiName}.json`)
+    return abi
   }
 
   /**
-   * get the name of the contract, given an address
-   * @param  address An ethereum address
-   * @return        The name of the contract, if the address is known, undefined otherwise
+   * return a web3 Contract instance.
+   * @param  address address of the contract to look up in self.contractAddresses
+   * @param  [abiName] (optional) name of the ABI (i.e. 'Avatar' or 'SchemeRegistrar').
+   * @param  [version] (optional) Arc version of contract (https://www.npmjs.com/package/@daostack/arc)
+   * @return   a web3 contract instance
    */
-  public getContractName(address: Address): string|undefined {
-    isAddress(address)
-    for (const key of Object.keys(this.contractAddresses)) {
-      if (this.contractAddresses[key].toLowerCase() === address.toLowerCase()) {
-        return key
-      }
-    }
+  public getContract(address: Address, abiName?: string, version?: string) {
+    const abi = this.getABI(address, abiName, version)
+    return new this.web3.eth.Contract(abi, address)
   }
 
+  /**
+   * get the GEN Token
+   * @return a Token instance
+   */
   public GENToken() {
+    // TODO: remove this reference to LATEST_ARC_VERSION
+    // (it's aworkaround for https://github.com/daostack/migration/issues/144)
+    const LATEST_ARC_VERSION = '0.0.1-rc.19'
     if (this.contractAddresses) {
-      return new Token(this.contractAddresses.GEN, this)
-    } else {
-      throw Error(`Cannot get GEN Token because no contract addresses were provided`)
+      for (const contractInfo of this.contractAddresses) {
+        if (contractInfo.name === 'GEN' && contractInfo.version === LATEST_ARC_VERSION) {
+          return new Token(contractInfo.address, this)
+        }
+      }
     }
+    throw Error(`Cannot find address of GEN Token`)
   }
 
   public getAccount(): Observable<Address> {
     // this complex logic is to get the correct account both from the Web3 as well as from the Metamaask provider
-    // Polling is Evil!
+    // This polls for changes. But polling is Evil!
     // cf. https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#ear-listening-for-selected-account-changes
     return Observable.create((observer: any) => {
       const interval = 1000 /// poll once a second
@@ -271,18 +277,17 @@ export class Arc extends GraphNodeObserver {
     this.web3.eth.defaultAccount = address
   }
 
-  public approveForStaking(amount: typeof BN) {
-    return this.GENToken().approveForStaking(amount)
+  public approveForStaking(spender: Address, amount: typeof BN) {
+    return this.GENToken().approveForStaking(spender, amount)
   }
 
   /**
-   * How much GEN the genesisProtocol may spend on behalve of the owner
-   * @param  owner owner for which to check the allowance
+   * How much GEN spender may spend on behalve of the owner
+   * @param  owner Address of the owner of the tokens
+   * @param  spender Address of the spender
    * @return
    */
-  public allowance(owner: string): Observable<typeof BN> {
-    const genesisProtocol = this.getContract('GenesisProtocol')
-    const spender = genesisProtocol.options.address
+  public allowance(owner: Address, spender: Address): Observable<typeof BN> {
     return this.GENToken().allowance(owner, spender)
   }
 
@@ -301,6 +306,36 @@ export class Arc extends GraphNodeObserver {
     return sendTransaction(transaction, mapToObject, errorHandler, this)
   }
 
+  /**
+   * save data of a proposal to IPFS, return  the IPFS hash
+   * @param  options an Object to save. This object must have title, url and desction defined
+   * @return  a Promise that resolves in the IPFS Hash where the file is saved
+   */
+  public async saveIPFSData(options: { title: string, url: string, description: string}): Promise<string> {
+    let ipfsDataToSave: object = {}
+    if (options.title || options.url || options.description) {
+      if (!this.ipfsProvider) {
+        throw Error(`No ipfsProvider set on Arc instance - cannot save data on IPFS`)
+      }
+      ipfsDataToSave = {
+        description: options.description,
+        title: options.title,
+        url: options.url
+      }
+    }
+    Logger.debug('Saving data on IPFS...')
+    let descriptionHash: string = ''
+    try {
+      const ipfsResponse = await this.ipfs.add(Buffer.from(JSON.stringify(ipfsDataToSave)))
+      descriptionHash = ipfsResponse[0].path
+      // pin the file
+      await this.ipfs.pin.add(descriptionHash)
+    } catch (error) {
+      throw error
+    }
+    Logger.debug(`Data saved successfully as ${descriptionHash}`)
+    return descriptionHash
+  }
 }
 
 export interface IApolloQueryOptions {
@@ -309,4 +344,11 @@ export interface IApolloQueryOptions {
 
 export interface IContractAddresses {
   [key: string]: Address
+}
+
+export interface IContractInfo {
+  id: string
+  version: string
+  address: Address
+  name: string
 }

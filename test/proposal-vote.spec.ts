@@ -3,19 +3,26 @@ import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Vote } from '../src/vote'
-import { createAProposal, firstResult, getTestDAO, newArc, waitUntilTrue } from './utils'
-const DAOstackMigration = require('@daostack/migration')
+import { createAProposal, firstResult,
+  getTestAddresses, getTestDAO, ITestAddresses,
+  newArc, waitUntilTrue } from './utils'
 
-jest.setTimeout(10000)
+jest.setTimeout(20000)
 
 describe('Vote on a ContributionReward', () => {
+
   let arc: Arc
+  let addresses: ITestAddresses
   let dao: DAO
+  let executedProposal: Proposal
 
   beforeAll(async () => {
     arc = await newArc()
+    addresses = await getTestAddresses()
     dao = await getTestDAO()
-  })
+    const { executedProposalId} = addresses.test
+    executedProposal = await dao.proposal(executedProposalId)
+    })
 
   it('works and gets indexed', async () => {
     const proposal = await createAProposal()
@@ -74,8 +81,13 @@ describe('Vote on a ContributionReward', () => {
   it('throws a meaningful error if the proposal does not exist', async () => {
     // a non-existing proposal
     const proposal = new Proposal(
-      '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2', dao.address, arc
+      '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2',
+      dao.address,
+      executedProposal.schemeAddress,
+      executedProposal.votingMachineAddress,
+      arc
     )
+
     proposal.context.web3.eth.defaultAccount = arc.web3.eth.accounts.wallet[2].address
     await expect(proposal.vote(IProposalOutcome.Pass).send()).rejects.toThrow(
       /unknown proposal/i
@@ -83,14 +95,12 @@ describe('Vote on a ContributionReward', () => {
   })
 
   it('throws a meaningful error if the proposal was already executed', async () => {
-    const { Avatar, executedProposalId } = DAOstackMigration.migration('private').test
-    const proposal = new Proposal(executedProposalId, Avatar, arc)
 
-    await expect(proposal.execute().send()).rejects.toThrow(
+    await expect(executedProposal.execute().send()).rejects.toThrow(
       /already executed/i
     )
 
-    await expect(proposal.vote(IProposalOutcome.Pass).send()).rejects.toThrow(
+    await expect(executedProposal.vote(IProposalOutcome.Pass).send()).rejects.toThrow(
       /already executed/i
     )
   })

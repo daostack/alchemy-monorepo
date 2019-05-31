@@ -1,6 +1,10 @@
 # DAOstack Client
 
-A frontend client library for the [DAOstack subgraph](https://github.com/daostack/subgraph)
+The DAOStack Client  
+* A library to work with the DAOstack ecosystem
+* Convenience functions to interact with the DAOstack contracts: vote, stake and execute proposals
+* A frontend client library for the [DAOstack subgraph](https://github.com/daostack/subgraph) - search for daos, proposaals
+*
 
 [![Build Status](https://travis-ci.com/daostack/client.svg?token=aXt9zApRNkfx8zDMypWx&branch=master)](https://travis-ci.com/daostack/client)
 
