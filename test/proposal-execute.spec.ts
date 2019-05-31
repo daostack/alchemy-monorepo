@@ -22,7 +22,7 @@ describe('Proposal execute()', () => {
     executedProposal = await dao.proposal(addresses.test.executedProposalId)
   })
 
-  it.only('runs correctly through the stages', async () => {
+  it('runs correctly through the stages', async () => {
 
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const accounts = arc.web3.eth.accounts.wallet
@@ -60,10 +60,6 @@ describe('Proposal execute()', () => {
     await proposal.execute().send()
 
     await proposal.vote(IProposalOutcome.Pass).send()
-    // let's vote for the proposal with accounts[1]
-    proposal.context.web3.eth.accounts.defaultAccount = accounts[1]
-    await proposal.vote(IProposalOutcome.Pass).send()
-    proposal.context.web3.eth.accounts.defaultAccount = accounts[0]
 
     // wait until the votes have been counted
     await waitUntilTrue(() => lastState().votesFor.gt(new BN(0)))
