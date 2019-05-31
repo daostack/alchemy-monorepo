@@ -92,6 +92,19 @@ describe('DAO', () => {
     expect(Number(fromWei(memberState.reputation))).toBeGreaterThan(0)
   })
 
+  it('dao.proposal() should work', async () => {
+    const dao = await getTestDAO()
+    const proposal = await dao.proposal(getTestAddresses().test.executedProposalId)
+    expect(proposal).toBeInstanceOf(Proposal)
+  })
+
+  it('dao.proposals() should work', async () => {
+    const dao = await getTestDAO()
+    const proposals = await dao.proposals().pipe(first()).toPromise()
+    expect(typeof proposals).toEqual(typeof [])
+    expect(proposals.length).toBeGreaterThanOrEqual(6)
+  })
+
   it('createProposal should work', async () => {
     const dao = await getTestDAO()
     const options = {

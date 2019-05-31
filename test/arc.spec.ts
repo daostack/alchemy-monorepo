@@ -1,8 +1,9 @@
 import { first } from 'rxjs/operators'
 import Arc from '../src/index'
+import { Proposal } from '../src/proposal'
 import { Address } from '../src/types'
 import { BN } from './utils'
-import { fromWei, newArc, toWei, waitUntilTrue } from './utils'
+import { fromWei, getTestAddresses, newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(20000)
 
@@ -121,4 +122,18 @@ describe('Arc ', () => {
     expect(arc.blockHeaderSubscription).toEqual(undefined)
 
   })
+
+  it('arc.proposal() should work', async () => {
+    const arc = await newArc()
+    const proposal = await arc.proposal(getTestAddresses().test.executedProposalId)
+    expect(proposal).toBeInstanceOf(Proposal)
+  })
+
+  it('arc.proposals() should work', async () => {
+    const arc = await newArc()
+    const proposals = await arc.proposals().pipe(first()).toPromise()
+    expect(typeof proposals).toEqual(typeof [])
+    expect(proposals.length).toBeGreaterThanOrEqual(6)
+  })
+
 })

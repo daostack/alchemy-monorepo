@@ -102,6 +102,14 @@ export class Arc extends GraphNodeObserver {
     return Scheme.search(this, options)
   }
 
+  public async proposal(id: string): Promise<Proposal> {
+    const proposals = await Proposal.search(this, {id }).pipe(first()).toPromise()
+    if (proposals.length === 0) {
+      throw Error(`No proposal with id ${id} was found`)
+    }
+    return proposals[0]
+  }
+
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
     return Proposal.search(this, options)
   }
