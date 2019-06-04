@@ -69,7 +69,6 @@ describe('Create a ContributionReward proposal', () => {
     expect(proposalState).toMatchObject({
       executedAt: 0,
       proposer: dao.context.web3.eth.defaultAccount.toLowerCase(),
-      quietEndingPeriod: 300,
       quietEndingPeriodBeganAt: 0,
       resolvedAt: 0,
       stage: IProposalStage.Queued

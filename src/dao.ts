@@ -30,6 +30,7 @@ export interface IDAOQueryOptions extends ICommonQueryOptions {
   address?: Address
   name?: string
   register?: 'na'|'proposed'|'registered'|'unRegistered'
+  [key: string]: any
 }
 
 export class DAO implements IStateful<IDAOState> {

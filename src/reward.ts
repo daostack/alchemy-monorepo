@@ -28,6 +28,7 @@ export interface IRewardQueryOptions extends ICommonQueryOptions {
   proposal?: string
   createdAtAfter?: Date
   createdAtBefore?: Date
+  [key: string]: any
 }
 
 export class Reward implements IStateful<IRewardState> {
