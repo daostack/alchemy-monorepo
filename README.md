@@ -21,13 +21,13 @@ import Arc from '@daostack/client'
 
 // create an Arc instance
 const arc = new Arc({
-  contractAddresses: await getContractAddresses(graphqlHttpMetaProvider, 'daostack'),
   graphqlHttpProvider,
   graphqlWsProvider,
   ipfsProvider,
   web3Provider
 })
 // get a list of DAOs
+await arc.initialize()
 arc.daos()
 
 ```

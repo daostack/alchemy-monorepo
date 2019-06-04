@@ -1,3 +1,4 @@
+import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
 import { first, map } from 'rxjs/operators'
 import { DAO, IDAOQueryOptions } from './dao'
@@ -43,7 +44,7 @@ export class Arc extends GraphNodeObserver {
   } = {}
 
   constructor(options: {
-    contractAddresses: IContractInfo[]
+    contractAddresses?: IContractInfo[]
     graphqlHttpProvider: string
     graphqlWsProvider: string
     ipfsProvider: IPFSProvider
@@ -61,7 +62,7 @@ export class Arc extends GraphNodeObserver {
       this.web3 = new Web3(web3provider)
     }
 
-    this.contractAddresses = options.contractAddresses
+    this.contractAddresses = options.contractAddresses || []
     if (!this.contractAddresses) {
       Logger.warn('No contract addresses given to the Arc.constructor: expect most write operations to fail!')
     }
@@ -69,6 +70,26 @@ export class Arc extends GraphNodeObserver {
     if (this.ipfsProvider) {
       this.ipfs = IPFSClient(this.ipfsProvider)
     }
+  }
+
+  public async initialize(): Promise<boolean> {
+    this.contractAddresses = await this.getContractAddresses()
+    return true
+  }
+  public async getContractAddresses(): Promise<IContractInfo[]> {
+    const query = gql`{
+      contractInfos {
+        id
+        name
+        version
+        address
+      }
+    }`
+    const itemMap = (record: any): IContractInfo => {
+      return record
+    }
+    const result = await this.getObservableList(query, itemMap).pipe(first()).toPromise()
+    return result
   }
 
   /**
