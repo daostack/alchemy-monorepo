@@ -5,12 +5,10 @@ import { Observable as ZenObservable } from 'apollo-link'
 import { HttpLink } from 'apollo-link-http'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
-import gql from 'graphql-tag'
 import fetch from 'isomorphic-fetch'
 import * as WebSocket from 'isomorphic-ws'
 import { Observable, Observer } from 'rxjs'
-import { IContractInfo } from '../src/arc'
-import { IContractAddresses } from './arc'
+import { IContractAddresses, IContractInfo } from './arc'
 import { Address } from './types'
 const Web3 = require('web3')
 

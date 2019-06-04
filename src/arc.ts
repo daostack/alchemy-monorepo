@@ -204,6 +204,9 @@ export class Arc extends GraphNodeObserver {
         return contractInfo
       }
     }
+    if (!this.contractAddresses) {
+      throw Error(`no contract info was found - did you call "arc.initialize()"?`)
+    }
     throw Error(`No contract with address ${address} is known`)
   }
 
@@ -213,6 +216,9 @@ export class Arc extends GraphNodeObserver {
           return contractInfo
         }
       }
+    if (!this.contractAddresses) {
+      throw Error(`no contract info was found - did you call "arc.initialize()"?`)
+    }
     throw Error(`No contract with name ${name}  and version ${version} is known`)
   }
 
