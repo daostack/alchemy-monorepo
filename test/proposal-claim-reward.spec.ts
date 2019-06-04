@@ -5,7 +5,7 @@ import { BN } from './utils'
 import { createAProposal, firstResult, getTestAddresses, getTestDAO, ITestAddresses, newArc, toWei,
   voteToAcceptProposal, waitUntilTrue } from './utils'
 
-jest.setTimeout(20000)
+jest.setTimeout(30000)
 
 describe('Claim rewards', () => {
   let arc: Arc
