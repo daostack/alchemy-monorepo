@@ -20,6 +20,7 @@ export interface IQueueQueryOptions {
   dao?: Address,
   votingMachine?: Address
   scheme?: Address
+  [key: string]: any
 }
 
 export class Queue {

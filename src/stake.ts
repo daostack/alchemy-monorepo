@@ -20,6 +20,7 @@ export interface IStakeQueryOptions extends ICommonQueryOptions {
   dao?: Address
   proposal?: string
   createdAt?: number
+  [key: string]: any
 }
 
 export class Stake implements IStake {

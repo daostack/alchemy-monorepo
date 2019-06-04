@@ -762,6 +762,7 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
   scheme?: Address
   orderBy?: ProposalQuerySortOptions
   type?: IProposalType
+  [key: string]: any
 }
 
 interface IProposalBaseCreateOptions {
