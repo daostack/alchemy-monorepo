@@ -84,7 +84,6 @@ export async function newArc() {
   })
   // get the contract addresses from the subgraph
   await arc.initialize()
-
   for (const pk of pks) {
     const account = arc.web3.eth.accounts.privateKeyToAccount(pk)
     arc.web3.eth.accounts.wallet.add(account)
