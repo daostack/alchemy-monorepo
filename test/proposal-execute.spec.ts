@@ -60,10 +60,6 @@ describe('Proposal execute()', () => {
     await proposal.execute().send()
 
     await proposal.vote(IProposalOutcome.Pass).send()
-    // let's vote for the proposal with accounts[1]
-    proposal.context.web3.eth.accounts.defaultAccount = accounts[1]
-    await proposal.vote(IProposalOutcome.Pass).send()
-    proposal.context.web3.eth.accounts.defaultAccount = accounts[0]
 
     // wait until the votes have been counted
     await waitUntilTrue(() => lastState().votesFor.gt(new BN(0)))
@@ -80,7 +76,6 @@ describe('Proposal execute()', () => {
     await proposal.execute().send()
     // this reverts: why?
     await proposal.stake(IProposalOutcome.Pass, amountToStakeFor).send()
-    return
 
     await waitUntilTrue(() => lastState().stakesFor.gt(new BN(0)))
     proposalState = lastState()
