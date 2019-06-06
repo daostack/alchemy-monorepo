@@ -19,6 +19,7 @@ export interface ITokenQueryOptions extends ICommonQueryOptions {
   name?: string
   owner?: Address
   symbol?: string
+  [key: string]: any
 }
 
 export interface IApproval {

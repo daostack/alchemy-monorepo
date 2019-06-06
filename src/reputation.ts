@@ -15,6 +15,7 @@ export interface IReputationState {
 export interface IReputationQueryOptions extends ICommonQueryOptions {
   id?: string,
   dao?: Address
+  [key: string]: any
 }
 
 export class Reputation implements IStateful<IReputationState> {

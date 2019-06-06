@@ -77,13 +77,13 @@ export async function getOptions(web3: any) {
 
 export async function newArc() {
   const arc = new Arc({
-    // contractAddresses: await getContractAddresses(graphqlHttpMetaProvider, 'daostack'),
-    contractAddresses: await getContractAddressesFromMigration('private'),
     graphqlHttpProvider,
     graphqlWsProvider,
     ipfsProvider,
     web3Provider
   })
+  // get the contract addresses from the subgraph
+  await arc.initialize()
 
   for (const pk of pks) {
     const account = arc.web3.eth.accounts.privateKeyToAccount(pk)

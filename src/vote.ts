@@ -21,6 +21,7 @@ export interface IVoteQueryOptions extends ICommonQueryOptions {
   outcome?: IProposalOutcome
   proposal?: string
   dao?: Address
+  [key: string]: any
 }
 
 export class Vote implements IVote {

@@ -31,6 +31,7 @@ export interface ISchemeQueryOptions {
   id?: string
   name?: string
   paramsHash?: string
+  [key: string]: any
 }
 
 /**
