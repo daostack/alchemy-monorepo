@@ -265,6 +265,9 @@ export class Proposal implements IStateful<IProposalState> {
             periods
             periodLength
             reputationReward
+            alreadyRedeemedReputationPeriods
+            alreadyRedeemedExternalTokenPeriods
+            alreadyRedeemedEthPeriods
           }
           createdAt
           dao {
@@ -366,6 +369,9 @@ export class Proposal implements IStateful<IProposalState> {
       if (item.contributionReward) {
         type = IProposalType.ContributionReward
         contributionReward = {
+          alreadyRedeemedEthPeriods: Number(item.contributionReward.alreadyRedeemedEthPeriods),
+          alreadyRedeemedExternalTokenPeriods: Number(item.contributionReward.alreadyRedeemedExternalTokenPeriods),
+          alreadyRedeemedReputationPeriods: Number(item.contributionReward.alreadyRedeemedExternalTokenPeriods),
           beneficiary: item.contributionReward.beneficiary,
           ethReward: new BN(item.contributionReward.ethReward),
           externalToken: item.contributionReward.externalToken,
@@ -692,8 +698,7 @@ export class Proposal implements IStateful<IProposalState> {
    *    if undefined will only redeem the ContributionReward rewards
    * @return  an Operation
    */
-  public claimRewards(beneficiary ?: Address): Operation < boolean > {
-    // const transaction = this.votingMachine().methods.redeem(this.id, account)
+  public claimRewards(beneficiary?: Address): Operation<boolean> {
     if (!beneficiary) {
       beneficiary = NULL_ADDRESS
     }

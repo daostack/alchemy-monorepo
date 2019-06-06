@@ -13,6 +13,9 @@ export interface IContributionReward {
   periods: number
   periodLength: number
   reputationReward: BN
+  alreadyRedeemedReputationPeriods: number
+  alreadyRedeemedExternalTokenPeriods: number
+  alreadyRedeemedEthPeriods: number
 }
 
 export interface IProposalCreateOptionsCR {
