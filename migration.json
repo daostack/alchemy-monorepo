@@ -80,28 +80,28 @@
     },
     "dao": {
       "0.0.1-rc.16": {
-        "name": "Gustatory Salad",
+        "name": "Voracious Plant operator",
         "Avatar": "0x86072CbFF48dA3C1F01824a6761A03F105BCC697",
         "DAOToken": "0x7C728214be9A0049e6a86f2137ec61030D0AA964",
         "Reputation": "0x5017A545b09ab9a30499DE7F431DF0855bCb7275",
         "Controller": "0x4bf3A7dFB3b76b5B3E169ACE65f888A4b4FCa5Ee"
       },
       "0.0.1-rc.17": {
-        "name": "Lachrymose Maintenance",
+        "name": "Effulgent Cupcake",
         "Avatar": "0x81920CAF1F99Bb0f7D72Fdfba840cff21d63CcC5",
         "DAOToken": "0xa6f8431C9eEe4Ac2859207aF4004F7a948924c30",
         "Reputation": "0xEdCD6442143188Deb586e182B7900dFb8707Bc27",
         "Controller": "0x8b9e409a817c7dC1a42C3DDe9E85dcBFF602c0fC"
       },
       "0.0.1-rc.18": {
-        "name": "Mannered Sea barnacles",
+        "name": "Dilatory Ninja",
         "Avatar": "0x3c3d89322de3aC6D5BCBD10801BbB2C68f5AC5f1",
         "DAOToken": "0xe67a1e001a30eF1e0EDE04637F1Aceb3F2080604",
         "Reputation": "0x4c8cF69bfd3361Dcf1795354afB32Ec4a26212F8",
         "Controller": "0xe00b745b5e71337507d43a8584320c4192CA7994"
       },
       "0.0.1-rc.19": {
-        "name": "Comely Trampoline",
+        "name": "Endemic Bunny",
         "Avatar": "0x0DB24A927FFC3622884B7A3B6f1C694ED8092A01",
         "DAOToken": "0x97681569c1007380DEc7075E5aCb6020Be36eC83",
         "Reputation": "0x06ef7018Af25ec846aDe8f8B5cB591A914a46347",
@@ -110,7 +110,7 @@
     },
     "test": {
       "0.0.1-rc.16": {
-        "name": "Friable Gnomes",
+        "name": "Fecund Animator",
         "Avatar": "0xE7A2C59e134ee81D4035Ae6DB2254f79308e334f",
         "DAOToken": "0xcDbe8b52A6c60A5f101d4A0F1f049f19a9e1D35F",
         "Reputation": "0x93cdbf39fB9e13BD253CA5819247D52fbabf0F2f",
@@ -127,7 +127,7 @@
         }
       },
       "0.0.1-rc.17": {
-        "name": "Friable Bunny",
+        "name": "Sartorial Hot air balloon",
         "Avatar": "0xa18433754fD5b47757744F5edFacfE6f13BbcdDB",
         "DAOToken": "0x33606f128fBb123A0553d9a001a41f35AAB65A70",
         "Reputation": "0x0C4751a1f777e46697C20b46c9c9BF886E372dE5",
@@ -144,7 +144,7 @@
         }
       },
       "0.0.1-rc.18": {
-        "name": "Heuristic Stylist",
+        "name": "Salubrious Woodworkers",
         "Avatar": "0x2516d50aaA9ad6F1A307c573535Cb355b8c62220",
         "DAOToken": "0x06F7f6e364259bd77354098e0149d1D552887Bea",
         "Reputation": "0xE465e063beBE4e150d56C8C3b8135C8CC811aD66",
@@ -161,7 +161,7 @@
         }
       },
       "0.0.1-rc.19": {
-        "name": "Histrionic Captain",
+        "name": "Defamatory Plumber",
         "Avatar": "0xe9669Bba4843FC76336F27eFD885553edab9086B",
         "DAOToken": "0x99827C360bAE453F8154E302527A53fdBEF32D97",
         "Reputation": "0xBEBf6d72218b610d4AcA8847AB0211Db61a90e1e",
