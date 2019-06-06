@@ -253,21 +253,21 @@ export class Arc extends GraphNodeObserver {
    * @return a Token instance
    */
   public GENToken() {
-    // TODO: remove this reference to LATEST_ARC_VERSION
-    // (it's aworkaround for https://github.com/daostack/subgraph/issues/257)
     if (this.contractAddresses) {
-      if (process.env.NODE_ENV === 'DEVELOPMENT') {
-        const LATEST_ARC_VERSION = '0.0.1-rc.19'
+      // TODO: remove this reference to LATEST_ARC_VERSION
+      // (it's aworkaround for https://github.com/daostack/subgraph/issues/257)
+      const LATEST_ARC_VERSION = '0.0.1-rc.19'
+      if (this.contractAddresses) {
         for (const contractInfo of this.contractAddresses) {
           if (contractInfo.name === 'GEN' && contractInfo.version === LATEST_ARC_VERSION) {
             return new Token(contractInfo.address, this)
           }
         }
-      } else {
-        for (const contractInfo of this.contractAddresses) {
-          if (contractInfo.name === 'GEN') {
-            return new Token(contractInfo.address, this)
-          }
+      }
+
+      for (const contractInfo of this.contractAddresses) {
+        if (contractInfo.name === 'GEN') {
+          return new Token(contractInfo.address, this)
         }
       }
       throw Error(`Cannot find address of GEN Token`)
