@@ -26,7 +26,7 @@ describe('Reward', () => {
     expect(reward).toBeInstanceOf(Reward)
   })
 
-  it('Rewards are searchable', async () => {
+  it('Rewards are searchable and have a state', async () => {
 
     // create a proposal with some rewards
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
@@ -43,7 +43,7 @@ describe('Reward', () => {
 
     expect(proposal).toBeDefined()
 
-    let result
+    let result: Reward[]
     result = await Reward.search(arc)
         .pipe(first()).toPromise()
     expect(result.length).toBeGreaterThan(0)
@@ -65,5 +65,9 @@ describe('Reward', () => {
       /not a valid address/i
     )
 
+    // get the reward state
+    const reward = result[0]
+    const rewardState = await reward.state().pipe(first()).toPromise()
+    expect(rewardState.id).toEqual(reward.id)
   })
 })

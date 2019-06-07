@@ -80,10 +80,8 @@ export class Reward implements IStateful<IRewardState> {
   public state(): Observable<IRewardState> {
 
     const query = gql`{
-      gpreward (where: {
-        id: "${this.id}"
-      }
-      ) {
+      gpreward ( id: "${this.id}" )
+      {
         id
         createdAt
         dao {
@@ -126,4 +124,5 @@ export class Reward implements IStateful<IRewardState> {
 
     return this.context.getObservableObject(query, itemMap)
   }
+
 }
