@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import { Observable, of } from 'rxjs'
+import { Observable } from 'rxjs'
 import { first, map } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { IMemberQueryOptions, Member } from './member'
