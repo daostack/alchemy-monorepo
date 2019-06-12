@@ -267,6 +267,7 @@ export class Proposal implements IStateful<IProposalState> {
             reputationReward
             alreadyRedeemedReputationPeriods
             alreadyRedeemedExternalTokenPeriods
+            alreadyRedeemedNativeTokenPeriods
             alreadyRedeemedEthPeriods
           }
           createdAt
@@ -371,7 +372,8 @@ export class Proposal implements IStateful<IProposalState> {
         contributionReward = {
           alreadyRedeemedEthPeriods: Number(item.contributionReward.alreadyRedeemedEthPeriods),
           alreadyRedeemedExternalTokenPeriods: Number(item.contributionReward.alreadyRedeemedExternalTokenPeriods),
-          alreadyRedeemedReputationPeriods: Number(item.contributionReward.alreadyRedeemedExternalTokenPeriods),
+          alreadyRedeemedNativeTokenPeriods: Number(item.contributionReward.alreadyRedeemedNativeTokenPeriods),
+          alreadyRedeemedReputationPeriods: Number(item.contributionReward.alreadyRedeemedReputationPeriods),
           beneficiary: item.contributionReward.beneficiary,
           ethReward: new BN(item.contributionReward.ethReward),
           externalToken: item.contributionReward.externalToken,
