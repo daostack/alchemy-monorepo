@@ -15,10 +15,10 @@ export interface IRewardState {
   daoBountyForStaker: typeof BN,
   reputationForProposer: typeof BN,
   tokenAddress: Address,
-  reputationForVoterRedeemedAt: typeof BN,
-  tokensForStakerRedeemedAt: typeof BN,
-  reputationForProposerRedeemedAt: typeof BN,
-  daoBountyForStakerRedeemedAt: typeof BN
+  reputationForVoterRedeemedAt: number,
+  tokensForStakerRedeemedAt: number,
+  reputationForProposerRedeemedAt: number,
+  daoBountyForStakerRedeemedAt: number
 }
 
 export interface IRewardQueryOptions extends ICommonQueryOptions {
@@ -108,17 +108,16 @@ export class Reward implements IStateful<IRewardState> {
         beneficiary: item.beneficiary,
         createdAt: item.createdAt,
         daoBountyForStaker: new BN(item.daoBountyForStaker),
-        daoBountyForStakerRedeemedAt: new BN(item.daoBountyForStakerRedeemedAt),
+        daoBountyForStakerRedeemedAt: Number(item.daoBountyForStakerRedeemedAt),
         id: item.id,
-        // proposal: new Proposal(item.proposal.id, item.dao.id, context),
         proposalId: item.proposal.id,
         reputationForProposer: new BN(item.reputationForProposer),
-        reputationForProposerRedeemedAt: new BN(item.reputationForProposerRedeemedAt),
+        reputationForProposerRedeemedAt: Number(item.reputationForProposerRedeemedAt),
         reputationForVoter: new BN(item.reputationForVoter),
-        reputationForVoterRedeemedAt: new BN(item.reputationForVoterRedeemedAt),
+        reputationForVoterRedeemedAt: Number(item.reputationForVoterRedeemedAt),
         tokenAddress: item.tokenAddress,
         tokensForStaker: new BN(item.tokensForStaker),
-        tokensForStakerRedeemedAt: new BN(item.tokensForStakerRedeemedAt)
+        tokensForStakerRedeemedAt: Number(item.tokensForStakerRedeemedAt)
       }
     }
 
