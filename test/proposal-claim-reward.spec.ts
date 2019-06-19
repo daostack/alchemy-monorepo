@@ -1,6 +1,6 @@
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { IProposalStage, IProposalState, IProposalType, Proposal } from '../src/proposal'
+import { IProposalStage, IProposalState, Proposal } from '../src/proposal'
 import { BN } from './utils'
 import { createAProposal, firstResult, getTestAddresses, getTestDAO, ITestAddresses, newArc, toWei,
   voteToAcceptProposal, waitUntilTrue } from './utils'
