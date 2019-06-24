@@ -1,6 +1,6 @@
 import { ITransactionState, ITransactionUpdate } from '../src/operation'
-import { IProposalType, Proposal } from '../src/proposal'
-import { getTestAddresses, getTestDAO, mineANewBlock, newArc, toWei, waitUntilTrue } from './utils'
+import { Proposal } from '../src/proposal'
+import { getTestAddresses, getTestDAO, mineANewBlock, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(20000)
 

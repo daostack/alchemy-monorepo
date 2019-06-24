@@ -1,5 +1,5 @@
 import { InMemoryCache } from 'apollo-cache-inmemory'
-import { ApolloClient, ApolloQueryResult } from 'apollo-client'
+import { ApolloClient } from 'apollo-client'
 import { split } from 'apollo-link'
 import { Observable as ZenObservable } from 'apollo-link'
 import { HttpLink } from 'apollo-link-http'
@@ -8,7 +8,7 @@ import { getMainDefinition } from 'apollo-utilities'
 import fetch from 'isomorphic-fetch'
 import * as WebSocket from 'isomorphic-ws'
 import { Observable, Observer } from 'rxjs'
-import { IContractAddresses, IContractInfo } from './arc'
+import { IContractInfo } from './arc'
 import { Address } from './types'
 const Web3 = require('web3')
 

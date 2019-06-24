@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import { Observable, Observer, of, Subscription } from 'rxjs'
+import { Observable, Observer, Subscription } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { Address, Hash, ICommonQueryOptions, IStateful, Web3Receipt } from './types'

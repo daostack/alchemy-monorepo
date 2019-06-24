@@ -3,7 +3,7 @@ import { Arc } from '../src/arc'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
 import { BN } from '../src/utils'
-import { fromWei, getTestAddresses, newArc, toWei, waitUntilTrue } from './utils'
+import { getTestAddresses, newArc, toWei, waitUntilTrue } from './utils'
 
 /**
  * Reputation test

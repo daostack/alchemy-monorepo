@@ -1,9 +1,7 @@
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { Proposal } from '../src/proposal'
 import { Queue } from '../src/queue'
-import { BN } from './utils'
 import { getTestAddresses, getTestDAO, ITestAddresses,  newArc } from './utils'
 
 jest.setTimeout(20000)
