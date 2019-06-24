@@ -78,9 +78,12 @@ const wrapCommand = fn => async options => {
   }
 
   const logTx = async ({ transactionHash, gasUsed }, msg) => {
-    const { gasPrice } = await web3.eth.getTransaction(transactionHash)
-    const txCost = web3.utils.fromWei((gasUsed * gasPrice).toString(), 'ether')
-    spinner.info(`${transactionHash} | ${Number(txCost).toFixed(5)} ETH | ${msg}`)
+    const transaction = await web3.eth.getTransaction(transactionHash)
+    if (transaction != null) {
+      const gasPrice = transaction.gasPrice
+      const txCost = web3.utils.fromWei((gasUsed * gasPrice).toString(), 'ether')
+      spinner.info(`${transactionHash} | ${Number(txCost).toFixed(5)} ETH | ${msg}`)
+    }
   }
 
   let network = await web3.eth.net.getNetworkType()

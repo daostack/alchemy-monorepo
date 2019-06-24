@@ -97,9 +97,9 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       founders.map(({ reputation }) => web3.utils.toWei(reputation !== undefined ? reputation.toString() : '0'))
     ]
 
-    const foundersBatchSize = 20
-
-    let foundersInitCount = founderAddresses.length < foundersBatchSize ? founderAddresses.length : foundersBatchSize
+    const initFoundersBatchSize = 20
+    const foundersBatchSize = 100
+    let foundersInitCount = founderAddresses.length < initFoundersBatchSize ? founderAddresses.length : initFoundersBatchSize
     const forgeOrg = daoCreator.methods.forgeOrg(
       orgName,
       tokenName,
@@ -117,20 +117,20 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
 
     await logTx(tx, 'Created new organization.')
 
-    let foundersToAddCount = founderAddresses.length - foundersBatchSize
+    let foundersToAddCount = founderAddresses.length - initFoundersBatchSize
     let i = 0
     while (foundersToAddCount > 0) {
-      i++
       spinner.start('Adding founders...')
       let currentBatchCount = foundersToAddCount < foundersBatchSize ? foundersToAddCount : foundersBatchSize
       tx = await daoCreator.methods.addFounders(
         Avatar,
-        founderAddresses.slice(i * foundersBatchSize, i * foundersBatchSize + currentBatchCount),
-        tokenDist.slice(i * foundersBatchSize, i * foundersBatchSize + currentBatchCount),
-        repDist.slice(i * foundersBatchSize, i * foundersBatchSize + currentBatchCount)
+        founderAddresses.slice(i * foundersBatchSize + initFoundersBatchSize, i * foundersBatchSize + currentBatchCount + initFoundersBatchSize),
+        tokenDist.slice(i * foundersBatchSize + initFoundersBatchSize, i * foundersBatchSize + currentBatchCount + initFoundersBatchSize),
+        repDist.slice(i * foundersBatchSize + initFoundersBatchSize, i * foundersBatchSize + currentBatchCount + initFoundersBatchSize)
       ).send({ nonce: ++nonce })
       await logTx(tx, 'Finished adding founders.')
       foundersToAddCount -= foundersBatchSize
+      i++
     }
 
     avatar = new web3.eth.Contract(

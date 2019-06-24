@@ -299,8 +299,8 @@
       "0.0.1-rc.19": {
         "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
         "DAORegistry": "0xF41F5d161C9AE80e533B08bd049C256b2bd6755a",
-        "ControllerCreator": "0x3FBb279671526AaF5423C5Ed241766b41360Db6b",
-        "DaoCreator": "0xa67cB3c71062398ddE9e0D1D1c7543C96A1B4271",
+        "ControllerCreator": "0x4E2A3a2be436A2D6ef99EE92e6a9b0094dCAf7b1",
+        "DaoCreator": "0x33ac5E4C436aF73A9D9F8A0217EA3D3eB85FE45c",
         "UController": "0xD4edC76468624C55c7075C0cf1EEAa9067c5a73b",
         "GenesisProtocol": "0xE3692aD4ed2d2817bEa59AeD435CE17d28E884Eb",
         "SchemeRegistrar": "0x5c946957903a173cDe9da121AEc73D549d6200Cc",
