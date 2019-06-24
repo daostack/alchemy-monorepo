@@ -13,6 +13,7 @@ export interface IContributionReward {
   periods: number
   periodLength: number
   reputationReward: BN
+  alreadyRedeemedNativeTokenPeriods: number
   alreadyRedeemedReputationPeriods: number
   alreadyRedeemedExternalTokenPeriods: number
   alreadyRedeemedEthPeriods: number
