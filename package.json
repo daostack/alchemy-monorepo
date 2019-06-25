@@ -24,7 +24,13 @@
     "prepare-release": "./prepare-release.sh",
     "release": "./release.sh",
     "prune-arc-build": "node ./pruneArcBuild.js",
-    "postinstall": "npm run prune-arc-build"
+    "postinstall": "npm run prune-arc-build",
+    "verify.initialize": "npm explore @daostack/arc -- npm install openzeppelin-solidity @daostack/infra --no-save && npm explore @daostack/infra -- npm install openzeppelin-solidity --no-save && npm explore @daostack/arc-hive -- npm install openzeppelin-solidity --no-save",
+    "verify.build": "node node_modules/typescript/bin/tsc verify.ts -sourceMap",
+    "verify.help": "node verify.js -h",
+    "verify.lint": "tslint -c tslint.json verify.ts",
+    "verify.lint.andFix": "npm run verify.lint -- --fix",
+    "verify": "node verify.js"
   },
   "repository": {
     "type": "git",
@@ -54,11 +60,22 @@
     "yargs": "^12.0.2"
   },
   "devDependencies": {
+    "axios": "^0.18.0",
+    "command-line-args": "^5.0.2",
+    "command-line-usage": "^5.0.5",
+    "dotenv": "^7.0.0",
+    "es6-promisify": "^6.0.1",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-standard": "^4.0.0"
+    "eslint-plugin-standard": "^4.0.0",
+    "ethereumjs-abi": "^0.6.7",
+    "glob": "^7.1.3",
+    "querystring": "^0.2.0",
+    "truffle-flattener": "^1.3.0",
+    "tslint": "^5.14.0",
+    "typescript": "^3.3.3333"
   }
 }

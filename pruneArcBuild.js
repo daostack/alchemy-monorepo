@@ -10,14 +10,14 @@ const spinner = ora()
 spinner.info(`Starts pruning Arc JSON files`)
 
 files.filter(file => {
-  const { contractName, abi, bytecode, deployedBytecode } = require(`${file}`)
+  const { contractName, abi, bytecode, deployedBytecode, compiler } = require(`${file}`)
 
   spinner.info(`Pruning ${contractName}`)
 
   fs.writeFileSync(
     file,
     JSON.stringify(
-      { contractName, abi, bytecode, deployedBytecode },
+      { contractName, abi, bytecode, deployedBytecode, compiler },
       undefined,
       2
     ),

@@ -3,9 +3,11 @@
 set -e
 source .env
 
-
 # npm ci
 echo "Installing NPM modules..."
+# best to start from sratch or the "verify" script may fail
+rm -r node_modules
+rm package-lock.json
 npm install
 npm ci
 # initial Arc vrsion to use
@@ -51,4 +53,16 @@ git add -A && git commit -m "release $(cat package.json | jq -r '.version')"
 echo "Pushing to github..."
 git push -f
 # done
-echo "Done!"
+echo "Pushed!"
+
+echo "Setting up verifications..."
+npm run verify.initialize
+npm run verify.build
+
+echo "Verifying..."
+read -n 1 -s -r -p "Press any key to verify contracts on kovan"
+npm run verify kovan
+read -n 1 -s -r -p "Press any key to verify contracts on rinkeby"
+npm run verify rinkeby
+read -n 1 -s -r -p "Press any key to verify contracts on main"
+npm run verify main
