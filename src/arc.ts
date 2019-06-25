@@ -244,8 +244,15 @@ export class Arc extends GraphNodeObserver {
    * @return   a web3 contract instance
    */
   public getContract(address: Address, abiName?: string, version?: string) {
-    const abi = this.getABI(address, abiName, version)
-    return new this.web3.eth.Contract(abi, address)
+    // we use a contract "cache" because web3 contract instances add an event listener
+    if (this.contracts[address]) {
+      return this.contracts[address]
+    } else {
+      const abi = this.getABI(address, abiName, version)
+      const contract = new this.web3.eth.Contract(abi, address)
+      this.contracts[address] = contract
+      return contract
+    }
   }
 
   /**

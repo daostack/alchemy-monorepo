@@ -239,9 +239,7 @@ export class Proposal implements IStateful<IProposalState> {
     this.id = id
     this.context = context
     this.dao = new DAO(daoAddress, context)
-    const abi = this.context.getABI(this.votingMachineAddress)
-    this.votingMachineContract = new this.context.web3.eth.Contract(abi, this.votingMachineAddress)
-
+    this.votingMachineContract = this.context.getContract(this.votingMachineAddress)
   }
   /**
    * `state` is an observable of the proposal state
@@ -533,9 +531,7 @@ export class Proposal implements IStateful<IProposalState> {
   }
 
   public scheme() {
-    const abi = this.context.getABI(this.schemeAddress)
-    // TODO: create the contract in the constructor (do not create a new contract instance on each call)
-    return new this.context.web3.eth.Contract(abi, this.schemeAddress)
+    return this.context.getContract(this.schemeAddress)
   }
   /**
    * [votingMachine description]
