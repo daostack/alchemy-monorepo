@@ -61,8 +61,8 @@ npm run verify.build
 
 echo "Verifying..."
 read -n 1 -s -r -p "Press any key to verify contracts on kovan"
-npm run verify kovan
+npm run verify -n kovan -p $kovan_provider
 read -n 1 -s -r -p "Press any key to verify contracts on rinkeby"
-npm run verify rinkeby
-read -n 1 -s -r -p "Press any key to verify contracts on main"
-npm run verify main
+npm run verify -n rinkeby -p $rinkeby_provider
+read -n 1 -s -r -p "Press any key to verify contracts on mainnet"
+npm run verify -n mainnet -p $mainnet_provider
