@@ -55,7 +55,8 @@ export function createTransactionMap(options: any, context: Arc) {
     const schemeContract = context.getContract(options.scheme)
     const schemeContractInfo = context.getContractInfo(options.scheme)
     const avatarAddress = receipt.events[eventName].returnValues._avatar
-    const avatarContract = context.getContract(avatarAddress, 'Avatar', schemeContractInfo.version)
+    const avatarABI = context.getABI(avatarAddress, 'Avatar', schemeContractInfo.version)
+    const avatarContract = context.getContract(avatarAddress, avatarABI)
     const controllerAddress = await avatarContract.methods.owner().call()
     const controllerContract = context.getContract(controllerAddress)
     const parametersHash = await controllerContract.methods.getSchemeParameters(options.scheme, avatarAddress).call()

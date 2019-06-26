@@ -112,11 +112,10 @@ export class Reputation implements IStateful<IReputationState> {
    * get a web3 contract instance for this token
    */
   public contract() {
-    return this.context.getContract(this.address)
     // TODO: this a  bit hacky
-    // const LATEST_ARC_VERSION = '0.0.1-rc.19'
-    // const ReputationContractABI = require(`@daostack/migration/abis/${LATEST_ARC_VERSION}/Reputation.json`)
-    // return new this.context.web3.eth.Contract(ReputationContractABI, this.address)
+    const LATEST_ARC_VERSION = '0.0.1-rc.19'
+    const abi = require(`@daostack/migration/abis/${LATEST_ARC_VERSION}/Reputation.json`)
+    return this.context.getContract(this.address, abi)
   }
 
   public mint(beneficiary: Address, amount: typeof BN) {
