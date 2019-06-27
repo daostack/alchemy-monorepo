@@ -13,7 +13,7 @@
   "author": "Matan Tsuberi <tsuberim@gmail.com>, Jelle Gerbrandy <jelle@daostack.io>",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/daostack/client"
   },
   "license": "MIT",
   "engines": {
@@ -98,7 +98,7 @@
     "u": "^0.1.0"
   },
   "dependencies": {
-    "@daostack/migration": "0.0.1-rc.19-v3",
+    "@daostack/migration": "0.0.1-rc.19-v5",
     "apollo-cache-inmemory": "^1.5.1",
     "apollo-client": "^2.5.1",
     "apollo-client-ws": "^2.4.0",

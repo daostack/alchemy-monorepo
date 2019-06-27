@@ -14,3 +14,4 @@ abis/
 schema.graphql
 subgraph.yaml
 play/
+.env
