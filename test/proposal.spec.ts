@@ -134,7 +134,7 @@ describe('Proposal', () => {
     expect(proposalState).toEqual(null)
   })
 
-  it.only('Check queued proposal state is correct', async () => {
+  it('Check queued proposal state is correct', async () => {
 
     const proposal = queuedProposal
     const pState = await proposal.state().pipe(first()).toPromise()

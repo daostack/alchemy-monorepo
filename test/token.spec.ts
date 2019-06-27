@@ -100,4 +100,13 @@ describe('Token', () => {
     await waitUntilTrue(() => allowances.length > 0 && lastAllowance().gte(amount))
     expect(lastAllowance()).toMatchObject(amount)
   })
+
+  it('get balance of a non-existing token', async () => {
+    const token = new Token('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1', arc)
+    const promise = token.balanceOf('0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1')
+      .pipe(first()).toPromise()
+    await expect(promise).rejects.toThrow(
+      'no contract'
+    )
+  })
 })
