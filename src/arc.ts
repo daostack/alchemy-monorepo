@@ -243,9 +243,18 @@ export class Arc extends GraphNodeObserver {
    * @param  [version] (optional) Arc version of contract (https://www.npmjs.com/package/@daostack/arc)
    * @return   a web3 contract instance
    */
-  public getContract(address: Address, abiName?: string, version?: string) {
-    const abi = this.getABI(address, abiName, version)
-    return new this.web3.eth.Contract(abi, address)
+  public getContract(address: Address, abi?: any) {
+    // we use a contract "cache" because web3 contract instances add an event listener
+    if (this.contracts[address]) {
+      return this.contracts[address]
+    } else {
+      if (!abi) {
+        abi = this.getABI(address)
+      }
+      const contract = new this.web3.eth.Contract(abi, address)
+      this.contracts[address] = contract
+      return contract
+    }
   }
 
   /**
