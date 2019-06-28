@@ -117,6 +117,17 @@ export class Token implements IStateful<ITokenState> {
   }
 
   public balanceOf(owner: string): Observable<typeof BN> {
+    const errHandler = async (err: Error) => {
+      if (err.message.match(/Returned values aren't valid/g)) {
+        // check if there is actually a contract deployed there
+        const code = await this.context.web3.eth.getCode(this.address)
+        if (code === '0x') {
+          return new Error(`Cannot get balanceOf(): there is no contract at this address ${this.address}`)
+        }
+      }
+      return err
+
+    }
     const observable = Observable.create(async (observer: Observer<typeof BN>) => {
       const contract = this.contract()
       let subscription: Subscription
@@ -134,7 +145,9 @@ export class Token implements IStateful<ITokenState> {
               })
             })
         })
-        .catch((err: Error) => { observer.error(err)})
+        .catch(async (err: Error) => {
+          observer.error(await errHandler(err))
+        })
       return () => {
         if (subscription) { subscription.unsubscribe() }
       }
