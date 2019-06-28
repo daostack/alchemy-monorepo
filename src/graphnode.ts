@@ -6,23 +6,28 @@ import { catchError, filter, first, map } from 'rxjs/operators'
 import { Logger } from './logger'
 import { createApolloClient, zenToRxjsObservable } from './utils'
 
+/**
+ * handles connections with the Graph
+ * @param options [description]
+ */
 export class GraphNodeObserver {
-  public graphqlHttpProvider: string
-  public graphqlWsProvider: string
+  public graphqlHttpProvider?: string
+  public graphqlWsProvider?: string
   public Logger = Logger
-  private apolloClient: ApolloClient<object>
+  private apolloClient?: ApolloClient<object>
 
   constructor(options: {
-    graphqlHttpProvider: string
-    graphqlWsProvider: string
+    graphqlHttpProvider?: string
+    graphqlWsProvider?: string
   }) {
-    this.graphqlHttpProvider = options.graphqlHttpProvider
-    this.graphqlWsProvider = options.graphqlWsProvider
-
-    this.apolloClient = createApolloClient({
-      graphqlHttpProvider: this.graphqlHttpProvider,
-      graphqlWsProvider: this.graphqlWsProvider
-    })
+    if (options.graphqlHttpProvider && options.graphqlWsProvider) {
+      this.graphqlHttpProvider = options.graphqlHttpProvider
+      this.graphqlWsProvider = options.graphqlWsProvider
+      this.apolloClient = createApolloClient({
+        graphqlHttpProvider: this.graphqlHttpProvider,
+        graphqlWsProvider: this.graphqlWsProvider
+      })
+    }
   }
 
   /**
@@ -36,6 +41,10 @@ export class GraphNodeObserver {
     apolloQueryOptions: IApolloQueryOptions = {}
   ) {
 
+    if (!this.apolloClient) {
+      throw Error(`No connection to the graph - did you set graphqlHttpProvider and graphqlWsProvider?`)
+    }
+    const apolloClient = this.apolloClient as ApolloClient<object>
     const observable = Observable.create(async (observer: Observer<ApolloQueryResult<any>>) => {
       Logger.debug(query.loc.source.body)
 
@@ -48,20 +57,20 @@ export class GraphNodeObserver {
           subscription ${query}
         `
       // subscribe
-      const zenObservable: ZenObservable<object[]> = this.apolloClient.subscribe<object[]>({
+      const zenObservable: ZenObservable<object[]> = apolloClient.subscribe<object[]>({
         fetchPolicy: 'cache-first',
         query: subscriptionQuery
        })
 
       zenObservable.subscribe((next: any) => {
-          this.apolloClient.writeQuery({
+          apolloClient.writeQuery({
             data: next.data,
             query
           })
       })
 
       const sub = zenToRxjsObservable(
-        this.apolloClient.watchQuery({
+        apolloClient.watchQuery({
           fetchPolicy: 'cache-first',
           fetchResults: true,
           query
@@ -176,8 +185,11 @@ export class GraphNodeObserver {
   }
 
   public sendQuery(query: any) {
-    const queryPromise = this.apolloClient.query({ query })
-    return queryPromise
+    if (!this.apolloClient) {
+      throw Error(`No connection to the graph - did you set graphqlHttpProvider and graphqlWsProvider?`)
+    }
+    const apolloClient = this.apolloClient as ApolloClient<object>
+    return apolloClient.query({ query })
   }
 
 }
