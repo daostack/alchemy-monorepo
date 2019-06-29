@@ -49,7 +49,7 @@ describe('Create a ContributionReward proposal', () => {
     let proposals: Proposal[] = []
     const proposalIsIndexed = async () => {
       // we pass no-cache to make sure we hit the server on each request
-      proposals = await Proposal.search(arc, {id: proposal.id}, { fetchPolicy: 'no-cache' })
+      proposals = await Proposal.search(arc, { where: {id: proposal.id}}, { fetchPolicy: 'no-cache' })
         .pipe(first()).toPromise()
       return proposals.length > 0
     }
@@ -100,7 +100,7 @@ describe('Create a ContributionReward proposal', () => {
     let proposals: Proposal[] = []
     const proposalIsIndexed = async () => {
       // we pass no-cache to make sure we hit the server on each request
-      proposals = await Proposal.search(arc, {id: proposal.id}, { fetchPolicy: 'no-cache' })
+      proposals = await Proposal.search(arc, {where: {id: proposal.id}}, { fetchPolicy: 'no-cache' })
         .pipe(first()).toPromise()
       return proposals.length > 0
     }

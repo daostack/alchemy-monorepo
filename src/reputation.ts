@@ -32,7 +32,7 @@ export class Reputation implements IStateful<IReputationState> {
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Reputation[]> {
     let where = ''
-    for (const key of Object.keys(options)) {
+    for (const key of Object.keys(options.where)) {
       if (options[key] === undefined) {
         continue
       }

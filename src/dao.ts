@@ -10,7 +10,7 @@ import { ISchemeQueryOptions, Scheme } from './scheme'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
-import { BN, isAddress } from './utils'
+import { BN, createGraphQlQuery, isAddress } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export interface IDAOState {
@@ -27,10 +27,12 @@ export interface IDAOState {
 }
 
 export interface IDAOQueryOptions extends ICommonQueryOptions {
-  address?: Address
-  name?: string
-  register?: 'na'|'proposed'|'registered'|'unRegistered'
-  [key: string]: any
+  where?: {
+    address?: Address
+    name?: string
+    register?: 'na'|'proposed'|'registered'|'unRegistered'
+    [key: string]: any
+  }
 }
 
 export class DAO implements IStateful<IDAOState> {
@@ -47,24 +49,25 @@ export class DAO implements IStateful<IDAOState> {
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<DAO[]> {
     let where = ''
-    for (const key of Object.keys(options)) {
-      if (options[key] === undefined) {
+    if (!options.where) {
+      options.where = {}
+    }
+    for (const key of Object.keys(options.where)) {
+      if (options.where[key] === undefined) {
         continue
       }
 
       if (key === 'address') {
-        const option = options[key] as string
+        const option = options.where[key] as string
         isAddress(option)
-        options[key] = option.toLowerCase()
+        options.where[key] = option.toLowerCase()
       }
 
-      where += `${key}: "${options[key] as string}"\n`
+      where += `${key}: "${options.where[key] as string}"\n`
     }
 
     const query = gql`{
-      daos(where: {
-        ${where}
-      }) {
+      daos ${createGraphQlQuery(options, where)} {
         id
       }
     }`
@@ -76,8 +79,11 @@ export class DAO implements IStateful<IDAOState> {
     )
   }
 
-  constructor(public address: Address, public context: Arc) {
-    this.address = address.toLowerCase()
+  public address: Address
+
+  constructor(public id: Address, public context: Arc) {
+    this.id = id.toLowerCase()
+    this.address = this.id
     this.context = context
   }
 
@@ -125,7 +131,8 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public schemes(options: ISchemeQueryOptions = {}): Observable<Scheme[]> {
-    options.dao = this.address
+    if (!options.where) { options.where = {}}
+    options.where.dao = this.address
     return Scheme.search(this.context, options)
   }
 
@@ -139,14 +146,13 @@ export class DAO implements IStateful<IDAOState> {
   }
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
     let where = ''
-    options.dao = this.address
-    for (const key of Object.keys(options)) {
-      where += `${key}: "${options[key]}"\n`
+    if (!options.where) { options.where = {}}
+    options.where.dao = this.address
+    for (const key of Object.keys(options.where)) {
+      where += `${key}: "${options.where[key]}"\n`
     }
     const query = gql`{
-      reputationHolders (where: {
-        ${where}
-      }){
+      reputationHolders ${createGraphQlQuery(options, where)} {
         id
         address
       }
@@ -170,12 +176,15 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
-    options.dao = this.address
+    if (!options.where) {
+      options.where = {}
+    }
+    options.where.dao = this.address
     return Proposal.search(this.context, options)
   }
 
   public async proposal(proposalId: string): Promise<Proposal> {
-    const proposals =  await this.proposals({id: proposalId}).pipe(first()).toPromise()
+    const proposals =  await this.proposals({ where: {id: proposalId}}).pipe(first()).toPromise()
     if (proposals) {
       return proposals[0]
     } else {
@@ -184,17 +193,20 @@ export class DAO implements IStateful<IDAOState> {
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
-    options.dao = this.address
+    if (!options.where) { options.where = {}}
+    options.where.dao = this.address
     return Reward.search(this.context, options)
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
-    options.dao = this.address
+    if (!options.where) { options.where = {}}
+    options.where.dao = this.address
     return Vote.search(this.context, options)
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
-    options.dao = this.address
+    if (!options.where) { options.where = {}}
+    options.where.dao = this.address
     return Stake.search(this.context, options)
   }
 

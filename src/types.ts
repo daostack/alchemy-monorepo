@@ -11,10 +11,11 @@ export interface IStateful<T> {
 }
 
 export interface ICommonQueryOptions {
-  start?: number
-  limit?: number
+  skip?: number
+  first?: number
   orderBy?: string
-  orderDirection?: 'ASC' | 'DESC'
+  orderDirection?: 'asc' | 'desc'
+  where?: any
 }
 
 export type IPFSProvider = string| { host: string, protocol?: string, port?: string, apiPath?: string}

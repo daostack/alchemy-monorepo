@@ -6,8 +6,8 @@ import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './propo
 import * as ContributionReward from './schemes/contributionReward'
 import * as GenericScheme from './schemes/genericScheme'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
-import { Address } from './types'
-import { isAddress } from './utils'
+import { Address, ICommonQueryOptions } from './types'
+import { createGraphQlQuery, isAddress } from './utils'
 
 export interface ISchemeState {
   id: string
@@ -21,17 +21,19 @@ export interface ISchemeState {
   paramsHash: string
 }
 
-export interface ISchemeQueryOptions {
-  address?: Address
-  canDelegateCall?: boolean
-  canRegisterSchemes?: boolean
-  canUpgradeController?: boolean
-  canManageGlobalConstraints?: boolean
-  dao?: Address
-  id?: string
-  name?: string
-  paramsHash?: string
-  [key: string]: any
+export interface ISchemeQueryOptions extends ICommonQueryOptions {
+  where?: {
+    address?: Address
+    canDelegateCall?: boolean
+    canRegisterSchemes?: boolean
+    canUpgradeController?: boolean
+    canManageGlobalConstraints?: boolean
+    dao?: Address
+    id?: string
+    name?: string
+    paramsHash?: string
+    [key: string]: any
+  }
 }
 
 /**
@@ -51,22 +53,23 @@ export class Scheme {
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Scheme[]> {
     let where = ''
-    for (const key of Object.keys(options)) {
-      if (options[key] === undefined) {
+    if (!options.where) { options.where = {}}
+    for (const key of Object.keys(options.where)) {
+      if (options.where[key] === undefined) {
         continue
       }
 
       if (key === 'address' || key === 'dao') {
-        const option = options[key] as string
+        const option = options.where[key] as string
         isAddress(option)
-        options[key] = option.toLowerCase()
+        options.where[key] = option.toLowerCase()
       }
 
-      where += `${key}: "${options[key] as string}"\n`
+      where += `${key}: "${options.where[key] as string}"\n`
     }
 
     const query = gql`{
-      controllerSchemes (where: {${where}})
+      controllerSchemes ${createGraphQlQuery(options, where)}
       {
         id
         address
@@ -84,7 +87,8 @@ export class Scheme {
           // pass
         }
       }
-      if (options.name && options.name !== name) {
+      if (!options.where) { options.where = {}}
+      if (options.where.name && options.where.name !== name) {
         return null
       }
       return new Scheme(
@@ -191,7 +195,8 @@ export class Scheme {
     }
 
     public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
-      options.scheme = this.address
+      if (!options.where) { options.where = {}}
+      options.where.scheme = this.address
       return Proposal.search(this.context, options)
     }
 

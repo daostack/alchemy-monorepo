@@ -3,9 +3,8 @@ import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { ISchemeState } from './scheme'
-import { Address } from './types'
-import { BN, isAddress } from './utils'
-import { realMathToNumber } from './utils'
+import { Address, ICommonQueryOptions } from './types'
+import { BN, createGraphQlQuery, isAddress, realMathToNumber } from './utils'
 
 export interface IQueueState {
   dao: DAO
@@ -16,11 +15,13 @@ export interface IQueueState {
   votingMachine: Address
 }
 
-export interface IQueueQueryOptions {
-  dao?: Address,
-  votingMachine?: Address
-  scheme?: Address
-  [key: string]: any
+export interface IQueueQueryOptions extends ICommonQueryOptions {
+  where?: {
+    dao?: Address,
+    votingMachine?: Address
+    scheme?: Address
+    [key: string]: any
+  }
 }
 
 export class Queue {
@@ -36,8 +37,9 @@ export class Queue {
     options: IQueueQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
 ): Observable<Queue[]> {
+    if (!options.where) { options.where = {}}
     let where = ''
-    for (const key of Object.keys(options)) {
+    for (const key of Object.keys(options.where)) {
       if (options[key] === undefined) {
         continue
       }
@@ -54,7 +56,7 @@ export class Queue {
     // use the following query once https://github.com/daostack/subgraph/issues/217 is resolved
     const query = gql`
       {
-        gpqueues (where: {${where}}) {
+        gpqueues ${createGraphQlQuery(options, where)} {
           id
           dao {
             id

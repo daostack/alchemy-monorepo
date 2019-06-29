@@ -32,7 +32,7 @@ describe('Scheme', () => {
   it('Scheme are searchable', async () => {
     const dao = await getTestDAO()
     let result: Scheme[]
-    result = await Scheme.search(arc, {dao: dao.address})
+    result = await Scheme.search(arc, {where: {dao: dao.address}})
         .pipe(first()).toPromise()
 
     // TODO: we should expect 3 queus here, see https://github.com/daostack/subgraph/issues/195
@@ -43,15 +43,15 @@ describe('Scheme', () => {
       'ContributionReward',
       'SchemeRegistrar'
     ].sort())
-    result = await Scheme.search(arc, {dao: dao.address, name: 'ContributionReward'})
+    result = await Scheme.search(arc, {where: {dao: dao.address, name: 'ContributionReward'}})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
-    result = await Scheme.search(arc, {dao: dao.address, name: 'GenericScheme'})
+    result = await Scheme.search(arc, {where: {dao: dao.address, name: 'GenericScheme'}})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
-    result = await Scheme.search(arc, {dao: dao.address, name: 'SchemeRegistrar'})
+    result = await Scheme.search(arc, {where: {dao: dao.address, name: 'SchemeRegistrar'}})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
   })
@@ -59,7 +59,7 @@ describe('Scheme', () => {
   it('Scheme.state() is working', async () => {
     const dao = await getTestDAO()
     const result = await Scheme
-      .search(arc, {dao: dao.address, name: 'SchemeRegistrar'})
+      .search(arc, {where: {dao: dao.address, name: 'SchemeRegistrar'}})
       .pipe(first()).toPromise()
 
     const scheme = result[0]
@@ -77,8 +77,22 @@ describe('Scheme', () => {
     const dao = await getTestDAO()
     const proposal = await dao.proposal(queuedProposalId)
     const proposalState = await proposal.state().pipe(first()).toPromise()
-    const schemes = await firstResult(Scheme.search(arc, {id: proposalState.scheme.id}))
+    const schemes = await firstResult(Scheme.search(arc, {where: {id: proposalState.scheme.id}}))
     const schemeState = await firstResult(schemes[0].state())
     expect(proposalState.scheme).toEqual(schemeState)
   })
+
+  it('paging and sorting works', async () => {
+    const ls1 = await Scheme.search(arc, { first: 3, orderBy: 'address' }).pipe(first()).toPromise()
+    expect(ls1.length).toEqual(3)
+    expect(ls1[0].address <= ls1[1].address).toBeTruthy()
+
+    const ls2 = await Scheme.search(arc, { first: 2, skip: 2, orderBy: 'address' }).pipe(first()).toPromise()
+    expect(ls2.length).toEqual(2)
+    expect(ls1[2].address).toEqual(ls2[0].address)
+
+    const ls3 = await Scheme.search(arc, {  orderBy: 'address', orderDirection: 'desc'}).pipe(first()).toPromise()
+    expect(ls3[0].address <= ls3[1].address).toBeTruthy()
+  })
+
 })

@@ -53,15 +53,15 @@ describe('Reward', () => {
     // expect(result.length).toEqual(1)
 
     // search does not care about case in the address
-    result = await Reward.search(arc, {beneficiary})
+    result = await Reward.search(arc, { where: {beneficiary}})
         .pipe(first()).toPromise()
     expect(result.length).toBeGreaterThan(0)
 
-    result = await Reward.search(arc, {beneficiary: arc.web3.utils.toChecksumAddress(beneficiary)})
+    result = await Reward.search(arc, { where: {beneficiary: arc.web3.utils.toChecksumAddress(beneficiary)}})
         .pipe(first()).toPromise()
     expect(result.length).toBeGreaterThan(0)
 
-    expect(() => Reward.search(arc, {beneficiary: ''})).toThrowError(
+    expect(() => Reward.search(arc, {where: {beneficiary: ''}})).toThrowError(
       /not a valid address/i
     )
 
@@ -69,5 +69,18 @@ describe('Reward', () => {
     const reward = result[0]
     const rewardState = await reward.state().pipe(first()).toPromise()
     expect(rewardState.id).toEqual(reward.id)
+  })
+
+  it('paging and sorting works', async () => {
+    const ls1 = await Reward.search(arc, { first: 3, orderBy: 'id' }).pipe(first()).toPromise()
+    expect(ls1.length).toEqual(3)
+    expect(Number(ls1[0].id)).toBeLessThan(Number(ls1[1].id))
+
+    const ls2 = await Reward.search(arc, { first: 2, skip: 2, orderBy: 'id' }).pipe(first()).toPromise()
+    expect(ls2.length).toEqual(2)
+    expect(Number(ls1[2].id)).toEqual(Number(ls2[0].id))
+
+    const ls3 = await Reward.search(arc, {  orderBy: 'id', orderDirection: 'desc'}).pipe(first()).toPromise()
+    expect(Number(ls3[0].id)).toBeGreaterThanOrEqual(Number(ls3[1].id))
   })
 })
