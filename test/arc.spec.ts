@@ -26,6 +26,21 @@ describe('Arc ', () => {
     expect(arc).toBeInstanceOf(Arc)
   })
 
+  it('Arc is usable without subgraph connection', () => {
+    const arc = new Arc({
+      contractAddresses: [],
+      ipfsProvider: {
+        host: 'localhost',
+        port: '5001',
+        protocol: 'https'
+      },
+      web3Provider: 'wss://web3.provider'
+    })
+    expect(arc).toBeInstanceOf(Arc)
+
+    expect(() => arc.sendQuery(`{daos {id}}`)).toThrowError(/no connection/i)
+  })
+
   it('arc.getContractAddresses() should work', async () => {
       const arc = await newArc()
 
