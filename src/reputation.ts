@@ -4,7 +4,7 @@ import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { Address, ICommonQueryOptions, IStateful, Web3Receipt } from './types'
-import { BN, isAddress } from './utils'
+import { BN, createGraphQlQuery, isAddress } from './utils'
 
 export interface IReputationState {
   address: Address
@@ -32,6 +32,7 @@ export class Reputation implements IStateful<IReputationState> {
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Reputation[]> {
     let where = ''
+    if (!options.where) { options.where = {}}
     for (const key of Object.keys(options.where)) {
       if (options[key] === undefined) {
         continue
@@ -47,9 +48,9 @@ export class Reputation implements IStateful<IReputationState> {
     }
 
     const query = gql`{
-      reps(where: {
-        ${where}
-      }) {
+      reps
+      ${createGraphQlQuery(options, where)}
+      {
         id
       }
     }`
@@ -61,8 +62,10 @@ export class Reputation implements IStateful<IReputationState> {
     )
   }
 
-  constructor(public address: Address, public context: Arc) {
-    isAddress(address)
+  public address: Address
+  constructor(public id: Address, public context: Arc) {
+    isAddress(id)
+    this.address = id
   }
   public state(): Observable<IReputationState> {
     const query = gql`{
