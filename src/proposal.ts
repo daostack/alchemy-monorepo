@@ -516,7 +516,7 @@ export class Proposal implements IStateful<IProposalState> {
         stakesAgainst,
         stakesFor,
         title: item.title,
-        totalRepWhenCreated: new B(item.totalRepWhenCreated),
+        totalRepWhenCreated: new BN(item.totalRepWhenCreated),
         totalRepWhenExecuted: new BN(item.totalRepWhenExecuted),
         type,
         upstakeNeededToPreBoost,
