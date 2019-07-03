@@ -234,6 +234,7 @@ if (require.main === module) {
     migrateBase: wrapCommand(migrateBase),
     migrateDAO: wrapCommand(migrateDAO),
     migrateDemoTest: wrapCommand(migrateDemoTest),
+    migrateScript: wrapCommand,
     cli
   }
 }

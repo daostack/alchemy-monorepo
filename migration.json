@@ -80,28 +80,28 @@
     },
     "dao": {
       "0.0.1-rc.16": {
-        "name": "Voracious Plant operator",
+        "name": "Meretricious Unicorn",
         "Avatar": "0x86072CbFF48dA3C1F01824a6761A03F105BCC697",
         "DAOToken": "0x7C728214be9A0049e6a86f2137ec61030D0AA964",
         "Reputation": "0x5017A545b09ab9a30499DE7F431DF0855bCb7275",
         "Controller": "0x4bf3A7dFB3b76b5B3E169ACE65f888A4b4FCa5Ee"
       },
       "0.0.1-rc.17": {
-        "name": "Effulgent Cupcake",
+        "name": "Boorish Cupcake",
         "Avatar": "0x81920CAF1F99Bb0f7D72Fdfba840cff21d63CcC5",
         "DAOToken": "0xa6f8431C9eEe4Ac2859207aF4004F7a948924c30",
         "Reputation": "0xEdCD6442143188Deb586e182B7900dFb8707Bc27",
         "Controller": "0x8b9e409a817c7dC1a42C3DDe9E85dcBFF602c0fC"
       },
       "0.0.1-rc.18": {
-        "name": "Dilatory Ninja",
+        "name": "Verdant Opera singer",
         "Avatar": "0x3c3d89322de3aC6D5BCBD10801BbB2C68f5AC5f1",
         "DAOToken": "0xe67a1e001a30eF1e0EDE04637F1Aceb3F2080604",
         "Reputation": "0x4c8cF69bfd3361Dcf1795354afB32Ec4a26212F8",
         "Controller": "0xe00b745b5e71337507d43a8584320c4192CA7994"
       },
       "0.0.1-rc.19": {
-        "name": "Endemic Bunny",
+        "name": "Redolent Dragons",
         "Avatar": "0x0DB24A927FFC3622884B7A3B6f1C694ED8092A01",
         "DAOToken": "0x97681569c1007380DEc7075E5aCb6020Be36eC83",
         "Reputation": "0x06ef7018Af25ec846aDe8f8B5cB591A914a46347",
@@ -110,7 +110,7 @@
     },
     "test": {
       "0.0.1-rc.16": {
-        "name": "Fecund Animator",
+        "name": "Mannered Hot air balloon",
         "Avatar": "0xE7A2C59e134ee81D4035Ae6DB2254f79308e334f",
         "DAOToken": "0xcDbe8b52A6c60A5f101d4A0F1f049f19a9e1D35F",
         "Reputation": "0x93cdbf39fB9e13BD253CA5819247D52fbabf0F2f",
@@ -127,7 +127,7 @@
         }
       },
       "0.0.1-rc.17": {
-        "name": "Sartorial Hot air balloon",
+        "name": "Endemic Carousel",
         "Avatar": "0xa18433754fD5b47757744F5edFacfE6f13BbcdDB",
         "DAOToken": "0x33606f128fBb123A0553d9a001a41f35AAB65A70",
         "Reputation": "0x0C4751a1f777e46697C20b46c9c9BF886E372dE5",
@@ -144,7 +144,7 @@
         }
       },
       "0.0.1-rc.18": {
-        "name": "Salubrious Woodworkers",
+        "name": "Loquacious Carrot",
         "Avatar": "0x2516d50aaA9ad6F1A307c573535Cb355b8c62220",
         "DAOToken": "0x06F7f6e364259bd77354098e0149d1D552887Bea",
         "Reputation": "0xE465e063beBE4e150d56C8C3b8135C8CC811aD66",
@@ -161,7 +161,7 @@
         }
       },
       "0.0.1-rc.19": {
-        "name": "Defamatory Plumber",
+        "name": "Limpid Hot air balloon",
         "Avatar": "0xe9669Bba4843FC76336F27eFD885553edab9086B",
         "DAOToken": "0x99827C360bAE453F8154E302527A53fdBEF32D97",
         "Reputation": "0xBEBf6d72218b610d4AcA8847AB0211Db61a90e1e",
@@ -221,20 +221,20 @@
       },
       "0.0.1-rc.19": {
         "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
-        "DAORegistry": "0x271893a9f0A4A8Ea089A13ab951eA201722A30B1",
-        "ControllerCreator": "0xD44040695D9a34230C2DD5e073E7ce9C3e45fd34",
-        "DaoCreator": "0x68d87fA9b10ea9f3E187860F8E2ad1A64e1736Be",
-        "UController": "0xe36e342b0ACD4fd4C120e7e63f4B85BDA2259309",
+        "DAORegistry": "0xf7f490C714Cd5920eB5de0a060EE2D5962450401",
+        "ControllerCreator": "0xa76Ed18B21ffa94e280cA9DB95891049eC42Fe4c",
+        "DaoCreator": "0x3ADad6A5441245f64b9dEc541AD34A107f38084F",
+        "UController": "0xD761F3Dd940D1242BECaFb301e37AFd6e1131D43",
         "GenesisProtocol": "0x41c8169C22974551DF6977052f8Ca33D6cD6d2e4",
         "SchemeRegistrar": "0xaB8d6122A4C86fD34bA8dC0b3C312A8b38c86754",
         "UpgradeScheme": "0x5dE28366c314D836662353F439Ea5388A3F101aE",
         "GlobalConstraintRegistrar": "0x4C60c370ffEd62607fa179dC0d2fFAA0eC452c8C",
         "ContributionReward": "0x5B6FD0f95eab8ad10EfAec62E3B07e9D32FF8cfd",
-        "AbsoluteVote": "0x0863036C027eb9F1C135DBAcC7c2FFDbC762F61D",
-        "QuorumVote": "0x35e1785FBfBE9Ab9ad2B0d37bB9790250f376724",
-        "TokenCapGC": "0x0eaeB8C5834729eBB41885ED5E1DEd34bB1cf5d3",
+        "AbsoluteVote": "0x1f342702831891f35671255b28350cc3f4f6d81a",
+        "QuorumVote": "0x5db1FdF3a2212BCa512D4Ee0CbC455738474b44d",
+        "TokenCapGC": "0xBebFA32962c9959c1832Af3D43AF1b11e319b22B",
         "VoteInOrganizationScheme": "0x5b1dEFf1Af3d85a3A19e461Fb8693CA188d3BBeD",
-        "OrganizationRegister": "0x55b5781364c4CA2417fD56d028c239BB3Fa76d1D",
+        "OrganizationRegister": "0x2beDa3949328d6d65cD0Dfe3bb2638cA8b67bee9",
         "Redeemer": "0x7a912D6EeF5bCB0dDC0576Dff6148554B49647F5",
         "GenericScheme": "0xEE8300c5A4a1eFb74dbBA5563453C435BEc18446"
       }

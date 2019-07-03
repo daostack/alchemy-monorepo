@@ -1,7 +1,6 @@
 const utils = require('./utils.js')
 async function assignGlobalVariables (web3, spinner, opts, logTx, previousMigration) {
   this.arcVersion = require('./package.json').dependencies['@daostack/arc']
-  this.web3 = previousMigration
   this.web3 = web3
   this.spinner = spinner
   this.opts = opts
