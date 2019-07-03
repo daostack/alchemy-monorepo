@@ -42,30 +42,56 @@ describe('Proposal', () => {
     expect(proposalsList.map((p) => p.id)).toContain(queuedProposal.id)
   })
 
+  it('paging works', async () => {
+    const proposals = dao.proposals()
+    const ls1 = await proposals.pipe(first()).toPromise()
+    expect(ls1.length).toBeGreaterThan(3)
+    const ls2 = await dao.proposals({ first: 2}).pipe(first()).toPromise()
+    expect(ls2.length).toEqual(2)
+    const ls3 = await dao.proposals({ first: 2, skip: 1}).pipe(first()).toPromise()
+    expect(ls3.length).toEqual(2)
+    expect(ls2[1]).toEqual(ls3[0])
+  })
+
+  it('sorting works', async () => {
+    const ls1 = await dao.proposals({ orderBy: 'createdAt'}).pipe(first()).toPromise()
+    expect(ls1.length).toBeGreaterThan(3)
+    const state0 = await ls1[0].state().pipe(first()).toPromise()
+    const state1 = await ls1[1].state().pipe(first()).toPromise()
+    expect(state0.createdAt).toBeLessThanOrEqual(state1.createdAt)
+
+    const ls2 = await dao.proposals({ orderBy: 'createdAt', orderDirection: 'desc'}).pipe(first()).toPromise()
+    const state3 = await ls2[0].state().pipe(first()).toPromise()
+    const state2 = await ls2[1].state().pipe(first()).toPromise()
+    expect(state2.createdAt).toBeLessThanOrEqual(state3.createdAt)
+
+    expect(state1.createdAt).toBeLessThanOrEqual(state2.createdAt)
+  })
+
   it('proposal.search() accepts expiresInQueueAt argument', async () => {
-    const l1 = await Proposal.search(arc, {expiresInQueueAt_gt: 0}).pipe(first()).toPromise()
+    const l1 = await Proposal.search(arc, { where: {expiresInQueueAt_gt: 0}}).pipe(first()).toPromise()
     expect(l1.length).toBeGreaterThan(0)
 
     const expiryDate = (await l1[0].state().pipe(first()).toPromise()).expiresInQueueAt
-    const l2 = await Proposal.search(arc, {expiresInQueueAt_gt: expiryDate}).pipe(first()).toPromise()
+    const l2 = await Proposal.search(arc, { where: {expiresInQueueAt_gt: expiryDate}}).pipe(first()).toPromise()
     expect(l2.length).toBeLessThan(l1.length)
   })
 
   it('proposal.search() accepts scheme argument', async () => {
     const state = await queuedProposal.state().pipe(first()).toPromise()
-    const l1 = await Proposal.search(arc, { scheme: state.scheme.id}).pipe(first()).toPromise()
+    const l1 = await Proposal.search(arc, { where: { scheme: state.scheme.id}}).pipe(first()).toPromise()
     expect(l1.length).toBeGreaterThan(0)
   })
 
   it('proposal.search() accepts type argument', async () => {
     let ls: Proposal[]
-    ls = await Proposal.search(arc, {type: IProposalType.ContributionReward}).pipe(first()).toPromise()
+    ls = await Proposal.search(arc, { where: {type: IProposalType.ContributionReward}}).pipe(first()).toPromise()
     expect(ls.length).toBeGreaterThan(0)
-    ls = await Proposal.search(arc, {type: IProposalType.GenericScheme}).pipe(first()).toPromise()
+    ls = await Proposal.search(arc, { where: {type: IProposalType.GenericScheme}}).pipe(first()).toPromise()
     expect(ls.length).toBeGreaterThan(0)
-    ls = await Proposal.search(arc, {type: IProposalType.SchemeRegistrarAdd}).pipe(first()).toPromise()
+    ls = await Proposal.search(arc, { where: {type: IProposalType.SchemeRegistrarAdd}}).pipe(first()).toPromise()
     // expect(ls.length).toEqual(0)
-    ls = await Proposal.search(arc, {type: IProposalType.SchemeRegistrarRemove}).pipe(first()).toPromise()
+    ls = await Proposal.search(arc, { where: {type: IProposalType.SchemeRegistrarRemove}}).pipe(first()).toPromise()
     // expect(ls.length).toEqual(0)
   })
 
@@ -74,26 +100,27 @@ describe('Proposal', () => {
     const proposer = proposalState.proposer
     let result: Proposal[]
 
-    result = await Proposal.search(arc, {proposer, id: queuedProposal.id}).pipe(first()).toPromise()
+    result = await Proposal.search(arc, { where: {proposer, id: queuedProposal.id}}).pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
-    result = await Proposal.search(arc, {proposer: proposer.toUpperCase(), id: queuedProposal.id})
-      .pipe(first()).toPromise()
-    expect(result.length).toEqual(1)
-
-    result = await Proposal.search(arc, {proposer: arc.web3.utils.toChecksumAddress(proposer), id: queuedProposal.id})
+    result = await Proposal.search(arc, { where: {proposer: proposer.toUpperCase(), id: queuedProposal.id}})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
     result = await Proposal
-      .search(arc, {dao: arc.web3.utils.toChecksumAddress(proposalState.dao.address), id: queuedProposal.id})
+      .search(arc, { where: {proposer: arc.web3.utils.toChecksumAddress(proposer), id: queuedProposal.id}})
+      .pipe(first()).toPromise()
+    expect(result.length).toEqual(1)
+
+    result = await Proposal
+      .search(arc, {where: {dao: arc.web3.utils.toChecksumAddress(proposalState.dao.address), id: queuedProposal.id}})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
   })
 
   it('dao.proposals() accepts different query arguments', async () => {
     const { queuedProposalId } = addresses.test
-    const proposals = await dao.proposals({ stage: IProposalStage.Queued}).pipe(first()).toPromise()
+    const proposals = await dao.proposals({ where: { stage: IProposalStage.Queued}}).pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
     expect(proposals.length).toBeGreaterThan(0)
     expect(proposals.map((p: Proposal) => p.id)).toContain(queuedProposalId)
@@ -107,14 +134,14 @@ describe('Proposal', () => {
     expect(proposalState.accountsWithUnclaimedRewards.length).toEqual(5)
     const someAccount = proposalState.accountsWithUnclaimedRewards[1]
     // query for redeemable proposals
-    const proposals = await dao.proposals({accountsWithUnclaimedRewards_contains: [someAccount]})
+    const proposals = await dao.proposals({ where: {accountsWithUnclaimedRewards_contains: [someAccount]}})
       .pipe(first()).toPromise()
     expect(proposals.length).toBeGreaterThan(0)
 
-    const shouldBeJustThisExecutedProposal = await dao.proposals({
+    const shouldBeJustThisExecutedProposal = await dao.proposals({ where: {
       accountsWithUnclaimedRewards_contains: [someAccount],
       id: proposal.id
-    }).pipe(first()).toPromise()
+    }}).pipe(first()).toPromise()
 
     expect(shouldBeJustThisExecutedProposal.map((p: Proposal) => p.id)).toEqual([proposal.id])
   })
@@ -190,7 +217,7 @@ describe('Proposal', () => {
     // check if the upstakeNeededToPreBoost value is correct
     //  (S+/S-) > AlphaConstant^NumberOfBoostedProposal.
     const boostedProposals = await pState.dao
-      .proposals({stage: IProposalStage.Boosted}).pipe(first()).toPromise()
+      .proposals({ where: {stage: IProposalStage.Boosted}}).pipe(first()).toPromise()
     const numberOfBoostedProposals = boostedProposals.length
     expect(pState.queue.threshold.toString())
       .toEqual(Math.pow(pState.genesisProtocolParams.thresholdConst, numberOfBoostedProposals).toString())
@@ -208,7 +235,7 @@ describe('Proposal', () => {
     // check if the upstakeNeededToPreBoost value is correct
     //  (S+/S-) > AlphaConstant^NumberOfBoostedProposal.
     const boostedProposals = await pState.dao
-      .proposals({stage: IProposalStage.Boosted}).pipe(first()).toPromise()
+      .proposals({ where: {stage: IProposalStage.Boosted}}).pipe(first()).toPromise()
     const numberOfBoostedProposals = boostedProposals.length
 
     expect(pState.stakesFor.div(pState.stakesAgainst.add(pState.downStakeNeededToQueue)).toString())

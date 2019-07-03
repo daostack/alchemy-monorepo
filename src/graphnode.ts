@@ -71,7 +71,7 @@ export class GraphNodeObserver {
 
       const sub = zenToRxjsObservable(
         apolloClient.watchQuery({
-          fetchPolicy: 'cache-first',
+          fetchPolicy: apolloQueryOptions.fetchPolicy,
           fetchResults: true,
           query
         })

@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { IProposalOutcome} from './proposal'
 import { Address, ICommonQueryOptions } from './types'
-import { BN, isAddress } from './utils'
+import { BN, createGraphQlQuery, isAddress } from './utils'
 
 export interface IStake {
   id: string|undefined
@@ -15,12 +15,14 @@ export interface IStake {
 }
 
 export interface IStakeQueryOptions extends ICommonQueryOptions {
-  id?: string
-  staker?: Address
-  dao?: Address
-  proposal?: string
-  createdAt?: number
-  [key: string]: any
+  where?: {
+    id?: string
+    staker?: Address
+    dao?: Address
+    proposal?: string
+    createdAt?: number
+    [key: string]: any
+  }
 }
 
 export class Stake implements IStake {
@@ -36,27 +38,25 @@ export class Stake implements IStake {
     options: IStakeQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable <Stake[]> {
-
+    if (!options.where) { options.where = {}}
     let where = ''
-    for (const key of Object.keys(options)) {
-      if (options[key] === undefined) {
+    for (const key of Object.keys(options.where)) {
+      if (options.where[key] === undefined) {
         continue
       }
 
       if (key === 'staker' || key === 'dao') {
-        const option = options[key] as string
+        const option = options.where[key] as string
         isAddress(option)
-        options[key] = option.toLowerCase()
+        options.where[key] = option.toLowerCase()
       }
 
-      where += `${key}: "${options[key] as string}"\n`
+      where += `${key}: "${options.where[key] as string}"\n`
     }
 
     const query = gql`
       {
-        proposalStakes (where: {
-          ${where}
-        }) {
+        proposalStakes ${createGraphQlQuery(options, where)} {
           id
           createdAt
           staker

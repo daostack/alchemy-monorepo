@@ -24,7 +24,7 @@ describe('DAO', () => {
     let result: DAO[]
     result = await DAO.search(arc).pipe(first()).toPromise()
     expect(result.length).toBeGreaterThan(1)
-    result = await DAO.search(arc, { register: 'unRegistered'}).pipe(first()).toPromise()
+    result = await DAO.search(arc, {where: { register: 'unRegistered'}}).pipe(first()).toPromise()
     expect(result.length).toEqual(0)
   })
 
@@ -122,7 +122,7 @@ describe('DAO', () => {
     const proposal = response.result as Proposal
     let proposals: Proposal[] = []
     const proposalIsIndexed = async () => {
-      proposals = await Proposal.search(arc, {id: proposal.id}).pipe(first()).toPromise()
+      proposals = await Proposal.search(arc, {where: {id: proposal.id}}).pipe(first()).toPromise()
       return proposals.length > 0
     }
     await waitUntilTrue(proposalIsIndexed)
@@ -134,7 +134,7 @@ describe('DAO', () => {
     let schemes = await dao.schemes().pipe(first()).toPromise()
     expect(typeof schemes).toEqual(typeof [])
     expect(schemes.length).toBeGreaterThanOrEqual(3)
-    schemes = await dao.schemes({name: 'ContributionReward'}).pipe(first()).toPromise()
+    schemes = await dao.schemes({ where: {name: 'ContributionReward'}}).pipe(first()).toPromise()
     expect(schemes.length).toBeGreaterThanOrEqual(1)
   })
 
@@ -152,6 +152,19 @@ describe('DAO', () => {
     const newBalance = await dao.ethBalance().pipe(first()).toPromise()
 
     expect(Number(fromWei(newBalance.sub(previousBalance)))).toBe(1)
+  })
+
+  it('paging and sorting works', async () => {
+    const ls1 = await DAO.search(arc, { first: 3, orderBy: 'id' }).pipe(first()).toPromise()
+    expect(ls1.length).toEqual(3)
+    expect(ls1[0].id <= ls1[1].id).toBeTruthy()
+
+    const ls2 = await DAO.search(arc, { first: 2, skip: 2, orderBy: 'id' }).pipe(first()).toPromise()
+    expect(ls2.length).toEqual(2)
+    expect(ls1[2].id).toEqual(ls2[0].id)
+
+    const ls3 = await DAO.search(arc, {  orderBy: 'id', orderDirection: 'desc'}).pipe(first()).toPromise()
+    expect(ls3[0].id >= ls3[1].id).toBeTruthy()
   })
 
 })

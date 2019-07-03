@@ -41,24 +41,37 @@ describe('Stake', () => {
     const stake = stakes[stakes.length - 1][0]
 
     // search for a stakes in an invalid proposal
-    result = await Stake.search(arc, {proposal: '0x12345'})
+    result = await Stake.search(arc, {where: {proposal: '0x12345'}})
       .pipe(first()).toPromise()
     expect(result).toEqual([])
 
-    result = await Stake.search(arc, {proposal: proposal.id})
+    result = await Stake.search(arc, {where:  {proposal: proposal.id}})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
     expect(result[0].outcome).toEqual(IProposalOutcome.Pass)
 
     result = await Stake
-      .search(arc, {staker: stake.staker, proposal: proposal.id})
+      .search(arc, {where: {staker: stake.staker, proposal: proposal.id}})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
     result = await Stake
-      .search(arc, {staker: arc.web3.utils.toChecksumAddress(stake.staker), proposal: proposal.id})
+      .search(arc, {where:  {staker: arc.web3.utils.toChecksumAddress(stake.staker), proposal: proposal.id}})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
+  })
+
+  it('paging and sorting works', async () => {
+    const ls1 = await Stake.search(arc, { first: 3, orderBy: 'id' }).pipe(first()).toPromise()
+    expect(ls1.length).toEqual(3)
+    expect(Number(ls1[0].id)).toBeLessThan(Number(ls1[1].id))
+
+    const ls2 = await Stake.search(arc, { first: 2, skip: 2, orderBy: 'id' }).pipe(first()).toPromise()
+    expect(ls2.length).toEqual(2)
+    expect(Number(ls1[2].id)).toEqual(Number(ls2[0].id))
+
+    const ls3 = await Stake.search(arc, {  orderBy: 'id', orderDirection: 'desc'}).pipe(first()).toPromise()
+    expect(Number(ls3[0].id)).toBeGreaterThanOrEqual(Number(ls3[1].id))
   })
 
 })

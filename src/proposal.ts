@@ -15,7 +15,7 @@ import * as SchemeRegistrar from './schemes/schemeRegistrar'
 import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
 import { BN } from './utils'
-import { NULL_ADDRESS, realMathToNumber } from './utils'
+import { createGraphQlQuery, NULL_ADDRESS, realMathToNumber } from './utils'
 import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export const IProposalType = {
@@ -165,8 +165,10 @@ export class Proposal implements IStateful<IProposalState> {
   ): Observable<Proposal[]> {
     let where = ''
 
-    for (const key of Object.keys(options)) {
-      const value = options[key]
+    if (!options.where) { options.where = {} }
+
+    for (const key of Object.keys(options.where)) {
+      const value = options.where[key]
       if (key === 'stage' && value !== undefined) {
         where += `stage: "${IProposalStage[value as IProposalStage]}"\n`
       } else if (key === 'stage_in' && Array.isArray(value)) {
@@ -184,25 +186,22 @@ export class Proposal implements IStateful<IProposalState> {
           const apolloKey = IProposalType[value][0].toLowerCase() + IProposalType[value].slice(1)
           where += `${apolloKey}_not: null\n`
         }
-      } else if (Array.isArray(options[key])) {
+      } else if (Array.isArray(options.where[key])) {
         // Support for operators like _in
-        const values = options[key].map((val: number) => '"' + val + '"')
+        const values = options.where[key].map((val: number) => '"' + val + '"')
         where += `${key}: [${values.join(',')}]\n`
       } else {
         if (key === 'proposer' || key === 'beneficiary' || key === 'dao') {
-          where += `${key}: "${(options[key] as string).toLowerCase()}"\n`
+          where += `${key}: "${(options.where[key] as string).toLowerCase()}"\n`
         } else {
-          where += `${key}: "${options[key] as string}"\n`
-
+          where += `${key}: "${options.where[key]}"\n`
         }
       }
     }
 
     const query = gql`
       {
-        proposals(where: {
-          ${where}
-        }) {
+        proposals ${createGraphQlQuery(options, where)} {
           id
           dao {
             id
@@ -245,7 +244,7 @@ export class Proposal implements IStateful<IProposalState> {
   /**
    * `state` is an observable of the proposal state
    */
-  public state(): Observable < IProposalState > {
+  public state(): Observable<IProposalState> {
     const query = gql`
       {
         proposal(id: "${this.id}") {
@@ -530,7 +529,8 @@ export class Proposal implements IStateful<IProposalState> {
       }
     }
 
-    return this.context.getObservableObject(query, itemMap) as Observable<IProposalState>
+    const result = this.context.getObservableObject(query, itemMap) as Observable<IProposalState>
+    return result
   }
 
   public scheme() {
@@ -554,8 +554,9 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.getContract(contractInfo.address)
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
-    options.proposal = this.id
+  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
+    if (!options.where) { options.where = {}}
+    options.where.proposal = this.id
     return Vote.search(this.context, options)
   }
 
@@ -619,12 +620,13 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.GENToken()
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
-    options.proposal = this.id
+  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
+    if (!options.where) { options.where = {}}
+    options.where.proposal = this.id
     return Stake.search(this.context, options)
   }
 
-  public stake(outcome: IProposalOutcome, amount: typeof BN ): Operation < Stake > {
+  public stake(outcome: IProposalOutcome, amount: typeof BN ): Operation<Stake> {
     const stakeMethod = this.votingMachine().methods.stake(
       this.id,  // proposalId
       outcome, // a value between 0 to and the proposal number of choices.
@@ -687,7 +689,8 @@ export class Proposal implements IStateful<IProposalState> {
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
-    options.proposal = this.id
+    if (!options.where) { options.where = {}}
+    options.where.proposal = this.id
     return Reward.search(this.context, options)
   }
 
@@ -750,25 +753,27 @@ enum ProposalQuerySortOptions {
 }
 
 export interface IProposalQueryOptions extends ICommonQueryOptions {
-  accountsWithUnclaimedRewards_contains?: Address[]
-  active?: boolean
-  boosted?: boolean
-  dao?: Address
-  expiresInQueueAt?: Date
-  expiresInQueueAt_gte?: Date
-  expiresInQueueAt_lte?: Date
-  expiresInQueueAt_gt?: Date
-  executedAfter?: Date
-  executedBefore?: Date
-  id?: string
-  proposer?: Address
-  proposalId?: string
-  stage?: IProposalStage
-  stage_in?: IProposalStage[]
-  scheme?: Address
-  orderBy?: ProposalQuerySortOptions
-  type?: IProposalType
-  [key: string]: any
+  where?: {
+    accountsWithUnclaimedRewards_contains?: Address[]
+    active?: boolean
+    boosted?: boolean
+    dao?: Address
+    expiresInQueueAt?: Date
+    expiresInQueueAt_gte?: Date
+    expiresInQueueAt_lte?: Date
+    expiresInQueueAt_gt?: Date
+    executedAfter?: Date
+    executedBefore?: Date
+    id?: string
+    proposer?: Address
+    proposalId?: string
+    stage?: IProposalStage
+    stage_in?: IProposalStage[]
+    scheme?: Address
+    orderBy?: ProposalQuerySortOptions
+    type?: IProposalType
+    [key: string]: any|undefined
+  }
 }
 
 interface IProposalBaseCreateOptions {

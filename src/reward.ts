@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { Address, ICommonQueryOptions, IStateful } from './types'
 import { BN } from './utils'
-import { isAddress } from './utils'
+import { createGraphQlQuery, isAddress } from './utils'
 
 export interface IRewardState {
   id: string
@@ -22,13 +22,15 @@ export interface IRewardState {
 }
 
 export interface IRewardQueryOptions extends ICommonQueryOptions {
-  id?: string
-  beneficiary?: Address
-  dao?: Address
-  proposal?: string
-  createdAtAfter?: Date
-  createdAtBefore?: Date
-  [key: string]: any
+  where?: {
+    id?: string
+    beneficiary?: Address
+    dao?: Address
+    proposal?: string
+    createdAtAfter?: Date
+    createdAtBefore?: Date
+    [key: string]: any
+  }
 }
 
 export class Reward implements IStateful<IRewardState> {
@@ -45,22 +47,23 @@ export class Reward implements IStateful<IRewardState> {
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Reward[]> {
     let where = ''
-    for (const key of Object.keys(options)) {
-      if (options[key] === undefined) {
+    if (!options.where) { options.where = {}}
+    for (const key of Object.keys(options.where)) {
+      if (options.where[key] === undefined) {
         continue
       }
 
       if (key === 'beneficiary' || key === 'dao') {
-        const option = options[key] as string
+        const option = options.where[key] as string
         isAddress(option)
-        options[key] = option.toLowerCase()
+        options.where[key] = option.toLowerCase()
       }
 
-      where += `${key}: "${options[key] as string}"\n`
+      where += `${key}: "${options.where[key] as string}"\n`
     }
 
     const query = gql`{
-      gprewards (where: {${where}}) {
+      gprewards ${createGraphQlQuery(options, where)} {
         id
       }
     }`

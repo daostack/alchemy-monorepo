@@ -72,7 +72,7 @@ describe('Member', () => {
 
       await proposal.stake(IProposalOutcome.Pass, toWei('99')).send()
       let stakes: Stake[] = []
-      member.stakes({ proposal: proposal.id}).subscribe(
+      member.stakes({ where: { proposal: proposal.id}}).subscribe(
         (next: Stake[]) => { stakes = next }
       )
       // wait until the proposal has been indexed
@@ -106,5 +106,18 @@ describe('Member', () => {
     await waitUntilTrue(() => members.length !== 0)
 
     expect(members.length).toBeGreaterThanOrEqual(10)
+  })
+
+  it('paging and sorting works', async () => {
+    const ls1 = await Member.search(arc, { first: 3, orderBy: 'address' }).pipe(first()).toPromise()
+    expect(ls1.length).toEqual(3)
+    expect(ls1[0].address <= ls1[1].address).toBeTruthy()
+
+    const ls2 = await Member.search(arc, { first: 2, skip: 2, orderBy: 'address' }).pipe(first()).toPromise()
+    expect(ls2.length).toEqual(2)
+    expect(ls1[2].address).toEqual(ls2[0].address)
+
+    const ls3 = await Member.search(arc, {  orderBy: 'address', orderDirection: 'desc'}).pipe(first()).toPromise()
+    expect(ls3[0].address >= ls3[1].address).toBeTruthy()
   })
 })

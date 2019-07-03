@@ -9,7 +9,7 @@ import fetch from 'isomorphic-fetch'
 import * as WebSocket from 'isomorphic-ws'
 import { Observable, Observer } from 'rxjs'
 import { IContractInfo } from './arc'
-import { Address } from './types'
+import { Address, ICommonQueryOptions } from './types'
 const Web3 = require('web3')
 
 export const BN = Web3.utils.BN
@@ -234,4 +234,46 @@ export function getContractAddressesFromMigration(environment: 'private'|'rinkeb
 
   }
   return contracts
+}
+
+/**
+ * creates a string to be plugsging into a graphql query
+ * @example
+ * `{  proposals ${createGraphQlQuery({ skip: 2}, 'id: "2"')}
+ *    { id }
+ * }`
+ * @param  options [description]
+ * @param  where   [description]
+ * @return         [description]
+ */
+export function createGraphQlQuery(options: ICommonQueryOptions, where: string = '') {
+  let queryString = ``
+
+  if (!where) {
+    for (const key of Object.keys(options.where)) {
+      where += `${key}: "${options.where[key]}"\n`
+    }
+  }
+  if (where) {
+    queryString += `where: {
+      ${where}
+    }`
+  }
+  if (options.first) {
+    queryString += `first: ${options.first}\n`
+  }
+  if (options.skip) {
+    queryString += `skip: ${options.skip}\n`
+  }
+  if (options.orderBy) {
+    queryString += `orderBy: ${options.orderBy}\n`
+  }
+  if (options.orderDirection) {
+    queryString += `orderDirection: ${options.orderDirection}\n`
+  }
+  if (queryString) {
+    return `(${queryString})`
+  } else {
+    return ''
+  }
 }

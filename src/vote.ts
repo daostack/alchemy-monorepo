@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { IProposalOutcome } from './proposal'
 import { Address, Date, ICommonQueryOptions } from './types'
-import { BN, isAddress } from './utils'
+import { BN, createGraphQlQuery, isAddress } from './utils'
 
 export interface IVote {
   id: string|undefined
@@ -16,12 +16,14 @@ export interface IVote {
 }
 
 export interface IVoteQueryOptions extends ICommonQueryOptions {
-  id?: string
-  voter?: Address
-  outcome?: IProposalOutcome
-  proposal?: string
-  dao?: Address
-  [key: string]: any
+  where?: {
+    id?: string
+    voter?: Address
+    outcome?: IProposalOutcome
+    proposal?: string
+    dao?: Address
+    [key: string]: any
+  }
 }
 
 export class Vote implements IVote {
@@ -37,33 +39,32 @@ export class Vote implements IVote {
     options: IVoteQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable <Vote[]> {
+    if (!options.where) { options.where = {}}
     let where = ''
     let daoFilter: (r: any) => boolean
     daoFilter = () => true
 
-    for (const key of Object.keys(options)) {
-      if (options[key] === undefined) {
+    for (const key of Object.keys(options.where)) {
+      if (options.where[key] === undefined) {
         continue
       }
 
       if (key === 'voter' || key === 'dao') {
-        const option = options[key] = options[key] as string
+        const option = options.where[key] = options.where[key] as string
         isAddress(option)
-        options[key] = option.toLowerCase()
+        options.where[key] = option.toLowerCase()
       }
 
       if (key === 'outcome') {
-        where += `${key}: "${IProposalOutcome[options[key] as number]}"\n`
+        where += `${key}: "${IProposalOutcome[options.where[key] as number]}"\n`
       } else {
-        where += `${key}: "${options[key] as string}"\n`
+        where += `${key}: "${options.where[key] as string}"\n`
       }
     }
 
     const query = gql`
       {
-        proposalVotes(where: {
-          ${where}
-        }) {
+        proposalVotes ${createGraphQlQuery(options, where)} {
           id
           createdAt
           dao {

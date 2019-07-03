@@ -110,7 +110,7 @@ export class Arc extends GraphNodeObserver {
   }
 
   public async scheme(id: string): Promise<Scheme> {
-    const schemes = await Scheme.search(this, { id }).pipe(first()).toPromise()
+    const schemes = await Scheme.search(this, {where: { id }}).pipe(first()).toPromise()
     if (schemes.length === 0) {
       throw Error(`No scheme with id ${id} is known`)
     }
@@ -122,7 +122,7 @@ export class Arc extends GraphNodeObserver {
   }
 
   public async proposal(id: string): Promise<Proposal> {
-    const proposals = await Proposal.search(this, {id }).pipe(first()).toPromise()
+    const proposals = await Proposal.search(this, { where: {id }}).pipe(first()).toPromise()
     if (proposals.length === 0) {
       throw Error(`No proposal with id ${id} was found`)
     }

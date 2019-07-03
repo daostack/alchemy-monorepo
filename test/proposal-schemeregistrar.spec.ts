@@ -68,7 +68,7 @@ describe('Proposal', () => {
     })
 
     // we now expect our new scheme to appear in the schemes collection
-    const registeredSchemes = await firstResult(Scheme.search(arc, { dao: dao.address }))
+    const registeredSchemes = await firstResult(Scheme.search(arc, {where: { dao: dao.address }}))
     expect(registeredSchemes.map((x: Scheme) => x.address))
       .toContain(schemeToRegister)
 
