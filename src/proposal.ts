@@ -97,6 +97,7 @@ export interface IProposalState {
   stakesFor: typeof BN
   stakesAgainst: typeof BN
   title?: string
+  totalRepWhenCreated: typeof BN
   totalRepWhenExecuted: typeof BN
   type: IProposalType,
   upstakeNeededToPreBoost: typeof BN
@@ -341,6 +342,7 @@ export class Proposal implements IStateful<IProposalState> {
           }
           stakesFor
           stakesAgainst
+          totalRepWhenCreated
           totalRepWhenExecuted
           title
           url
@@ -514,6 +516,7 @@ export class Proposal implements IStateful<IProposalState> {
         stakesAgainst,
         stakesFor,
         title: item.title,
+        totalRepWhenCreated: new BN(item.totalRepWhenCreated),
         totalRepWhenExecuted: new BN(item.totalRepWhenExecuted),
         type,
         upstakeNeededToPreBoost,
