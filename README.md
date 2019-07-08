@@ -358,7 +358,18 @@ In order to release a version:
 2. In the another terminal tab:
 
    1. Make sure you have the required `.env` variables set (`kovan_provider`, `kovan_private_key`, `rinkeby_provider`,
-      `rinkeby_private_key`, `mainnet_provider`, `mainnet_private_key`).
+      `rinkeby_private_key`, `mainnet_provider`, `mainnet_private_key`). It should look something like this:
+
+        ```bash
+        kovan_provider="https://kovan.infura.io/v3/<YOUR_INFURA_KEY>"
+        kovan_private_key="0x<YOUR_PRIVATE_KEY>"
+        rinkeby_provider="https://rinkeby.infura.io/v3/<YOUR_INFURA_KEY>"
+        rinkeby_private_key="0x<YOUR_PRIVATE_KEY>"
+        mainnet_provider="https://mainnet.infura.io/v3/<YOUR_INFURA_KEY>"
+        mainnet_private_key="0x<YOUR_PRIVATE_KEY>"
+        ```
+
+        _Note: Make sure you have enough ETH in the account corresponding to the private key you will use to pay the deployment gas costs._
    2. Make sure you are not on the `master` branch. If needed, create a new branch for the release process.
    3. `npm run prepare-release` - This will perform all the necessary steps to update version and prepare for a new release. The changes made here will be committed to the git branch.
    4. Create a PR and merge the new branch with the changes into `master`.
