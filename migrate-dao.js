@@ -21,6 +21,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   const {
     UController,
     DaoCreator,
+    DAORegistry,
     SchemeRegistrar,
     ContributionReward,
     GenericScheme,
@@ -266,6 +267,21 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       tx = await controller.methods.newOrganization(avatar.options.address).send({ nonce: ++nonce })
       await logTx(tx, 'Finished registerring Avatar')
     }
+  }
+
+  const network = await web3.eth.net.getNetworkType()
+
+  if (network === 'private') {
+    const daoRegistry = new web3.eth.Contract(
+      require('@daostack/arc-hive/build/contracts/DAORegistry.json').abi,
+      DAORegistry,
+      opts
+    )
+    spinner.start('Registering DAO in DAORegistry')
+    let DAOname = await avatar.methods.orgName().call()
+    tx = await daoRegistry.methods.propose(avatar.options.address).send({ nonce: ++nonce })
+    tx = await daoRegistry.methods.register(avatar.options.address, DAOname).send({ nonce: ++nonce })
+    await logTx(tx, 'Finished Registering DAO in DAORegistry')
   }
 
   let schemeNames = []

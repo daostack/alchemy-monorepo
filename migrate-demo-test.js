@@ -26,6 +26,7 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
   let accounts = this.web3.eth.accounts.wallet
 
   const {
+    DAORegistry,
     GenesisProtocol,
     GEN
   } = this.base
@@ -98,6 +99,21 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
     avatarAddress,
     this.opts
   )
+
+  const network = await this.web3.eth.net.getNetworkType()
+
+  if (network === 'private') {
+    const daoRegistry = new this.web3.eth.Contract(
+      require('@daostack/arc-hive/build/contracts/DAORegistry.json').abi,
+      DAORegistry,
+      this.opts
+    )
+    this.spinner.start('Registering DAO in DAORegistry')
+    let DAOname = await avatar.methods.orgName().call()
+    let tx = await daoRegistry.methods.propose(avatar.options.address).send()
+    tx = await daoRegistry.methods.register(avatar.options.address, DAOname).send()
+    await this.logTx(tx, 'Finished Registering DAO in DAORegistry')
+  }
 
   const Avatar = avatarAddress
   const DAOToken = await avatar.methods.nativeToken().call()
