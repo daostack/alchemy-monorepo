@@ -120,6 +120,16 @@ export class Token implements IStateful<ITokenState> {
     return this.context.getObservableObject(query, itemMap) as Observable<ITokenState>
   }
 
+  /*
+   * get a web3 contract instance for this token
+   */
+  public contract(mode?: 'readonly') {
+    // TODO: this a  bit hacky - we shuld have this contractInfo in our "contractAddresses" registry
+    const LATEST_ARC_VERSION = '0.0.1-rc.19'
+    const abi = require(`@daostack/migration/abis/${LATEST_ARC_VERSION}/DAOToken.json`)
+    return this.context.getContract(this.address, abi, mode)
+  }
+
   public balanceOf(owner: string): Observable<typeof BN> {
     const errHandler = async (err: Error) => {
       if (err.message.match(/Returned values aren't valid/g)) {
@@ -133,7 +143,7 @@ export class Token implements IStateful<ITokenState> {
 
     }
     const observable = Observable.create(async (observer: Observer<typeof BN>) => {
-      const contract = this.contract()
+      const contract = this.contract('readonly')
       let subscription: Subscription
       contract.methods.balanceOf(owner).call()
         .then((balance: number) => {
@@ -163,7 +173,7 @@ export class Token implements IStateful<ITokenState> {
   public allowance(owner: Address, spender: Address): Observable<typeof BN> {
     return Observable.create(async (observer: Observer<typeof BN>) => {
       let subscription: Subscription
-      const contract = this.contract()
+      const contract = this.contract('readonly')
       contract.methods.allowance(owner, spender).call()
         .then((balance: number) => {
           if (balance === null) {
@@ -185,16 +195,6 @@ export class Token implements IStateful<ITokenState> {
         }
       }
     })
-  }
-
-  /*
-   * get a web3 contract instance for this token
-   */
-  public contract() {
-    // TODO: this a  bit hacky - we shuld have this contractInfo in our "contractAddresses" registry
-    const LATEST_ARC_VERSION = '0.0.1-rc.19'
-    const abi = require(`@daostack/migration/abis/${LATEST_ARC_VERSION}/DAOToken.json`)
-    return this.context.getContract(this.address, abi)
   }
 
   public mint(beneficiary: Address, amount: typeof BN) {

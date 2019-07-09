@@ -6,6 +6,9 @@ import { catchError, filter, first, map } from 'rxjs/operators'
 import { Logger } from './logger'
 import { createApolloClient, zenToRxjsObservable } from './utils'
 
+export interface IObservable<T> extends Observable<T> {
+  first: () => T
+}
 /**
  * handles connections with the Graph
  * @param options [description]

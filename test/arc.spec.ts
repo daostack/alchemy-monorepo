@@ -3,7 +3,7 @@ import Arc from '../src/index'
 import { Proposal } from '../src/proposal'
 import { Address } from '../src/types'
 import { BN } from './utils'
-import { fromWei, getTestAddresses, newArc, toWei, waitUntilTrue } from './utils'
+import { fromWei, getTestAddresses, newArc, toWei, waitUntilTrue, web3Provider } from './utils'
 
 jest.setTimeout(20000)
 
@@ -168,4 +168,23 @@ describe('Arc ', () => {
     expect(proposals.length).toBeGreaterThanOrEqual(6)
   })
 
+  it('separates reading and sending transactions correctly', async () => {
+    // these tests are a bit clumsy, because we have access to only a single node
+
+    // we now expect all read operations to fail, and all write operations to succeed
+    const arcWrite = await newArc({ web3ProviderRead: 'http://does.not.exist'})
+
+    expect(arcWrite.ethBalance('0x90f8bf6a479f320ead074411a4b0e7944ea81111').pipe(first()).toPromise())
+      .rejects.toThrow()
+    expect(arcWrite.GENToken().balanceOf('0x90f8bf6a479f320ead074411a4b0e7944ea81111').pipe(first()).toPromise())
+      .rejects.toThrow()
+    expect(arcWrite.GENToken()
+      .allowance('0x90f8bf6a479f320ead074411a4b0e7944ea81111', '0x90f8bf6a479f320ead074411a4b0e7944ea81111')
+      .pipe(first()).toPromise())
+      .rejects.toThrow()
+    // we now expect all write operations to fail, and all read operations to succeed
+    const arcRead = await newArc({ web3Provider: 'http://doesnotexist.com', web3ProviderRead: web3Provider})
+    expect(await arcRead.ethBalance('0x90f8bf6a479f320ead074411a4b0e7944ea81111').pipe(first()).toPromise())
+      .toEqual(new BN(0))
+  })
 })
