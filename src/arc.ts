@@ -21,17 +21,20 @@ const Web3 = require('web3')
  */
 export class Arc extends GraphNodeObserver {
   public web3Provider: Web3Provider = ''
+  public web3ProviderRead: Web3Provider = ''
   public ipfsProvider: IPFSProvider
 
   public pendingOperations: Observable<Array<Operation<any>>> = of()
 
   public ipfs: any
-  public web3: any
+  public web3: typeof Web3
+  public web3Read: typeof Web3 // if provided, arc will read all data from this provider
   /**
    * a mapping of contrct names to contract addresses
    */
   public contractAddresses: IContractInfo[]
-  public contracts: {[key: string]: any} = {}
+  public contracts: {[key: string]: any} = {} // a cache for the contracts
+  public contractsR: {[key: string]: any} = {} // a cache for teh "read-only" contracts
 
   // accounts obseved by ethBalance
   public blockHeaderSubscription: Subscription|undefined = undefined
@@ -49,6 +52,7 @@ export class Arc extends GraphNodeObserver {
     graphqlWsProvider?: string
     ipfsProvider: IPFSProvider
     web3Provider: string
+    web3ProviderRead?: string
 }) {
     super({
       graphqlHttpProvider: options.graphqlHttpProvider,
@@ -58,6 +62,11 @@ export class Arc extends GraphNodeObserver {
 
     if (options.web3Provider) {
       this.web3 = new Web3(options.web3Provider)
+    }
+    if (options.web3ProviderRead) {
+      this.web3Read = new Web3(options.web3ProviderRead)
+    } else {
+      this.web3Read = this.web3
     }
 
     this.contractAddresses = options.contractAddresses || []
@@ -148,21 +157,23 @@ export class Arc extends GraphNodeObserver {
       this.observedAccounts[owner].observer = observer
 
       // get the current balance and return it
-      this.web3.eth.getBalance(owner).then((currentBalance: number) => {
-        const accInfo = this.observedAccounts[owner];
-        (accInfo.observer as Observer<typeof BN>).next(new BN(currentBalance))
-        accInfo.lastBalance = currentBalance
-      })
+      this.web3Read.eth.getBalance(owner)
+        .then((currentBalance: number) => {
+          const accInfo = this.observedAccounts[owner];
+          (accInfo.observer as Observer<typeof BN>).next(new BN(currentBalance))
+          accInfo.lastBalance = currentBalance
+        })
+        .catch((err: Error) => observer.error(err))
 
       // set up the blockheadersubscription if it does not exist yet
       if (!this.blockHeaderSubscription) {
-        this.blockHeaderSubscription = this.web3.eth.subscribe('newBlockHeaders', (err: Error) => {
+        this.blockHeaderSubscription = this.web3Read.eth.subscribe('newBlockHeaders', (err: Error) => {
           Object.keys(this.observedAccounts).forEach((addr) => {
             const accInfo = this.observedAccounts[addr]
             if (err) {
               (accInfo.observer as Observer<typeof BN>).error(err)
             } else {
-              this.web3.eth.getBalance(addr).then((balance: any) => {
+              this.web3Read.eth.getBalance(addr).then((balance: any) => {
                 if (balance !== accInfo.lastBalance) {
                   (accInfo.observer as Observer<typeof BN>).next(new BN(balance))
                   accInfo.lastBalance = balance
@@ -173,7 +184,7 @@ export class Arc extends GraphNodeObserver {
         })
       }
       // unsubscribe
-      return( ) => {
+      return () => {
         this.observedAccounts[owner].subscriptionsCount -= 1
         if (this.observedAccounts[owner].subscriptionsCount <= 0) {
           delete this.observedAccounts[owner]
@@ -241,16 +252,26 @@ export class Arc extends GraphNodeObserver {
    * @param  [version] (optional) Arc version of contract (https://www.npmjs.com/package/@daostack/arc)
    * @return   a web3 contract instance
    */
-  public getContract(address: Address, abi?: any) {
+  public getContract(address: Address, abi?: any, mode?: 'readonly') {
     // we use a contract "cache" because web3 contract instances add an event listener
-    if (this.contracts[address]) {
+
+    const readonlyContract = (mode === 'readonly' && this.web3Read !== this.web3)
+    if (readonlyContract && this.contractsR[address]) {
+      return this.contractsR[address]
+    } else if (this.contracts[address]) {
       return this.contracts[address]
     } else {
       if (!abi) {
         abi = this.getABI(address)
       }
-      const contract = new this.web3.eth.Contract(abi, address)
-      this.contracts[address] = contract
+      let contract: any
+      if (readonlyContract) {
+        contract = new this.web3Read.eth.Contract(abi, address)
+        this.contractsR[address] = contract
+      } else {
+        contract = new this.web3.eth.Contract(abi, address)
+        this.contracts[address] = contract
+      }
       return contract
     }
   }

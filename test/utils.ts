@@ -75,13 +75,14 @@ export async function getOptions(web3: any) {
   }
 }
 
-export async function newArc() {
-  const arc = new Arc({
+export async function newArc(options: { [key: string]: string} = {}): Promise<Arc> {
+  const defaultOptions = {
     graphqlHttpProvider,
     graphqlWsProvider,
     ipfsProvider,
     web3Provider
-  })
+  }
+  const arc = new Arc(Object.assign(defaultOptions, options))
   // get the contract addresses from the subgraph
   await arc.initialize()
   for (const pk of pks) {
