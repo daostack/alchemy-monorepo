@@ -37,6 +37,6 @@ script:
   - npm run build
 
 after_success:
-  - npm run report-coverage
-  - test $TRAVIS_BRANCH = "master" && npm run deploy-docs
-  - test $TRAVIS_BRANCH = "master" && npm run semantic-release
+  # - npm run report-coverage
+  # - test $TRAVIS_BRANCH = "master" && npm run deploy-docs
+  # - test $TRAVIS_BRANCH = "master" && npm run semantic-release

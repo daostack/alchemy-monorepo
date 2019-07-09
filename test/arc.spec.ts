@@ -42,7 +42,7 @@ describe('Arc ', () => {
     expect(() => arc.sendQuery(gql`{daos {id}}`)).toThrowError(/no connection/i)
   })
 
-  it('Arc is usable without knowning about contrats', () => {
+  it('Arc is usable without knowing about contracts', () => {
     const arc = new Arc({
       contractAddresses: [],
       graphqlHttpProvider: 'https://graphql.provider',
