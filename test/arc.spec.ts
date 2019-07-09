@@ -1,3 +1,4 @@
+import gql from 'graphql-tag'
 import { first } from 'rxjs/operators'
 import Arc from '../src/index'
 import { Proposal } from '../src/proposal'
@@ -38,10 +39,22 @@ describe('Arc ', () => {
     })
     expect(arc).toBeInstanceOf(Arc)
 
-    expect(() => arc.sendQuery(`{daos {id}}`)).toThrowError(/no connection/i)
+    expect(() => arc.sendQuery(gql`{daos {id}}`)).toThrowError(/no connection/i)
   })
 
-  it('arc.getContractAddresses() should work', async () => {
+  it('Arc is usable without knowning about contrats', () => {
+    const arc = new Arc({
+      contractAddresses: [],
+      graphqlHttpProvider: 'https://graphql.provider',
+      graphqlWsProvider: 'https://graphql.provider'
+    })
+    expect(arc).toBeInstanceOf(Arc)
+
+    const daos = arc.sendQuery(gql`{daos {id}}`)
+    expect(daos).toBeTruthy()
+  })
+
+  it('arc.allowances() should work', async () => {
       const arc = await newArc()
 
       const allowances: Array<typeof BN> = []
@@ -161,7 +174,7 @@ describe('Arc ', () => {
     expect(proposal).toBeInstanceOf(Proposal)
   })
 
-  it('arc.proposals() should work', async () => {
+  it.only('arc.proposals() should work', async () => {
     const arc = await newArc()
     const proposals = await arc.proposals().pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
