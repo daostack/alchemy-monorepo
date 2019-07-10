@@ -21,14 +21,23 @@ import Arc from '@daostack/client'
 
 // create an Arc instance
 const arc = new Arc({
-  graphqlHttpProvider,
-  graphqlWsProvider,
-  ipfsProvider,
-  web3Provider
+  graphqlHttpProvider: "https://subgraph.daostack.io/subgraphs/name/v23",
+  graphqlWsProvider: "wss://ws.subgraph.daostack.io/subgraphs/name/v23",
+  web3Provider: `wss://mainnet.infura.io/ws/v3/e0cdf3bfda9b468fa908aa6ab03d5ba2`,
+  ipfsProvider: {
+    "host": "subgraph.daostack.io",
+    "port": "443",
+    "protocol": "https",
+    "api-path": "/ipfs/api/v0/"
+  }
 })
 // get a list of DAOs
-await arc.initialize()
 arc.daos()
+// before we can use the Arc instance to send transactions, we need to provide it
+// with information on where the contracts can be found
+// query the subgraph for the contract addresses, and use those
+const contractInfos = await arc.getContractInfos()
+arc.setContractInfo(contractInfos)
 
 ```
 

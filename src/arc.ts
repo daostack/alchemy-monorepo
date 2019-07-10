@@ -50,15 +50,15 @@ export class Arc extends GraphNodeObserver {
     contractAddresses?: IContractInfo[]
     graphqlHttpProvider?: string
     graphqlWsProvider?: string
-    ipfsProvider: IPFSProvider
-    web3Provider: string
+    ipfsProvider?: IPFSProvider
+    web3Provider?: string
     web3ProviderRead?: string
 }) {
     super({
       graphqlHttpProvider: options.graphqlHttpProvider,
       graphqlWsProvider: options.graphqlWsProvider
     })
-    this.ipfsProvider = options.ipfsProvider
+    this.ipfsProvider = options.ipfsProvider || ''
 
     if (options.web3Provider) {
       this.web3 = new Web3(options.web3Provider)
@@ -79,11 +79,20 @@ export class Arc extends GraphNodeObserver {
     }
   }
 
-  public async initialize(): Promise<boolean> {
-    this.contractAddresses = await this.getContractAddresses()
-    return true
+  /**
+   * set the contract addresses
+   * @param  contractInfos a list of IContractInfo objects
+   * @return
+   */
+  public async setContractInfos(contractInfos: IContractInfo[]) {
+    // reset the cache
+    this.contracts = {}
+    this.contractsR = {}
+    //  get the contract addresses from the subgraph
+    this.contractAddresses = contractInfos
   }
-  public async getContractAddresses(): Promise<IContractInfo[]> {
+
+  public async getContractInfos(): Promise<IContractInfo[]> {
     const query = gql`{
       contractInfos {
         id
@@ -214,7 +223,7 @@ export class Arc extends GraphNodeObserver {
       }
     }
     if (!this.contractAddresses) {
-      throw Error(`no contract info was found - did you call "arc.initialize()"?`)
+      throw Error(`no contract info was found - did you call "arc.setContractInfos()"?`)
     }
     throw Error(`No contract with address ${address} is known`)
   }
@@ -226,7 +235,7 @@ export class Arc extends GraphNodeObserver {
         }
       }
     if (!this.contractAddresses) {
-      throw Error(`no contract info was found - did you call "arc.initialize()"?`)
+      throw Error(`no contract info was found - did you call "arc.setContractInfos(...)"?`)
     }
     throw Error(`No contract with name ${name}  and version ${version} is known`)
   }
@@ -300,7 +309,7 @@ export class Arc extends GraphNodeObserver {
       }
       throw Error(`Cannot find address of GEN Token`)
     } else {
-      throw Error(`No contract addresses known - did you run arc.initialize()?`)
+      throw Error(`No contract addresses known - did you run arc.setContractInfos()?`)
     }
   }
 
