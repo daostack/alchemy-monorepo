@@ -127,22 +127,22 @@ export class Proposal implements IStateful<IProposalState> {
       throw Error(`Proposal.create(options): options must include an address for "scheme"`)
     }
 
-    let schemeName: string
-    try {
-      schemeName = context.getContractInfo(options.scheme).name
-    } catch (err) {
-      if (err.message.match(/is known/)) {
-        throw new Error(`Unknown scheme at ${options.scheme} - cannot create a proposal`)
-      } else {
-        throw err
-      }
-    }
+    // let schemeName: string
+    // try {
+    //   schemeName = context.getContractInfo(options.scheme).name
+    // } catch (err) {
+    //   if (err.message.match(/is known/)) {
+    //     throw new Error(`Unknown scheme at ${options.scheme} - cannot create a proposal`)
+    //   } else {
+    //     throw err
+    //   }
+    // }
 
     const scheme = new Scheme(
       options.scheme, // id
-      options.dao, // dao
-      schemeName,
-      options.scheme, // address
+      // options.dao, // dao
+      // schemeName,
+      // options.scheme, // address
       context
     )
     return scheme.createProposal(options)

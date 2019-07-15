@@ -93,9 +93,6 @@ export class Scheme {
       }
       return new Scheme(
         item.id,
-        item.dao.id,
-        name,
-        item.address,
         context
       )
     }
@@ -107,17 +104,11 @@ export class Scheme {
     ) as Observable<Scheme[]>
   }
 
-  public address: Address
   public id: Address
-  public dao: Address
-  public name: string
 
-  constructor(id: Address, dao: Address, name: string, address: Address, public context: Arc) {
+  constructor(id: Address, public context: Arc) {
     this.context = context
     this.id = id
-    this.dao = dao
-    this.name = name
-    this.address = address
   }
 
   public state(): Observable<ISchemeState> {
@@ -162,41 +153,49 @@ export class Scheme {
      * @return a Proposal instance
      */
     public createProposal(options: IProposalCreateOptions): Operation<Proposal>  {
-      let msg: string
-      const context = this.context
-      let createTransaction: () => any = () => null
-      let map: any
+      const observable = Observable.create(async (observer: any) => {
+        let msg: string
+        const context = this.context
+        let createTransaction: () => any = () => null
+        let map: any
+        // @ts-ignore
+        const state = await this.state().first()
 
-      switch (this.name) {
-      // ContributionReward
-        case 'ContributionReward':
-          createTransaction  = ContributionReward.createTransaction(options, this.context)
-          map = ContributionReward.createTransactionMap(options, this.context)
-          break
+        switch (state.name) {
+          // ContributionReward
+          case 'ContributionReward':
+            createTransaction  = ContributionReward.createTransaction(options, this.context)
+            map = ContributionReward.createTransactionMap(options, this.context)
+            break
 
-        // GenericScheme
-        case 'GenericScheme':
-          createTransaction  = GenericScheme.createTransaction(options, this.context)
-          map = GenericScheme.createTransactionMap(options, this.context)
-          break
+          // GenericScheme
+          case 'GenericScheme':
+            createTransaction  = GenericScheme.createTransaction(options, this.context)
+            map = GenericScheme.createTransactionMap(options, this.context)
+            break
 
-        // SchemeRegistrar
-        case 'SchemeRegistrar':
-          createTransaction  = SchemeRegistrar.createTransaction(options, this.context)
-          map = SchemeRegistrar.createTransactionMap(options, this.context)
-          break
+          // SchemeRegistrar
+          case 'SchemeRegistrar':
+            createTransaction  = SchemeRegistrar.createTransaction(options, this.context)
+            map = SchemeRegistrar.createTransactionMap(options, this.context)
+            break
 
-        default:
-          msg = `Unknown proposal scheme: "${this.name}"`
-          throw Error(msg)
-      }
+          default:
+            msg = `Unknown proposal scheme: "${state.name}"`
+            throw Error(msg)
+        }
 
-      return context.sendTransaction(createTransaction, map)
+        const sendTransactionObservable = context.sendTransaction(createTransaction, map)
+        const sub = sendTransactionObservable.subscribe(observer)
+
+        return () => sub.unsubscribe()
+      })
+      return observable
     }
 
     public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
       if (!options.where) { options.where = {}}
-      options.where.scheme = this.address
+      options.where.scheme = this.id
       return Proposal.search(this.context, options)
     }
 
