@@ -1,0 +1,88 @@
+[
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_avatar",
+        "type": "address"
+      },
+      {
+        "name": "_contract",
+        "type": "address"
+      },
+      {
+        "name": "_a",
+        "type": "uint256"
+      },
+      {
+        "name": "_b",
+        "type": "address"
+      },
+      {
+        "name": "_c",
+        "type": "bytes32"
+      },
+      {
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "genericCall",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      },
+      {
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_avatar",
+        "type": "address"
+      },
+      {
+        "name": "_contract",
+        "type": "address"
+      },
+      {
+        "name": "_a",
+        "type": "uint256"
+      },
+      {
+        "name": "_b",
+        "type": "address"
+      },
+      {
+        "name": "_c",
+        "type": "bytes32"
+      },
+      {
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "genericCallDirect",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      },
+      {
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

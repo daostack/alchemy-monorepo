@@ -17,6 +17,9 @@ readonly ARC=$(cat package.json | jq -r '.dependencies."@daostack/arc"' | rev | 
 # migrate ganache
 for (( version=$INITIAL_VERSION; version<=$ARC; version++ ))
 do
+if [ "$version" == "20" ]; then
+continue
+fi
 echo "Installing Arc version $version..."
 npm install "@daostack/arc@0.0.1-rc.$version"
 # generate abis
