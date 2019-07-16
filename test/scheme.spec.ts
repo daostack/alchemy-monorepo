@@ -71,7 +71,8 @@ describe('Scheme', () => {
     })
 
   })
-  it.only('Scheme.state() is working for GenericScheme schemes', async () => {
+
+  it('Scheme.state() is working for GenericScheme schemes', async () => {
     const dao = await getTestDAO()
     const result = await Scheme
       .search(arc, {where: {dao: dao.address, name: 'GenericScheme'}})
