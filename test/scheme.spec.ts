@@ -79,7 +79,7 @@ describe('Scheme', () => {
     const proposalState = await proposal.state().pipe(first()).toPromise()
     const schemes = await firstResult(Scheme.search(arc, {where: {id: proposalState.scheme.id}}))
     const schemeState = await firstResult(schemes[0].state())
-    expect(proposalState.scheme).toEqual(schemeState)
+    expect(proposalState.scheme).toMatchObject(schemeState)
   })
 
   it('paging and sorting works', async () => {
