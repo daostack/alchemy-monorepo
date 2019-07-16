@@ -82,9 +82,6 @@ describe('Vote on a ContributionReward', () => {
     // a non-existing proposal
     const proposal = new Proposal(
       '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2',
-      dao.address,
-      executedProposal.schemeAddress,
-      executedProposal.votingMachineAddress,
       arc
     )
 
@@ -111,7 +108,7 @@ describe('Vote on a ContributionReward', () => {
 
     const accounts = arc.web3.eth.accounts.wallet
     const accountWithNoRep = accounts[6].address
-    const reputation = await firstResult(proposal.dao.nativeReputation())
+    const reputation = await firstResult(dao.nativeReputation())
     const balance = await firstResult(reputation.reputationOf(accountWithNoRep))
     expect(balance.toString()).toEqual('0')
     arc.setAccount(accountWithNoRep) // a fake address

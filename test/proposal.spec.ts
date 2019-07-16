@@ -146,14 +146,6 @@ describe('Proposal', () => {
     expect(shouldBeJustThisExecutedProposal.map((p: Proposal) => p.id)).toEqual([proposal.id])
   })
 
-  it('get proposal dao', async () => {
-
-    // const proposalDao = await proposal.dao.pipe(first()).toPromise()
-    const proposal = executedProposal
-    expect(proposal).toBeInstanceOf(Proposal)
-    expect(proposal.dao.address).toEqual(dao.address)
-  })
-
   it('state should be available before the data is indexed', async () => {
     const proposal = await createAProposal()
     const proposalState = await proposal.state().pipe(first()).toPromise()
@@ -256,7 +248,8 @@ describe('Proposal', () => {
 
     const stakeAmount = toWei('18')
     await proposal.stakingToken().mint(arc.web3.eth.defaultAccount, stakeAmount).send()
-    await arc.approveForStaking(proposal.votingMachine().options.address, stakeAmount).send()
+    const votingMachine = await proposal.votingMachine()
+    await arc.approveForStaking(votingMachine.options.address, stakeAmount).send()
     await proposal.stake(IProposalOutcome.Pass, stakeAmount).send()
 
     // wait until we have the we received the stake update
@@ -277,12 +270,14 @@ describe('Proposal', () => {
         throw err
       }
     )
+    // wait for the proposal to be indexed
+    await waitUntilTrue(() => states.length > 0)
     // vote for the proposal
     await proposal.vote(IProposalOutcome.Pass).pipe(first()).toPromise()
 
     // wait until all transactions are indexed
     await waitUntilTrue(() => {
-      if (states.length > 2 && states[states.length - 1].votesFor.gt(new BN(0))) {
+      if (states.length > 1 && states[states.length - 1].votesFor.gt(new BN(0))) {
         return true
       } else {
         return false

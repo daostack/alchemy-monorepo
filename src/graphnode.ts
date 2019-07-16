@@ -184,6 +184,7 @@ export class GraphNodeObserver {
         return r.data[entity]
       }),
       map(itemMap)
+      // filter((o) => !!o)
     )
   }
 

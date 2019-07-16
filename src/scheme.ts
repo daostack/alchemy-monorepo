@@ -1,7 +1,8 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
+import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
-import { Operation } from './operation'
+import { Operation, toIOperationObservable } from './operation'
 import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './proposal'
 import * as ContributionReward from './schemes/contributionReward'
 import * as GenericScheme from './schemes/genericScheme'
@@ -108,7 +109,7 @@ export class Scheme {
 
   constructor(id: Address, public context: Arc) {
     this.context = context
-    this.id = id
+    this.id = id.toLowerCase()
   }
 
   public state(): Observable<ISchemeState> {
@@ -129,7 +130,9 @@ export class Scheme {
     `
 
     const itemMap = (item: any): ISchemeState|null => {
-
+      if (!item) {
+        return null
+      }
       const name = item.name || this.context.getContractInfo(item.address).name
       return {
         address: item.address,
@@ -158,8 +161,7 @@ export class Scheme {
         const context = this.context
         let createTransaction: () => any = () => null
         let map: any
-        // @ts-ignore
-        const state = await this.state().first()
+        const state = await this.state().pipe(first()).toPromise()
 
         switch (state.name) {
           // ContributionReward
@@ -190,7 +192,8 @@ export class Scheme {
 
         return () => sub.unsubscribe()
       })
-      return observable
+
+      return toIOperationObservable(observable)
     }
 
     public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {

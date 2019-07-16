@@ -33,7 +33,8 @@ describe('Stake on a ContributionReward', () => {
     const stakingToken =  await proposal.stakingToken()
 
     // approve the spend, for staking
-    await stakingToken.approveForStaking(proposal.votingMachine().options.address, toWei('100')).send()
+    const votingMachine = await proposal.votingMachine()
+    await stakingToken.approveForStaking(votingMachine.options.address, toWei('100')).send()
 
     const stake = await proposal.stake(IProposalOutcome.Pass, new BN(100)).send()
 
@@ -78,9 +79,9 @@ describe('Stake on a ContributionReward', () => {
     // a non-existing proposal
     const proposal = new Proposal(
       '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2',
-      dao.address,
-      executedProposal.schemeAddress,
-      executedProposal.votingMachineAddress,
+      // dao.address,
+      // executedProposal.schemeAddress,
+      // executedProposal.votingMachineAddress,
       arc
     )
 
