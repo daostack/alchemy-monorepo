@@ -231,24 +231,24 @@ export class Scheme {
         canManageGlobalConstraints: item.canManageGlobalConstraints,
         canRegisterSchemes: item.canRegisterSchemes,
         canUpgradeController: item.canUpgradeController,
+        contributionRewardParams: item.contributionRewardParams ? {
+          voteParams: mapGenesisProtocolParams(item.contributionRewardParams.voteParams),
+          votingMachine: item.contributionRewardParams.votingMachine
+        } : null,
         dao: item.dao.id,
+        genericSchemeParams: item.genericSchemeParams ? {
+          contractToCall: item.genericSchemeParams.contractToCall,
+          voteParams: mapGenesisProtocolParams(item.genericSchemeParams.voteParams),
+          votingMachine: item.genericSchemeParams.votingMachine
+        } : null,
         id: item.id,
         name,
         paramsHash: item.paramsHash,
-        contributionRewardParams: item.contributionRewardParams ? {
-          votingMachine: item.contributionRewardParams.votingMachine,
-          voteParams: mapGenesisProtocolParams(item.contributionRewardParams.voteParams)
-        } : null,
-        genericSchemeParams: item.genericSchemeParams ? {
-          votingMachine: item.genericSchemeParams.votingMachine,
-          contractToCall: item.genericSchemeParams.contractToCall,
-          voteParams: mapGenesisProtocolParams(item.genericSchemeParams.voteParams)
-        } : null,
         schemeRegistrarParams: item.schemeRegistrarParams ? {
-          votingMachine: item.schemeRegistrarParams.votingMachine,
           voteRegisterParams: mapGenesisProtocolParams(item.schemeRegistrarParams.voteRegisterParams),
-          voteRemoveParams: mapGenesisProtocolParams(item.schemeRegistrarParams.voteRemoveParams)
-        }: null
+          voteRemoveParams: mapGenesisProtocolParams(item.schemeRegistrarParams.voteRemoveParams),
+          votingMachine: item.schemeRegistrarParams.votingMachine
+        } : null
       }
     }
     return this.context.getObservableObject(query, itemMap) as Observable<ISchemeState>
