@@ -225,16 +225,6 @@ export class Scheme {
     const itemMap = (item: any): ISchemeState|null => {
 
       const name = item.name || this.context.getContractInfo(item.address).name
-      let genericScheme: GenericScheme.IGenericSchemeInfo|undefined
-      if (item.genericSchemeParams) {
-        genericScheme = {
-          contractToCall: item.genericSchemeParams.contractToCall,
-          id: item.genericSchemeParams.id,
-          votingMachine: item.genericSchemeParams.votingMachine
-        }
-      } else {
-        genericScheme = undefined
-      }
       return {
         address: item.address,
         canDelegateCall: item.canDelegateCall,
