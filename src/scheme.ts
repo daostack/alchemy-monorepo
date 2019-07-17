@@ -1,6 +1,7 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
+import { IGenesisProtocolParams, mapGenesisProtocolParams } from './genesisProtocol'
 import { Operation } from './operation'
 import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './proposal'
 import * as ContributionReward from './schemes/contributionReward'
@@ -19,7 +20,20 @@ export interface ISchemeState {
   canManageGlobalConstraints: boolean
   dao: Address
   paramsHash: string
-  genericScheme?: GenericScheme.IGenericSchemeInfo
+  contributionRewardParams?: {
+    votingMachine: Address
+    voteParams: IGenesisProtocolParams
+  } | null
+  genericSchemeParams?: {
+    votingMachine: Address
+    contractToCall: Address
+    voteParams: IGenesisProtocolParams
+  } | null
+  schemeRegistrarParams?: {
+    votingMachine: Address
+    voteRemoveParams: IGenesisProtocolParams
+    voteRegisterParams: IGenesisProtocolParams
+  } | null
 }
 
 export interface ISchemeQueryOptions extends ICommonQueryOptions {
@@ -134,10 +148,75 @@ export class Scheme {
           canUpgradeController
           canManageGlobalConstraints
           paramsHash
-          genericSchemeParams {
-            id
-            contractToCall
+          contributionRewardParams {
             votingMachine
+            voteParams {
+              queuedVoteRequiredPercentage
+              queuedVotePeriodLimit
+              boostedVotePeriodLimit
+              preBoostedVotePeriodLimit
+              thresholdConst
+              limitExponentValue
+              quietEndingPeriod
+              proposingRepReward
+              votersReputationLossRatio
+              minimumDaoBounty
+              daoBountyConst
+              activationTime
+              voteOnBehalf
+            }
+          }
+          genericSchemeParams {
+            votingMachine
+            contractToCall
+            voteParams {
+              queuedVoteRequiredPercentage
+              queuedVotePeriodLimit
+              boostedVotePeriodLimit
+              preBoostedVotePeriodLimit
+              thresholdConst
+              limitExponentValue
+              quietEndingPeriod
+              proposingRepReward
+              votersReputationLossRatio
+              minimumDaoBounty
+              daoBountyConst
+              activationTime
+              voteOnBehalf
+            }
+          }
+          schemeRegistrarParams {
+            votingMachine
+            voteRemoveParams {
+              queuedVoteRequiredPercentage
+              queuedVotePeriodLimit
+              boostedVotePeriodLimit
+              preBoostedVotePeriodLimit
+              thresholdConst
+              limitExponentValue
+              quietEndingPeriod
+              proposingRepReward
+              votersReputationLossRatio
+              minimumDaoBounty
+              daoBountyConst
+              activationTime
+              voteOnBehalf
+            }
+            voteRegisterParams {
+              queuedVoteRequiredPercentage
+              queuedVotePeriodLimit
+              boostedVotePeriodLimit
+              preBoostedVotePeriodLimit
+              thresholdConst
+              limitExponentValue
+              quietEndingPeriod
+              proposingRepReward
+              votersReputationLossRatio
+              minimumDaoBounty
+              daoBountyConst
+              activationTime
+              voteOnBehalf
+            }
           }
         }
       }
@@ -146,27 +225,30 @@ export class Scheme {
     const itemMap = (item: any): ISchemeState|null => {
 
       const name = item.name || this.context.getContractInfo(item.address).name
-      let genericScheme: GenericScheme.IGenericSchemeInfo|undefined
-      if (item.genericSchemeParams) {
-        genericScheme = {
-          contractToCall: item.genericSchemeParams.contractToCall,
-          id: item.genericSchemeParams.id,
-          votingMachine: item.genericSchemeParams.votingMachine
-        }
-      } else {
-        genericScheme = undefined
-      }
       return {
         address: item.address,
         canDelegateCall: item.canDelegateCall,
         canManageGlobalConstraints: item.canManageGlobalConstraints,
         canRegisterSchemes: item.canRegisterSchemes,
         canUpgradeController: item.canUpgradeController,
+        contributionRewardParams: item.contributionRewardParams ? {
+          voteParams: mapGenesisProtocolParams(item.contributionRewardParams.voteParams),
+          votingMachine: item.contributionRewardParams.votingMachine
+        } : null,
         dao: item.dao.id,
-        genericScheme,
+        genericSchemeParams: item.genericSchemeParams ? {
+          contractToCall: item.genericSchemeParams.contractToCall,
+          voteParams: mapGenesisProtocolParams(item.genericSchemeParams.voteParams),
+          votingMachine: item.genericSchemeParams.votingMachine
+        } : null,
         id: item.id,
         name,
-        paramsHash: item.paramsHash
+        paramsHash: item.paramsHash,
+        schemeRegistrarParams: item.schemeRegistrarParams ? {
+          voteRegisterParams: mapGenesisProtocolParams(item.schemeRegistrarParams.voteRegisterParams),
+          voteRemoveParams: mapGenesisProtocolParams(item.schemeRegistrarParams.voteRemoveParams),
+          votingMachine: item.schemeRegistrarParams.votingMachine
+        } : null
       }
     }
     return this.context.getObservableObject(query, itemMap) as Observable<ISchemeState>

@@ -82,11 +82,6 @@ describe('Scheme', () => {
     const state = await scheme.state().pipe(first()).toPromise()
     expect(state).toMatchObject({
       address: testAddresses.base.GenericScheme.toLowerCase(),
-      genericScheme: {
-        contractToCall: '0xb113d904f84950c7b1c8663fab9baa1d8095b1e2',
-         id: '0x7f2d89a2453a5b49a6d98b0604d7a79892fe80f0f1d3d750710089edb1bbc583',
-         votingMachine: '0xaffd1e5d27968889e25ba045c53ed608ce5ee223'
-      },
       id: scheme.id,
       name: 'GenericScheme'
     })
@@ -100,7 +95,7 @@ describe('Scheme', () => {
     const proposalState = await proposal.state().pipe(first()).toPromise()
     const schemes = await firstResult(Scheme.search(arc, {where: {id: proposalState.scheme.id}}))
     const schemeState = await firstResult(schemes[0].state())
-    expect(proposalState.scheme).toEqual(schemeState)
+    expect(schemeState).toMatchObject(proposalState.scheme)
   })
 
   it('paging and sorting works', async () => {
