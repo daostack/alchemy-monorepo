@@ -6,10 +6,13 @@ import { ISchemeState } from './scheme'
 import { Address, ICommonQueryOptions } from './types'
 import { BN, createGraphQlQuery, isAddress, realMathToNumber } from './utils'
 
-export interface IQueueState {
+export interface IQueueStaticState {
   dao: DAO
   id: string
   name: string
+}
+
+export interface IQueueState extends IQueueStaticState {
   scheme: ISchemeState
   threshold: number
   votingMachine: Address

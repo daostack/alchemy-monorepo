@@ -54,13 +54,16 @@ export enum IExecutionState {
   BoostedBarCrossed
 }
 
-export interface IProposalState {
+export interface IProposalStaticState {
+  dao: DAO
+}
+
+export interface IProposalState extends IProposalStaticState {
   accountsWithUnclaimedRewards: Address[],
   boostedAt: Date
   contributionReward: ContributionReward.IContributionReward|null
   confidenceThreshold: number
   createdAt: Date
-  dao: DAO
   descriptionHash?: string
   description?: string
   downStakeNeededToQueue: typeof BN

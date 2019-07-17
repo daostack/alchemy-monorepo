@@ -157,12 +157,12 @@ export class DAO implements IStateful<IDAOState> {
         address
       }
     }`
-    const itemMap = (item: any): Member => new Member(item.address, this.address, this.context)
+    const itemMap = (item: any): Member => new Member({address: item.address, dao: this.address}, this.context)
     return this.context.getObservableList(query, itemMap) as Observable<Member[]>
   }
 
   public member(address: Address): Member {
-    return new Member(address, this.address, this.context)
+    return new Member({ address, dao: this.address}, this.context)
   }
 
   /**
@@ -183,13 +183,8 @@ export class DAO implements IStateful<IDAOState> {
     return Proposal.search(this.context, options)
   }
 
-  public async proposal(proposalId: string): Promise<Proposal> {
-    const proposals =  await this.proposals({ where: {id: proposalId}}).pipe(first()).toPromise()
-    if (proposals) {
-      return proposals[0]
-    } else {
-      throw new Error(`No proposal with id ${proposalId} could be found`)
-    }
+  public proposal(proposalId: string): Proposal {
+    return new Proposal(proposalId, this.context)
   }
 
   public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {

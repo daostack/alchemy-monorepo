@@ -84,13 +84,40 @@ export async function newArc(options: { [key: string]: string} = {}): Promise<Ar
   }
   const arc = new Arc(Object.assign(defaultOptions, options))
   // get the contract addresses from the subgraph
-  const contractInfos = await arc.getContractInfos()
+  const contractInfos = await arc.fetchContractInfos()
   arc.setContractInfos(contractInfos)
   for (const pk of pks) {
     const account = arc.web3.eth.accounts.privateKeyToAccount(pk)
     arc.web3.eth.accounts.wallet.add(account)
   }
   arc.web3.eth.defaultAccount = arc.web3.eth.accounts.wallet[0].address
+  return arc
+}
+
+/**
+ * Arc without a valid ethereum connection
+ * @return [description]
+ */
+export async function newArcWithoutEthereum(): Promise<Arc> {
+  const arc = new Arc({
+    graphqlHttpProvider,
+    graphqlWsProvider
+  })
+  return arc
+}
+
+/**
+ * Arc instance without a working graphql connection
+ * @return [description]
+ */
+
+export async function newArcWithoutGraphql(): Promise<Arc> {
+  const arc = new Arc({
+    ipfsProvider,
+    web3Provider
+  })
+  const normalArc = await newArc()
+  arc.setContractInfos(normalArc.contractInfos)
   return arc
 }
 
@@ -109,7 +136,6 @@ export async function getTestDAO() {
 export async function createAProposal(
   dao?: DAO,
   options: any = {}
-  // options: IProposalCreateOptions | { scheme?: Address, dao?: Address} = {}
 ) {
   if (!dao) {
     dao = await getTestDAO()

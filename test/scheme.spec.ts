@@ -29,11 +29,18 @@ describe('Scheme', () => {
   it('Scheme are searchable', async () => {
     const dao = await getTestDAO()
     let result: Scheme[]
-    result = await Scheme.search(arc, {where: {dao: dao.address}})
+    result = await Scheme.search(arc, {where: {dao: dao.address, name_not: null}})
         .pipe(first()).toPromise()
 
-    // TODO: we should expect 3 queus here, see https://github.com/daostack/subgraph/issues/195
-    expect(result.length).toEqual(3)
+    expect(result.length).toBeGreaterThanOrEqual(3)
+
+    // the schemes have their static state set
+    const staticState = result[0].staticState
+    expect(staticState.name).toBeTruthy()
+    expect(staticState.address).toBeTruthy()
+    expect(staticState.id).toBeTruthy()
+    expect(staticState.dao).toBeTruthy()
+    expect(staticState.paramsHash).toBeTruthy()
 
     const schemeStates: ISchemeState[] = []
 
@@ -117,4 +124,10 @@ describe('Scheme', () => {
     // expect(ls3[0].address <= ls3[1].address).toBeTruthy()
   })
 
+  it('fetchStaticState works', async () => {
+    const schemes = await firstResult(Scheme.search(arc))
+    const scheme = schemes[0]
+    const state = await scheme.fetchStaticState()
+    expect(Object.keys(state)).toContain('address')
+  })
 })

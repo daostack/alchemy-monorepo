@@ -5,13 +5,18 @@ import { IProposalOutcome} from './proposal'
 import { Address, ICommonQueryOptions } from './types'
 import { BN, createGraphQlQuery, isAddress } from './utils'
 
-export interface IStake {
-  id: string|undefined
+export interface IStakeStaticState {
+  id: string
   staker: Address
   createdAt: Date | undefined
   outcome: IProposalOutcome
   amount: typeof BN // amount staked
   proposalId: string
+}
+
+// @ts-ignore
+export interface IStakeState extends IStakeStaticState {
+
 }
 
 export interface IStakeQueryOptions extends ICommonQueryOptions {
@@ -25,7 +30,7 @@ export interface IStakeQueryOptions extends ICommonQueryOptions {
   }
 }
 
-export class Stake implements IStake {
+export class Stake {
 
   /**
    * Stake.search(context, options) searches for stake entities
@@ -80,20 +85,33 @@ export class Stake implements IStake {
         } else {
           throw new Error(`Unexpected value for proposalStakes.outcome: ${r.outcome}`)
         }
-        return new Stake(r.id, r.staker, r.createdAt, outcome, new BN(r.amount || 0), r.proposal.id)
+        return new Stake({
+          amount: new BN(r.amount || 0),
+          createdAt: r.createdAt,
+          id: r.id,
+          outcome,
+          proposalId: r.proposal.id,
+          staker: r.staker
+        })
       },
       apolloQueryOptions
     ) as Observable<Stake[]>
   }
 
+  public id: string
+  public staticState: IStakeStaticState|undefined
   constructor(
-      public id: string|undefined,
-      public staker: string,
-      public createdAt: Date | undefined,
-      public outcome: IProposalOutcome,
-      public amount: typeof BN,
-      public proposalId: string
-      // public dao: Address
+      idOrOpts: string|IStakeStaticState
   ) {
+    if (typeof idOrOpts === 'string') {
+      this.id = idOrOpts
+    } else {
+      this.id = idOrOpts.id
+      this.setStaticState(idOrOpts as IStakeStaticState)
+    }
+  }
+
+  public setStaticState(opts: IStakeStaticState) {
+    this.staticState = opts
   }
 }

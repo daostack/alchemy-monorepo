@@ -69,8 +69,14 @@ describe('Proposal', () => {
 
     // we now expect our new scheme to appear in the schemes collection
     const registeredSchemes = await firstResult(Scheme.search(arc, {where: { dao: dao.address }}))
-    expect(registeredSchemes.map((x: Scheme) => x.address))
-      .toContain(schemeToRegister)
+    const registeredSchemesAddresses: string[] = []
+    await Promise.all(
+      registeredSchemes.map(async (x: Scheme) => {
+        const state = await x.fetchStaticState()
+        registeredSchemesAddresses.push(state.address)
+      })
+    )
+    expect(registeredSchemesAddresses).toContain(schemeToRegister)
 
     // we create a new proposal now to edit the scheme
     const proposalToEdit = await createAProposal(dao, {

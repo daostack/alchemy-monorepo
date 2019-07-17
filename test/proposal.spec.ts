@@ -9,7 +9,8 @@ import { BN } from './utils'
 import { createAProposal,
   fromWei,
   getTestAddresses,
-  ITestAddresses, newArc, toWei, waitUntilTrue } from './utils'
+  ITestAddresses,
+  newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(20000)
 /**

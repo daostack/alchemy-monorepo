@@ -13,9 +13,9 @@ import { createGraphQlQuery, isAddress } from './utils'
 
 export interface ISchemeStaticState {
   id: string
-  name: string
   address: Address
   dao: Address
+  name: string
   paramsHash: string
 }
 
@@ -96,30 +96,17 @@ export class Scheme {
           address
           name
           dao { id }
-          canDelegateCall
-          canRegisterSchemes
-          canUpgradeController
-          canManageGlobalConstraints
           paramsHash
       }
     }`
     const itemMap = (item: any): Scheme|null => {
-      // TODO: remove next lines after resolution of https://github.com/daostack/subgraph/issues/238
-      let name = item.name
-      if (!name) {
-        try {
-          name = context.getContractInfo(item.address).name
-        } catch (err) {
-          // pass
-        }
-      }
       if (!options.where) { options.where = {}}
       if (options.where.name && options.where.name !== name) {
         return null
       }
       return new Scheme(
         {
-          address: item.addres,
+          address: item.address,
           dao: item.dao.id,
           id: item.id,
           name: item.name,
@@ -159,7 +146,7 @@ export class Scheme {
    * @return the statatic state
    */
   public async fetchStaticState(): Promise<ISchemeStaticState> {
-    if (this.staticState !== null) {
+    if (!!this.staticState) {
       return this.staticState
     } else {
       const state = await this.state().pipe(first()).toPromise()
