@@ -10,7 +10,7 @@ import * as SchemeRegistrar from './schemes/schemeRegistrar'
 import { Address, ICommonQueryOptions } from './types'
 import { createGraphQlQuery, isAddress } from './utils'
 
-export interface ISchemeState {
+export interface ISchemeStaticState {
   id: string
   name: string
   address: Address
@@ -20,6 +20,9 @@ export interface ISchemeState {
   canManageGlobalConstraints: boolean
   dao: Address
   paramsHash: string
+}
+
+export interface ISchemeState extends ISchemeStaticState {
 }
 
 export interface ISchemeQueryOptions extends ICommonQueryOptions {
