@@ -1,5 +1,6 @@
 export { Arc, IContractInfo } from './arc'
 export { DAO, IDAOState, IDAOQueryOptions } from './dao'
+export { IGenesisProtocolParams } from './genesisProtocol'
 export { Member, IMemberState, IMemberQueryOptions } from './member'
 export { ITransactionUpdate, ITransactionState } from './operation'
 export { IExecutionState, Proposal, IProposalCreateOptions, IProposalState,
