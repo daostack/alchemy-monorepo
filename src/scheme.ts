@@ -148,7 +148,6 @@ export class Scheme {
           canUpgradeController
           canManageGlobalConstraints
           paramsHash
-<<<<<<< HEAD
           contributionRewardParams {
             votingMachine
             voteParams {
@@ -218,12 +217,6 @@ export class Scheme {
               activationTime
               voteOnBehalf
             }
-=======
-          genericSchemeParams {
-            id
-            contractToCall
-            votingMachine
->>>>>>> master
           }
         }
       }
@@ -253,15 +246,11 @@ export class Scheme {
           votingMachine: item.contributionRewardParams.votingMachine
         } : null,
         dao: item.dao.id,
-<<<<<<< HEAD
         genericSchemeParams: item.genericSchemeParams ? {
           contractToCall: item.genericSchemeParams.contractToCall,
           voteParams: mapGenesisProtocolParams(item.genericSchemeParams.voteParams),
           votingMachine: item.genericSchemeParams.votingMachine
         } : null,
-=======
-        genericScheme,
->>>>>>> master
         id: item.id,
         name,
         paramsHash: item.paramsHash,
