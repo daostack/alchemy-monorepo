@@ -1,7 +1,7 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
-import { IGenesisProtocolParams, mapGenesisProtocolParams } from './genesisprotocol'
+import { IGenesisProtocolParams, mapGenesisProtocolParams } from './genesisProtocol'
 import { Operation } from './operation'
 import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './proposal'
 import * as ContributionReward from './schemes/contributionReward'
