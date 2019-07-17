@@ -3,6 +3,7 @@ import { from, Observable } from 'rxjs'
 import { concatMap, filter, first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
+import { IGenesisProtocolParams, mapGenesisProtocolParams } from './genesisProtocol'
 import { Operation, toIOperationObservable } from './operation'
 import { IQueueState } from './queue'
 import { IRewardQueryOptions, Reward } from './reward'
@@ -67,20 +68,7 @@ export interface IProposalState {
   executionState: IExecutionState
   expiresInQueueAt: Date
   genericScheme: GenericScheme.IGenericScheme|null
-  genesisProtocolParams: {
-    activationTime: number
-    boostedVotePeriodLimit: number
-    daoBountyConst: number // ?
-    limitExponentValue: number
-    minimumDaoBounty: typeof BN // in GEN
-    preBoostedVotePeriodLimit: number
-    proposingRepReward: typeof BN // in REP
-    queuedVoteRequiredPercentage: number
-    queuedVotePeriodLimit: number // in seconds (?)
-    quietEndingPeriod: number
-    thresholdConst: number
-    votersReputationLossRatio: number // in 1000's
-  }
+  genesisProtocolParams: IGenesisProtocolParams
   id: string
   organizationId: string
   paramsHash: string
@@ -444,7 +432,6 @@ export class Proposal implements IStateful<IProposalState> {
           .div(new BN(threshold * PRECISION))
           .sub(stakesAgainst)
       }
-      const thresholdConst = realMathToNumber(new BN(item.genesisProtocolParams.thresholdConst))
       const scheme = item.scheme
       const schemeName = scheme.name || this.context.getContractInfo(scheme.address).name
       const gpQueue = item.gpQueue
@@ -483,20 +470,7 @@ export class Proposal implements IStateful<IProposalState> {
         executionState: IExecutionState[item.executionState] as any,
         expiresInQueueAt: Number(item.expiresInQueueAt),
         genericScheme,
-        genesisProtocolParams: {
-          activationTime: Number(item.genesisProtocolParams.activationTime),
-          boostedVotePeriodLimit: Number(item.genesisProtocolParams.boostedVotePeriodLimit),
-          daoBountyConst: Number(item.genesisProtocolParams.daoBountyConst),
-          limitExponentValue: Number(item.genesisProtocolParams.limitExponentValue),
-          minimumDaoBounty: new BN(item.genesisProtocolParams.minimumDaoBounty),
-          preBoostedVotePeriodLimit: Number(item.genesisProtocolParams.preBoostedVotePeriodLimit),
-          proposingRepReward: new BN(item.genesisProtocolParams.proposingRepReward),
-          queuedVotePeriodLimit: Number(item.genesisProtocolParams.queuedVotePeriodLimit),
-          queuedVoteRequiredPercentage: Number(item.genesisProtocolParams.queuedVoteRequiredPercentage),
-          quietEndingPeriod: Number(item.genesisProtocolParams.quietEndingPeriod),
-          thresholdConst,
-          votersReputationLossRatio: Number(item.genesisProtocolParams.votersReputationLossRatio)
-        },
+        genesisProtocolParams: mapGenesisProtocolParams(item.genesisProtocolParams),
         id: item.id,
         organizationId: item.organizationId,
         paramsHash: item.paramsHash,

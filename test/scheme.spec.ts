@@ -59,7 +59,7 @@ describe('Scheme', () => {
     expect(result.length).toEqual(1)
   })
 
-  it('Scheme.state() is working', async () => {
+  it('Scheme.state() is working for SchemeRegistrar schemes', async () => {
     const dao = await getTestDAO()
     const result = await Scheme
       .search(arc, {where: {dao: dao.address, name: 'SchemeRegistrar'}})
@@ -75,6 +75,22 @@ describe('Scheme', () => {
 
   })
 
+  it('Scheme.state() is working for GenericScheme schemes', async () => {
+    const dao = await getTestDAO()
+    const result = await Scheme
+      .search(arc, {where: {dao: dao.address, name: 'GenericScheme'}})
+      .pipe(first()).toPromise()
+
+    const scheme = result[0]
+    const state = await scheme.state().pipe(first()).toPromise()
+    expect(state).toMatchObject({
+      address: testAddresses.base.GenericScheme.toLowerCase(),
+      id: scheme.id,
+      name: 'GenericScheme'
+    })
+
+  })
+
   it('Scheme.state() should be equal to proposal.state().scheme', async () => {
     const { queuedProposalId } = testAddresses.test
     const dao = await getTestDAO()
@@ -82,7 +98,7 @@ describe('Scheme', () => {
     const proposalState = await proposal.state().pipe(first()).toPromise()
     const schemes = await firstResult(Scheme.search(arc, {where: {id: proposalState.scheme.id}}))
     const schemeState = await firstResult(schemes[0].state())
-    expect(proposalState.scheme).toEqual(schemeState)
+    expect(schemeState).toMatchObject(proposalState.scheme)
   })
 
   it('paging and sorting works', async () => {

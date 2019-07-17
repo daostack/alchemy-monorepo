@@ -2,6 +2,7 @@ import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
+import { IGenesisProtocolParams, mapGenesisProtocolParams } from './genesisProtocol'
 import { Operation, toIOperationObservable } from './operation'
 import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './proposal'
 import * as ContributionReward from './schemes/contributionReward'
@@ -23,6 +24,22 @@ export interface ISchemeState extends ISchemeStaticState {
   canRegisterSchemes: boolean
   canUpgradeController: boolean
   canManageGlobalConstraints: boolean
+  dao: Address
+  paramsHash: string
+  contributionRewardParams?: {
+    votingMachine: Address
+    voteParams: IGenesisProtocolParams
+  } | null
+  genericSchemeParams?: {
+    votingMachine: Address
+    contractToCall: Address
+    voteParams: IGenesisProtocolParams
+  } | null
+  schemeRegistrarParams?: {
+    votingMachine: Address
+    voteRemoveParams: IGenesisProtocolParams
+    voteRegisterParams: IGenesisProtocolParams
+  } | null
 }
 
 export interface ISchemeQueryOptions extends ICommonQueryOptions {
@@ -164,6 +181,76 @@ export class Scheme {
           canUpgradeController
           canManageGlobalConstraints
           paramsHash
+          contributionRewardParams {
+            votingMachine
+            voteParams {
+              queuedVoteRequiredPercentage
+              queuedVotePeriodLimit
+              boostedVotePeriodLimit
+              preBoostedVotePeriodLimit
+              thresholdConst
+              limitExponentValue
+              quietEndingPeriod
+              proposingRepReward
+              votersReputationLossRatio
+              minimumDaoBounty
+              daoBountyConst
+              activationTime
+              voteOnBehalf
+            }
+          }
+          genericSchemeParams {
+            votingMachine
+            contractToCall
+            voteParams {
+              queuedVoteRequiredPercentage
+              queuedVotePeriodLimit
+              boostedVotePeriodLimit
+              preBoostedVotePeriodLimit
+              thresholdConst
+              limitExponentValue
+              quietEndingPeriod
+              proposingRepReward
+              votersReputationLossRatio
+              minimumDaoBounty
+              daoBountyConst
+              activationTime
+              voteOnBehalf
+            }
+          }
+          schemeRegistrarParams {
+            votingMachine
+            voteRemoveParams {
+              queuedVoteRequiredPercentage
+              queuedVotePeriodLimit
+              boostedVotePeriodLimit
+              preBoostedVotePeriodLimit
+              thresholdConst
+              limitExponentValue
+              quietEndingPeriod
+              proposingRepReward
+              votersReputationLossRatio
+              minimumDaoBounty
+              daoBountyConst
+              activationTime
+              voteOnBehalf
+            }
+            voteRegisterParams {
+              queuedVoteRequiredPercentage
+              queuedVotePeriodLimit
+              boostedVotePeriodLimit
+              preBoostedVotePeriodLimit
+              thresholdConst
+              limitExponentValue
+              quietEndingPeriod
+              proposingRepReward
+              votersReputationLossRatio
+              minimumDaoBounty
+              daoBountyConst
+              activationTime
+              voteOnBehalf
+            }
+          }
         }
       }
     `
@@ -179,10 +266,24 @@ export class Scheme {
         canManageGlobalConstraints: item.canManageGlobalConstraints,
         canRegisterSchemes: item.canRegisterSchemes,
         canUpgradeController: item.canUpgradeController,
+        contributionRewardParams: item.contributionRewardParams ? {
+          voteParams: mapGenesisProtocolParams(item.contributionRewardParams.voteParams),
+          votingMachine: item.contributionRewardParams.votingMachine
+        } : null,
         dao: item.dao.id,
+        genericSchemeParams: item.genericSchemeParams ? {
+          contractToCall: item.genericSchemeParams.contractToCall,
+          voteParams: mapGenesisProtocolParams(item.genericSchemeParams.voteParams),
+          votingMachine: item.genericSchemeParams.votingMachine
+        } : null,
         id: item.id,
         name,
-        paramsHash: item.paramsHash
+        paramsHash: item.paramsHash,
+        schemeRegistrarParams: item.schemeRegistrarParams ? {
+          voteRegisterParams: mapGenesisProtocolParams(item.schemeRegistrarParams.voteRegisterParams),
+          voteRemoveParams: mapGenesisProtocolParams(item.schemeRegistrarParams.voteRemoveParams),
+          votingMachine: item.schemeRegistrarParams.votingMachine
+        } : null
       }
     }
     return this.context.getObservableObject(query, itemMap) as Observable<ISchemeState>
@@ -203,19 +304,16 @@ export class Scheme {
         const state = await this.fetchStaticState()
 
         switch (state.name) {
-          // ContributionReward
           case 'ContributionReward':
             createTransaction  = ContributionReward.createTransaction(options, this.context)
             map = ContributionReward.createTransactionMap(options, this.context)
             break
 
-          // GenericScheme
           case 'GenericScheme':
             createTransaction  = GenericScheme.createTransaction(options, this.context)
             map = GenericScheme.createTransactionMap(options, this.context)
             break
 
-          // SchemeRegistrar
           case 'SchemeRegistrar':
             createTransaction  = SchemeRegistrar.createTransaction(options, this.context)
             map = SchemeRegistrar.createTransactionMap(options, this.context)
@@ -235,7 +333,7 @@ export class Scheme {
       return toIOperationObservable(observable)
     }
 
-    public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
+    public proposals(options: IProposalQueryOptions = {}): Observable < Proposal[] > {
       if (!options.where) { options.where = {}}
       options.where.scheme = this.id
       return Proposal.search(this.context, options)

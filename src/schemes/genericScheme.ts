@@ -2,6 +2,12 @@ import { Arc } from '../arc'
 import { Proposal } from '../proposal'
 import { Address } from '../types'
 
+export interface IGenericSchemeInfo {
+  id: string
+  contractToCall: Address
+  votingMachine: Address
+}
+
 export interface IGenericScheme {
   id: string
   contractToCall: Address
