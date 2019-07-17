@@ -148,6 +148,7 @@ export class Scheme {
           canUpgradeController
           canManageGlobalConstraints
           paramsHash
+<<<<<<< HEAD
           contributionRewardParams {
             votingMachine
             voteParams {
@@ -217,6 +218,12 @@ export class Scheme {
               activationTime
               voteOnBehalf
             }
+=======
+          genericSchemeParams {
+            id
+            contractToCall
+            votingMachine
+>>>>>>> master
           }
         }
       }
@@ -225,6 +232,16 @@ export class Scheme {
     const itemMap = (item: any): ISchemeState|null => {
 
       const name = item.name || this.context.getContractInfo(item.address).name
+      let genericScheme: GenericScheme.IGenericSchemeInfo|undefined
+      if (item.genericSchemeParams) {
+        genericScheme = {
+          contractToCall: item.genericSchemeParams.contractToCall,
+          id: item.genericSchemeParams.id,
+          votingMachine: item.genericSchemeParams.votingMachine
+        }
+      } else {
+        genericScheme = undefined
+      }
       return {
         address: item.address,
         canDelegateCall: item.canDelegateCall,
@@ -236,11 +253,15 @@ export class Scheme {
           votingMachine: item.contributionRewardParams.votingMachine
         } : null,
         dao: item.dao.id,
+<<<<<<< HEAD
         genericSchemeParams: item.genericSchemeParams ? {
           contractToCall: item.genericSchemeParams.contractToCall,
           voteParams: mapGenesisProtocolParams(item.genericSchemeParams.voteParams),
           votingMachine: item.genericSchemeParams.votingMachine
         } : null,
+=======
+        genericScheme,
+>>>>>>> master
         id: item.id,
         name,
         paramsHash: item.paramsHash,
@@ -260,7 +281,7 @@ export class Scheme {
      * @param  options [description ]
      * @return a Proposal instance
      */
-    public createProposal(options: IProposalCreateOptions): Operation<Proposal>  {
+    public createProposal(options: IProposalCreateOptions): Operation < Proposal >  {
       let msg: string
       const context = this.context
       let createTransaction: () => any = () => null
@@ -269,31 +290,31 @@ export class Scheme {
       switch (this.name) {
       // ContributionReward
         case 'ContributionReward':
-          createTransaction  = ContributionReward.createTransaction(options, this.context)
-          map = ContributionReward.createTransactionMap(options, this.context)
-          break
+             createTransaction  = ContributionReward.createTransaction(options, this.context)
+             map = ContributionReward.createTransactionMap(options, this.context)
+             break
 
         // GenericScheme
         case 'GenericScheme':
-          createTransaction  = GenericScheme.createTransaction(options, this.context)
-          map = GenericScheme.createTransactionMap(options, this.context)
-          break
+             createTransaction  = GenericScheme.createTransaction(options, this.context)
+             map = GenericScheme.createTransactionMap(options, this.context)
+             break
 
         // SchemeRegistrar
         case 'SchemeRegistrar':
-          createTransaction  = SchemeRegistrar.createTransaction(options, this.context)
-          map = SchemeRegistrar.createTransactionMap(options, this.context)
-          break
+             createTransaction  = SchemeRegistrar.createTransaction(options, this.context)
+             map = SchemeRegistrar.createTransactionMap(options, this.context)
+             break
 
         default:
-          msg = `Unknown proposal scheme: "${this.name}"`
-          throw Error(msg)
+             msg = `Unknown proposal scheme: "${this.name}"`
+             throw Error(msg)
       }
 
       return context.sendTransaction(createTransaction, map)
     }
 
-    public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
+    public proposals(options: IProposalQueryOptions = {}): Observable < Proposal[] > {
       if (!options.where) { options.where = {}}
       options.where.scheme = this.address
       return Proposal.search(this.context, options)
