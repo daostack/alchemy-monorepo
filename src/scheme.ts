@@ -14,16 +14,15 @@ export interface ISchemeStaticState {
   id: string
   name: string
   address: Address
-  canDelegateCall: boolean
-  canRegisterSchemes: boolean
-  canUpgradeController: boolean
-  canManageGlobalConstraints: boolean
   dao: Address
   paramsHash: string
 }
 
-// @ts-ignore
 export interface ISchemeState extends ISchemeStaticState {
+  canDelegateCall: boolean
+  canRegisterSchemes: boolean
+  canUpgradeController: boolean
+  canManageGlobalConstraints: boolean
 }
 
 export interface ISchemeQueryOptions extends ICommonQueryOptions {
@@ -76,10 +75,15 @@ export class Scheme {
     const query = gql`{
       controllerSchemes ${createGraphQlQuery(options, where)}
       {
-        id
-        address
-        dao { id }
-        name
+          id
+          address
+          name
+          dao { id }
+          canDelegateCall
+          canRegisterSchemes
+          canUpgradeController
+          canManageGlobalConstraints
+          paramsHash
       }
     }`
     const itemMap = (item: any): Scheme|null => {
@@ -97,7 +101,13 @@ export class Scheme {
         return null
       }
       return new Scheme(
-        item.id,
+        {
+          address: item.addres,
+          dao: item.dao.id,
+          id: item.id,
+          name: item.name,
+          paramsHash: item.paramsHash
+        },
         context
       )
     }
@@ -127,6 +137,10 @@ export class Scheme {
     this.staticState = opts
   }
 
+  /**
+   * fetch the static state from the subgraph
+   * @return the statatic state
+   */
   public async fetchStaticState(): Promise<ISchemeStaticState> {
     if (this.staticState !== null) {
       return this.staticState
