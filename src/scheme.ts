@@ -22,6 +22,7 @@ export interface ISchemeStaticState {
   paramsHash: string
 }
 
+// @ts-ignore
 export interface ISchemeState extends ISchemeStaticState {
 }
 
@@ -109,10 +110,31 @@ export class Scheme {
   }
 
   public id: Address
+  public staticState: ISchemeStaticState|null = null
 
-  constructor(id: Address, public context: Arc) {
+  constructor(idOrOpts: Address|ISchemeStaticState, public context: Arc) {
     this.context = context
-    this.id = id.toLowerCase()
+    if (typeof idOrOpts === 'string') {
+      this.id = idOrOpts as string
+      this.id = this.id.toLowerCase()
+    } else {
+      this.setStaticState(idOrOpts)
+      this.id = (this.staticState as ISchemeStaticState).id
+    }
+  }
+
+  public setStaticState(opts: ISchemeStaticState) {
+    this.staticState = opts
+  }
+
+  public async fetchStaticState(): Promise<ISchemeStaticState> {
+    if (this.staticState !== null) {
+      return this.staticState
+    } else {
+      const state = await this.state().pipe(first()).toPromise()
+      this.staticState = state
+      return state
+    }
   }
 
   public state(): Observable<ISchemeState> {
@@ -164,7 +186,7 @@ export class Scheme {
         const context = this.context
         let createTransaction: () => any = () => null
         let map: any
-        const state = await this.state().pipe(first()).toPromise()
+        const state = await this.fetchStaticState()
 
         switch (state.name) {
           // ContributionReward
