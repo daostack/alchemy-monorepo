@@ -27,7 +27,8 @@ describe('Vote on a ContributionReward', () => {
   it('works and gets indexed', async () => {
     const proposal = await createAProposal()
     const voteResponse = await proposal.vote(IProposalOutcome.Pass).send()
-    expect(voteResponse.result).toMatchObject({
+    const voteState0 = await voteResponse.result.fetchStaticState()
+    expect(voteState0.result).toMatchObject({
       outcome : IProposalOutcome.Pass
     })
 
@@ -43,7 +44,7 @@ describe('Vote on a ContributionReward', () => {
 
     expect(votes.length).toEqual(1)
     const vote = votes[0]
-    const voteState = vote.fetchStaticState()
+    const voteState = await vote.fetchStaticState()
     expect(voteState.proposal).toEqual(proposal.id)
     expect(voteState.dao).toEqual(dao.id)
     expect(voteState.outcome).toEqual(IProposalOutcome.Pass)
