@@ -6,11 +6,11 @@ import { DAO } from './dao'
 import { toIOperationObservable } from './operation'
 import { IProposalQueryOptions, Proposal } from './proposal'
 import { Reward } from './reward'
-import { IStake, IStakeQueryOptions, Stake } from './stake'
+import { IStakeQueryOptions, Stake } from './stake'
 import { Address, ICommonQueryOptions, IStateful } from './types'
 import { BN } from './utils'
 import { createGraphQlQuery, isAddress } from './utils'
-import { IVote, IVoteQueryOptions, Vote } from './vote'
+import { IVoteQueryOptions, Vote } from './vote'
 
 export interface IMemberStaticState {
   address: Address
@@ -188,7 +188,7 @@ export class Member implements IStateful<IMemberState> {
     return toIOperationObservable(observable)
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
+  public stakes(options: IStakeQueryOptions = {}): Observable <Stake[]> {
     const observable = Observable.create(async (observer: any) => {
       const state = await this.fetchStaticState()
       if (!options.where) { options.where = {} }
@@ -201,7 +201,7 @@ export class Member implements IStateful<IMemberState> {
     return toIOperationObservable(observable)
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable < IVote[] > {
+  public votes(options: IVoteQueryOptions = {}): Observable<Vote[]> {
     const observable = Observable.create(async (observer: any) => {
       const state = await this.fetchStaticState()
       if (!options.where) { options.where = {} }

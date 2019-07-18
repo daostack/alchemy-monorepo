@@ -7,11 +7,11 @@ import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './propo
 import { Reputation } from './reputation'
 import { IRewardQueryOptions, Reward } from './reward'
 import { ISchemeQueryOptions, Scheme } from './scheme'
-import { IStake, IStakeQueryOptions, Stake } from './stake'
+import { IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
 import { BN, createGraphQlQuery, isAddress } from './utils'
-import { IVote, IVoteQueryOptions, Vote } from './vote'
+import { IVoteQueryOptions, Vote } from './vote'
 
 export interface IDAOState {
   address: Address // address of the avatar
@@ -193,13 +193,13 @@ export class DAO implements IStateful<IDAOState> {
     return Reward.search(this.context, options)
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
+  public votes(options: IVoteQueryOptions = {}): Observable<Vote[]> {
     if (!options.where) { options.where = {}}
     options.where.dao = this.address
     return Vote.search(this.context, options)
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
+  public stakes(options: IStakeQueryOptions = {}): Observable<Stake[]> {
     if (!options.where) { options.where = {}}
     options.where.dao = this.address
     return Stake.search(this.context, options)

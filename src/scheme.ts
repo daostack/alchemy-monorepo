@@ -101,9 +101,6 @@ export class Scheme {
     }`
     const itemMap = (item: any): Scheme|null => {
       if (!options.where) { options.where = {}}
-      if (options.where.name && options.where.name !== name) {
-        return null
-      }
       return new Scheme(
         {
           address: item.address,

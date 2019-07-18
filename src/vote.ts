@@ -5,16 +5,20 @@ import { IProposalOutcome } from './proposal'
 import { Address, Date, ICommonQueryOptions } from './types'
 import { BN, createGraphQlQuery, isAddress } from './utils'
 
-export interface IVote {
-  id: string|undefined
+export interface IVoteStaticState {
+  id?: string
   voter: Address
   createdAt: Date | undefined
   outcome: IProposalOutcome
   amount: typeof BN // amount of reputation that was voted with
-  proposalId: string
+  proposal: string
   dao: Address
 }
 
+// @ts-ignore
+export interface IVoteState extends IVoteStaticState {
+
+}
 export interface IVoteQueryOptions extends ICommonQueryOptions {
   where?: {
     id?: string
@@ -26,7 +30,7 @@ export interface IVoteQueryOptions extends ICommonQueryOptions {
   }
 }
 
-export class Vote implements IVote {
+export class Vote {
 
   /**
    * Vote.search(context, options) searches for vote entities
@@ -90,20 +94,34 @@ export class Vote implements IVote {
         } else {
           throw new Error(`Unexpected value for proposalVote.outcome: ${r.outcome}`)
         }
-        return new Vote(r.id, r.voter, r.createdAt, outcome, new BN(r.reputation || 0), r.proposal.id, r.dao.id)
+        return new Vote({
+          amount: new BN(r.reputation || 0),
+          createdAt: r.createdAt,
+          dao: r.dao.id,
+          id: r.id,
+          outcome,
+          proposal: r.proposal.id,
+          voter: r.voter
+        })
       },
       daoFilter,
       apolloQueryOptions
     ) as Observable<Vote[]>
   }
+  public id: string|undefined
+  public staticState: IVoteStaticState|undefined
 
-  constructor(
-      public id: string|undefined,
-      public voter: Address,
-      public createdAt: Date | undefined,
-      public outcome: IProposalOutcome,
-      public amount: typeof BN,
-      public proposalId: string,
-      public dao: Address
-  ) {}
+  constructor(idOrOpts: string|IVoteStaticState) {
+    if (typeof idOrOpts === 'string') {
+      this.id = idOrOpts
+    } else {
+      const opts = idOrOpts as IVoteStaticState
+      this.id = opts.id
+      this.setStaticState(opts)
+    }
+  }
+
+  public setStaticState(opts: IVoteStaticState) {
+    this.staticState = opts
+  }
 }

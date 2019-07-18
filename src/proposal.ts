@@ -12,11 +12,11 @@ import { Scheme } from './scheme'
 import * as ContributionReward from './schemes/contributionReward'
 import * as GenericScheme from './schemes/genericScheme'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
-import { IStake, IStakeQueryOptions, Stake } from './stake'
+import { IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
 import { BN } from './utils'
 import { createGraphQlQuery, NULL_ADDRESS, realMathToNumber } from './utils'
-import { IVote, IVoteQueryOptions, Vote } from './vote'
+import { IVoteQueryOptions, Vote } from './vote'
 
 export const IProposalType = {
   ...ContributionReward.IProposalType,
@@ -530,7 +530,7 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.getContract(contractInfo.address)
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
+  public votes(options: IVoteQueryOptions = {}): Observable<Vote[]> {
     if (!options.where) { options.where = {}}
     options.where.proposal = this.id
     return Vote.search(this.context, options)
@@ -565,18 +565,16 @@ export class Proposal implements IStateful<IProposalState> {
             // no vote was cast
             return null
           }
-          const voteId = undefined
 
-          return new Vote(
-            voteId,
-            event.returnValues._voter,
+          return new Vote({
             // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
-            0, // createdAt -
+            createdAt: 0, // createdAt -
+            dao: state.dao.address,
             outcome,
-            event.returnValues._reputation, // amount
-            this.id, // proposalID
-            state.dao.address
-          )
+            proposal: this.id, // proposalID
+            amount: event.returnValues._reputation, // amount
+            voter: event.returnValues._voter
+          })
         }
         const errorHandler = async (error: Error) => {
           if (error.message.match(/revert/)) {
@@ -604,30 +602,28 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.GENToken()
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable < IStake[] > {
+  public stakes(options: IStakeQueryOptions = {}): Observable<Stake[]> {
     if (!options.where) { options.where = {}}
     options.where.proposal = this.id
     return Stake.search(this.context, options)
   }
 
-  public stake(outcome: IProposalOutcome, amount: typeof BN ): Operation < Stake > {
+  public stake(outcome: IProposalOutcome, amount: typeof BN ): Operation<Stake> {
     const map = (receipt: any) => { // map extracts Stake instance from receipt
         const event = receipt.events.Stake
         if (!event) {
           // for some reason, a transaction was mined but no error was raised before
           throw new Error(`Error staking: no "Stake" event was found - ${Object.keys(receipt.events)}`)
         }
-        const stakeId = undefined
 
-        return new Stake(
-          stakeId,
-          event.returnValues._staker,
+        return new Stake({
+          amount: event.returnValues._reputation, // amount
           // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
-          undefined,
+          createdAt: undefined,
           outcome,
-          event.returnValues._reputation, // amount
-          this.id // proposalID
-        )
+          proposal: this.id, // proposalID
+          staker: event.returnValues._staker
+        })
     }
 
     const errorHandler =  async (error: Error) => {
