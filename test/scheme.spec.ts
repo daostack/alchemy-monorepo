@@ -120,8 +120,7 @@ describe('Scheme', () => {
     // expect(ls1[2].address).toEqual(ls2[0].address)
 
     const ls3 = await Scheme.search(arc, {  orderBy: 'address', orderDirection: 'desc'}).pipe(first()).toPromise()
-    expect((await firstResult(ls3[0].state())).address <= (await firstResult(ls3[1].state())).address).toBeTruthy()
-    // expect(ls3[0].address <= ls3[1].address).toBeTruthy()
+    expect((await firstResult(ls3[0].state())).address >= (await firstResult(ls3[1].state())).address).toBeTruthy()
   })
 
   it('fetchStaticState works', async () => {

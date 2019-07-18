@@ -1,5 +1,5 @@
 import { ApolloClient, ApolloQueryResult } from 'apollo-client'
-import { Observable as ZenObservable } from 'apollo-link'
+import { FetchResult, Observable as ZenObservable } from 'apollo-link'
 import gql from 'graphql-tag'
 import { Observable, Observer } from 'rxjs'
 import { catchError, filter, first, map } from 'rxjs/operators'
@@ -60,7 +60,8 @@ export class GraphNodeObserver {
           subscription ${query}
         `
       // subscribe
-      const zenObservable: ZenObservable<object[]> = apolloClient.subscribe<object[]>({
+      const zenObservable: ZenObservable<FetchResult<object[], Record<string, any>, Record<string, any>>>
+        = apolloClient.subscribe<object[]>({
         fetchPolicy: 'cache-first',
         query: subscriptionQuery
        })
