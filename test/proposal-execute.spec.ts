@@ -31,7 +31,7 @@ describe('Proposal execute()', () => {
 
     const options = {
       beneficiary,
-      dao: dao.address,
+      dao: dao.id,
       ethReward: toWei('4'),
       externalTokenAddress: undefined,
       externalTokenReward: toWei('3'),
@@ -48,14 +48,16 @@ describe('Proposal execute()', () => {
 
     proposal.state().subscribe(
       (next: IProposalState) => {
-        proposalStates.push(next)
+        if (next) {
+          proposalStates.push(next)
+        }
       },
       (error: Error) => { throw error }
     )
 
     // wait until the propsal is indexed
-    await waitUntilTrue(() => proposalStates.length > 1)
-    expect(proposalStates[1].stage).toEqual(IProposalStage.Queued)
+    await waitUntilTrue(() => proposalStates.length > 0)
+    expect(lastState().stage).toEqual(IProposalStage.Queued)
 
     // calling execute in this stage has no effect on the stage
     await proposal.execute().send()
@@ -75,7 +77,7 @@ describe('Proposal execute()', () => {
       .approveForStaking(proposalState.votingMachine, amountToStakeFor.add(new BN(1000))).send()
 
     await proposal.execute().send()
-    // this reverts: why?
+
     await proposal.stake(IProposalOutcome.Pass, amountToStakeFor).send()
 
     await waitUntilTrue(() => lastState().stakesFor.gt(new BN(0)))
@@ -111,7 +113,6 @@ describe('Proposal execute()', () => {
   })
 
   it('execute a proposal by voting only', async () => {
-    arc = dao.context
     // daoBalance
     const daoState = await dao.state().pipe(first()).toPromise()
     const repTotalSupply = daoState.reputationTotalSupply
@@ -129,7 +130,6 @@ describe('Proposal execute()', () => {
     expect(lastState().stage).toEqual(IProposalStage.Queued)
     expect(lastState().executedAt).toEqual(0)
 
-    return
     await voteToAcceptProposal(proposal)
     // wait until all votes have been counted
     await waitUntilTrue(() => {

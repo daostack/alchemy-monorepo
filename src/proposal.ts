@@ -711,13 +711,12 @@ export class Proposal implements IStateful<IProposalState> {
    *    if undefined will only redeem the ContributionReward rewards
    * @return  an Operation
    */
-  public claimRewards(beneficiary ?: Address): Operation < boolean > {
+  public claimRewards(beneficiary ?: Address): Operation<boolean> {
 
     if (!beneficiary) {
       beneficiary = NULL_ADDRESS
     }
-    // @ts-ignore
-    return this.state().pipe(
+    const observable = this.state().pipe(
       first(),
       concatMap((state) => {
         const transaction = this.redeemerContract().methods.redeem(
@@ -728,13 +727,14 @@ export class Proposal implements IStateful<IProposalState> {
         return this.context.sendTransaction(transaction, () => true)
       })
     )
+    return toIOperationObservable(observable)
   }
 
   /**
    * calll the 'execute()' function on the votingMachine.
    * the main purpose of this function is to set the stage of the proposals
    * this call may (or may not) "execute" the proposal itself (i.e. do what the proposal proposes)
-   * @return an Operation that, when sucessful, wil lcontain the receipt of the transaction
+   * @return an Operation that, when sucessful, will contain the receipt of the transaction
    */
   public execute(): Operation<any> {
     const observable = from(this.votingMachine()).pipe(

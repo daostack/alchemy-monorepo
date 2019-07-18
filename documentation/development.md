@@ -28,11 +28,11 @@ If you update the subgraph dependency in `package.json`, you must re-configure t
 npm run setup-env
 ```
 
-##
+## Testing
 
 run a specific test:
 ```sh
-npm run test -- dao.test
+npm run test -- test/arc.spec.ts
 ```
 Or watch:
 ```sh

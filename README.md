@@ -36,7 +36,7 @@ arc.daos()
 // before we can use the Arc instance to send transactions, we need to provide it
 // with information on where the contracts can be found
 // query the subgraph for the contract addresses, and use those
-const contractInfos = await arc.getContractInfos()
+const contractInfos = await arc.fetchContractInfos()
 arc.setContractInfo(contractInfos)
 
 ```

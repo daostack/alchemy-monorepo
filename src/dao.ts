@@ -14,6 +14,7 @@ import { BN, createGraphQlQuery, isAddress } from './utils'
 import { IVoteQueryOptions, Vote } from './vote'
 
 export interface IDAOStaticState {
+  id: Address
   address: Address // address of the avatar
   name: string
   reputation: Reputation
@@ -81,12 +82,39 @@ export class DAO implements IStateful<IDAOState> {
     )
   }
 
-  public address: Address
+  public id: Address
+  public staticState: IDAOStaticState|undefined
 
-  constructor(public id: Address, public context: Arc) {
-    this.id = id.toLowerCase()
-    this.address = this.id
-    this.context = context
+  constructor(public idOrOpts: Address|IDAOStaticState, public context: Arc) {
+    if (typeof idOrOpts === 'string') {
+      this.id = idOrOpts.toLowerCase()
+    } else {
+      this.id = idOrOpts.address
+      this.setStaticState(idOrOpts)
+    }
+  }
+
+  public setStaticState(opts: IDAOStaticState) {
+    this.staticState = opts
+  }
+
+  public async fetchStaticState(): Promise<IDAOStaticState> {
+    if (!!this.staticState) {
+      return this.staticState
+    } else {
+      const state =  await this.state().pipe(first()).toPromise()
+      const staticState = {
+        address: state.address,
+        id: state.id,
+        name: state.name,
+        reputation: state.reputation,
+        token: state.token,
+        tokenName: state.tokenName,
+        tokenSymbol: state.tokenSymbol
+      }
+      this.setStaticState(staticState)
+      return staticState
+    }
   }
 
   /**
@@ -95,7 +123,7 @@ export class DAO implements IStateful<IDAOState> {
    */
   public state(): Observable<IDAOState> {
     const query = gql`{
-      dao(id: "${this.address}") {
+      dao(id: "${this.id}") {
         id
         name
         nativeReputation { id, totalSupply }
@@ -106,10 +134,11 @@ export class DAO implements IStateful<IDAOState> {
 
     const itemMap = (item: any): IDAOState => {
       if (item === null) {
-        throw Error(`Could not find a DAO with address ${this.address}`)
+        throw Error(`Could not find a DAO with id ${this.id}`)
       }
       return {
         address: item.id,
+        id: item.id,
         memberCount: Number(item.reputationHoldersCount),
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, this.context),
@@ -133,7 +162,7 @@ export class DAO implements IStateful<IDAOState> {
 
   public schemes(options: ISchemeQueryOptions = {}): Observable<Scheme[]> {
     if (!options.where) { options.where = {}}
-    options.where.dao = this.address
+    options.where.dao = this.id
     return Scheme.search(this.context, options)
   }
 
@@ -148,7 +177,7 @@ export class DAO implements IStateful<IDAOState> {
   public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
     let where = ''
     if (!options.where) { options.where = {}}
-    options.where.dao = this.address
+    options.where.dao = this.id
     for (const key of Object.keys(options.where)) {
       where += `${key}: "${options.where[key]}"\n`
     }
@@ -158,12 +187,12 @@ export class DAO implements IStateful<IDAOState> {
         address
       }
     }`
-    const itemMap = (item: any): Member => new Member({address: item.address, dao: this.address}, this.context)
+    const itemMap = (item: any): Member => new Member({address: item.address, dao: this.id}, this.context)
     return this.context.getObservableList(query, itemMap) as Observable<Member[]>
   }
 
   public member(address: Address): Member {
-    return new Member({ address, dao: this.address}, this.context)
+    return new Member({ address, dao: this.id}, this.context)
   }
 
   /**
@@ -172,7 +201,7 @@ export class DAO implements IStateful<IDAOState> {
    * @return a Proposal instance
    */
   public createProposal(options: IProposalCreateOptions) {
-    options.dao = this.address
+    options.dao = this.id
     return Proposal.create(options, this.context)
   }
 
@@ -180,7 +209,7 @@ export class DAO implements IStateful<IDAOState> {
     if (!options.where) {
       options.where = {}
     }
-    options.where.dao = this.address
+    options.where.dao = this.id
     return Proposal.search(this.context, options)
   }
 
@@ -190,23 +219,23 @@ export class DAO implements IStateful<IDAOState> {
 
   public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
     if (!options.where) { options.where = {}}
-    options.where.dao = this.address
+    options.where.dao = this.id
     return Reward.search(this.context, options)
   }
 
   public votes(options: IVoteQueryOptions = {}): Observable<Vote[]> {
     if (!options.where) { options.where = {}}
-    options.where.dao = this.address
+    options.where.dao = this.id
     return Vote.search(this.context, options)
   }
 
   public stakes(options: IStakeQueryOptions = {}): Observable<Stake[]> {
     if (!options.where) { options.where = {}}
-    options.where.dao = this.address
+    options.where.dao = this.id
     return Stake.search(this.context, options)
   }
 
   public ethBalance(): Observable<typeof BN> {
-    return this.context.ethBalance(this.address)
+    return this.context.ethBalance(this.id)
   }
 }

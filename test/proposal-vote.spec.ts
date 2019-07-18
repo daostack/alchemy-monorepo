@@ -43,9 +43,10 @@ describe('Vote on a ContributionReward', () => {
 
     expect(votes.length).toEqual(1)
     const vote = votes[0]
-    expect(vote.proposalId).toEqual(proposal.id)
-    expect(vote.dao).toEqual(dao.address)
-    expect(vote.outcome).toEqual(IProposalOutcome.Pass)
+    const voteState = vote.fetchStaticState()
+    expect(voteState.proposal).toEqual(proposal.id)
+    expect(voteState.dao).toEqual(dao.address)
+    expect(voteState.outcome).toEqual(IProposalOutcome.Pass)
   })
 
   it('voting twice will not complain', async () => {
@@ -75,7 +76,8 @@ describe('Vote on a ContributionReward', () => {
     })
     const proposalVotes = await proposal.votes().pipe(first()).toPromise()
     expect(proposalVotes.length = 1)
-    expect(proposalVotes[0].outcome).toEqual(IProposalOutcome.Pass)
+    const state = await proposalVotes[0].fetchStaticState()
+    expect(state.outcome).toEqual(IProposalOutcome.Pass)
   })
 
   it('throws a meaningful error if the proposal does not exist', async () => {
