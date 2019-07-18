@@ -2,7 +2,14 @@ import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { Proposal } from '../src/proposal'
-import { fromWei, getTestAddresses, getTestDAO, newArc, toWei, waitUntilTrue } from './utils'
+import { fromWei,
+  getTestAddresses,
+  getTestDAO,
+  newArc,
+  newArcWithoutGraphql,
+  toWei,
+  waitUntilTrue
+} from './utils'
 
 /**
  * DAO test
@@ -53,7 +60,6 @@ describe('DAO', () => {
     const state = await dao.state().pipe(first()).toPromise()
     expect(Object.keys(state)).toEqual([
       'address',
-      'dao',
       'memberCount',
       'name',
       'reputation',
@@ -106,7 +112,7 @@ describe('DAO', () => {
   })
 
   it('createProposal should work', async () => {
-    const dao = await getTestDAO()
+    const dao = await getTestDAO(arc)
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       dao: dao.address,
@@ -129,6 +135,24 @@ describe('DAO', () => {
     expect(proposal.id).toBeDefined()
 
   })
+
+  it.skip('createProposal should work without a grapql connection', async () => {
+    const arcWithoutGraphql = await newArcWithoutGraphql()
+    const dao = await getTestDAO(arcWithoutGraphql)
+    const options = {
+      beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+      dao: dao.address,
+      ethReward: toWei('300'),
+      externalTokenAddress: undefined,
+      externalTokenReward: toWei('0'),
+      nativeTokenReward: toWei('1'),
+      reputationReward: toWei('10'),
+      scheme: getTestAddresses().base.ContributionReward
+    }
+
+    await dao.createProposal(options).send()
+  })
+
   it('dao.schemes() should work', async () => {
     const dao = await getTestDAO()
     let schemes = await dao.schemes().pipe(first()).toPromise()

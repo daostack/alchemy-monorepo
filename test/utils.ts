@@ -121,10 +121,12 @@ export async function newArcWithoutGraphql(): Promise<Arc> {
   return arc
 }
 
-export async function getTestDAO() {
+export async function getTestDAO(arc?: Arc) {
   // we have two indexed daos with the same name, but one has 6 members, and that is the one
   // we are using for testing
-  const arc = await newArc()
+  if (!arc) {
+    arc = await newArc()
+  }
   const addresses = await getTestAddresses()
   if (!addresses.test.Avatar) {
     const msg = `Expected to find ".test.avatar" in the migration file, found ${addresses} instead`
@@ -155,7 +157,12 @@ export async function createAProposal(
   }
 
   const response = await (dao as DAO).createProposal(options as IProposalCreateOptions).send()
-  return response.result as Proposal
+  const proposal = response.result as Proposal
+  // wait for the proposal to be indexed
+  let indexed = false
+  proposal.state().subscribe((next: any) => { if (next) { indexed = true } })
+  await waitUntilTrue(() => indexed )
+  return proposal
 }
 
 export async function mintSomeReputation() {

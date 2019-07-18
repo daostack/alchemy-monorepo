@@ -6,12 +6,12 @@ import { Address, ICommonQueryOptions } from './types'
 import { BN, createGraphQlQuery, isAddress } from './utils'
 
 export interface IStakeStaticState {
-  id: string
+  id?: string
   staker: Address
   createdAt: Date | undefined
   outcome: IProposalOutcome
   amount: typeof BN // amount staked
-  proposalId: string
+  proposal: string
 }
 
 // @ts-ignore
@@ -90,7 +90,7 @@ export class Stake {
           createdAt: r.createdAt,
           id: r.id,
           outcome,
-          proposalId: r.proposal.id,
+          proposal: r.proposal.id,
           staker: r.staker
         })
       },
@@ -98,8 +98,9 @@ export class Stake {
     ) as Observable<Stake[]>
   }
 
-  public id: string
+  public id: string|undefined
   public staticState: IStakeStaticState|undefined
+
   constructor(
       idOrOpts: string|IStakeStaticState
   ) {

@@ -26,7 +26,8 @@ describe('Proposal execute()', () => {
 
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const accounts = arc.web3.eth.accounts.wallet
-    const schemeAddress = executedProposal.schemeAddress
+    const state = await executedProposal.fetchStaticState()
+    const schemeAddress = state.scheme.address
 
     const options = {
       beneficiary,
@@ -71,7 +72,7 @@ describe('Proposal execute()', () => {
     const amountToStakeFor = toWei(10000)
     await proposal.stakingToken().mint(accounts[0].address, amountToStakeFor).send()
     await proposal.stakingToken()
-      .approveForStaking(proposal.votingMachineAddress, amountToStakeFor.add(new BN(1000))).send()
+      .approveForStaking(proposalState.votingMachine, amountToStakeFor.add(new BN(1000))).send()
 
     await proposal.execute().send()
     // this reverts: why?
@@ -105,7 +106,7 @@ describe('Proposal execute()', () => {
       arc
     )
     await expect(proposal.execute().send()).rejects.toThrow(
-      /does not exist/i
+      /no proposal/i
     )
   })
 
@@ -121,13 +122,14 @@ describe('Proposal execute()', () => {
       proposalStates.push(state)
     })
     // calling "execute" immediately will have no effect, because the proposal is not
-    await waitUntilTrue(() => proposalStates.length === 2)
-    expect(proposalStates[proposalStates.length - 1].stage).toEqual(IProposalStage.Queued)
+    await waitUntilTrue(() => proposalStates.length === 1)
+    expect(lastState().stage).toEqual(IProposalStage.Queued)
     // this execution will not change the state, because the quorum is not met
     await proposal.execute().send()
     expect(lastState().stage).toEqual(IProposalStage.Queued)
     expect(lastState().executedAt).toEqual(0)
 
+    return
     await voteToAcceptProposal(proposal)
     // wait until all votes have been counted
     await waitUntilTrue(() => {

@@ -7,22 +7,24 @@ import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './propo
 import { Reputation } from './reputation'
 import { IRewardQueryOptions, Reward } from './reward'
 import { ISchemeQueryOptions, Scheme } from './scheme'
-import { IStake, IStakeQueryOptions, Stake } from './stake'
+import { IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
 import { BN, createGraphQlQuery, isAddress } from './utils'
-import { IVote, IVoteQueryOptions, Vote } from './vote'
+import { IVoteQueryOptions, Vote } from './vote'
 
-export interface IDAOState {
+export interface IDAOStaticState {
   address: Address // address of the avatar
-  dao: DAO
-  memberCount: number
   name: string
   reputation: Reputation
-  reputationTotalSupply: typeof BN
   token: Token
   tokenName: string
   tokenSymbol: string
+}
+
+export interface IDAOState extends IDAOStaticState {
+  memberCount: number
+  reputationTotalSupply: typeof BN
   tokenTotalSupply: typeof BN
 }
 
@@ -108,7 +110,6 @@ export class DAO implements IStateful<IDAOState> {
       }
       return {
         address: item.id,
-        dao: this,
         memberCount: Number(item.reputationHoldersCount),
         name: item.name,
         reputation: new Reputation(item.nativeReputation.id, this.context),
@@ -193,13 +194,13 @@ export class DAO implements IStateful<IDAOState> {
     return Reward.search(this.context, options)
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
+  public votes(options: IVoteQueryOptions = {}): Observable<Vote[]> {
     if (!options.where) { options.where = {}}
     options.where.dao = this.address
     return Vote.search(this.context, options)
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
+  public stakes(options: IStakeQueryOptions = {}): Observable<Stake[]> {
     if (!options.where) { options.where = {}}
     options.where.dao = this.address
     return Stake.search(this.context, options)

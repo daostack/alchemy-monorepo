@@ -4,8 +4,14 @@ import { DAO } from '../src/dao'
 import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Stake } from '../src/stake'
 import { BN } from './utils'
-import { createAProposal, getTestAddresses, getTestDAO, ITestAddresses, newArc,
-  toWei, waitUntilTrue } from './utils'
+import { createAProposal,
+  // getTestAddresses,
+  getTestDAO,
+  // ITestAddresses,
+  newArc,
+  toWei,
+  waitUntilTrue
+} from './utils'
 
 jest.setTimeout(20000)
 
@@ -13,18 +19,18 @@ describe('Stake on a ContributionReward', () => {
   let arc: Arc
   let web3: any
   let accounts: any
-  let addresses: ITestAddresses
+  // let addresses: ITestAddresses
   let dao: DAO
-  let executedProposal: Proposal
+  // let executedProposal: Proposal
 
   beforeAll(async () => {
     arc = await newArc()
     web3 = arc.web3
     accounts = web3.eth.accounts.wallet
-    addresses = getTestAddresses()
+    // addresses = getTestAddresses()
     dao = await getTestDAO()
-    const { executedProposalId} = addresses.test
-    executedProposal = await dao.proposal(executedProposalId)
+    // const { executedProposalId} = addresses.test
+    // executedProposal = await dao.proposal(executedProposalId)
   })
 
   it('works and gets indexed', async () => {
@@ -87,7 +93,7 @@ describe('Stake on a ContributionReward', () => {
 
     proposal.context.web3.eth.defaultAccount = accounts[2].address
     await expect(proposal.stake(IProposalOutcome.Pass, toWei('10000000')).send()).rejects.toThrow(
-      /unknown proposal/i
+      /No proposal/i
     )
   })
 })
