@@ -41,14 +41,6 @@ describe('Member', () => {
     expect(memberState.dao).toBe(dao.id.toLowerCase())
   })
 
-  // it('Member state also works for members that are not in the index', async () => {
-  //   const someAddress = '0xe74f3c49c162c00ac18b022856e1a4ecc8947c42'
-  //   const member = new Member({ address: someAddress, dao: dao.address}, arc)
-  //   const memberState = await member.state().pipe(first()).toPromise()
-  //   expect(fromWei(memberState.reputation)).toEqual('0')
-  //   expect(memberState.address).toEqual(someAddress)
-  // })
-
   it('Member proposals() works', async () => {
     const member = new Member({ address: defaultAccount, dao: dao.id}, arc)
     let proposals: Proposal[] = []
