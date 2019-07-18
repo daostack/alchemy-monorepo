@@ -30,15 +30,15 @@ describe('Claim rewards', () => {
     await arc.web3.eth.sendTransaction({
       gas: 4000000,
       gasPrice: 100000000000,
-      to: dao.address,
+      to: dao.id,
       value: ethReward
     })
-    const daoEthBalance = new BN(await arc.web3.eth.getBalance(dao.address))
+    const daoEthBalance = new BN(await arc.web3.eth.getBalance(dao.id))
     expect(Number(daoEthBalance.toString())).toBeGreaterThanOrEqual(Number(ethReward.toString()))
 
     const options = {
       beneficiary,
-      dao: dao.address,
+      dao: dao.id,
       ethReward,
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
@@ -89,8 +89,8 @@ describe('Claim rewards', () => {
     const externalTokenAddress = testAddresses.base.GEN
     const externalTokenReward = new BN(12345)
 
-    await arc.GENToken().transfer(dao.address, externalTokenReward).send()
-    const daoBalance =  await firstResult(arc.GENToken().balanceOf(dao.address))
+    await arc.GENToken().transfer(dao.id, externalTokenReward).send()
+    const daoBalance =  await firstResult(arc.GENToken().balanceOf(dao.id))
     expect(Number(daoBalance.toString())).toBeGreaterThanOrEqual(Number(externalTokenReward.toString()))
     const options = {
       beneficiary,

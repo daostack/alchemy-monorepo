@@ -38,7 +38,7 @@ describe('DAO', () => {
   it('should be possible to get the token balance of the DAO', async () => {
     const dao = await getTestDAO()
     const { token } = await dao.state().pipe(first()).toPromise()
-    const balance = await token.balanceOf(dao.address).pipe(first()).toPromise()
+    const balance = await token.balanceOf(dao.id).pipe(first()).toPromise()
     expect(fromWei(balance)).toEqual('0')
   })
 
