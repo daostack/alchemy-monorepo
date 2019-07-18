@@ -45,7 +45,7 @@ describe('Vote on a ContributionReward', () => {
     const vote = votes[0]
     const voteState = vote.fetchStaticState()
     expect(voteState.proposal).toEqual(proposal.id)
-    expect(voteState.dao).toEqual(dao.address)
+    expect(voteState.dao).toEqual(dao.id)
     expect(voteState.outcome).toEqual(IProposalOutcome.Pass)
   })
 

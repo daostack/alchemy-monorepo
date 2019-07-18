@@ -69,7 +69,7 @@ describe('DAO', () => {
       'tokenSymbol',
       'tokenTotalSupply'
     ])
-    expect(state.address).toEqual(dao.address)
+    expect(state.address).toEqual(dao.id)
     // the created DAO has 6 members but other tests may add rep
     expect(state.memberCount).toBeGreaterThanOrEqual(5)
   })
@@ -115,7 +115,7 @@ describe('DAO', () => {
     const dao = await getTestDAO(arc)
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
-      dao: dao.address,
+      dao: dao.id,
       ethReward: toWei('300'),
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
@@ -141,7 +141,7 @@ describe('DAO', () => {
     const dao = await getTestDAO(arcWithoutGraphql)
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
-      dao: dao.address,
+      dao: dao.id,
       ethReward: toWei('300'),
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),

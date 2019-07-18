@@ -32,7 +32,7 @@ describe('Reward', () => {
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const state = await dao.createProposal({
       beneficiary,
-      dao: dao.address,
+      dao: dao.id,
       ethReward: toWei('300'),
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),

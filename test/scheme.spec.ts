@@ -35,7 +35,7 @@ describe('Scheme', () => {
     expect(result.length).toBeGreaterThanOrEqual(3)
 
     // the schemes have their static state set
-    const staticState = result[0].staticState
+    const staticState = await result[0].fetchStaticState()
     expect(staticState.name).toBeTruthy()
     expect(staticState.address).toBeTruthy()
     expect(staticState.id).toBeTruthy()
@@ -53,15 +53,15 @@ describe('Scheme', () => {
       'ContributionReward',
       'SchemeRegistrar'
     ].sort())
-    result = await Scheme.search(arc, {where: {dao: dao.address, name: 'ContributionReward'}})
+    result = await Scheme.search(arc, {where: {dao: dao.id, name: 'ContributionReward'}})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
-    result = await Scheme.search(arc, {where: {dao: dao.address, name: 'GenericScheme'}})
+    result = await Scheme.search(arc, {where: {dao: dao.id, name: 'GenericScheme'}})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
-    result = await Scheme.search(arc, {where: {dao: dao.address, name: 'SchemeRegistrar'}})
+    result = await Scheme.search(arc, {where: {dao: dao.id, name: 'SchemeRegistrar'}})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
   })

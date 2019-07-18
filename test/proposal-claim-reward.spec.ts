@@ -94,7 +94,7 @@ describe('Claim rewards', () => {
     expect(Number(daoBalance.toString())).toBeGreaterThanOrEqual(Number(externalTokenReward.toString()))
     const options = {
       beneficiary,
-      dao: dao.address,
+      dao: dao.id,
       ethReward: new BN(0),
       externalTokenAddress,
       externalTokenReward,

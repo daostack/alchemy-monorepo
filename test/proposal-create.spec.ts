@@ -35,7 +35,7 @@ describe('Create a ContributionReward proposal', () => {
   it('is properly indexed', async () => {
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
-      dao: dao.address,
+      dao: dao.id,
       ethReward: toWei('300'),
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
@@ -84,7 +84,7 @@ describe('Create a ContributionReward proposal', () => {
   it('saves title etc on ipfs', async () => {
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
-      dao: dao.address,
+      dao: dao.id,
       description: 'Just eat them',
       ethReward: toWei('300'),
       externalTokenAddress: undefined,
