@@ -98,7 +98,7 @@
     "u": "^0.1.0"
   },
   "dependencies": {
-    "@daostack/migration": "0.0.1-rc.19-v5",
+    "@daostack/migration": "0.0.1-rc.21-v0",
     "apollo-cache-inmemory": "^1.5.1",
     "apollo-client": "^2.5.1",
     "apollo-client-ws": "^2.4.0",
