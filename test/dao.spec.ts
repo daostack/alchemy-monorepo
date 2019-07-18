@@ -170,7 +170,7 @@ describe('DAO', () => {
       from: arc.web3.eth.defaultAccount,
       gas: 4000000,
       gasPrice: 100000000000,
-      to: dao.address,
+      to: dao.id,
       value: toWei('1')
     })
     const newBalance = await dao.ethBalance().pipe(first()).toPromise()

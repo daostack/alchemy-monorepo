@@ -588,14 +588,14 @@ export class Proposal implements IStateful<IProposalState> {
           }
 
           return new Vote({
+            amount: event.returnValues._reputation, // amount
             // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
             createdAt: 0, // createdAt -
-            dao: state.dao.address,
+            dao: state.dao.id,
             outcome,
             proposal: this.id, // proposalID
-            amount: event.returnValues._reputation, // amount
             voter: event.returnValues._voter
-          })
+          }, this.context)
         }
         const errorHandler = async (error: Error) => {
           if (error.message.match(/revert/)) {
@@ -644,7 +644,7 @@ export class Proposal implements IStateful<IProposalState> {
           outcome,
           proposal: this.id, // proposalID
           staker: event.returnValues._staker
-        })
+        }, this.context)
     }
 
     const errorHandler =  async (error: Error) => {
@@ -721,7 +721,7 @@ export class Proposal implements IStateful<IProposalState> {
       concatMap((state) => {
         const transaction = this.redeemerContract().methods.redeem(
           this.id,
-          state.dao.address,
+          state.dao.id,
           beneficiary
         )
         return this.context.sendTransaction(transaction, () => true)
