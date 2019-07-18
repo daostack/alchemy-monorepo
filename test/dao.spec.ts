@@ -60,6 +60,7 @@ describe('DAO', () => {
     const state = await dao.state().pipe(first()).toPromise()
     expect(Object.keys(state)).toEqual([
       'address',
+      'id',
       'memberCount',
       'name',
       'reputation',
@@ -78,7 +79,7 @@ describe('DAO', () => {
     expect.assertions(1)
     const reputation = new DAO('0xfake', arc)
     await expect(reputation.state().toPromise()).rejects.toThrow(
-      'Could not find a DAO with address 0xfake'
+      'Could not find a DAO with id 0xfake'
     )
   })
 
