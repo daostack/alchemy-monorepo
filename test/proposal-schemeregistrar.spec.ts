@@ -40,7 +40,7 @@ describe('Proposal', () => {
       proposalToAddStates.push(pState)
     })
 
-    await waitUntilTrue(() => proposalToAddStates.length > 1)
+    await waitUntilTrue(() => proposalToAddStates.length > 0)
 
     expect(lastProposalToAddState().schemeRegistrar).toMatchObject({
       decision: null,
