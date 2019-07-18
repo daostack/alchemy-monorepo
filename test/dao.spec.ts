@@ -26,6 +26,8 @@ describe('DAO', () => {
     expect(result.length).toBeGreaterThan(1)
     result = await DAO.search(arc, {where: { register: 'unRegistered'}}).pipe(first()).toPromise()
     expect(result.length).toEqual(0)
+    result = await DAO.search(arc, {where: { register: 'registered'}}).pipe(first()).toPromise()
+    expect(result.length).toBeGreaterThan(0)
   })
 
   it('should be possible to get the token balance of the DAO', async () => {
