@@ -27,18 +27,18 @@ describe('Member', () => {
   })
 
   it('Member is instantiable', () => {
-    const member = new Member({ address: defaultAccount, dao: dao.address}, arc)
+    const member = new Member({ address: defaultAccount, dao: dao.id}, arc)
     expect(member).toBeInstanceOf(Member)
     const memberFromId = new Member('0xsomeId', arc)
     expect(memberFromId).toBeInstanceOf(Member)
   })
 
   it('Member state works', async () => {
-    const member = new Member({ address: defaultAccount, dao: dao.address}, arc)
+    const member = new Member({ address: defaultAccount, dao: dao.id}, arc)
     const memberState = await member.state().pipe(first()).toPromise()
     expect(Number(fromWei(memberState.reputation))).toBeGreaterThan(0)
     expect(memberState.address).toEqual(defaultAccount.toLowerCase())
-    expect(memberState.dao).toBe(dao.address.toLowerCase())
+    expect(memberState.dao).toBe(dao.id.toLowerCase())
   })
 
   // it('Member state also works for members that are not in the index', async () => {
@@ -50,7 +50,7 @@ describe('Member', () => {
   // })
 
   it('Member proposals() works', async () => {
-    const member = new Member({ address: defaultAccount, dao: dao.address}, arc)
+    const member = new Member({ address: defaultAccount, dao: dao.id}, arc)
     let proposals: Proposal[] = []
     member.proposals().subscribe((next: Proposal[]) => proposals = next)
     // wait until the proposal has been indexed
@@ -62,7 +62,7 @@ describe('Member', () => {
 
   it('Member stakes() works', async () => {
       const stakerAccount = arc.web3.eth.accounts.wallet[1].address
-      const member = new Member({ address: stakerAccount, dao: dao.address}, arc)
+      const member = new Member({ address: stakerAccount, dao: dao.id}, arc)
       const proposal = await createAProposal()
       const stakingToken =  await proposal.stakingToken()
       // mint tokens with defaultAccount
@@ -81,14 +81,15 @@ describe('Member', () => {
       await waitUntilTrue(() => stakes.length > 0)
 
       expect(stakes.length).toBeGreaterThan(0)
-      expect(stakes[0].staker).toEqual(stakerAccount.toLowerCase())
-      expect(fromWei(stakes[0].amount)).toEqual('99')
+      const stakeState = await stakes[0].fetchStaticState()
+      expect(stakeState.staker).toEqual(stakerAccount.toLowerCase())
+      expect(fromWei(stakeState.amount)).toEqual('99')
       // clean up after test
       arc.web3.eth.defaultAccount = defaultAccount
     })
 
   it('Member votes() works', async () => {
-    const member = new Member({ address: defaultAccount, dao: dao.address}, arc)
+    const member = new Member({ address: defaultAccount, dao: dao.id}, arc)
     const proposal = await createAProposal()
     const votes: Vote[][] = []
     member.votes().subscribe((next: Vote[]) => votes.push(next))
@@ -96,7 +97,12 @@ describe('Member', () => {
     await proposal.vote(IProposalOutcome.Pass).send()
     await waitUntilTrue(() => votes.length > 1)
     expect(votes[votes.length - 1].length).toBeGreaterThan(0)
-    expect(votes[votes.length - 1].map((vote) => vote.proposalId)).toContain(proposal.id)
+    const proposalIds: string[] = []
+    await Promise.all(votes[votes.length - 1].map(async (vote) => {
+      const voteState = await vote.fetchStaticState()
+      proposalIds.push(voteState.proposal)
+    }))
+    expect(proposalIds).toContain(proposal.id)
   })
 
   it('Members are searchable', async () => {
