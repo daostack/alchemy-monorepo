@@ -29,7 +29,7 @@ describe('Scheme', () => {
   it('Scheme are searchable', async () => {
     const dao = await getTestDAO()
     let result: Scheme[]
-    result = await Scheme.search(arc, {where: {dao: dao.address, name_not: null}})
+    result = await Scheme.search(arc, {where: {dao: dao.id, name_not: null}})
         .pipe(first()).toPromise()
 
     expect(result.length).toBeGreaterThanOrEqual(3)
@@ -69,7 +69,7 @@ describe('Scheme', () => {
   it('Scheme.state() is working for SchemeRegistrar schemes', async () => {
     const dao = await getTestDAO()
     const result = await Scheme
-      .search(arc, {where: {dao: dao.address, name: 'SchemeRegistrar'}})
+      .search(arc, {where: {dao: dao.id, name: 'SchemeRegistrar'}})
       .pipe(first()).toPromise()
 
     const scheme = result[0]
@@ -85,7 +85,7 @@ describe('Scheme', () => {
   it('Scheme.state() is working for GenericScheme schemes', async () => {
     const dao = await getTestDAO()
     const result = await Scheme
-      .search(arc, {where: {dao: dao.address, name: 'GenericScheme'}})
+      .search(arc, {where: {dao: dao.id, name: 'GenericScheme'}})
       .pipe(first()).toPromise()
 
     const scheme = result[0]
