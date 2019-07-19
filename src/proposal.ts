@@ -1,10 +1,11 @@
 import gql from 'graphql-tag'
-import { from, Observable } from 'rxjs'
-import { concatMap, filter, first } from 'rxjs/operators'
+const Web3 = require('web3')
+import { Observable } from 'rxjs'
+import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { IGenesisProtocolParams, mapGenesisProtocolParams } from './genesisProtocol'
-import { Operation, toIOperationObservable } from './operation'
+import { Operation } from './operation'
 import { IQueueState } from './queue'
 import { IRewardQueryOptions, Reward } from './reward'
 import { ISchemeState } from './scheme'
@@ -12,12 +13,12 @@ import { Scheme } from './scheme'
 import * as ContributionReward from './schemes/contributionReward'
 import * as GenericScheme from './schemes/genericScheme'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
-import { TOKEN_CONTRACT_VERSION } from './settings'
-import { IStakeQueryOptions, Stake } from './stake'
+import { REDEEMER_CONTRACT_VERSION } from './settings'
+import { IStake, IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
 import { BN } from './utils'
 import { createGraphQlQuery, NULL_ADDRESS, realMathToNumber } from './utils'
-import { IVoteQueryOptions, Vote } from './vote'
+import { IVote, IVoteQueryOptions, Vote } from './vote'
 
 export const IProposalType = {
   ...ContributionReward.IProposalType,
@@ -55,19 +56,13 @@ export enum IExecutionState {
   BoostedBarCrossed
 }
 
-export interface IProposalStaticState {
-  id: string
-  dao: DAO
-  scheme: ISchemeState
-  votingMachine: Address
-}
-
-export interface IProposalState extends IProposalStaticState {
+export interface IProposalState {
   accountsWithUnclaimedRewards: Address[],
   boostedAt: Date
   contributionReward: ContributionReward.IContributionReward|null
   confidenceThreshold: number
   createdAt: Date
+  dao: DAO
   descriptionHash?: string
   description?: string
   downStakeNeededToQueue: typeof BN
@@ -76,6 +71,7 @@ export interface IProposalState extends IProposalStaticState {
   expiresInQueueAt: Date
   genericScheme: GenericScheme.IGenericScheme|null
   genesisProtocolParams: IGenesisProtocolParams
+  id: string
   organizationId: string
   paramsHash: string
   preBoostedAt: Date
@@ -85,6 +81,7 @@ export interface IProposalState extends IProposalStaticState {
   quietEndingPeriodBeganAt: Date
   schemeRegistrar: SchemeRegistrar.ISchemeRegistrar|null
   resolvedAt: Date
+  scheme: ISchemeState
   stage: IProposalStage
   stakesFor: typeof BN
   stakesAgainst: typeof BN
@@ -98,6 +95,7 @@ export interface IProposalState extends IProposalStaticState {
   votesAgainst: typeof BN
   votesCount: number
   voteOnBehalf: Address
+  votingMachine: Address
   winningOutcome: IProposalOutcome
 }
 
@@ -118,24 +116,25 @@ export class Proposal implements IStateful<IProposalState> {
       throw Error(`Proposal.create(options): options must include an address for "scheme"`)
     }
 
-    const schemesQuery = Scheme.search(
-      context,
-      { where: {
-        address: options.scheme,
-        dao: options.dao
-      }}
-    )
-    const observable = schemesQuery.pipe(
-      first(),
-      concatMap((schemes) => {
-        if (schemes) {
-          return schemes[0].createProposal(options)
-        } else {
-          throw Error(`No scheme was found with address ${options.scheme} registered with dao ${options.dao}`)
-        }
+    let schemeName: string
+    try {
+      schemeName = context.getContractInfo(options.scheme).name
+    } catch (err) {
+      if (err.message.match(/is known/)) {
+        throw new Error(`Unknown scheme at ${options.scheme} - cannot create a proposal`)
+      } else {
+        throw err
       }
-    ))
-    return toIOperationObservable(observable)
+    }
+
+    const scheme = new Scheme(
+      options.scheme, // id
+      options.dao, // dao
+      schemeName,
+      options.scheme, // address
+      context
+    )
+    return scheme.createProposal(options)
   }
 
   /**
@@ -207,50 +206,29 @@ export class Proposal implements IStateful<IProposalState> {
 
     return context.getObservableList(
       query,
-      (r: any) => new Proposal(r.id, context),
+      (r: any) => new Proposal(r.id, r.dao.id, r.scheme.address, r.votingMachine, context),
       apolloQueryOptions
     ) as Observable<Proposal[]>
   }
 
   public context: Arc
-  public id: string
-  public staticState: IProposalStaticState|undefined
+  public dao: DAO
+  private votingMachineContract: typeof Web3.eth.Contract
 
   constructor(
-    idOrOpts: string|IProposalStaticState,
+    public id: string,
+    daoAddress: Address,
+    public schemeAddress: Address,
+    public votingMachineAddress: Address,
     context: Arc
   ) {
-    if (typeof idOrOpts === 'string') {
-      this.id = idOrOpts
-    } else {
-      this.id = idOrOpts.id
-      this.setStaticState(idOrOpts)
+    if (!schemeAddress) {
+      throw Error('No schemeAddress provided..')
     }
+    this.id = id
     this.context = context
-  }
-
-  public setStaticState(opts: IProposalStaticState) {
-    this.staticState = opts
-  }
-
-  public async fetchStaticState(): Promise<IProposalStaticState> {
-    if (!!this.staticState) {
-      return this.staticState
-    } else {
-      const state = await this.state().pipe(first()).toPromise()
-      if (state === null) {
-        throw Error(`No proposal with id ${this.id} was found in the subgraph`)
-      }
-      const staticState = {
-        dao: state.dao,
-        id: this.id,
-        scheme: state.scheme,
-        votingMachine: state.votingMachine
-      }
-      this.setStaticState(staticState)
-      return staticState
-    }
-
+    this.dao = new DAO(daoAddress, context)
+    this.votingMachineContract = this.context.getContract(this.votingMachineAddress)
   }
   /**
    * `state` is an observable of the proposal state
@@ -530,28 +508,30 @@ export class Proposal implements IStateful<IProposalState> {
     return result
   }
 
-  public async scheme() {
-    const schemeAddress = (await this.state().pipe(filter((o) => !!o), first()).toPromise()).scheme.address
-    return this.context.getContract(schemeAddress)
+  public scheme() {
+    return this.context.getContract(this.schemeAddress)
   }
   /**
    * [votingMachine description]
    * @return a web3 Contract instance
    */
-  public async votingMachine() {
-    const staticState = await this.fetchStaticState()
-    return this.context.getContract(staticState.votingMachine)
+  public votingMachine() {
+    return this.votingMachineContract
   }
+
   /**
    * [redeemerContract description]
    * @return a web3 Contract instance
    */
   public redeemerContract() {
-    const contractInfo = this.context.getContractInfoByName('Redeemer', TOKEN_CONTRACT_VERSION)
+    // TODO: the Redeemer contract version is hardcoced until we find a way around https://github.com/daostack/subgraph/issues/290
+    // const contractInfoOfScheme = this.context.getContractInfo(this.schemeAddress)
+    // const REDEEMER_CONTRACT_VERSION = contractInfoOfScheme.version
+    const contractInfo = this.context.getContractInfoByName('Redeemer', REDEEMER_CONTRACT_VERSION)
     return this.context.getContract(contractInfo.address)
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<Vote[]> {
+  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
     if (!options.where) { options.where = {}}
     options.where.proposal = this.id
     return Vote.search(this.context, options)
@@ -566,85 +546,87 @@ export class Proposal implements IStateful<IProposalState> {
    */
   public vote(outcome: IProposalOutcome, amount: number = 0): Operation<Vote|null> {
 
-    // @ts-ignore
-    const observable = this.state().pipe(
-      filter((o) => !!o),
-      first(),
-      concatMap((state) => {
+    const votingMachine = this.votingMachine()
 
-        const votingMachine = this.context.getContract(state.votingMachine)
-        const voteMethod = votingMachine.methods.vote(
-          this.id,  // proposalId
-          outcome, // a value between 0 to and the proposal number of choices.
-          amount.toString(), // amount of reputation to vote with . if _amount == 0 it will use all voter reputation.
-          NULL_ADDRESS
-        )
-
-        const map = (receipt: any) => {
-          const event = receipt.events.VoteProposal
-          if (!event) {
-            // no vote was cast
-            return null
-          }
-
-          return new Vote({
-            amount: event.returnValues._reputation, // amount
-            // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
-            createdAt: 0, // createdAt -
-            dao: state.dao.id,
-            outcome,
-            proposal: this.id, // proposalID
-            voter: event.returnValues._voter
-          }, this.context)
-        }
-        const errorHandler = async (error: Error) => {
-          if (error.message.match(/revert/)) {
-            const proposal = this
-            const proposalDataFromVotingMachine = await votingMachine.methods.proposals(proposal.id).call()
-            if (proposalDataFromVotingMachine.proposer === NULL_ADDRESS ) {
-              return Error(`Error in vote(): unknown proposal with id ${proposal.id}`)
-            }
-
-            if (proposalDataFromVotingMachine.state === '2') {
-              const msg = `Error in vote(): proposal ${proposal.id} already executed`
-              return Error(msg)
-            }
-          }
-          // if we have found no known error, we return the original error
-          return error
-        }
-        return this.context.sendTransaction(voteMethod, map, errorHandler)
-      })
+    const voteMethod = votingMachine.methods.vote(
+      this.id,  // proposalId
+      outcome, // a value between 0 to and the proposal number of choices.
+      amount.toString(), // amount of reputation to vote with . if _amount == 0 it will use all voter reputation.
+      NULL_ADDRESS
     )
-    return toIOperationObservable(observable)
+
+    const map = (receipt: any) => {
+      const event = receipt.events.VoteProposal
+      if (!event) {
+        // no vote was cast
+        return null
+      }
+      const voteId = undefined
+
+      return new Vote(
+        voteId,
+        event.returnValues._voter,
+        // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
+        0, // createdAt -
+        outcome,
+        event.returnValues._reputation, // amount
+        this.id, // proposalID
+        this.dao.address
+      )
+    }
+    const errorHandler = async (error: Error) => {
+      if (error.message.match(/revert/)) {
+        const proposal = this
+        const proposalDataFromVotingMachine = await votingMachine.methods.proposals(proposal.id).call()
+        if (proposalDataFromVotingMachine.proposer === NULL_ADDRESS ) {
+          return Error(`Error in vote(): unknown proposal with id ${proposal.id}`)
+        }
+
+        if (proposalDataFromVotingMachine.state === '2') {
+          const msg = `Error in vote(): proposal ${proposal.id} already executed`
+          return Error(msg)
+        }
+      }
+      // if we have found no known error, we return the original error
+      return error
+    }
+    return this.context.sendTransaction(voteMethod, map, errorHandler)
   }
 
   public stakingToken() {
     return this.context.GENToken()
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable<Stake[]> {
+  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
     if (!options.where) { options.where = {}}
     options.where.proposal = this.id
     return Stake.search(this.context, options)
   }
 
   public stake(outcome: IProposalOutcome, amount: typeof BN ): Operation<Stake> {
+    const stakeMethod = this.votingMachine().methods.stake(
+      this.id,  // proposalId
+      outcome, // a value between 0 to and the proposal number of choices.
+      amount.toString() // the amount of tokens to stake
+    )
+
     const map = (receipt: any) => { // map extracts Stake instance from receipt
         const event = receipt.events.Stake
         if (!event) {
           // for some reason, a transaction was mined but no error was raised before
           throw new Error(`Error staking: no "Stake" event was found - ${Object.keys(receipt.events)}`)
         }
+        const stakeId = undefined
 
-        return new Stake({
-          amount: event.returnValues._reputation, // amount
+        return new Stake(
+          stakeId,
+          event.returnValues._staker,
           // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
-          createdAt: undefined,
+          undefined,
           outcome,
-          proposal: this.id, // proposalID
-          staker: event.returnValues._staker
-        }, this.context)
+          event.returnValues._reputation, // amount
+          this.id // proposalID
+        )
     }
 
     const errorHandler =  async (error: Error) => {
@@ -653,7 +635,7 @@ export class Proposal implements IStateful<IProposalState> {
         const stakingToken = this.stakingToken()
         // TODO: check if we have the correct stakingTokenAddress (should not happen, but ok)
         // const stakingTokenAddress = this.votingMachine().methods.stakingToken().call()
-        const prop = await (await this.votingMachine()).methods.proposals(proposal.id).call()
+        const prop = await this.votingMachine().methods.proposals(proposal.id).call()
         if (prop.proposer === NULL_ADDRESS ) {
           return new Error(`Unknown proposal with id ${proposal.id}`)
         }
@@ -669,9 +651,8 @@ export class Proposal implements IStateful<IProposalState> {
         }
 
         // staker has approved the token spend
-        const votingMachine = await this.votingMachine()
         const allowance = new BN(await stakingToken.contract().methods.allowance(
-          defaultAccount, votingMachine.options.address
+          defaultAccount, this.votingMachine().options.address
         ).call())
         if (allowance.lt(amountBN)) {
           return new Error(`Staker has insufficient allowance to stake ${amount.toString()}
@@ -681,23 +662,10 @@ export class Proposal implements IStateful<IProposalState> {
       // if we have found no known error, we return the original error
       return error
     }
-
-    const observable = from(this.votingMachine()).pipe(
-      concatMap((votingMachine) => {
-        const stakeMethod = votingMachine.methods.stake(
-          this.id,  // proposalId
-          outcome, // a value between 0 to and the proposal number of choices.
-          amount.toString() // the amount of tokens to stake
-        )
-        return this.context.sendTransaction(stakeMethod, map, errorHandler)
-      })
-    )
-
-    return toIOperationObservable(observable)
-
+    return this.context.sendTransaction(stakeMethod, map, errorHandler)
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable < Reward[] > {
+  public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
     if (!options.where) { options.where = {}}
     options.where.proposal = this.id
     return Reward.search(this.context, options)
@@ -711,59 +679,48 @@ export class Proposal implements IStateful<IProposalState> {
    *    if undefined will only redeem the ContributionReward rewards
    * @return  an Operation
    */
-  public claimRewards(beneficiary ?: Address): Operation<boolean> {
-
+  public claimRewards(beneficiary?: Address): Operation<boolean> {
     if (!beneficiary) {
       beneficiary = NULL_ADDRESS
     }
-    const observable = this.state().pipe(
-      first(),
-      concatMap((state) => {
-        const transaction = this.redeemerContract().methods.redeem(
-          this.id,
-          state.dao.id,
-          beneficiary
-        )
-        return this.context.sendTransaction(transaction, () => true)
-      })
+    const transaction = this.redeemerContract().methods.redeem(
+      this.id,
+      this.dao.address,
+      beneficiary
     )
-    return toIOperationObservable(observable)
+    return this.context.sendTransaction(transaction, () => true)
   }
 
   /**
    * calll the 'execute()' function on the votingMachine.
    * the main purpose of this function is to set the stage of the proposals
    * this call may (or may not) "execute" the proposal itself (i.e. do what the proposal proposes)
-   * @return an Operation that, when sucessful, will contain the receipt of the transaction
+   * @return an Operation that, when sucessful, wil lcontain the receipt of the transaction
    */
   public execute(): Operation<any> {
-    const observable = from(this.votingMachine()).pipe(
-      concatMap((votingMachine) => {
-        const transaction = votingMachine.methods.execute(this.id)
-        const map = (receipt: any) => {
-          if (Object.keys(receipt.events).length  === 0) {
-            // this does not mean that anything failed
-            return receipt
-          } else {
-            return receipt
-          }
-        }
-        const errorHandler = async (err: Error) => {
-          const proposalDataFromVotingMachine = await votingMachine.methods.proposals(this.id).call()
+    const transaction = this.votingMachine().methods.execute(this.id)
+    const map = (receipt: any) => {
+      if (Object.keys(receipt.events).length  === 0) {
+        // this does not mean that anything failed
+        return receipt
+      } else {
+        return receipt
+      }
+    }
+    const errorHandler = async (err: Error) => {
+      const votingMachine = this.votingMachine()
+      const proposalDataFromVotingMachine = await votingMachine.methods.proposals(this.id).call()
 
-          if (proposalDataFromVotingMachine.callbacks === NULL_ADDRESS) {
-            const msg = `Error in proposal.execute(): A proposal with id ${this.id} does not exist`
-            return Error(msg)
-          } else if (proposalDataFromVotingMachine.state === '2') {
-            const msg = `Error in proposal.execute(): proposal ${this.id} already executed`
-            return Error(msg)
-          }
-          return err
-        }
-        return this.context.sendTransaction(transaction, map, errorHandler)
-      })
-    )
-    return toIOperationObservable(observable)
+      if (proposalDataFromVotingMachine.callbacks === NULL_ADDRESS) {
+        const msg = `Error in proposal.execute(): A proposal with id ${this.id} does not exist`
+        return Error(msg)
+      } else if (proposalDataFromVotingMachine.state === '2') {
+        const msg = `Error in proposal.execute(): proposal ${this.id} already executed`
+        return Error(msg)
+      }
+      return err
+    }
+    return this.context.sendTransaction(transaction, map, errorHandler)
   }
 }
 
