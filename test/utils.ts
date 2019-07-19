@@ -190,6 +190,8 @@ export async function waitUntilTrue(test: () => Promise<boolean> | boolean) {
 export async function voteToAcceptProposal(proposal: Proposal) {
   const arc = proposal.context
   const accounts = arc.web3.eth.accounts.wallet
+  // make sure the proposal is indexed
+  await waitUntilTrue(async () => !!(await proposal.state().pipe(first()).toPromise()))
 
   for (let i = 0; i <= 3; i ++) {
     try {
@@ -200,8 +202,9 @@ export async function voteToAcceptProposal(proposal: Proposal) {
       if (err.message.match(/already executed/)) {
         return
       } else {
+        // console.log(err.message)
         // ignore?
-        // throw err
+        throw err
       }
     } finally {
       arc.setAccount(accounts[0].address)

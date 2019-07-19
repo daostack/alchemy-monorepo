@@ -52,11 +52,13 @@ describe('Claim rewards', () => {
 
     // vote for the proposal with all the votest
     await voteToAcceptProposal(proposal)
-    // check if prposal is indeed accepted etc
 
+    // check if prposal is indeed accepted etc
     proposal.state().subscribe(((next) => states.push(next)))
 
     await waitUntilTrue(() => {
+      // console.log(lastState() && lastState().stage)
+      // console.log(IProposalStage.Executed)
       return lastState() && lastState().stage === IProposalStage.Executed
     })
 
