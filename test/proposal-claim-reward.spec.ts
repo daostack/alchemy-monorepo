@@ -18,7 +18,7 @@ describe('Claim rewards', () => {
     dao = await getTestDAO()
   })
 
-  it.only('works for ether and native token', async () => {
+  it('works for ether and native token', async () => {
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const ethReward = new BN(12345)
     const nativeTokenReward = toWei('271828')
