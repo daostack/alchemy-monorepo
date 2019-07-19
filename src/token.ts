@@ -125,7 +125,6 @@ export class Token implements IStateful<ITokenState> {
    * get a web3 contract instance for this token
    */
   public contract(mode?: 'readonly') {
-    // TODO: this a  bit hacky - we shuld have this contractInfo in our "contractAddresses" registry
     const abi = require(`@daostack/migration/abis/${DAOTOKEN_CONTRACT_VERSION}/DAOToken.json`)
     return this.context.getContract(this.address, abi, mode)
   }

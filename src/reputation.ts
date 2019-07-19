@@ -116,7 +116,6 @@ export class Reputation implements IStateful<IReputationState> {
    * get a web3 contract instance for this token
    */
   public contract() {
-    // TODO: this a  bit hacky
     const abi = require(`@daostack/migration/abis/${REPUTATION_CONTRACT_VERSION}/Reputation.json`)
     return this.context.getContract(this.address, abi)
   }
