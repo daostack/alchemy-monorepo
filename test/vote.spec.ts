@@ -21,7 +21,6 @@ describe('vote', () => {
     const vote = new Vote({
       amount: toWei('100'),
       createdAt: 0,
-      dao: '0x12445daoAddress',
       id: '0x1234id',
       outcome: IProposalOutcome.Fail,
       proposal: '0x12445proposalId',
