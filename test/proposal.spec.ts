@@ -1,7 +1,11 @@
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { IExecutionState, IProposalOutcome, IProposalStage, IProposalState,
+import { IExecutionState,
+  IProposalCreateOptions,
+  IProposalOutcome,
+  IProposalStage,
+  IProposalState,
   IProposalType,
   Proposal } from '../src/proposal'
 import { IContributionReward } from '../src/schemes/contributionReward'
@@ -148,8 +152,22 @@ describe('Proposal', () => {
   })
 
   // skipping this test, bc we chaned the implementation and it is unclear why this feature (?) was needed
-  it.skip('state should be available before the data is indexed', async () => {
-    const proposal = await createAProposal()
+  it('state should be available before the data is indexed', async () => {
+    const options   = {
+      beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+      ethReward: toWei('300'),
+      externalTokenAddress: undefined,
+      externalTokenReward: toWei('0'),
+      nativeTokenReward: toWei('1'),
+      periodLength: 0,
+      periods: 1,
+      reputationReward: toWei('10'),
+      scheme: getTestAddresses().base.ContributionReward
+    }
+
+    const response = await (dao as DAO).createProposal(options as IProposalCreateOptions).send()
+    const proposal = response.result as Proposal
+
     const proposalState = await proposal.state().pipe(first()).toPromise()
     // the state is null because the proposal has not been indexed yet
     expect(proposalState).toEqual(null)

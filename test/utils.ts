@@ -161,7 +161,7 @@ export async function createAProposal(
   // wait for the proposal to be indexed
   let indexed = false
   proposal.state().subscribe((next: any) => { if (next) { indexed = true } })
-  await waitUntilTrue(() => indexed )
+  await waitUntilTrue(() => indexed)
   return proposal
 }
 
@@ -202,7 +202,6 @@ export async function voteToAcceptProposal(proposal: Proposal) {
       if (err.message.match(/already executed/)) {
         return
       } else {
-        // console.log(err.message)
         // ignore?
         throw err
       }
