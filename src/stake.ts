@@ -15,9 +15,8 @@ export interface IStakeStaticState {
   proposal: string
 }
 
-// @ts-ignore
 export interface IStakeState extends IStakeStaticState {
-
+  id: string
 }
 
 export interface IStakeQueryOptions extends ICommonQueryOptions {

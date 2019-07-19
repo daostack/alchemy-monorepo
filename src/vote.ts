@@ -16,10 +16,10 @@ export interface IVoteStaticState {
   dao: Address
 }
 
-// @ts-ignore
 export interface IVoteState extends IVoteStaticState {
-
+  id: string
 }
+
 export interface IVoteQueryOptions extends ICommonQueryOptions {
   where?: {
     id?: string
