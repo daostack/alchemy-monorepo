@@ -86,9 +86,6 @@ describe('Stake on a ContributionReward', () => {
     // a non-existing proposal
     const proposal = new Proposal(
       '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2',
-      // dao.address,
-      // executedProposal.schemeAddress,
-      // executedProposal.votingMachineAddress,
       arc
     )
 

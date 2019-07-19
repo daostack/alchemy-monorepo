@@ -13,7 +13,6 @@ export interface IVoteStaticState {
   outcome: IProposalOutcome
   amount: typeof BN // amount of reputation that was voted with
   proposal: string
-  dao: Address
 }
 
 export interface IVoteState extends IVoteStaticState {
@@ -98,7 +97,6 @@ export class Vote {
         return new Vote({
           amount: new BN(r.reputation || 0),
           createdAt: r.createdAt,
-          dao: r.dao.id,
           id: r.id,
           outcome,
           proposal: r.proposal.id,
@@ -146,7 +144,6 @@ export class Vote {
       return {
         amount: item.reputation,
         createdAt: item.createdAt,
-        dao: item.dao.id,
         id: item.id,
         outcome: item.outcome,
         proposal: item.proppsal,

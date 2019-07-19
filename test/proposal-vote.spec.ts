@@ -28,7 +28,7 @@ describe('Vote on a ContributionReward', () => {
     const proposal = await createAProposal()
     const voteResponse = await proposal.vote(IProposalOutcome.Pass).send()
     const voteState0 = await voteResponse.result.fetchStaticState()
-    expect(voteState0.result).toMatchObject({
+    expect(voteState0).toMatchObject({
       outcome : IProposalOutcome.Pass
     })
 
@@ -46,7 +46,6 @@ describe('Vote on a ContributionReward', () => {
     const vote = votes[0]
     const voteState = await vote.fetchStaticState()
     expect(voteState.proposal).toEqual(proposal.id)
-    expect(voteState.dao).toEqual(dao.id)
     expect(voteState.outcome).toEqual(IProposalOutcome.Pass)
   })
 
@@ -90,7 +89,7 @@ describe('Vote on a ContributionReward', () => {
 
     proposal.context.web3.eth.defaultAccount = arc.web3.eth.accounts.wallet[2].address
     await expect(proposal.vote(IProposalOutcome.Pass).send()).rejects.toThrow(
-      /unknown proposal/i
+      /No proposal/i
     )
   })
 

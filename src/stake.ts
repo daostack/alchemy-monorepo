@@ -145,11 +145,11 @@ export class Stake {
     return this.context.getObservableObject(query, itemMap)
   }
 
-  public setStaticState(opts: IStakeState) {
+  public setStaticState(opts: IStakeStaticState) {
     this.staticState = opts
   }
 
-  public async fetchStaticState(): Promise<IStakeState> {
+  public async fetchStaticState(): Promise<IStakeStaticState> {
     if (!!this.staticState) {
       return this.staticState
     } else {

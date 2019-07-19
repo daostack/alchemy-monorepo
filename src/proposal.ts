@@ -566,37 +566,25 @@ export class Proposal implements IStateful<IProposalState> {
    */
   public vote(outcome: IProposalOutcome, amount: number = 0): Operation<Vote|null> {
 
-    // @ts-ignore
-    const observable = this.state().pipe(
-      filter((o) => !!o),
-      first(),
-      concatMap((state) => {
+    const mapReceipt = (receipt: any) => {
+      const event = receipt.events.VoteProposal
+      if (!event) {
+        // no vote was cast
+        return null
+      }
 
-        const votingMachine = this.context.getContract(state.votingMachine)
-        const voteMethod = votingMachine.methods.vote(
-          this.id,  // proposalId
-          outcome, // a value between 0 to and the proposal number of choices.
-          amount.toString(), // amount of reputation to vote with . if _amount == 0 it will use all voter reputation.
-          NULL_ADDRESS
-        )
+      return new Vote({
+        amount: event.returnValues._reputation, // amount
+        // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
+        createdAt: 0, // createdAt -
+        outcome,
+        proposal: this.id, // proposalID
+        voter: event.returnValues._voter
+      }, this.context)
+    }
 
-        const map = (receipt: any) => {
-          const event = receipt.events.VoteProposal
-          if (!event) {
-            // no vote was cast
-            return null
-          }
-
-          return new Vote({
-            amount: event.returnValues._reputation, // amount
-            // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
-            createdAt: 0, // createdAt -
-            dao: state.dao.id,
-            outcome,
-            proposal: this.id, // proposalID
-            voter: event.returnValues._voter
-          }, this.context)
-        }
+    const observable = from(this.votingMachine()).pipe(
+      concatMap((votingMachine) => {
         const errorHandler = async (error: Error) => {
           if (error.message.match(/revert/)) {
             const proposal = this
@@ -613,9 +601,18 @@ export class Proposal implements IStateful<IProposalState> {
           // if we have found no known error, we return the original error
           return error
         }
-        return this.context.sendTransaction(voteMethod, map, errorHandler)
+
+        const voteMethod = votingMachine.methods.vote(
+          this.id,  // proposalId
+          outcome, // a value between 0 to and the proposal number of choices.
+          amount.toString(), // amount of reputation to vote with . if _amount == 0 it will use all voter reputation.
+          NULL_ADDRESS
+        )
+
+        return this.context.sendTransaction(voteMethod, mapReceipt, errorHandler)
       })
     )
+
     return toIOperationObservable(observable)
   }
 
@@ -651,8 +648,6 @@ export class Proposal implements IStateful<IProposalState> {
       if (error.message.match(/revert/)) {
         const proposal = this
         const stakingToken = this.stakingToken()
-        // TODO: check if we have the correct stakingTokenAddress (should not happen, but ok)
-        // const stakingTokenAddress = this.votingMachine().methods.stakingToken().call()
         const prop = await (await this.votingMachine()).methods.proposals(proposal.id).call()
         if (prop.proposer === NULL_ADDRESS ) {
           return new Error(`Unknown proposal with id ${proposal.id}`)
