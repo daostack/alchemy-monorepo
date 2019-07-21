@@ -1,5 +1,5 @@
 const utils = require('./utils.js')
-async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logTx, previousMigration }) {
+async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logTx, previousMigration, customABIsLocation }) {
   let base = previousMigration.base
   if (!(await confirm('About to migrate new DAO. Continue?'))) {
     return
@@ -395,6 +395,63 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     schemes.push(UpgradeScheme)
     params.push(upgradeSchemeParams)
     permissions.push('0x0000000A')
+  }
+
+  for (const schemeName in migrationParams.CustomSchemes) {
+    let scheme = migrationParams.CustomSchemes[schemeName]
+    let { abi, bytecode } = require(`${customABIsLocation}/${schemeName}.json`)
+    let schemeContract
+    if (scheme.address === undefined) {
+      spinner.start(`Migrating ${schemeName}...`)
+      const SchemeContract = new web3.eth.Contract(abi, undefined, opts)
+      const schemeDeployedContract = SchemeContract.deploy({
+        data: bytecode,
+        arguments: null
+      }).send({ nonce: ++nonce })
+      tx = await new Promise(resolve => schemeDeployedContract.on('receipt', resolve))
+      schemeContract = await schemeDeployedContract
+      await logTx(tx, `${schemeContract.options.address} => ${schemeName}`)
+    } else {
+      schemeContract = new web3.eth.Contract(abi, scheme.address, opts)
+    }
+
+    let schemeParamsHash = '0x0000000000000000000000000000000000000000000000000000000000000000'
+    if (scheme.isUniversal) {
+      spinner.start(`Setting ${schemeName} parameters...`)
+      let schemeParams = []
+      for (let i in scheme.params) {
+        if (scheme.params[i].voteParams !== undefined) {
+          schemeParams.push(votingMachinesParams[scheme.params[i].voteParams])
+        } else if (scheme.params[i] === 'GenesisProtocolAddress') {
+          schemeParams.push(GenesisProtocol)
+        } else {
+          schemeParams.push(scheme.params[i])
+        }
+      }
+      const schemeSetParams = schemeContract.methods.setParameters(...schemeParams)
+      schemeParamsHash = await schemeSetParams.call()
+      tx = await schemeSetParams.send({ nonce: ++nonce })
+      await logTx(tx, `${schemeName} parameters set.`)
+    } else {
+      spinner.start(`Initializing ${schemeName}...`)
+      let schemeParams = [avatar.options.address]
+      for (let i in scheme.params) {
+        if (scheme.params[i].voteParams !== undefined) {
+          schemeParams.push(votingMachinesParams[scheme.params[i].voteParams])
+        } else {
+          schemeParams.push(scheme.params[i])
+        }
+        const schemeSetParams = schemeContract.methods.initialize(...schemeParams)
+        schemeParamsHash = await schemeSetParams.call()
+        tx = await schemeSetParams.send({ nonce: ++nonce })
+        await logTx(tx, `${schemeName} initialized.`)
+      }
+    }
+
+    schemeNames.push(schemeName)
+    schemes.push(schemeContract.options.address)
+    params.push(schemeParamsHash)
+    permissions.push(scheme.permissions)
   }
 
   if (migrationParams.useDaoCreator === true) {

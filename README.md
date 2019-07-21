@@ -255,6 +255,27 @@ Example migration parameters object:
     "votingMachine": "0x00000000000000000000votingmachineaddress" // The address of your voting machine (default is Genesis Protocol address)
     "voteParams": 1 // The index of the parameters in the voting machines parameters array (default is 0)
   },
+  // Allows you to register and deploy custom schemes
+  "CustomSchemes": {
+     // You should have an contract build file with identical name inside `custom-abis` folder
+    "MyCustomScheme": {
+      // If true will call setParameters() else will call initialized() with the avatar address as a first parameter
+      "isUniversal": true,  
+      // Parameters to use in the setParameters() / initialized() method
+      "params": [
+        // An object like this { "voteParams": X } is transformed as the voting params hash like "voteParams": 0 in the supported schemes
+        { "voteParams": 0 },
+        // This will be converted to the actual Genesis Protocol address
+        "GenesisProtocolAddress",
+        // You can also add literal parameters like so
+        "anotherParam"
+      ],
+      // If the scheme is deployed set the address here, if not remove the field and the script will deploy the scheme
+      "address": "0xaddress...",
+      // The permissions your scheme need from the controller
+      "permissions": "0x00000001"
+    }
+  },
   // Parameters list your DAO will use with the voting machines
   // You can add here either Genesis Protocol parameters which will set the parameters in the GP voting machine or add a pre-set parameters hash to any voting machine
   "VotingMachinesParams": [

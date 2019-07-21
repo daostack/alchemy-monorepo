@@ -32,14 +32,15 @@ const defaults = {
   privateKey: '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d',
   prevmigration: path.normalize(path.join(__dirname, './migration.json')),
   output: path.normalize(path.join(__dirname, './migration.json')),
-  params: JSON.parse(fs.readFileSync(path.join(__dirname, 'migration-params.json')))
+  params: JSON.parse(fs.readFileSync(path.join(__dirname, 'migration-params.json'))),
+  customabislocation: path.normalize(path.join(__dirname, './custom-abis'))
 }
 
 /**
  * A wrapper function that performs tasks common to all migration commands.
  */
 const wrapCommand = fn => async options => {
-  let { quiet, disableconfs, force, provider, gasPrice, privateKey, mnemonic, prevmigration, output, params } = { ...defaults, ...options }
+  let { quiet, disableconfs, force, provider, gasPrice, privateKey, mnemonic, prevmigration, output, params, customabislocation } = { ...defaults, ...options }
   const emptySpinner = new Proxy({}, { get: () => () => { } }) // spinner that does nothing
   const spinner = quiet ? emptySpinner : ora()
 
@@ -129,7 +130,8 @@ const wrapCommand = fn => async options => {
     opts,
     migrationParams: { ...params, ...params[network] },
     logTx,
-    previousMigration: { ...existingFile[network] }
+    previousMigration: { ...existingFile[network] },
+    customabislocation
   })
 
   // obtain time and balance after command
@@ -214,6 +216,12 @@ function cli () {
       alias: 'm',
       type: 'string',
       describe: `mnemonic used to generate the private key of the account used in migration (cannot be used with the 'private-key' option)`
+    })
+    .option('custom-abis-location', {
+      alias: 'c',
+      type: 'string',
+      describe: 'path to the folder containing the truffle build data for custom schemes',
+      default: defaults.customabislocation
     })
     .command('$0', 'Migrate base contracts and an example DAO', yargs => yargs, wrapCommand(migrate))
     .command('base', 'Migrate an example DAO', yargs => yargs, wrapCommand(migrateBase))
