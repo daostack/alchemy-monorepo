@@ -9,7 +9,7 @@ import { IGenericScheme} from '../src/schemes/genericScheme'
 import { createAProposal, getTestAddresses, getTestDAO, ITestAddresses, LATEST_ARC_VERSION,
   newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
 
-jest.setTimeout(20000)
+jest.setTimeout(60000)
 
 /**
  * Proposal test
