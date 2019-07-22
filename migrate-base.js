@@ -123,7 +123,7 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
     ControllerCreator
   )
   await deploy(require('@daostack/arc/build/contracts/UController.json'))
-  const GenesisProtocol = await deploy(
+  await deploy(
     require('@daostack/arc/build/contracts/GenesisProtocol.json'),
     ['DAOToken'],
     GENToken
@@ -133,19 +133,15 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
   await deploy(
     require('@daostack/arc/build/contracts/GlobalConstraintRegistrar.json')
   )
-  const ContributionReward = await deploy(require('@daostack/arc/build/contracts/ContributionReward.json'))
+  await deploy(require('@daostack/arc/build/contracts/ContributionReward.json'))
   await deploy(require('@daostack/arc/build/contracts/AbsoluteVote.json'))
   await deploy(require('@daostack/arc/build/contracts/QuorumVote.json'))
   await deploy(require('@daostack/arc/build/contracts/TokenCapGC.json'))
   await deploy(require('@daostack/arc/build/contracts/VoteInOrganizationScheme.json'))
   await deploy(require('@daostack/arc/build/contracts/OrganizationRegister.json'))
-  await deploy(
-    require('@daostack/arc/build/contracts/Redeemer.json'),
-    ['ContributionReward', 'GenesisProtocol'],
-    ContributionReward,
-    GenesisProtocol
-  )
-
+  if (Number(arcVersion.slice(-2)) >= 22) {
+    await deploy(require('@daostack/arc/build/contracts/Redeemer.json'))
+  }
   await deploy(require('@daostack/arc/build/contracts/GenericScheme.json'))
   let migration = { 'base': previousMigration.base || {} }
   migration.base[arcVersion] = addresses
