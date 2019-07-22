@@ -397,6 +397,34 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     permissions.push('0x0000000A')
   }
 
+  if (migrationParams.schemes.ReputationFromToken) {
+    let { abi: reputationFromTokenABI, bytecode: reputationFromTokenBytecode } = require('@daostack/arc/build/contracts/ReputationFromToken.json')
+    spinner.start('Migrating ReputationFromToken...')
+    const reputationFromTokenContract = new web3.eth.Contract(reputationFromTokenABI, undefined, opts)
+    const reputationFromTokenDeployedContract = reputationFromTokenContract.deploy({
+      data: reputationFromTokenBytecode,
+      arguments: null
+    }).send({ nonce: ++nonce })
+    tx = await new Promise(resolve => reputationFromTokenDeployedContract.on('receipt', resolve))
+    const reputationFromToken = await reputationFromTokenDeployedContract
+    await logTx(tx, `${reputationFromToken.options.address} => ReputationFromToken`)
+
+    spinner.start('Setting ReputationFromToken...')
+
+    const reputationFromTokenInit = reputationFromToken.methods.initialize(
+      avatar.options.address,
+      migrationParams.ReputationFromToken.tokenContract,
+      migrationParams.ReputationFromToken.curve === undefined ? '0x0000000000000000000000000000000000000000' : migrationParams.ReputationFromToken.curve
+    )
+    tx = await reputationFromTokenInit.send({ nonce: ++nonce })
+    await logTx(tx, 'Reputation From Token Scheme Initialized.')
+
+    schemeNames.push('ReputationFromToken')
+    schemes.push(reputationFromToken.options.address)
+    params.push('0x0000000000000000000000000000000000000000000000000000000000000000')
+    permissions.push('0x00000001')
+  }
+
   for (const schemeName in migrationParams.CustomSchemes) {
     let scheme = migrationParams.CustomSchemes[schemeName]
     let { abi, bytecode } = require(`${customABIsLocation}/${schemeName}.json`)
