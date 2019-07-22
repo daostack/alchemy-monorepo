@@ -1,31 +1,28 @@
 # Developing
 
-Get all services running:
+For development, it is useful to have local instances of Ganache (an ethereum node), IPFS (which is used to store data), an instance of The Graph with the DAOStack subgraph.
+The package is provided with convenient docker containers that provide  a  complete environment for testing and development:
 
+Get all services running:
 ```sh
-docker-compose up graph-node
+docker-compose up
 ```
 
 This command will build and start a graph instance, ganache, IPFS and postgresql.
 
-Before being able to use these services, you need to deploy the DAOStack contracts and configure the graph node to listen to changes.
-Open another terminal and run the following comand:
-```sh
-npm run setup-env
-```
 
 To run the tests, run:
-```sh
+```
 npm run test
 ```
 
+You may also want to run the (demo.js)[./documentation/demo.js] file for some concrete examples of the usage of the library:
+```
+npm run demo
+```
 After you are done, run:
 ```
 docker-compose down
-```
-If you update the subgraph dependency in `package.json`, you must re-configure the graph node:
-```
-npm run setup-env
 ```
 
 ## Testing
@@ -38,3 +35,9 @@ Or watch:
 ```sh
 npm run test -- --watch
 ```
+
+### Commands
+
+ - `npm run build`: Generate bundles and typings, create docs
+ - `npm run lint`: Lints code
+ - `npm run test`: run all tests

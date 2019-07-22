@@ -1,12 +1,11 @@
+[![Build Status](https://travis-ci.com/daostack/client.svg?token=aXt9zApRNkfx8zDMypWx&branch=master)](https://travis-ci.com/daostack/client)
+
 # DAOstack Client
 
-The DAOStack Client  
-* A library to work with the DAOstack ecosystem
-* Convenience functions to interact with the DAOstack contracts: vote, stake and execute proposals
-* A frontend client library for the [DAOstack subgraph](https://github.com/daostack/subgraph) - search for daos, proposaals
-*
+The DAOStack Client is a nodejs library to work with the DAOstack ecosystem
+* Convenience functions to interact with the [DAOstack contracts](https://github.com/daostack/arc): create proposals, and vote and stake on them
+* A client library for the [DAOstack subgraph](https://github.com/daostack/subgraph) - search for daos, proposals
 
-[![Build Status](https://travis-ci.com/daostack/client.svg?token=aXt9zApRNkfx8zDMypWx&branch=master)](https://travis-ci.com/daostack/client)
 
 ## Usage
 
@@ -23,7 +22,7 @@ import Arc from '@daostack/client'
 const arc = new Arc({
   graphqlHttpProvider: "https://subgraph.daostack.io/subgraphs/name/v23",
   graphqlWsProvider: "wss://ws.subgraph.daostack.io/subgraphs/name/v23",
-  web3Provider: `wss://mainnet.infura.io/ws/v3/e0cdf3bfda9b468fa908aa6ab03d5ba2`,
+  web3Provider: `wss://mainnet.infura.io/ws/v3/${YOUR_TOKEN_HERE}`,
   ipfsProvider: {
     "host": "subgraph.daostack.io",
     "port": "443",
@@ -32,45 +31,11 @@ const arc = new Arc({
   }
 })
 // get a list of DAOs
-arc.daos()
-// before we can use the Arc instance to send transactions, we need to provide it
-// with information on where the contracts can be found
-// query the subgraph for the contract addresses, and use those
-const contractInfos = await arc.fetchContractInfos()
-arc.setContractInfo(contractInfos)
-
+arc.daos().subscribe(
+  (daos) => console.log(`Here are your DAOS: ${daos}`)
+)
 ```
 
 * [overview](./documentation/overview.md)
 * [development](./documentation/development.md)
-* [example](./documentation/example-session.md)
-* [troubleshooting](./documentation/troubleshooting.md)
-
-## Developing
-
-Get all services running:
-
-```sh
-docker-compose up graph-node
-```
-
-This command will start all the services that are needed for a test environment: a graph-node instance, ganache, IPFS and postgresql.
-
-
-To run the tests, run:
-```sh
-npm run test
-```
-
-After you are done, run:
-```
-docker-compose down
-```
-
-
-### Commands
-
-
- - `npm run build`: Generate bundles and typings, create docs
- - `npm run lint`: Lints code
- - `npm run test`: run all tests
+* [example](./documentation/demo.js) (run with `npm run demo`)

@@ -1,37 +1,40 @@
 # Overview
 
-The `@daostack/client` is a package that provides an interface to the
-[DAOstack contracts](https://github.com/daostack/arc) and to the [DAOstack subgraph](https://github.com/daostack/subgraph).
+The main purpose of the `@daostack/client` package is to provide a helpful set of tools to interact with the DAOstack ecosystem.
+
+In particular, the  library provides an interface to
+ the [DAOstack contracts](https://github.com/daostack/arc)
+and to the [DAOstack subgraph](https://github.com/daostack/subgraph) (an index of on-chain data).
 
 
 ## Installation
 
 
+```sh
+npm install @daostack/client
+```
 The client package can be used as a dependency for developing a client application
 (we are using it to build a [React application](https://github.com/daostack/alchemy) called [Alchemy](https://alchemy.daostack.io)),
 but it can also be used for writing nodejs scripts that interact with the contracts or for querying data from the subgraph.
 
 
-The first thing to do is install the package:
-
-```sh
-npm install @daostack/client -g
-```
-
 ## General structure
 
-The main purpose of the `@daostack/client` library is to provide helpful tools to interact with the DAOstack ecosystem.
+The client library provides a number of Classes that represent a the DAOstack basic entities - these are the basic building blocks of a DAO.
 
-For that purpose, we provide a number of Classes that represent a number of basic entities - these are the basic building blocks of a DAO, if you will.
-These are the following classes: `DAO`, `Member`, `Proposal`, `Queue`,  `Scheme`, `Reputation`, `Reward`, `Stake` and `Vote`.
+A  `DAO` instance has a number of `Member`s, which are holders of reputation (from the `Reputation` contract) and can cast a `Vote` on a  `Proposal`.
+Proposals are always made in a `Scheme` - that determines the conditions and effects of executing a proposal, typically by ordering them in a  `Queue`.
+Users can also put a `Stake` on the outcome of a proposal, and claim one or more `Reward` if they vote or stake effectively.
 
 
 ### Configuration: the Arc object
 
-Before interacting with the contracts on-chain and the indexing service,  is the `Arc` object that holds the basic configuration (which services to connect to) and serves as the main entrypoint when using the library.
+Before interacting with the contracts on-chain and the indexing service,
+the user of the library must provide some basic configration options.
+Thhe `Arc` object that holds the basic configuration (which services to connect to) and serves as the main entrypoint when using the library.
 
-A typical way of configuring a new Arc instance is as follows:
 
+The current (at the time of writing) version of (Alchemy)[https://alchemy.daostack.io] uses the following configuration:
 ```
 import { Arc } from '@daostack/client'
 
@@ -46,32 +49,40 @@ const arc = new Arc({
     "api-path": "/ipfs/api/v0/"
   }
 })
-```
-Note how we are passing to Arc all the information it needs to connect to the various services: websocket and http connections to the subgraph of The Graph;
-the connection to the Ethereum node, and a connection to an ipfs Provider (which is used to as a data storage layer by DAOStack).
 
-Some of these configuration settings are optional.
-Without the graphql services, it is still possible to use `@daostack/client` for creating and sending transactions to the blockchain;
+// before we can use the Arc instance to send transactions, we need to provide it
+// with information on where the contracts can be found
+// query the subgraph for the contract addresses, and use those
+const contractInfos = await arc.fetchContractInfos()
+arc.setContractInfo(contractInfos)
+
+
+```
+Note how we are passing to Arc all the information it needs to connect to the various services: the web3Provider represents a  connection to an Ethereum node,  websocket and http connections to the subgraph of The Graph;
+and a connection to an IPFS provider (which is used to as a data storage layer by DAOStack).
+
+Some of these configuration settings are optional: to use `@daostack/client` for creating and sending transactions to the blockchain, it is sufficient
+to provide the web3Provider;
 similarly, the `web3` and `ipfs` providers can be omitted when the library is only used for fetching data from the subgraph.
 
 
 
 ### Proposals, Schemes, Votes, Stakes, Queues, etc
 
-These classes all implement the same patterns.
+All classes all implement some common patterns.
 
 
 All classes implement `search`  function as a class method, which can be used to search for those entities on the subgraph.
 For example, to get all DAOs that are called `Foo`, you can do:
 
 ```
-import { Arc, DAO } from '@doastack/client'
-const arc = new Arc({.....})
+import { DAO } from '@doastack/client'
 DAO.search(arc, {where: { name: "Foo" }})
 ```
 Note how the search function must be provided with an `Arc` instance, so it knows to which service to send the queries.
 
-All queries return (rxjs.Observable)[http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html] instances. (See below)[#search] for further explanation.
+All queries return (rxjs.Observable)[http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html] instances.
+(See below)[#search] for further explanation.
 
 ### Class instances
 
@@ -157,15 +168,34 @@ Here is how you create a proposal in a DAO  for a contribution reward for a
 
 ```
 const DAO = new DAO('0x123DAOADDRESS')
-dao.createProposal({
+const tx = dao.createProposal({
   beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
   ethReward: toWei('300'),
-  externalTokenAddress: undefined,
-  externalTokenReward: toWei('0'),
   nativeTokenReward: toWei('1'),
   periodLength: 0,
   periods: 1,
   reputationReward: toWei('10'),
   scheme: '0xContributionRewardAddress' // address of a contribution reward scheme that is registered with this DAO
 })
+```
+
+All functions that send a transaction to the blockchain (like `DAO.createProposal`, `Proposal.vote`, `Token.mint`, etc, etc) return an rxjs Observable. This observable returns a stream of updates about the state of the transaction: first when it is sent, then when it is mined and confirmed.
+
+You can subscribe to the transaction:
+
+```
+tx.subscribe(
+  (next) => {
+    console.log(next.state) // sending, sent, or mined
+    if (next.state === ITransactionState.Mined) {
+      console.log(`This transaction has ${next.confirmations} confirmations`)
+      console.log(next.result)
+    }
+  })
+  ```
+
+All operations also provide a convenience function `send()` that returns a promise that resolves when the transaction is mined
+```
+const voteTransaction = await proposal.vote(...).send()
+const vote = (voteTransaction.result // an instance of Vote
 ```

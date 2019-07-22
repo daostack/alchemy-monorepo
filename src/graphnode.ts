@@ -122,7 +122,7 @@ export class GraphNodeObserver {
     apolloQueryOptions: IApolloQueryOptions = {}
   ) {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
-    return this.getObservable(query, apolloQueryOptions).pipe(
+    const observable =  this.getObservable(query, apolloQueryOptions).pipe(
       map((r: ApolloQueryResult<any>) => {
         if (!r.data[entity]) {
           throw Error(`Could not find entity '${entity}' in ${Object.keys(r.data)}`)
@@ -131,6 +131,8 @@ export class GraphNodeObserver {
       }),
       map((rs: object[]) => rs.map(itemMap).filter((x) => x !== null))
     )
+    observable.first = () => observable.pipe(first()).toPromise()
+    return observable
   }
 
   /**
@@ -177,7 +179,7 @@ export class GraphNodeObserver {
   ) {
     const entity = query.definitions[0].selectionSet.selections[0].name.value
 
-    return this.getObservable(query, apolloQueryOptions).pipe(
+    const observable = this.getObservable(query, apolloQueryOptions).pipe(
       map((r: ApolloQueryResult<any>) => {
         if (!r.data) {
           return null
@@ -187,6 +189,8 @@ export class GraphNodeObserver {
       map(itemMap)
       // filter((o) => !!o)
     )
+    observable.first = () => observable.pipe(first()).toPromise()
+    return observable
   }
 
   public sendQuery(query: any) {

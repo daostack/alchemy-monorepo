@@ -85,7 +85,7 @@ export class DAO implements IStateful<IDAOState> {
   public id: Address
   public staticState: IDAOStaticState|undefined
 
-  constructor(public idOrOpts: Address|IDAOStaticState, public context: Arc) {
+  constructor(idOrOpts: Address|IDAOStaticState, public context: Arc) {
     if (typeof idOrOpts === 'string') {
       this.id = idOrOpts.toLowerCase()
     } else {
