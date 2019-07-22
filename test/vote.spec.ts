@@ -4,7 +4,7 @@ import { IProposalOutcome} from '../src/proposal'
 import { Vote } from '../src/vote'
 import { createAProposal, getTestDAO, newArc, toWei, waitUntilTrue } from './utils'
 
-jest.setTimeout(20000)
+jest.setTimeout(60000)
 
 /**
  * Stake test

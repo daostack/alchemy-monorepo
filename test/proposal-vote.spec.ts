@@ -7,7 +7,7 @@ import { createAProposal, firstResult,
   getTestAddresses, getTestDAO, ITestAddresses,
   newArc, waitUntilTrue } from './utils'
 
-jest.setTimeout(20000)
+jest.setTimeout(60000)
 
 describe('Vote on a ContributionReward', () => {
 

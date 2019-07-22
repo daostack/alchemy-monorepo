@@ -9,7 +9,7 @@ import { Vote } from '../src/vote'
 import { createAProposal, fromWei,
   getTestDAO, newArc, toWei, waitUntilTrue } from './utils'
 
-jest.setTimeout(20000)
+jest.setTimeout(60000)
 
 /**
  * Member test

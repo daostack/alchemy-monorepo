@@ -10,7 +10,7 @@ import { ISchemeRegistrar } from '../src/schemes/schemeRegistrar'
 import { createAProposal, firstResult, getTestAddresses, getTestDAO,
   newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
 
-jest.setTimeout(30000)
+jest.setTimeout(60000)
 
 /**
  * Proposal test
