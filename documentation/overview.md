@@ -29,9 +29,11 @@ Users can also put a `Stake` on the outcome of a proposal, and claim one or more
 
 ### Configuration: the Arc object
 
+** if you are a developer, you may also be interested in the (demo file)[./demo.js] **
+
 Before interacting with the contracts on-chain and the indexing service,
 the user of the library must provide some basic configration options.
-Thhe `Arc` object that holds the basic configuration (which services to connect to) and serves as the main entrypoint when using the library.
+The `Arc` object that holds the basic configuration (which services to connect to) and serves as the main entrypoint when using the library.
 
 
 The current (at the time of writing) version of (Alchemy)[https://alchemy.daostack.io] uses the following configuration:
@@ -55,8 +57,6 @@ const arc = new Arc({
 // query the subgraph for the contract addresses, and use those
 const contractInfos = await arc.fetchContractInfos()
 arc.setContractInfo(contractInfos)
-
-
 ```
 Note how we are passing to Arc all the information it needs to connect to the various services: the web3Provider represents a  connection to an Ethereum node,  websocket and http connections to the subgraph of The Graph;
 and a connection to an IPFS provider (which is used to as a data storage layer by DAOStack).
