@@ -22,21 +22,21 @@ but it can also be used for writing nodejs scripts that interact with the contra
 
 The client library provides a number of Classes that represent a the DAOstack basic entities - these are the basic building blocks of a DAO.
 
-A  `DAO` instance has a number of `Member`s, which are holders of reputation (from the `Reputation` contract) and can cast a `Vote` on a  `Proposal`.
+A  `DAO` has a number of `Member`, which are holders of reputation (from the `Reputation` contract) and can cast a `Vote` on a  `Proposal`.
 Proposals are always made in a `Scheme` - that determines the conditions and effects of executing a proposal, typically by ordering them in a  `Queue`.
 Users can also put a `Stake` on the outcome of a proposal, and claim one or more `Reward` if they vote or stake effectively.
 
 
 ### Configuration: the Arc object
 
-** if you are a developer, you may also be interested in the (demo file)[./demo.js] **
+**if you are a developer, you may also be interested in the [demo file](./demo.js)**
 
 Before interacting with the contracts on-chain and the indexing service,
 the user of the library must provide some basic configration options.
 The `Arc` object that holds the basic configuration (which services to connect to) and serves as the main entrypoint when using the library.
 
 
-The current (at the time of writing) version of (Alchemy)[https://alchemy.daostack.io] uses the following configuration:
+The current (at the time of writing) version of [Alchemy](https://alchemy.daostack.io) uses the following configuration:
 ```
 import { Arc } from '@daostack/client'
 
@@ -69,11 +69,11 @@ similarly, the `web3` and `ipfs` providers can be omitted when the library is on
 
 ### Proposals, Schemes, Votes, Stakes, Queues, etc
 
-All classes all implement some common patterns.
 
+All basic Entity classes in the client library implement a number of common functions.
 
-All classes implement `search`  function as a class method, which can be used to search for those entities on the subgraph.
-For example, to get all DAOs that are called `Foo`, you can do:
+For example, all these classes implement a `search`  function as a class method, which can be used to search for those entities on the subgraph.
+To get all DAOs that are called `Foo`, you can do:
 
 ```
 import { DAO } from '@doastack/client'
@@ -81,43 +81,53 @@ DAO.search(arc, {where: { name: "Foo" }})
 ```
 Note how the search function must be provided with an `Arc` instance, so it knows to which service to send the queries.
 
-All queries return (rxjs.Observable)[http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html] instances.
-(See below)[#search] for further explanation.
+All queries return [rxjs.Observable](http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html).
+[See below](#search) for further explanation.
 
 ### Class instances
 
-All Entity class instances in the client library can be created in two different ways.
-
-The first way is by providing an `id` (and an instance of `Arc`), for example:
+All Entity classes can be created by providing an `id` (and an instance of `Arc`), for example:
 
 ```
 const proposal = new Proposal('0x1234....', arc)
 ```
-The proposal object can now be used to vote.
+The proposal object can now be used to vote, and stake.
 ```
 await proposal.vote(...).send()
 ```
 This call will register a vote by sending a transaction to the blockchain.
 Again, see below for more details.
 
-Because the proposal is created with only an `id`, the client will query the subgraph for additional information, such as the address of the contract that the vote needs to be sent to.
-
-To make the client usable without having subgraph service available, all Entities have a second way of being created:
+Because the proposal is created with only an `id`, the client will query the subgraph for additional information, such as the address of the contract that the vote needs to be sent to. To make the client usable without having subgraph service available, all Entities have a second way of being created:
 ```
 const proposal = new Proposal({
-  id: '0x12455',
-  votingMachine: '0x1111',
-  scheme: '0x12345'
+  id: '0x12455..',
+  votingMachine: '0x1111..',
+  scheme: '0x12345...'
   }, arc)
 ```
 This will provide the instance with enough information to send transactions without having to query the subgraph for additional information.
 
 
+## Entity states
+
+All entities implement a `state()` method that returns an observable of objects that represent the current state of the entity.
+
+```
+proposal.state().subscribe(
+  (newState) => console.log(`This proposal has ${newState.votesFor} upvotes`)
+  )
+```
+```
+dao.state().subscribe(
+  (newState) => console.log(`This DAO has ${newState.memberCount} members`)
+  )
+```
 
 ## Searching and observables
 
-
-Here are some examples of queries:
+The search functions are wrappers around graphql queries, and standard graphql syntax can be used
+to filter and sort the queries, and for pagination:
 ```
 Proposal.search({ where: { dao: '0x1234..' }})
 ```
@@ -148,7 +158,7 @@ const observable =  dao.proposals() // all proposals in this dao
 
 // a subscription
 const subscription = observable.subscribe(
-  (next) => console.log(`Found ${next.length} proposals`) // will be called each time the data from the qeury changes
+  (next) => console.log(`Now there are ${next.length} proposals`) // will be called each time the data from the qeury changes
 )
 subscription.unsubscribe() // do not forget to unsubscribe
 ```
@@ -187,7 +197,7 @@ You can subscribe to the transaction:
 tx.subscribe(
   (next) => {
     console.log(next.state) // sending, sent, or mined
-    if (next.state === ITransactionState.Mined) {
+    if (next.stage === ITransactionStage.Mined) {
       console.log(`This transaction has ${next.confirmations} confirmations`)
       console.log(next.result)
     }
@@ -197,5 +207,7 @@ tx.subscribe(
 All operations also provide a convenience function `send()` that returns a promise that resolves when the transaction is mined
 ```
 const voteTransaction = await proposal.vote(...).send()
-const vote = (voteTransaction.result // an instance of Vote
+const vote = voteTransaction.result // an instance of Vote
 ```
+
+For more docuemntatation, see the generated docs [TODO]

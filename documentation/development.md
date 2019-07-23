@@ -18,7 +18,7 @@ npm run test
 
 You may also want to run the (demo.js)[./documentation/demo.js] file for some concrete examples of the usage of the library:
 ```
-npm run demo
+node documentation/demo.js
 ```
 After you are done, run:
 ```

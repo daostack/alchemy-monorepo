@@ -16,7 +16,7 @@ npm install --save @daostack/client
 ```
 now you can do:
 ```
-import Arc from '@daostack/client'
+import { Arc } from '@daostack/client'
 
 // create an Arc instance
 const arc = new Arc({
@@ -30,12 +30,16 @@ const arc = new Arc({
     "api-path": "/ipfs/api/v0/"
   }
 })
+
 // get a list of DAOs
 arc.daos().subscribe(
   (daos) => console.log(`Here are your DAOS: ${daos}`)
 )
 ```
 
+## More information
+
 * [overview](./documentation/overview.md)
 * [development](./documentation/development.md)
-* [example](./documentation/demo.js) (run with `npm run demo`)
+* [small demo](./documentation/demo.js) 
+* Generated documentation [TODO!]
