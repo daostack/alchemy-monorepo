@@ -6,6 +6,7 @@ import { Operation } from './operation'
 import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './proposal'
 import * as ContributionReward from './schemes/contributionReward'
 import * as GenericScheme from './schemes/genericScheme'
+import { ReputationFromTokenScheme } from './schemes/reputationFromToken'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
 import { Address, ICommonQueryOptions } from './types'
 import { createGraphQlQuery, isAddress } from './utils'
@@ -51,11 +52,25 @@ export interface ISchemeQueryOptions extends ICommonQueryOptions {
   }
 }
 
+export interface ISchemeQueryOptions extends ICommonQueryOptions {
+  where?: {
+    address?: Address
+    canDelegateCall?: boolean
+    canRegisterSchemes?: boolean
+    canUpgradeController?: boolean
+    canManageGlobalConstraints?: boolean
+    dao?: Address
+    id?: string
+    name?: string
+    paramsHash?: string
+    [key: string]: any
+  }
+}
+
 /**
  * A Scheme represents a scheme instance that is registered at a DAO
  */
-export class Scheme {
-
+export class Scheme implements IStateful<ISchemeState> {
   /**
    * Scheme.search(context, options) searches for scheme entities
    * @param  context an Arc instance that provides connection information
@@ -103,16 +118,25 @@ export class Scheme {
         }
       }
       if (!options.where) { options.where = {}}
-      if (options.where.name && options.where.name !== name) {
-        return null
+
+      if (item.name === 'ReputationFromToken') {
+        return new ReputationFromTokenScheme({
+          address: item.address,
+          dao: item.dao.id,
+          id: item.id,
+          name: item.name,
+          paramsHash: item.paramsHash
+        }, context)
+      } else {
+
+        return new Scheme(
+          item.id,
+          item.dao.id,
+          name,
+          item.address,
+          context
+        )
       }
-      return new Scheme(
-        item.id,
-        item.dao.id,
-        name,
-        item.address,
-        context
-      )
     }
 
     return context.getObservableList(
@@ -122,20 +146,59 @@ export class Scheme {
     ) as Observable<Scheme[]>
   }
 
+<<<<<<< Updated upstream
   public address: Address
   public id: Address
   public dao: Address
   public name: string
 
-  constructor(id: Address, dao: Address, name: string, address: Address, public context: Arc) {
+constructor(id: Address, dao: Address, name: string, address: Address, public context: Arc) {
     this.context = context
     this.id = id
     this.dao = dao
     this.name = name
     this.address = address
+=======
+  /**
+   * Scheme.search(context, options) searches for scheme entities
+   * @param  context an Arc instance that provides connection information
+   * @param  options the query options, cf. ISchemeQueryOptions
+   * @return         an observable of Scheme objects
+   */
+  public id: Address
+  public staticState: ISchemeStaticState | null = null
+
+  constructor(idOrOpts: Address | ISchemeStaticState, public context: Arc) {
+    this.context = context
+    if (typeof idOrOpts === 'string') {
+      this.id = idOrOpts as string
+      this.id = this.id.toLowerCase()
+    } else {
+      this.setStaticState(idOrOpts)
+      this.id = (this.staticState as ISchemeStaticState).id
+    }
   }
 
-  public state(): Observable<ISchemeState> {
+  public setStaticState(opts: ISchemeStaticState) {
+    this.staticState = opts
+  }
+
+  /**
+   * fetch the static state from the subgraph
+   * @return the statatic state
+   */
+  public async fetchStaticState(): Promise < ISchemeStaticState > {
+    if (!!this.staticState) {
+      return this.staticState
+    } else {
+      const state = await this.state().pipe(first()).toPromise()
+      this.staticState = state
+      return state
+    }
+>>>>>>> Stashed changes
+  }
+
+  public state(): Observable < ISchemeState > {
     const query = gql`
       {
         controllerScheme (id: "${this.id}") {
@@ -261,10 +324,19 @@ export class Scheme {
      * @return a Proposal instance
      */
     public createProposal(options: IProposalCreateOptions): Operation < Proposal >  {
+<<<<<<< Updated upstream
       let msg: string
       const context = this.context
       let createTransaction: () => any = () => null
       let map: any
+=======
+      const observable = Observable.create(async (observer: any) => {
+        let msg: string
+        const context = this.context
+        let createTransaction: () => any = () => null
+        let map: any
+        const state = await this.fetchStaticState()
+>>>>>>> Stashed changes
 
       switch (this.name) {
       // ContributionReward
