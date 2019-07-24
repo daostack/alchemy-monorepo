@@ -8,7 +8,7 @@ jest.setTimeout(20000)
  */
 describe('Scheme', () => {
 
-  it('Test the whole flow', async () => {
+  it.skip('Test the whole flow', async () => {
     // deploy the FixedReputationAllocation contrat
     // const contractInfo =   require(`@daostack/arc/build/contracts/ReputationFromToken.json`)
     //
