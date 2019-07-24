@@ -85,7 +85,6 @@ export async function newArc(options: { [key: string]: string} = {}): Promise<Ar
   const arc = new Arc(Object.assign(defaultOptions, options))
   // get the contract addresses from the subgraph
   const contractInfos = await arc.fetchContractInfos()
-  arc.setContractInfos(contractInfos)
   for (const pk of pks) {
     const account = arc.web3.eth.accounts.privateKeyToAccount(pk)
     arc.web3.eth.accounts.wallet.add(account)

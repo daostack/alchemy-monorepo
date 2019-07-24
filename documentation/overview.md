@@ -55,8 +55,7 @@ const arc = new Arc({
 // before we can use the Arc instance to send transactions, we need to provide it
 // with information on where the contracts can be found
 // query the subgraph for the contract addresses, and use those
-const contractInfos = await arc.fetchContractInfos()
-arc.setContractInfo(contractInfos)
+await arc.fetchContractInfos()
 ```
 Note how we are passing to Arc all the information it needs to connect to the various services: the web3Provider represents a  connection to an Ethereum node,  websocket and http connections to the subgraph of The Graph;
 and a connection to an IPFS provider (which is used to as a data storage layer by DAOStack).

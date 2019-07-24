@@ -26,9 +26,8 @@ async function main() {
     ipfsProvider: '/ip4/127.0.0.1/tcp/5001',
   })
   // we must provice Arc with some contract information.
-  // We could have hardcoded it, but get this information from the subgraph
-  const contractInfos = await arc.fetchContractInfos()
-  arc.setContractInfos(contractInfos)
+  // We can use setContractInfos to set them manually, but it is convenient to get this information from the subgraph
+  await arc.fetchContractInfos()
 
   // we get the first returned item from the obervable that returns a list of DAOs
   const daos = await arc.daos().first()

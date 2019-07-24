@@ -92,6 +92,10 @@ export class Arc extends GraphNodeObserver {
     this.contractInfos = contractInfos
   }
 
+  /**
+   * fetch contractInfos from the subgraph
+   * @return a list of IContractInfo instances
+   */
   public async fetchContractInfos(): Promise<IContractInfo[]> {
     const query = gql`{
       contractInfos {
@@ -105,6 +109,7 @@ export class Arc extends GraphNodeObserver {
       return record
     }
     const result = await this.getObservableList(query, itemMap).pipe(first()).toPromise()
+    this.setContractInfos(result)
     return result
   }
 
