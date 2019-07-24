@@ -8,7 +8,7 @@ import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './propo
 import * as ContributionReward from './schemes/contributionReward'
 import * as GenericScheme from './schemes/genericScheme'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
-import { Address, ICommonQueryOptions } from './types'
+import { Address, ICommonQueryOptions, IStateful } from './types'
 import { createGraphQlQuery, isAddress } from './utils'
 
 export interface ISchemeStaticState {
@@ -60,7 +60,7 @@ export interface ISchemeQueryOptions extends ICommonQueryOptions {
 /**
  * A Scheme represents a scheme instance that is registered at a DAO
  */
-export class Scheme {
+export class Scheme implements IStateful<ISchemeState> {
 
   /**
    * Scheme.search(context, options) searches for scheme entities

@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { IProposalOutcome} from './proposal'
-import { Address, ICommonQueryOptions } from './types'
+import { Address, ICommonQueryOptions, IStateful } from './types'
 import { BN, createGraphQlQuery, isAddress } from './utils'
 
 export interface IStakeStaticState {
@@ -30,7 +30,7 @@ export interface IStakeQueryOptions extends ICommonQueryOptions {
   }
 }
 
-export class Stake {
+export class Stake implements IStateful<IStakeState> {
 
   /**
    * Stake.search(context, options) searches for stake entities

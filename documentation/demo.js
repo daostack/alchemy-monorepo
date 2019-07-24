@@ -35,7 +35,7 @@ async function main() {
 
   console.log(`Found ${daos.length} DAOs in ${arc.graphqlHttpProvider}`)
 
-  // given the ida of a DAO, we can also create a resh DAO instance
+  // given the id of a DAO, we can also create a fresh DAO instance
   const { DAO } = require('../dist/lib/index.js')
   const dao = new DAO(daos[0].id, arc)
 

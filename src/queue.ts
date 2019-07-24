@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { ISchemeState } from './scheme'
-import { Address, ICommonQueryOptions } from './types'
+import { Address, ICommonQueryOptions, IStateful } from './types'
 import { BN, createGraphQlQuery, isAddress, realMathToNumber } from './utils'
 
 export interface IQueueStaticState {
@@ -27,7 +27,7 @@ export interface IQueueQueryOptions extends ICommonQueryOptions {
   }
 }
 
-export class Queue {
+export class Queue implements IStateful<IQueueState> {
 
   /**
    * Queue.search(context, options) searches for queue entities

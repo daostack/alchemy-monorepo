@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { IProposalOutcome } from './proposal'
-import { Address, Date, ICommonQueryOptions } from './types'
+import { Address, Date, ICommonQueryOptions, IStateful } from './types'
 import { BN, createGraphQlQuery, isAddress } from './utils'
 
 export interface IVoteStaticState {
@@ -30,7 +30,7 @@ export interface IVoteQueryOptions extends ICommonQueryOptions {
   }
 }
 
-export class Vote {
+export class Vote implements IStateful<IVoteState> {
 
   /**
    * Vote.search(context, options) searches for vote entities
