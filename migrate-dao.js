@@ -415,10 +415,23 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     await logTx(tx, `${reputationFromToken.options.address} => ReputationFromToken`)
 
     spinner.start('Setting ReputationFromToken...')
-
+    let tokenContract = migrationParams.ReputationFromToken.tokenContract
+    if (tokenContract === undefined || tokenContract === null) {
+      let { abi: repAllocationABI, bytecode: repAllocationBytecode } = require('@daostack/arc/build/contracts/RepAllocation.json')
+      spinner.start('Migrating RepAllocation...')
+      const repAllocationContract = new web3.eth.Contract(repAllocationABI, undefined, opts)
+      const repAllocationDeployedContract = repAllocationContract.deploy({
+        data: repAllocationBytecode,
+        arguments: null
+      }).send()
+      tx = await new Promise(resolve => repAllocationDeployedContract.on('receipt', resolve))
+      const repAllocation = await repAllocationDeployedContract
+      await logTx(tx, `${repAllocation.options.address} => RepAllocation`)
+      tokenContract = repAllocation.options.address
+    }
     const reputationFromTokenInit = reputationFromToken.methods.initialize(
       avatar.options.address,
-      migrationParams.ReputationFromToken.tokenContract,
+      tokenContract,
       migrationParams.ReputationFromToken.curve === undefined ? '0x0000000000000000000000000000000000000000' : migrationParams.ReputationFromToken.curve
     )
     tx = await reputationFromTokenInit.send({ nonce: ++nonce })

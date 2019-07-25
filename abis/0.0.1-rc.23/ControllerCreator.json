@@ -1,0 +1,21 @@
+[
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_avatar",
+        "type": "address"
+      }
+    ],
+    "name": "create",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
