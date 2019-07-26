@@ -158,7 +158,14 @@ export function sendTransaction<T>(
       })
     }
   )
+  return toIOperationObservable(observable)
+}
+
+export function toIOperationObservable<T>(observable: Observable<T>): IOperationObservable<T> {
+
   // the 3rd update we get from the observable is the confirmation that it is mined
+  // @ts-ignore
   observable.send = () => observable.pipe(take(3)).toPromise()
+  // @ts-ignore
   return observable
 }

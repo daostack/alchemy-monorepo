@@ -1,7 +1,7 @@
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { Member } from '../src/member'
+import { IMemberStaticState, Member } from '../src/member'
 import { IProposalOutcome, Proposal } from '../src/proposal'
 import { Stake } from '../src/stake'
 import { Address } from '../src/types'
@@ -9,7 +9,7 @@ import { Vote } from '../src/vote'
 import { createAProposal, fromWei,
   getTestDAO, newArc, toWei, waitUntilTrue } from './utils'
 
-jest.setTimeout(20000)
+jest.setTimeout(60000)
 
 /**
  * Member test
@@ -27,29 +27,22 @@ describe('Member', () => {
   })
 
   it('Member is instantiable', () => {
-    const member = new Member(defaultAccount, dao.address, arc)
+    const member = new Member({ address: defaultAccount, dao: dao.id}, arc)
     expect(member).toBeInstanceOf(Member)
+    const memberFromId = new Member('0xsomeId', arc)
+    expect(memberFromId).toBeInstanceOf(Member)
   })
 
   it('Member state works', async () => {
-    const member = new Member(defaultAccount, dao.address, arc)
+    const member = new Member({ address: defaultAccount, dao: dao.id}, arc)
     const memberState = await member.state().pipe(first()).toPromise()
     expect(Number(fromWei(memberState.reputation))).toBeGreaterThan(0)
-    expect(memberState.dao).toBeInstanceOf(DAO)
-    expect(memberState.address).toEqual(defaultAccount)
-    expect(memberState.dao.address).toBe(dao.address.toLowerCase())
-  })
-
-  it('Member state also works for members that are not in the index', async () => {
-    const someAddress = '0xe74f3c49c162c00ac18b022856e1a4ecc8947c42'
-    const member = new Member(someAddress, dao.address, arc)
-    const memberState = await member.state().pipe(first()).toPromise()
-    expect(fromWei(memberState.reputation)).toEqual('0')
-    expect(memberState.address).toEqual(someAddress)
+    expect(memberState.address).toEqual(defaultAccount.toLowerCase())
+    expect(memberState.dao).toBe(dao.id.toLowerCase())
   })
 
   it('Member proposals() works', async () => {
-    const member = new Member(defaultAccount, dao.address, arc)
+    const member = new Member({ address: defaultAccount, dao: dao.id}, arc)
     let proposals: Proposal[] = []
     member.proposals().subscribe((next: Proposal[]) => proposals = next)
     // wait until the proposal has been indexed
@@ -61,14 +54,15 @@ describe('Member', () => {
 
   it('Member stakes() works', async () => {
       const stakerAccount = arc.web3.eth.accounts.wallet[1].address
-      const member = new Member(stakerAccount, dao.address, arc)
+      const member = new Member({ address: stakerAccount, dao: dao.id}, arc)
       const proposal = await createAProposal()
       const stakingToken =  await proposal.stakingToken()
       // mint tokens with defaultAccount
       await stakingToken.mint(stakerAccount, toWei('10000')).send()
       // switch the defaultAccount to a fresh one
       stakingToken.context.web3.eth.defaultAccount = stakerAccount
-      await stakingToken.approveForStaking(proposal.votingMachine().options.address, toWei('1000')).send()
+      const votingMachine = await proposal.votingMachine()
+      await stakingToken.approveForStaking(votingMachine.options.address, toWei('1000')).send()
 
       await proposal.stake(IProposalOutcome.Pass, toWei('99')).send()
       let stakes: Stake[] = []
@@ -79,14 +73,15 @@ describe('Member', () => {
       await waitUntilTrue(() => stakes.length > 0)
 
       expect(stakes.length).toBeGreaterThan(0)
-      expect(stakes[0].staker).toEqual(stakerAccount.toLowerCase())
-      expect(fromWei(stakes[0].amount)).toEqual('99')
+      const stakeState = await stakes[0].fetchStaticState()
+      expect(stakeState.staker).toEqual(stakerAccount.toLowerCase())
+      expect(fromWei(stakeState.amount)).toEqual('99')
       // clean up after test
       arc.web3.eth.defaultAccount = defaultAccount
     })
 
   it('Member votes() works', async () => {
-    const member = new Member(defaultAccount, dao.address, arc)
+    const member = new Member({ address: defaultAccount, dao: dao.id}, arc)
     const proposal = await createAProposal()
     const votes: Vote[][] = []
     member.votes().subscribe((next: Vote[]) => votes.push(next))
@@ -94,7 +89,12 @@ describe('Member', () => {
     await proposal.vote(IProposalOutcome.Pass).send()
     await waitUntilTrue(() => votes.length > 1)
     expect(votes[votes.length - 1].length).toBeGreaterThan(0)
-    expect(votes[votes.length - 1].map((vote) => vote.proposalId)).toContain(proposal.id)
+    const proposalIds: string[] = []
+    await Promise.all(votes[votes.length - 1].map(async (vote) => {
+      const voteState = await vote.fetchStaticState()
+      proposalIds.push(voteState.proposal)
+    }))
+    expect(proposalIds).toContain(proposal.id)
   })
 
   it('Members are searchable', async () => {
@@ -111,13 +111,16 @@ describe('Member', () => {
   it('paging and sorting works', async () => {
     const ls1 = await Member.search(arc, { first: 3, orderBy: 'address' }).pipe(first()).toPromise()
     expect(ls1.length).toEqual(3)
-    expect(ls1[0].address <= ls1[1].address).toBeTruthy()
+    expect((ls1[0].staticState as IMemberStaticState).address <=
+      (ls1[1].staticState as IMemberStaticState).address).toBeTruthy()
 
     const ls2 = await Member.search(arc, { first: 2, skip: 2, orderBy: 'address' }).pipe(first()).toPromise()
     expect(ls2.length).toEqual(2)
-    expect(ls1[2].address).toEqual(ls2[0].address)
+    expect((ls1[2].staticState as IMemberStaticState).address)
+      .toEqual((ls2[0].staticState as IMemberStaticState).address)
 
     const ls3 = await Member.search(arc, {  orderBy: 'address', orderDirection: 'desc'}).pipe(first()).toPromise()
-    expect(ls3[0].address >= ls3[1].address).toBeTruthy()
+    expect((ls3[0].staticState as IMemberStaticState).address >=
+      (ls3[1].staticState as IMemberStaticState).address).toBeTruthy()
   })
 })

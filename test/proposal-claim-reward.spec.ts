@@ -5,7 +5,7 @@ import { BN } from './utils'
 import { createAProposal, firstResult, getTestAddresses, getTestDAO, ITestAddresses, newArc, toWei,
   voteToAcceptProposal, waitUntilTrue } from './utils'
 
-jest.setTimeout(30000)
+jest.setTimeout(60000)
 
 describe('Claim rewards', () => {
   let arc: Arc
@@ -30,15 +30,15 @@ describe('Claim rewards', () => {
     await arc.web3.eth.sendTransaction({
       gas: 4000000,
       gasPrice: 100000000000,
-      to: dao.address,
+      to: dao.id,
       value: ethReward
     })
-    const daoEthBalance = new BN(await arc.web3.eth.getBalance(dao.address))
+    const daoEthBalance = new BN(await arc.web3.eth.getBalance(dao.id))
     expect(Number(daoEthBalance.toString())).toBeGreaterThanOrEqual(Number(ethReward.toString()))
 
     const options = {
       beneficiary,
-      dao: dao.address,
+      dao: dao.id,
       ethReward,
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
@@ -52,11 +52,13 @@ describe('Claim rewards', () => {
 
     // vote for the proposal with all the votest
     await voteToAcceptProposal(proposal)
-    // check if prposal is indeed accepted etc
 
+    // check if prposal is indeed accepted etc
     proposal.state().subscribe(((next) => states.push(next)))
 
     await waitUntilTrue(() => {
+      // console.log(lastState() && lastState().stage)
+      // console.log(IProposalStage.Executed)
       return lastState() && lastState().stage === IProposalStage.Executed
     })
 
@@ -89,12 +91,12 @@ describe('Claim rewards', () => {
     const externalTokenAddress = testAddresses.base.GEN
     const externalTokenReward = new BN(12345)
 
-    await arc.GENToken().transfer(dao.address, externalTokenReward).send()
-    const daoBalance =  await firstResult(arc.GENToken().balanceOf(dao.address))
+    await arc.GENToken().transfer(dao.id, externalTokenReward).send()
+    const daoBalance =  await firstResult(arc.GENToken().balanceOf(dao.id))
     expect(Number(daoBalance.toString())).toBeGreaterThanOrEqual(Number(externalTokenReward.toString()))
     const options = {
       beneficiary,
-      dao: dao.address,
+      dao: dao.id,
       ethReward: new BN(0),
       externalTokenAddress,
       externalTokenReward,

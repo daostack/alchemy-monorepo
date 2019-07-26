@@ -51,6 +51,7 @@ export function createTransaction(options: any, context: Arc) {
  * @param  context an Arc instance
  * @return         [description]
  */
+// @ts-ignore
 export function createTransactionMap(options: any, context: Arc) {
   const eventName = 'NewCallProposal'
   const map = async (receipt: any) => {
@@ -58,17 +59,19 @@ export function createTransactionMap(options: any, context: Arc) {
 
     // need to get the votingMachineAddress from the contract, as it is not in the events
     // TODO: this code can be considerably simplified if/when https://github.com/daostack/arc/issues/637 is resolved
-    const schemeContract = context.getContract(options.scheme)
-    const schemeContractInfo = context.getContractInfo(options.scheme)
-    const avatarAddress = receipt.events[eventName].returnValues._avatar
-    const avatarABI = context.getABI(avatarAddress, 'Avatar', schemeContractInfo.version)
-    const avatarContract = context.getContract(avatarAddress, avatarABI)
-    const controllerAddress = await avatarContract.methods.owner().call()
-    const controllerContract = context.getContract(controllerAddress)
-    const parametersHash = await controllerContract.methods.getSchemeParameters(options.scheme, avatarAddress).call()
-    const parameters = await schemeContract.methods.parameters(parametersHash).call()
-    const votingMachineAddress = parameters.intVote
-    return new Proposal(proposalId, options.dao as string, options.scheme, votingMachineAddress, context)
+    // const schemeContract = context.getContract(options.scheme)
+    // const schemeContractInfo = context.getContractInfo(options.scheme)
+    // const avatarAddress = receipt.events[eventName].returnValues._avatar
+    // const avatarABI = context.getABI(avatarAddress, 'Avatar', schemeContractInfo.version)
+    // const avatarContract = context.getContract(avatarAddress, avatarABI)
+    // const controllerAddress = await avatarContract.methods.owner().call()
+    // const controllerContract = context.getContract(controllerAddress)
+    // const parametersHash = await controllerContract.methods.getSchemeParameters(options.scheme, avatarAddress).call()
+    // const parameters = await schemeContract.methods.parameters(parametersHash).call()
+    // const votingMachineAddress = parameters.intVote
+    return new Proposal(proposalId,
+      // options.dao as string, options.scheme, votingMachineAddress,
+      context)
   }
   return map
 }

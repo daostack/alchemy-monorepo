@@ -57,12 +57,15 @@ export function createTransaction(options: any, context: Arc) {
   }
 }
 
+// @ts-ignore
 export function createTransactionMap(options: any, context: Arc) {
   const eventName = 'NewContributionProposal'
   const map = (receipt: any) => {
     const proposalId = receipt.events[eventName].returnValues._proposalId
-    const votingMachineAddress = receipt.events[eventName].returnValues._intVoteInterface
-    return new Proposal(proposalId, options.dao as string, options.scheme, votingMachineAddress, context)
+    // const votingMachineAddress = receipt.events[eventName].returnValues._intVoteInterface
+    return new Proposal(proposalId,
+      // options.dao as string, options.scheme, votingMachineAddress,
+      context)
   }
   return map
 }
