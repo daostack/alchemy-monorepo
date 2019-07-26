@@ -2,9 +2,17 @@ import gql from 'graphql-tag'
 import { first } from 'rxjs/operators'
 import Arc from '../src/index'
 import { Proposal } from '../src/proposal'
+import { Scheme } from '../src/scheme'
 import { Address } from '../src/types'
 import { BN } from './utils'
-import { fromWei, getTestAddresses, newArc, toWei, waitUntilTrue, web3Provider } from './utils'
+import { fromWei, getTestAddresses,
+  newArc,
+  newArcWithoutEthereum,
+  newArcWithoutGraphql,
+  toWei,
+  waitUntilTrue,
+  web3Provider
+} from './utils'
 
 jest.setTimeout(20000)
 
@@ -14,7 +22,7 @@ jest.setTimeout(20000)
 describe('Arc ', () => {
   it('Arc is instantiable', () => {
     const arc = new Arc({
-      contractAddresses: [],
+      contractInfos: [],
       graphqlHttpProvider: 'https://graphql.provider',
       graphqlWsProvider: 'https://graphql.provider',
       ipfsProvider: {
@@ -27,27 +35,15 @@ describe('Arc ', () => {
     expect(arc).toBeInstanceOf(Arc)
   })
 
-  it('Arc is usable without subgraph connection', () => {
-    const arc = new Arc({
-      contractAddresses: [],
-      ipfsProvider: {
-        host: 'localhost',
-        port: '5001',
-        protocol: 'https'
-      },
-      web3Provider: 'wss://web3.provider'
-    })
+  it('Arc is usable without subgraph connection', async () => {
+    const arc = await newArcWithoutGraphql()
     expect(arc).toBeInstanceOf(Arc)
 
     expect(() => arc.sendQuery(gql`{daos {id}}`)).toThrowError(/no connection/i)
   })
 
-  it('Arc is usable without knowing about contracts', () => {
-    const arc = new Arc({
-      contractAddresses: [],
-      graphqlHttpProvider: 'https://graphql.provider',
-      graphqlWsProvider: 'https://graphql.provider'
-    })
+  it('Arc is usable without knowing about contracts', async () => {
+    const arc = await newArcWithoutEthereum()
     expect(arc).toBeInstanceOf(Arc)
 
     const daos = arc.sendQuery(gql`{daos {id}}`)
@@ -55,21 +51,21 @@ describe('Arc ', () => {
   })
 
   it('arc.allowances() should work', async () => {
-      const arc = await newArc()
+    const arc = await newArc()
 
-      const allowances: Array<typeof BN> = []
-      const spender = '0xDb56f2e9369E0D7bD191099125a3f6C370F8ed15'
-      const amount = toWei(1001)
-      await arc.approveForStaking(spender, amount).send()
-      arc.allowance(arc.web3.eth.defaultAccount, spender).subscribe(
-        (next: typeof BN) => {
-          allowances.push(next)
-        }
-      )
-      const lastAllowance = () => allowances[allowances.length - 1]
-      await waitUntilTrue(() => (allowances.length > 0))
-      expect(fromWei(lastAllowance())).toEqual('1001')
-    })
+    const allowances: Array<typeof BN> = []
+    const spender = '0xDb56f2e9369E0D7bD191099125a3f6C370F8ed15'
+    const amount = toWei(1001)
+    await arc.approveForStaking(spender, amount).send()
+    arc.allowance(arc.web3.eth.defaultAccount, spender).subscribe(
+      (next: typeof BN) => {
+        allowances.push(next)
+      }
+    )
+    const lastAllowance = () => allowances[allowances.length - 1]
+    await waitUntilTrue(() => (allowances.length > 0))
+    expect(fromWei(lastAllowance())).toEqual('1001')
+  })
 
   it('arc.allowance() should work', async () => {
     const arc = await newArc()
@@ -170,11 +166,11 @@ describe('Arc ', () => {
 
   it('arc.proposal() should work', async () => {
     const arc = await newArc()
-    const proposal = await arc.proposal(getTestAddresses().test.executedProposalId)
+    const proposal = arc.proposal(getTestAddresses().test.executedProposalId)
     expect(proposal).toBeInstanceOf(Proposal)
   })
 
-  it.only('arc.proposals() should work', async () => {
+  it('arc.proposals() should work', async () => {
     const arc = await newArc()
     const proposals = await arc.proposals().pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
@@ -200,4 +196,17 @@ describe('Arc ', () => {
     expect(await arcRead.ethBalance('0x90f8bf6a479f320ead074411a4b0e7944ea81111').pipe(first()).toPromise())
       .toEqual(new BN(0))
   })
+  it('arc.scheme() should work', async () => {
+    const arc = await newArc()
+    const schemeId = '0x124355'
+    const scheme = arc.scheme(schemeId)
+    expect(scheme).toBeInstanceOf(Scheme)
+  })
+
+  it('arc.schemes() should work', async () => {
+    const arc = await newArc()
+    const schemes = await arc.schemes().pipe(first()).toPromise()
+    expect(schemes.length).toBeGreaterThan(0)
+  })
+
 })

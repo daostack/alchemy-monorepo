@@ -1,7 +1,11 @@
 import { first} from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { IExecutionState, IProposalOutcome, IProposalStage, IProposalState,
+import { IExecutionState,
+  IProposalCreateOptions,
+  IProposalOutcome,
+  IProposalStage,
+  IProposalState,
   IProposalType,
   Proposal } from '../src/proposal'
 import { IContributionReward } from '../src/schemes/contributionReward'
@@ -9,7 +13,8 @@ import { BN } from './utils'
 import { createAProposal,
   fromWei,
   getTestAddresses,
-  ITestAddresses, newArc, toWei, waitUntilTrue } from './utils'
+  ITestAddresses,
+  newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(20000)
 /**
@@ -113,7 +118,7 @@ describe('Proposal', () => {
     expect(result.length).toEqual(1)
 
     result = await Proposal
-      .search(arc, {where: {dao: arc.web3.utils.toChecksumAddress(proposalState.dao.address), id: queuedProposal.id}})
+      .search(arc, {where: {dao: arc.web3.utils.toChecksumAddress(proposalState.dao.id), id: queuedProposal.id}})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
   })
@@ -146,16 +151,23 @@ describe('Proposal', () => {
     expect(shouldBeJustThisExecutedProposal.map((p: Proposal) => p.id)).toEqual([proposal.id])
   })
 
-  it('get proposal dao', async () => {
-
-    // const proposalDao = await proposal.dao.pipe(first()).toPromise()
-    const proposal = executedProposal
-    expect(proposal).toBeInstanceOf(Proposal)
-    expect(proposal.dao.address).toEqual(dao.address)
-  })
-
+  // skipping this test, bc we chaned the implementation and it is unclear why this feature (?) was needed
   it('state should be available before the data is indexed', async () => {
-    const proposal = await createAProposal()
+    const options   = {
+      beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
+      ethReward: toWei('300'),
+      externalTokenAddress: undefined,
+      externalTokenReward: toWei('0'),
+      nativeTokenReward: toWei('1'),
+      periodLength: 0,
+      periods: 1,
+      reputationReward: toWei('10'),
+      scheme: getTestAddresses().base.ContributionReward
+    }
+
+    const response = await (dao as DAO).createProposal(options as IProposalCreateOptions).send()
+    const proposal = response.result as Proposal
+
     const proposalState = await proposal.state().pipe(first()).toPromise()
     // the state is null because the proposal has not been indexed yet
     expect(proposalState).toEqual(null)
@@ -256,7 +268,8 @@ describe('Proposal', () => {
 
     const stakeAmount = toWei('18')
     await proposal.stakingToken().mint(arc.web3.eth.defaultAccount, stakeAmount).send()
-    await arc.approveForStaking(proposal.votingMachine().options.address, stakeAmount).send()
+    const votingMachine = await proposal.votingMachine()
+    await arc.approveForStaking(votingMachine.options.address, stakeAmount).send()
     await proposal.stake(IProposalOutcome.Pass, stakeAmount).send()
 
     // wait until we have the we received the stake update
@@ -277,12 +290,14 @@ describe('Proposal', () => {
         throw err
       }
     )
+    // wait for the proposal to be indexed
+    await waitUntilTrue(() => states.length > 0)
     // vote for the proposal
     await proposal.vote(IProposalOutcome.Pass).pipe(first()).toPromise()
 
     // wait until all transactions are indexed
     await waitUntilTrue(() => {
-      if (states.length > 2 && states[states.length - 1].votesFor.gt(new BN(0))) {
+      if (states.length > 1 && states[states.length - 1].votesFor.gt(new BN(0))) {
         return true
       } else {
         return false

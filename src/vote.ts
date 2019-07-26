@@ -1,18 +1,22 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
+import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { IProposalOutcome } from './proposal'
-import { Address, Date, ICommonQueryOptions } from './types'
+import { Address, Date, ICommonQueryOptions, IStateful } from './types'
 import { BN, createGraphQlQuery, isAddress } from './utils'
 
-export interface IVote {
-  id: string|undefined
+export interface IVoteStaticState {
+  id?: string
   voter: Address
   createdAt: Date | undefined
   outcome: IProposalOutcome
   amount: typeof BN // amount of reputation that was voted with
-  proposalId: string
-  dao: Address
+  proposal: string
+}
+
+export interface IVoteState extends IVoteStaticState {
+  id: string
 }
 
 export interface IVoteQueryOptions extends ICommonQueryOptions {
@@ -26,7 +30,7 @@ export interface IVoteQueryOptions extends ICommonQueryOptions {
   }
 }
 
-export class Vote implements IVote {
+export class Vote implements IStateful<IVoteState> {
 
   /**
    * Vote.search(context, options) searches for vote entities
@@ -90,20 +94,74 @@ export class Vote implements IVote {
         } else {
           throw new Error(`Unexpected value for proposalVote.outcome: ${r.outcome}`)
         }
-        return new Vote(r.id, r.voter, r.createdAt, outcome, new BN(r.reputation || 0), r.proposal.id, r.dao.id)
+        return new Vote({
+          amount: new BN(r.reputation || 0),
+          createdAt: r.createdAt,
+          id: r.id,
+          outcome,
+          proposal: r.proposal.id,
+          voter: r.voter
+        }, context)
       },
       daoFilter,
       apolloQueryOptions
     ) as Observable<Vote[]>
   }
+  public id: string|undefined
+  public staticState: IVoteStaticState|undefined
 
-  constructor(
-      public id: string|undefined,
-      public voter: Address,
-      public createdAt: Date | undefined,
-      public outcome: IProposalOutcome,
-      public amount: typeof BN,
-      public proposalId: string,
-      public dao: Address
-  ) {}
+  constructor(idOrOpts: string|IVoteStaticState, public context: Arc) {
+    if (typeof idOrOpts === 'string') {
+      this.id = idOrOpts
+    } else {
+      const opts = idOrOpts as IVoteStaticState
+      this.id = opts.id
+      this.setStaticState(opts)
+    }
+  }
+
+  public state(): Observable<IVoteState> {
+    const query = gql`{
+      proposalVote (id: "${this.id}") {
+        id
+        createdAt
+        dao {
+          id
+        }
+        voter
+        proposal {
+          id
+        }
+        outcome
+        reputation
+      }
+    }`
+
+    const itemMap = (item: any): IVoteState => {
+      if (item === null) {
+        throw Error(`Could not find a Vote with id ${this.id}`)
+      }
+      return {
+        amount: item.reputation,
+        createdAt: item.createdAt,
+        id: item.id,
+        outcome: item.outcome,
+        proposal: item.proppsal,
+        voter: item.voter
+      }
+    }
+    return this.context.getObservableObject(query, itemMap)
+  }
+
+  public setStaticState(opts: IVoteStaticState) {
+    this.staticState = opts
+  }
+
+  public async fetchStaticState(): Promise<IVoteStaticState> {
+    if (!!this.staticState) {
+      return this.staticState
+    } else {
+      return await this.state().pipe(first()).toPromise()
+    }
+  }
 }

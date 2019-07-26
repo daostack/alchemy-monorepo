@@ -1,17 +1,22 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
+import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { IProposalOutcome} from './proposal'
-import { Address, ICommonQueryOptions } from './types'
+import { Address, ICommonQueryOptions, IStateful } from './types'
 import { BN, createGraphQlQuery, isAddress } from './utils'
 
-export interface IStake {
-  id: string|undefined
+export interface IStakeStaticState {
+  id?: string
   staker: Address
   createdAt: Date | undefined
   outcome: IProposalOutcome
   amount: typeof BN // amount staked
-  proposalId: string
+  proposal: string
+}
+
+export interface IStakeState extends IStakeStaticState {
+  id: string
 }
 
 export interface IStakeQueryOptions extends ICommonQueryOptions {
@@ -25,7 +30,7 @@ export interface IStakeQueryOptions extends ICommonQueryOptions {
   }
 }
 
-export class Stake implements IStake {
+export class Stake implements IStateful<IStakeState> {
 
   /**
    * Stake.search(context, options) searches for stake entities
@@ -80,20 +85,78 @@ export class Stake implements IStake {
         } else {
           throw new Error(`Unexpected value for proposalStakes.outcome: ${r.outcome}`)
         }
-        return new Stake(r.id, r.staker, r.createdAt, outcome, new BN(r.amount || 0), r.proposal.id)
+        return new Stake({
+          amount: new BN(r.amount || 0),
+          createdAt: r.createdAt,
+          id: r.id,
+          outcome,
+          proposal: r.proposal.id,
+          staker: r.staker
+        }, context)
       },
       apolloQueryOptions
     ) as Observable<Stake[]>
   }
 
+  public id: string|undefined
+  public staticState: IStakeStaticState|undefined
+
   constructor(
-      public id: string|undefined,
-      public staker: string,
-      public createdAt: Date | undefined,
-      public outcome: IProposalOutcome,
-      public amount: typeof BN,
-      public proposalId: string
-      // public dao: Address
+      idOrOpts: string|IStakeStaticState,
+      public context: Arc
   ) {
+    if (typeof idOrOpts === 'string') {
+      this.id = idOrOpts
+    } else {
+      this.id = idOrOpts.id
+      this.setStaticState(idOrOpts as IStakeStaticState)
+    }
   }
+
+  public state(): Observable<IStakeState> {
+    const query = gql`
+      {
+        proposalStake (id: "${this.id}") {
+          id
+          createdAt
+          staker
+          proposal {
+            id
+          }
+          outcome
+          amount
+        }
+      }
+    `
+
+    const itemMap = (item: any): IStakeState => {
+      if (item === null) {
+        throw Error(`Could not find a Stake with id ${this.id}`)
+      }
+      return {
+        amount: item.reputation,
+        createdAt: item.createdAt,
+        id: item.id,
+        outcome: item.outcome,
+        proposal: item.proppsal,
+        staker: item.staker
+      }
+    }
+    return this.context.getObservableObject(query, itemMap)
+  }
+
+  public setStaticState(opts: IStakeStaticState) {
+    this.staticState = opts
+  }
+
+  public async fetchStaticState(): Promise<IStakeStaticState> {
+    if (!!this.staticState) {
+      return this.staticState
+    } else {
+      const state = await this.state().pipe(first()).toPromise()
+      this.staticState = state
+      return this.staticState
+    }
+  }
+
 }

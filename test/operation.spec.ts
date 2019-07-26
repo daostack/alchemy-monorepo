@@ -2,7 +2,7 @@ import { ITransactionState, ITransactionUpdate } from '../src/operation'
 import { Proposal } from '../src/proposal'
 import { getTestAddresses, getTestDAO, mineANewBlock, toWei, waitUntilTrue } from './utils'
 
-jest.setTimeout(20000)
+jest.setTimeout(60000)
 
 describe('Operation', () => {
 
@@ -10,7 +10,7 @@ describe('Operation', () => {
     const dao = await getTestDAO()
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
-      dao: dao.address,
+      dao: dao.id,
       ethReward: toWei('300'),
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),

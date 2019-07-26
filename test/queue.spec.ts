@@ -32,7 +32,7 @@ describe('Queue', () => {
 
   it('Queues are searchable', async () => {
     let result: Queue[]
-    result = await Queue.search(arc, {where: {dao: dao.address}})
+    result = await Queue.search(arc, {where: {dao: dao.id}})
         .pipe(first()).toPromise()
     // TODO: we should expect 3 queus here, see https://github.com/daostack/subgraph/issues/195
     expect(result.length).toBeGreaterThanOrEqual(2)
@@ -40,7 +40,7 @@ describe('Queue', () => {
   })
 
   it('Queue.state() is working', async () => {
-    const result = await Queue.search(arc, {where: {dao: dao.address}})
+    const result = await Queue.search(arc, {where: {dao: dao.id}})
         .pipe(first()).toPromise()
 
     const queue = result[0]

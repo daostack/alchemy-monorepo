@@ -1,6 +1,6 @@
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { Scheme } from '../src/scheme'
+import { ISchemeState, Scheme } from '../src/scheme'
 import { firstResult, getTestAddresses, getTestDAO,  ITestAddresses, newArc } from './utils'
 
 jest.setTimeout(20000)
@@ -20,10 +20,7 @@ describe('Scheme', () => {
 
   it('Scheme is instantiable', () => {
     const scheme = new Scheme(
-      '0x1234id', // address
-      '0x124daoAddress', // dao address
-      'no-name', // name
-      '0x123334schemeAddress',
+      '0x1234id', // id
       arc
     )
     expect(scheme).toBeInstanceOf(Scheme)
@@ -32,26 +29,39 @@ describe('Scheme', () => {
   it('Scheme are searchable', async () => {
     const dao = await getTestDAO()
     let result: Scheme[]
-    result = await Scheme.search(arc, {where: {dao: dao.address}})
+    result = await Scheme.search(arc, {where: {dao: dao.id, name_not: null}})
         .pipe(first()).toPromise()
 
-    // TODO: we should expect 3 queus here, see https://github.com/daostack/subgraph/issues/195
-    expect(result.length).toEqual(3)
+    expect(result.length).toBeGreaterThanOrEqual(3)
 
-    expect((result.map((r) => r.name)).sort()).toEqual([
+    // the schemes have their static state set
+    const staticState = await result[0].fetchStaticState()
+    expect(staticState.name).toBeTruthy()
+    expect(staticState.address).toBeTruthy()
+    expect(staticState.id).toBeTruthy()
+    expect(staticState.dao).toBeTruthy()
+    expect(staticState.paramsHash).toBeTruthy()
+
+    const schemeStates: ISchemeState[] = []
+
+    await Promise.all(result.map(async (item) => {
+      const state = await item.state().pipe(first()).toPromise()
+      schemeStates.push(state)
+    }))
+    expect((schemeStates.map((r) => r.name)).sort()).toEqual([
       'GenericScheme',
       'ContributionReward',
       'SchemeRegistrar'
     ].sort())
-    result = await Scheme.search(arc, {where: {dao: dao.address, name: 'ContributionReward'}})
+    result = await Scheme.search(arc, {where: {dao: dao.id, name: 'ContributionReward'}})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
-    result = await Scheme.search(arc, {where: {dao: dao.address, name: 'GenericScheme'}})
+    result = await Scheme.search(arc, {where: {dao: dao.id, name: 'GenericScheme'}})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
-    result = await Scheme.search(arc, {where: {dao: dao.address, name: 'SchemeRegistrar'}})
+    result = await Scheme.search(arc, {where: {dao: dao.id, name: 'SchemeRegistrar'}})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
   })
@@ -59,7 +69,7 @@ describe('Scheme', () => {
   it('Scheme.state() is working for SchemeRegistrar schemes', async () => {
     const dao = await getTestDAO()
     const result = await Scheme
-      .search(arc, {where: {dao: dao.address, name: 'SchemeRegistrar'}})
+      .search(arc, {where: {dao: dao.id, name: 'SchemeRegistrar'}})
       .pipe(first()).toPromise()
 
     const scheme = result[0]
@@ -75,7 +85,7 @@ describe('Scheme', () => {
   it('Scheme.state() is working for GenericScheme schemes', async () => {
     const dao = await getTestDAO()
     const result = await Scheme
-      .search(arc, {where: {dao: dao.address, name: 'GenericScheme'}})
+      .search(arc, {where: {dao: dao.id, name: 'GenericScheme'}})
       .pipe(first()).toPromise()
 
     const scheme = result[0]
@@ -101,14 +111,22 @@ describe('Scheme', () => {
   it('paging and sorting works', async () => {
     const ls1 = await Scheme.search(arc, { first: 3, orderBy: 'address' }).pipe(first()).toPromise()
     expect(ls1.length).toEqual(3)
-    expect(ls1[0].address <= ls1[1].address).toBeTruthy()
+
+    expect((await firstResult(ls1[0].state())).address <= (await firstResult(ls1[1].state())).address).toBeTruthy()
 
     const ls2 = await Scheme.search(arc, { first: 2, skip: 2, orderBy: 'address' }).pipe(first()).toPromise()
     expect(ls2.length).toEqual(2)
-    expect(ls1[2].address).toEqual(ls2[0].address)
+    expect((await firstResult(ls1[2].state())).address <= (await firstResult(ls2[0].state())).address).toBeTruthy()
+    // expect(ls1[2].address).toEqual(ls2[0].address)
 
     const ls3 = await Scheme.search(arc, {  orderBy: 'address', orderDirection: 'desc'}).pipe(first()).toPromise()
-    expect(ls3[0].address >= ls3[1].address).toBeTruthy()
+    expect((await firstResult(ls3[0].state())).address >= (await firstResult(ls3[1].state())).address).toBeTruthy()
   })
 
+  it('fetchStaticState works', async () => {
+    const schemes = await firstResult(Scheme.search(arc))
+    const scheme = schemes[0]
+    const state = await scheme.fetchStaticState()
+    expect(Object.keys(state)).toContain('address')
+  })
 })

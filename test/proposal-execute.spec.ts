@@ -26,11 +26,12 @@ describe('Proposal execute()', () => {
 
     const beneficiary = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
     const accounts = arc.web3.eth.accounts.wallet
-    const schemeAddress = executedProposal.schemeAddress
+    const state = await executedProposal.fetchStaticState()
+    const schemeAddress = state.scheme.address
 
     const options = {
       beneficiary,
-      dao: dao.address,
+      dao: dao.id,
       ethReward: toWei('4'),
       externalTokenAddress: undefined,
       externalTokenReward: toWei('3'),
@@ -47,14 +48,16 @@ describe('Proposal execute()', () => {
 
     proposal.state().subscribe(
       (next: IProposalState) => {
-        proposalStates.push(next)
+        if (next) {
+          proposalStates.push(next)
+        }
       },
       (error: Error) => { throw error }
     )
 
     // wait until the propsal is indexed
-    await waitUntilTrue(() => proposalStates.length > 1)
-    expect(proposalStates[1].stage).toEqual(IProposalStage.Queued)
+    await waitUntilTrue(() => proposalStates.length > 0)
+    expect(lastState().stage).toEqual(IProposalStage.Queued)
 
     // calling execute in this stage has no effect on the stage
     await proposal.execute().send()
@@ -71,10 +74,10 @@ describe('Proposal execute()', () => {
     const amountToStakeFor = toWei(10000)
     await proposal.stakingToken().mint(accounts[0].address, amountToStakeFor).send()
     await proposal.stakingToken()
-      .approveForStaking(proposal.votingMachineAddress, amountToStakeFor.add(new BN(1000))).send()
+      .approveForStaking(proposalState.votingMachine, amountToStakeFor.add(new BN(1000))).send()
 
     await proposal.execute().send()
-    // this reverts: why?
+
     await proposal.stake(IProposalOutcome.Pass, amountToStakeFor).send()
 
     await waitUntilTrue(() => lastState().stakesFor.gt(new BN(0)))
@@ -99,18 +102,17 @@ describe('Proposal execute()', () => {
     // a non-existing proposal
     const proposal = new Proposal(
       '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2',
-      dao.address,
-      executedProposal.schemeAddress,
-      executedProposal.votingMachineAddress,
+      // dao.address,
+      // executedProposal.schemeAddress,
+      // executedProposal.votingMachineAddress,
       arc
     )
     await expect(proposal.execute().send()).rejects.toThrow(
-      /does not exist/i
+      /no proposal/i
     )
   })
 
   it('execute a proposal by voting only', async () => {
-    arc = dao.context
     // daoBalance
     const daoState = await dao.state().pipe(first()).toPromise()
     const repTotalSupply = daoState.reputationTotalSupply
@@ -121,8 +123,8 @@ describe('Proposal execute()', () => {
       proposalStates.push(state)
     })
     // calling "execute" immediately will have no effect, because the proposal is not
-    await waitUntilTrue(() => proposalStates.length === 2)
-    expect(proposalStates[proposalStates.length - 1].stage).toEqual(IProposalStage.Queued)
+    await waitUntilTrue(() => proposalStates.length === 1)
+    expect(lastState().stage).toEqual(IProposalStage.Queued)
     // this execution will not change the state, because the quorum is not met
     await proposal.execute().send()
     expect(lastState().stage).toEqual(IProposalStage.Queued)
