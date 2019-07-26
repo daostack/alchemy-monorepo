@@ -26,7 +26,7 @@ describe('Scheme', () => {
     expect(scheme).toBeInstanceOf(Scheme)
   })
 
-  it('Scheme are searchable', async () => {
+  it('Schemes are searchable', async () => {
     const dao = await getTestDAO()
     let result: Scheme[]
     result = await Scheme.search(arc, {where: {dao: dao.id, name_not: null}})
@@ -64,7 +64,13 @@ describe('Scheme', () => {
     result = await Scheme.search(arc, {where: {dao: dao.id, name: 'SchemeRegistrar'}})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
-  })
+    result = await Scheme.search(arc, {where: {dao: dao.id, name_in: ['SchemeRegistrar', 'GenericScheme']}})
+        .pipe(first()).toPromise()
+    expect(result.length).toEqual(2)
+    result = await Scheme.search(arc, {where: {dao: dao.id, name_not_in: ['GenericScheme']}})
+        .pipe(first()).toPromise()
+    expect(result.length).toBeGreaterThan(1)
+    })
 
   it('Scheme.state() is working for SchemeRegistrar schemes', async () => {
     const dao = await getTestDAO()
