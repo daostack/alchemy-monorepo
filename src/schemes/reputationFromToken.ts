@@ -1,19 +1,20 @@
 import { from } from 'rxjs'
-import { concatMap, first, take } from 'rxjs/operators'
-// import { Arc } from '../arc'
+import { concatMap } from 'rxjs/operators'
+
 import {
-  IOperationObservable,
-  // toIOperationObservable,
-  ITransactionUpdate,
-  Operation
+  Operation,
+  toIOperationObservable
 } from '../operation'
-import { Scheme } from '../scheme'
+
 import { Address } from '../types'
 
-export class ReputationFromTokenScheme extends Scheme {
-  // constructor(idOrOpts: Address|ISchemeStaticState, public context: Arc) {
-  //   super(idOrOpts, context)
-  // }
+import { Scheme } from '../scheme'
+
+export class ReputationFromTokenScheme {
+
+  constructor(public scheme: Scheme) {
+
+  }
 
   public redeem(beneficiary: Address): Operation<any> {
     const mapReceipt = (receipt: any) => {
@@ -31,14 +32,10 @@ export class ReputationFromTokenScheme extends Scheme {
           beneficiary
         )
 
-        return this.context.sendTransaction(redeemMethod, mapReceipt, errorHandler)
+        return this.scheme.context.sendTransaction(redeemMethod, mapReceipt, errorHandler)
       })
     )
-
-    // @ts-ignore
-    observable.send = () => observable.pipe(take(3)).toPromise()
-    return observable as IOperationObservable<ITransactionUpdate<any>>
-    // return toIOperationObservable(observable)
+    return toIOperationObservable(observable)
   }
 
   public async redemptionAmount(beneficiary: Address): Promise<number> {
@@ -48,9 +45,8 @@ export class ReputationFromTokenScheme extends Scheme {
   }
 
   private async getContract() {
-    // const state = await this.fetchStaticState()
-    const state = await this.state().pipe(first()).toPromise()
-    const contract =  this.context.getContract(state.address)
+    const state = await this.scheme.fetchStaticState()
+    const contract =  this.scheme.context.getContract(state.address)
     return contract
   }
 

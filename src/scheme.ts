@@ -117,26 +117,14 @@ export class Scheme implements IStateful<ISchemeState> {
     const itemMap = (item: any): Scheme|null => {
       if (!options.where) { options.where = {}}
 
-      if (item.name === 'ReputationFromToken') {
-        return new ReputationFromTokenScheme({
-          address: item.address,
-          dao: item.dao.id,
-          id: item.id,
-          name,
-          paramsHash: item.paramsHash
-        }, context)
-      } else {
-      return new Scheme(
-        {
-          address: item.address,
-          dao: item.dao.id,
-          id: item.id,
-          name: item.name,
-          paramsHash: item.paramsHash
-        },
-        context
-      )
-      }
+      const scheme = new Scheme({
+        address: item.address,
+        dao: item.dao.id,
+        id: item.id,
+        name: item.name,
+        paramsHash: item.paramsHash
+      }, context)
+      return scheme
     }
 
     return context.getObservableList(
@@ -147,9 +135,10 @@ export class Scheme implements IStateful<ISchemeState> {
   }
 
   public id: Address
-  public staticState: ISchemeStaticState|null = null
+  public staticState: ISchemeStaticState | null = null
+  public ReputationFromToken: ReputationFromTokenScheme | null = null
 
-  constructor(idOrOpts: Address|ISchemeStaticState, public context: Arc) {
+  constructor(idOrOpts: Address | ISchemeStaticState, public context: Arc) {
     this.context = context
     if (typeof idOrOpts === 'string') {
       this.id = idOrOpts as string
@@ -168,12 +157,16 @@ export class Scheme implements IStateful<ISchemeState> {
    * fetch the static state from the subgraph
    * @return the statatic state
    */
-  public async fetchStaticState(): Promise<ISchemeStaticState> {
+  public async fetchStaticState(): Promise < ISchemeStaticState > {
     if (!!this.staticState) {
       return this.staticState
     } else {
       const state = await this.state().pipe(first()).toPromise()
       this.staticState = state
+      if (this.staticState.name ===  'ReputationFromToken') {
+        this.ReputationFromToken = new ReputationFromTokenScheme(this)
+      }
+
       return state
     }
   }
@@ -305,7 +298,7 @@ export class Scheme implements IStateful<ISchemeState> {
      * @param  options [description ]
      * @return a Proposal instance
      */
-    public createProposal(options: IProposalCreateOptions): Operation<Proposal>  {
+    public createProposal(options: IProposalCreateOptions): Operation < Proposal >  {
       const observable = Observable.create(async (observer: any) => {
         let msg: string
         const context = this.context
