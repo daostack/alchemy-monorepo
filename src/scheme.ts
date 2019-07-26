@@ -98,10 +98,15 @@ export class Scheme implements IStateful<ISchemeState> {
       if (key === 'address' || key === 'dao') {
         const option = options.where[key] as string
         isAddress(option)
-        options.where[key] = option.toLowerCase()
+        options.where[key] = `"${option.toLowerCase()}"`
+      } else if (key.endsWith('_in') || key.endsWith('_not_in')) {
+        const option = options.where[key] as string[]
+        options.where[key] = JSON.stringify(option)
+      } else {
+        const option = options.where[key] as string
+        options.where[key] = `"${option}"`
       }
-
-      where += `${key}: "${options.where[key] as string}"\n`
+      where += `${key}: ${options.where[key] as string}\n`
     }
 
     const query = gql`{
@@ -113,7 +118,7 @@ export class Scheme implements IStateful<ISchemeState> {
           dao { id }
           paramsHash
       }
-    }`
+    }   `
     const itemMap = (item: any): Scheme|null => {
       if (!options.where) { options.where = {}}
 
@@ -173,7 +178,7 @@ export class Scheme implements IStateful<ISchemeState> {
 
   public state(): Observable < ISchemeState > {
     const query = gql`
-      {
+        {
         controllerScheme (id: "${this.id}") {
           id
           address
@@ -256,7 +261,7 @@ export class Scheme implements IStateful<ISchemeState> {
           }
         }
       }
-    `
+        `
 
     const itemMap = (item: any): ISchemeState|null => {
       if (!item) {
@@ -323,7 +328,7 @@ export class Scheme implements IStateful<ISchemeState> {
             break
 
           default:
-            msg = `Unknown proposal scheme: "${state.name}"`
+            msg = `Unknown proposal scheme: '${state.name}'`
             throw Error(msg)
         }
 
