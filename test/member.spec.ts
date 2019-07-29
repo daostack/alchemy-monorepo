@@ -45,7 +45,7 @@ describe('Member', () => {
     const member = new Member({ address: '0xe3016a92b6c728f5a55fe45029804de60148c689', dao: dao.id}, arc)
     const memberState = await member.state().pipe(first()).toPromise()
     expect(Number(memberState.reputation)).toEqual(0)
-    expect(memberState.address).toEqual(defaultAccount.toLowerCase())
+    expect(memberState.address).toEqual('0xe3016a92b6c728f5a55fe45029804de60148c689')
     expect(memberState.dao).toBe(dao.id.toLowerCase())
   })
 
