@@ -719,6 +719,8 @@ export class Proposal implements IStateful<IProposalState> {
       first(),
       concatMap((state) => {
         const transaction = this.redeemerContract().methods.redeem(
+          state.scheme.address, // contributionreward address
+          state.votingMachine, // genesisProtocol address
           this.id,
           state.dao.id,
           beneficiary
