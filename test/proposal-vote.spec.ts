@@ -7,7 +7,7 @@ import { createAProposal, firstResult,
   getTestAddresses, getTestDAO, ITestAddresses,
   newArc, waitUntilTrue } from './utils'
 
-jest.setTimeout(20000)
+jest.setTimeout(60000)
 
 describe('Vote on a ContributionReward', () => {
 
@@ -27,7 +27,8 @@ describe('Vote on a ContributionReward', () => {
   it('works and gets indexed', async () => {
     const proposal = await createAProposal()
     const voteResponse = await proposal.vote(IProposalOutcome.Pass).send()
-    expect(voteResponse.result).toMatchObject({
+    const voteState0 = await voteResponse.result.fetchStaticState()
+    expect(voteState0).toMatchObject({
       outcome : IProposalOutcome.Pass
     })
 
@@ -43,9 +44,9 @@ describe('Vote on a ContributionReward', () => {
 
     expect(votes.length).toEqual(1)
     const vote = votes[0]
-    expect(vote.proposalId).toEqual(proposal.id)
-    expect(vote.dao).toEqual(dao.address)
-    expect(vote.outcome).toEqual(IProposalOutcome.Pass)
+    const voteState = await vote.fetchStaticState()
+    expect(voteState.proposal).toEqual(proposal.id)
+    expect(voteState.outcome).toEqual(IProposalOutcome.Pass)
   })
 
   it('voting twice will not complain', async () => {
@@ -75,22 +76,20 @@ describe('Vote on a ContributionReward', () => {
     })
     const proposalVotes = await proposal.votes().pipe(first()).toPromise()
     expect(proposalVotes.length = 1)
-    expect(proposalVotes[0].outcome).toEqual(IProposalOutcome.Pass)
+    const state = await proposalVotes[0].fetchStaticState()
+    expect(state.outcome).toEqual(IProposalOutcome.Pass)
   })
 
   it('throws a meaningful error if the proposal does not exist', async () => {
     // a non-existing proposal
     const proposal = new Proposal(
       '0x1aec6c8a3776b1eb867c68bccc2bf8b1178c47d7b6a5387cf958c7952da267c2',
-      dao.address,
-      executedProposal.schemeAddress,
-      executedProposal.votingMachineAddress,
       arc
     )
 
     proposal.context.web3.eth.defaultAccount = arc.web3.eth.accounts.wallet[2].address
     await expect(proposal.vote(IProposalOutcome.Pass).send()).rejects.toThrow(
-      /unknown proposal/i
+      /No proposal/i
     )
   })
 
@@ -111,7 +110,7 @@ describe('Vote on a ContributionReward', () => {
 
     const accounts = arc.web3.eth.accounts.wallet
     const accountWithNoRep = accounts[6].address
-    const reputation = await firstResult(proposal.dao.nativeReputation())
+    const reputation = await firstResult(dao.nativeReputation())
     const balance = await firstResult(reputation.reputationOf(accountWithNoRep))
     expect(balance.toString()).toEqual('0')
     arc.setAccount(accountWithNoRep) // a fake address

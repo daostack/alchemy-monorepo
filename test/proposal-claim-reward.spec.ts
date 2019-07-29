@@ -5,7 +5,7 @@ import { BN } from './utils'
 import { createAProposal, firstResult, getTestAddresses, getTestDAO, ITestAddresses, newArc, toWei,
   voteToAcceptProposal, waitUntilTrue } from './utils'
 
-jest.setTimeout(30000)
+jest.setTimeout(60000)
 
 describe('Claim rewards', () => {
   let arc: Arc
@@ -30,15 +30,15 @@ describe('Claim rewards', () => {
     await arc.web3.eth.sendTransaction({
       gas: 4000000,
       gasPrice: 100000000000,
-      to: dao.address,
+      to: dao.id,
       value: ethReward
     })
-    const daoEthBalance = new BN(await arc.web3.eth.getBalance(dao.address))
+    const daoEthBalance = new BN(await arc.web3.eth.getBalance(dao.id))
     expect(Number(daoEthBalance.toString())).toBeGreaterThanOrEqual(Number(ethReward.toString()))
 
     const options = {
       beneficiary,
-      dao: dao.address,
+      dao: dao.id,
       ethReward,
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
@@ -56,6 +56,8 @@ describe('Claim rewards', () => {
     proposal.state().subscribe(((next) => states.push(next)))
 
     await waitUntilTrue(() => {
+      // console.log(lastState() && lastState().stage)
+      // console.log(IProposalStage.Executed)
       return lastState() && lastState().stage === IProposalStage.Executed
     })
 
@@ -72,8 +74,8 @@ describe('Claim rewards', () => {
     const redeemerContract19 = arc.getContract('0xC739aB616866B180017ee4a594364A761A921bA6')
     // Redeemer version 21
     const redeemerContract21 = arc.getContract('0xDE2D1DE7bbc81560cB34421bf562C41B1bB415F2')
-    const transaction19 = await redeemerContract19.methods.redeem(proposal.id, proposal.dao.address, beneficiary).call()
-    const transaction21 = await redeemerContract21.methods.redeem(proposal.id, proposal.dao.address, beneficiary).call()
+    const transaction19 = await redeemerContract19.methods.redeem(proposal.id, dao.id, beneficiary).call()
+    const transaction21 = await redeemerContract21.methods.redeem(proposal.id, dao.id, beneficiary).call()
     console.log(`Result of executing Redeem on an executed proposal in Redeemer version 19`)
     console.log(`(this is wat we expect)`)
     console.log(transaction19)
@@ -101,12 +103,12 @@ describe('Claim rewards', () => {
     const externalTokenAddress = testAddresses.base.GEN
     const externalTokenReward = new BN(12345)
 
-    await arc.GENToken().transfer(dao.address, externalTokenReward).send()
-    const daoBalance =  await firstResult(arc.GENToken().balanceOf(dao.address))
+    await arc.GENToken().transfer(dao.id, externalTokenReward).send()
+    const daoBalance =  await firstResult(arc.GENToken().balanceOf(dao.id))
     expect(Number(daoBalance.toString())).toBeGreaterThanOrEqual(Number(externalTokenReward.toString()))
     const options = {
       beneficiary,
-      dao: dao.address,
+      dao: dao.id,
       ethReward: new BN(0),
       externalTokenAddress,
       externalTokenReward,

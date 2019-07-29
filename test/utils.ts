@@ -84,8 +84,7 @@ export async function newArc(options: { [key: string]: string} = {}): Promise<Ar
   }
   const arc = new Arc(Object.assign(defaultOptions, options))
   // get the contract addresses from the subgraph
-  const contractInfos = await arc.getContractInfos()
-  arc.setContractInfos(contractInfos)
+  await arc.fetchContractInfos()
   for (const pk of pks) {
     const account = arc.web3.eth.accounts.privateKeyToAccount(pk)
     arc.web3.eth.accounts.wallet.add(account)
@@ -94,10 +93,39 @@ export async function newArc(options: { [key: string]: string} = {}): Promise<Ar
   return arc
 }
 
-export async function getTestDAO() {
+/**
+ * Arc without a valid ethereum connection
+ * @return [description]
+ */
+export async function newArcWithoutEthereum(): Promise<Arc> {
+  const arc = new Arc({
+    graphqlHttpProvider,
+    graphqlWsProvider
+  })
+  return arc
+}
+
+/**
+ * Arc instance without a working graphql connection
+ * @return [description]
+ */
+
+export async function newArcWithoutGraphql(): Promise<Arc> {
+  const arc = new Arc({
+    ipfsProvider,
+    web3Provider
+  })
+  const normalArc = await newArc()
+  arc.setContractInfos(normalArc.contractInfos)
+  return arc
+}
+
+export async function getTestDAO(arc?: Arc) {
   // we have two indexed daos with the same name, but one has 6 members, and that is the one
   // we are using for testing
-  const arc = await newArc()
+  if (!arc) {
+    arc = await newArc()
+  }
   const addresses = await getTestAddresses()
   if (!addresses.test.Avatar) {
     const msg = `Expected to find ".test.avatar" in the migration file, found ${addresses} instead`
@@ -109,7 +137,6 @@ export async function getTestDAO() {
 export async function createAProposal(
   dao?: DAO,
   options: any = {}
-  // options: IProposalCreateOptions | { scheme?: Address, dao?: Address} = {}
 ) {
   if (!dao) {
     dao = await getTestDAO()
@@ -129,7 +156,12 @@ export async function createAProposal(
   }
 
   const response = await (dao as DAO).createProposal(options as IProposalCreateOptions).send()
-  return response.result as Proposal
+  const proposal = response.result as Proposal
+  // wait for the proposal to be indexed
+  let indexed = false
+  proposal.state().subscribe((next: any) => { if (next) { indexed = true } })
+  await waitUntilTrue(() => indexed)
+  return proposal
 }
 
 export async function mintSomeReputation() {
@@ -157,6 +189,8 @@ export async function waitUntilTrue(test: () => Promise<boolean> | boolean) {
 export async function voteToAcceptProposal(proposal: Proposal) {
   const arc = proposal.context
   const accounts = arc.web3.eth.accounts.wallet
+  // make sure the proposal is indexed
+  await waitUntilTrue(async () => !!(await proposal.state().pipe(first()).toPromise()))
 
   for (let i = 0; i <= 3; i ++) {
     try {
@@ -168,7 +202,7 @@ export async function voteToAcceptProposal(proposal: Proposal) {
         return
       } else {
         // ignore?
-        // throw err
+        throw err
       }
     } finally {
       arc.setAccount(accounts[0].address)
