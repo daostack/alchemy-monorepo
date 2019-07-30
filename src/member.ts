@@ -1,19 +1,23 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
+import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
-import { BN } from './utils'
-
+import { toIOperationObservable } from './operation'
 import { IProposalQueryOptions, Proposal } from './proposal'
 import { Reward } from './reward'
-import { IStake, IStakeQueryOptions } from './stake'
+import { IStakeQueryOptions, Stake } from './stake'
 import { Address, ICommonQueryOptions, IStateful } from './types'
+import { BN } from './utils'
 import { createGraphQlQuery, isAddress } from './utils'
-import { IVote, IVoteQueryOptions, Vote } from './vote'
+import { IVoteQueryOptions, Vote } from './vote'
 
-export interface IMemberState {
+export interface IMemberStaticState {
   address: Address
-  dao: DAO,
+  dao: Address,
+}
+export interface IMemberState extends IMemberStaticState {
+  id: string
   reputation: typeof BN
 }
 
@@ -70,84 +74,142 @@ export class Member implements IStateful<IMemberState> {
 
     return context.getObservableList(
       query,
-      (r: any) => new Member(r.address, r.dao.id, context),
+      (r: any) => new Member({ address: r.address, dao: r.dao.id}, context),
       apolloQueryOptions
     )
   }
+
+  public id: string|undefined
+  public staticState: IMemberStaticState|undefined
 
   /**
    * @param address addresssof the member
    * @param daoAdress addresssof the DAO this member is a member of
    * @param context an instance of Arc
    */
-  constructor(public address: Address, public daoAddress: Address, public context: Arc) {
-    isAddress(address)
-    isAddress(daoAddress)
+  constructor(idOrOpts: string|IMemberStaticState, public context: Arc) {
+    if (typeof idOrOpts === 'string') {
+      this.id = idOrOpts as string
+    } else {
+      const opts: IMemberStaticState = idOrOpts as IMemberStaticState
+      isAddress(opts.address)
+      isAddress(opts.dao)
+      this.setStaticState(opts)
+    }
+  }
+
+  public async fetchStaticState(): Promise<IMemberStaticState> {
+    if (!!this.staticState) {
+      return this.staticState
+    } else {
+      const state = await this.state().pipe(first()).toPromise()
+      this.id = state.id
+      this.staticState = {
+        address: state.address,
+        dao: state.dao
+      }
+      return this.staticState
+    }
+  }
+  public setStaticState(opts: IMemberStaticState) {
+    this.staticState = {
+      address: opts.address.toLowerCase(),
+      dao: opts.dao.toLowerCase()
+    }
   }
 
   public state(): Observable<IMemberState> {
-    const query = gql`
-      {
-        reputationHolders (
-          where: {
-            address: "${this.address}"
-            dao: "${this.daoAddress}"
-          }
-        ) {
-          id
-          address
-          dao {
+    let query: any
+    if (this.id) {
+      query = gql`{
+          reputationHolder (
+              id: "${this.id}"
+          ) {
             id
+            address
+            dao {
+              id
+            }
+            balance
           }
-          balance
-        }
-      }
-    `
+        }`
+    } else {
+      const staticState = this.staticState as IMemberStaticState
+      query = gql`{
+          reputationHolders (
+            where: {
+              address: "${staticState.address}"
+              dao: "${staticState.dao}"
+            }
+          ) {
+            id
+            address
+            dao {
+              id
+            }
+            balance
+          }
+        }`
+    }
 
     const itemMap = (items: any) => {
       if (items.length === 0) {
-        return {
-          address: this.address,
-          dao: new DAO(this.daoAddress, this.context),
-          reputation: new BN(0)
-        }
-      } else {
-        const item = items[0]
-        return {
-          address: this.address,
-          dao: new DAO(this.daoAddress, this.context),
+        throw Error(`This member was not found`)
+      }
+      const item = items[0]
+      return {
+          address: item.address,
+          dao: item.dao.id,
           reputation: new BN(item.balance)
         }
       }
-    }
-
     return this.context.getObservableObject(query, itemMap) as Observable<IMemberState>
-
   }
 
-  public dao(): DAO {
-    return new DAO(this.daoAddress, this.context)
+  public async dao(): Promise<DAO> {
+    const staticState = await this.fetchStaticState()
+    return new DAO(staticState.dao, this.context)
   }
 
-  public rewards(): Observable<Reward[]> {
+  public rewards(): Observable < Reward[] > {
     throw new Error('not implemented')
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
-    if (!options.where) { options.where = {} }
-    options.where.proposer = this.address
-    return this.dao().proposals(options)
+    const observable = Observable.create(async (observer: any) => {
+      const state = await this.fetchStaticState()
+      if (!options.where) { options.where = {} }
+      options.where.proposer = state.address
+      options.where.dao = state.dao
+      const sub = Proposal.search(this.context, options).subscribe(observer)
+      return () => sub.unsubscribe()
+    })
+
+    return toIOperationObservable(observable)
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable<IStake[]> {
-    if (!options.where) { options.where = {} }
-    options.where.staker = this.address
-    return this.dao().stakes(options)
+  public stakes(options: IStakeQueryOptions = {}): Observable <Stake[]> {
+    const observable = Observable.create(async (observer: any) => {
+      const state = await this.fetchStaticState()
+      if (!options.where) { options.where = {} }
+      options.where.staker = state.address
+      options.where.dao = state.dao
+      const sub = Stake.search(this.context, options).subscribe(observer)
+      return () => sub.unsubscribe()
+    })
+
+    return toIOperationObservable(observable)
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<IVote[]> {
-    if (!options.where) { options.where = {} }
-    options.where.voter = this.address
-    return Vote.search(this.context, options)
-  }
+  public votes(options: IVoteQueryOptions = {}): Observable<Vote[]> {
+    const observable = Observable.create(async (observer: any) => {
+      const state = await this.fetchStaticState()
+      if (!options.where) { options.where = {} }
+      options.where.voter = state.address
+      const sub = Vote.search(this.context, options).subscribe(observer)
+      return () => sub.unsubscribe()
+    })
+
+    return toIOperationObservable(observable)
+    }
 }

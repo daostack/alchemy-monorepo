@@ -32,7 +32,7 @@ export class Arc extends GraphNodeObserver {
   /**
    * a mapping of contrct names to contract addresses
    */
-  public contractAddresses: IContractInfo[]
+  public contractInfos: IContractInfo[]
   public contracts: {[key: string]: any} = {} // a cache for the contracts
   public contractsR: {[key: string]: any} = {} // a cache for teh "read-only" contracts
 
@@ -47,7 +47,7 @@ export class Arc extends GraphNodeObserver {
   } = {}
 
   constructor(options: {
-    contractAddresses?: IContractInfo[]
+    contractInfos?: IContractInfo[]
     graphqlHttpProvider?: string
     graphqlWsProvider?: string
     ipfsProvider?: IPFSProvider
@@ -69,8 +69,8 @@ export class Arc extends GraphNodeObserver {
       this.web3Read = this.web3
     }
 
-    this.contractAddresses = options.contractAddresses || []
-    if (!this.contractAddresses) {
+    this.contractInfos = options.contractInfos || []
+    if (!this.contractInfos) {
       Logger.warn('No contract addresses given to the Arc.constructor: expect most write operations to fail!')
     }
 
@@ -89,10 +89,14 @@ export class Arc extends GraphNodeObserver {
     this.contracts = {}
     this.contractsR = {}
     //  get the contract addresses from the subgraph
-    this.contractAddresses = contractInfos
+    this.contractInfos = contractInfos
   }
 
-  public async getContractInfos(): Promise<IContractInfo[]> {
+  /**
+   * fetch contractInfos from the subgraph
+   * @return a list of IContractInfo instances
+   */
+  public async fetchContractInfos(): Promise<IContractInfo[]> {
     const query = gql`{
       contractInfos {
         id
@@ -105,6 +109,7 @@ export class Arc extends GraphNodeObserver {
       return record
     }
     const result = await this.getObservableList(query, itemMap).pipe(first()).toPromise()
+    this.setContractInfos(result)
     return result
   }
 
@@ -127,24 +132,16 @@ export class Arc extends GraphNodeObserver {
     return DAO.search(this, options)
   }
 
-  public async scheme(id: string): Promise<Scheme> {
-    const schemes = await Scheme.search(this, {where: { id }}).pipe(first()).toPromise()
-    if (schemes.length === 0) {
-      throw Error(`No scheme with id ${id} is known`)
-    }
-    return schemes[0]
+  public scheme(id: string): Scheme {
+    return new Scheme(id, this)
   }
 
   public schemes(options: ISchemeQueryOptions = {}): Observable<Scheme[]> {
     return Scheme.search(this, options)
   }
 
-  public async proposal(id: string): Promise<Proposal> {
-    const proposals = await Proposal.search(this, { where: {id }}).pipe(first()).toPromise()
-    if (proposals.length === 0) {
-      throw Error(`No proposal with id ${id} was found`)
-    }
-    return proposals[0]
+  public proposal(id: string): Proposal {
+    return new Proposal(id, this)
   }
 
   public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
@@ -217,24 +214,24 @@ export class Arc extends GraphNodeObserver {
    */
   public getContractInfo(address: Address) {
     isAddress(address)
-    for (const contractInfo of this.contractAddresses) {
+    for (const contractInfo of this.contractInfos) {
       if (contractInfo.address.toLowerCase() === address.toLowerCase()) {
         return contractInfo
       }
     }
-    if (!this.contractAddresses) {
+    if (!this.contractInfos) {
       throw Error(`no contract info was found - did you call "arc.setContractInfos()"?`)
     }
     throw Error(`No contract with address ${address} is known`)
   }
 
   public getContractInfoByName(name: string, version: string) {
-    for (const contractInfo of this.contractAddresses) {
+    for (const contractInfo of this.contractInfos) {
         if (contractInfo.name === name && contractInfo.version === version) {
           return contractInfo
         }
       }
-    if (!this.contractAddresses) {
+    if (!this.contractInfos) {
       throw Error(`no contract info was found - did you call "arc.setContractInfos(...)"?`)
     }
     throw Error(`No contract with name ${name}  and version ${version} is known`)
@@ -256,7 +253,7 @@ export class Arc extends GraphNodeObserver {
 
   /**
    * return a web3 Contract instance.
-   * @param  address address of the contract to look up in self.contractAddresses
+   * @param  address address of the contract to look up in self.contractInfos
    * @param  [abiName] (optional) name of the ABI (i.e. 'Avatar' or 'SchemeRegistrar').
    * @param  [version] (optional) Arc version of contract (https://www.npmjs.com/package/@daostack/arc)
    * @return   a web3 contract instance
@@ -290,19 +287,19 @@ export class Arc extends GraphNodeObserver {
    * @return a Token instance
    */
   public GENToken() {
-    if (this.contractAddresses) {
+    if (this.contractInfos) {
       // TODO: remove this reference to LATEST_ARC_VERSION
       // (it's aworkaround for https://github.com/daostack/subgraph/issues/257)
       const LATEST_ARC_VERSION = '0.0.1-rc.19'
-      if (this.contractAddresses) {
-        for (const contractInfo of this.contractAddresses) {
+      if (this.contractInfos) {
+        for (const contractInfo of this.contractInfos) {
           if (contractInfo.name === 'GEN' && contractInfo.version === LATEST_ARC_VERSION) {
             return new Token(contractInfo.address, this)
           }
         }
       }
 
-      for (const contractInfo of this.contractAddresses) {
+      for (const contractInfo of this.contractInfos) {
         if (contractInfo.name === 'GEN') {
           return new Token(contractInfo.address, this)
         }

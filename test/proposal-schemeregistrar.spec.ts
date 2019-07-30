@@ -10,7 +10,7 @@ import { ISchemeRegistrar } from '../src/schemes/schemeRegistrar'
 import { createAProposal, firstResult, getTestAddresses, getTestDAO,
   newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
 
-jest.setTimeout(30000)
+jest.setTimeout(60000)
 
 /**
  * Proposal test
@@ -40,7 +40,7 @@ describe('Proposal', () => {
       proposalToAddStates.push(pState)
     })
 
-    await waitUntilTrue(() => proposalToAddStates.length > 1)
+    await waitUntilTrue(() => proposalToAddStates.length > 0)
 
     expect(lastProposalToAddState().schemeRegistrar).toMatchObject({
       decision: null,
@@ -68,9 +68,15 @@ describe('Proposal', () => {
     })
 
     // we now expect our new scheme to appear in the schemes collection
-    const registeredSchemes = await firstResult(Scheme.search(arc, {where: { dao: dao.address }}))
-    expect(registeredSchemes.map((x: Scheme) => x.address))
-      .toContain(schemeToRegister)
+    const registeredSchemes = await firstResult(Scheme.search(arc, {where: { dao: dao.id }}))
+    const registeredSchemesAddresses: string[] = []
+    await Promise.all(
+      registeredSchemes.map(async (x: Scheme) => {
+        const state = await x.fetchStaticState()
+        registeredSchemesAddresses.push(state.address)
+      })
+    )
+    expect(registeredSchemesAddresses).toContain(schemeToRegister)
 
     // we create a new proposal now to edit the scheme
     const proposalToEdit = await createAProposal(dao, {
@@ -87,7 +93,7 @@ describe('Proposal', () => {
     })
     const lastProposalToEditState = (): IProposalState => proposalToEditStates[proposalToEditStates.length - 1]
 
-    await waitUntilTrue(() => proposalToEditStates.length > 1)
+    await waitUntilTrue(() => proposalToEditStates.length > 0)
 
     expect(lastProposalToEditState().schemeRegistrar).toMatchObject({
       decision: null,
@@ -115,7 +121,7 @@ describe('Proposal', () => {
     })
     const lastProposalToRemoveState = (): IProposalState => proposalToRemoveStates[proposalToRemoveStates.length - 1]
 
-    await waitUntilTrue(() => proposalToRemoveStates.length > 1)
+    await waitUntilTrue(() => proposalToRemoveStates.length > 0)
 
     expect(lastProposalToRemoveState().schemeRegistrar).toMatchObject({
       decision: null,
