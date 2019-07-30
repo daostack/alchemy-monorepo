@@ -14,7 +14,7 @@ import * as GenericScheme from './schemes/genericScheme'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
 import { IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import { BN } from './utils'
+import { BN, isAddress } from './utils'
 import { createGraphQlQuery, NULL_ADDRESS, realMathToNumber } from './utils'
 import { IVoteQueryOptions, Vote } from './vote'
 
@@ -181,7 +181,9 @@ export class Proposal implements IStateful<IProposalState> {
         where += `${key}: [${values.join(',')}]\n`
       } else {
         if (key === 'proposer' || key === 'beneficiary' || key === 'dao') {
-          where += `${key}: "${(options.where[key] as string).toLowerCase()}"\n`
+          const option = options.where[key] as string
+          isAddress(option)
+          where += `${key}: "${option.toLowerCase()}"\n`
         } else {
           where += `${key}: "${options.where[key]}"\n`
         }
