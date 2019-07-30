@@ -52,8 +52,7 @@ describe('Claim rewards', () => {
 
     // vote for the proposal with all the votest
     await voteToAcceptProposal(proposal)
-
-    // check if prposal is indeed accepted etc
+    // check if proposal is indeed accepted etc
     proposal.state().subscribe(((next) => states.push(next)))
 
     await waitUntilTrue(() => {
@@ -70,6 +69,19 @@ describe('Claim rewards', () => {
       reputationBalances.push(next)
     })
     const prevEthBalance = new BN(await arc.web3.eth.getBalance(beneficiary))
+
+    // Redeemer version 19
+    const redeemerContract19 = arc.getContract('0xC739aB616866B180017ee4a594364A761A921bA6')
+    // Redeemer version 21
+    const redeemerContract21 = arc.getContract('0xDE2D1DE7bbc81560cB34421bf562C41B1bB415F2')
+    const transaction19 = await redeemerContract19.methods.redeem(proposal.id, dao.id, beneficiary).call()
+    const transaction21 = await redeemerContract21.methods.redeem(proposal.id, dao.id, beneficiary).call()
+    console.log(`Result of executing Redeem on an executed proposal in Redeemer version 19`)
+    console.log(`(this is wat we expect)`)
+    console.log(transaction19)
+    console.log(`Result of executing Redeem on an executed proposal in Redeemer version 21`)
+    console.log(`(we expect the same as above)`)
+    console.log(transaction21)
 
     await proposal.claimRewards(beneficiary).send()
 
