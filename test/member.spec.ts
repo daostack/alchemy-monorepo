@@ -105,7 +105,7 @@ describe('Member', () => {
     expect(proposalIds).toContain(proposal.id)
   })
 
-  it('Members are searchable', async () => {
+  it.skip('Members are searchable', async () => {
     let members: Member[] = []
 
     Member.search(arc)
