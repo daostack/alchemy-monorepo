@@ -13,17 +13,17 @@ import { createGraphQlQuery, isAddress } from './utils'
 import { IVoteQueryOptions, Vote } from './vote'
 
 export interface IMemberStaticState {
-  address: Address
-  dao: Address,
+  address: Address,
+  dao: Address
 }
 export interface IMemberState extends IMemberStaticState {
-  id: string
+  id: string,
   reputation: typeof BN
 }
 
 export interface IMemberQueryOptions extends ICommonQueryOptions {
   where?: {
-    address?: Address
+    address?: Address,
     dao?: Address
   }
 }
@@ -154,7 +154,16 @@ export class Member implements IStateful<IMemberState> {
 
     const itemMap = (items: any) => {
       if (items.length === 0) {
-        throw Error(`This member was not found`)
+        if (this.id) {
+          throw Error(`A member with id ${this.id} was not found`)
+        } else {
+          const staticState = this.staticState as IMemberStaticState
+          return  {
+            address: staticState.address,
+            dao: staticState.dao,
+            reputation: new BN(0)
+          }
+        }
       }
       const item = items[0]
       return {
