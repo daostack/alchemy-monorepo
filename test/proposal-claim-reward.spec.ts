@@ -132,4 +132,8 @@ describe('Claim rewards', () => {
     await proposal.claimRewards().send()
   })
 
+  it('claimRewards should also work for expired proposals', async () => {
+     const proposal: Proposal = await arc.proposal(testAddresses.test.queuedProposalId)
+     await proposal.claimRewards().send()
+   })
 })
