@@ -423,7 +423,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       const repAllocationDeployedContract = repAllocationContract.deploy({
         data: repAllocationBytecode,
         arguments: null
-      }).send()
+      }).send({ nonce: ++nonce })
       tx = await new Promise(resolve => repAllocationDeployedContract.on('receipt', resolve))
       const repAllocation = await repAllocationDeployedContract
       await logTx(tx, `${repAllocation.options.address} => RepAllocation`)
