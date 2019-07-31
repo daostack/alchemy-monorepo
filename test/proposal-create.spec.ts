@@ -122,7 +122,7 @@ describe('Create a ContributionReward proposal', () => {
 
   })
 
-  it('handles the fact that the ipfs url is not set elegantly', async () => {
+  it.skip('handles the fact that the ipfs url is not set elegantly', async () => {
     const arcWithoutIPFS = await newArc()
     arcWithoutIPFS.ipfsProvider = ''
     const contractAddresses = await getTestAddresses()
