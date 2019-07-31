@@ -122,7 +122,7 @@ describe('Create a ContributionReward proposal', () => {
 
   })
 
-  it.skip('handles the fact that the ipfs url is not set elegantly', async () => {
+  it('handles the fact that the ipfs url is not set elegantly', async () => {
     const arcWithoutIPFS = await newArc()
     arcWithoutIPFS.ipfsProvider = ''
     const contractAddresses = await getTestAddresses()
@@ -139,7 +139,7 @@ describe('Create a ContributionReward proposal', () => {
       url: 'http://swift.org/modest'
     }
 
-    expect(anotherDAO.createProposal(options).send()).rejects.toThrowError(
+    await expect(anotherDAO.createProposal(options).send()).rejects.toThrowError(
       /no ipfsProvider set/i
     )
   })

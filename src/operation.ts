@@ -68,7 +68,11 @@ export function sendTransaction<T>(
     let result: any
     let tx: any
     if (typeof transaction === 'function') {
-      tx = await transaction()
+      try {
+        tx = await transaction()
+      } catch (err) {
+        observer.error(err)
+      }
     }  else {
       tx = transaction
     }
