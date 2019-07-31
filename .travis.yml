@@ -34,12 +34,6 @@ script:
   - echo -en 'travis_fold:end:script.2\\r'
   - npm run lint
   - npm run test
-  # try to find the cause of the failing test
-  - npm run test -- test/scheme.spec.ts
-  # try to find the cause of the failing test
-  - npm run test -- test/proposal-create.spec.ts test/scheme.spec.ts
-  # try to find the cause of the failing test
-  - npm run test -- test/p
   - npm run build
 
 after_success:
