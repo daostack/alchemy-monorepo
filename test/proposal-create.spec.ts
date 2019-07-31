@@ -56,6 +56,7 @@ describe('Create a ContributionReward proposal', () => {
     await waitUntilTrue(proposalIsIndexed)
 
     expect(proposal.id).toBeDefined()
+
     const proposalState = await proposal.state().pipe(first()).toPromise()
 
     const contributionReward = proposalState.contributionReward as IContributionReward
@@ -63,7 +64,7 @@ describe('Create a ContributionReward proposal', () => {
     expect(fromWei(contributionReward.ethReward)).toEqual('300')
     expect(fromWei(contributionReward.nativeTokenReward)).toEqual('1')
     expect(fromWei(contributionReward.reputationReward)).toEqual('10')
-    expect(fromWei(proposalState.stakesAgainst)).toEqual('100') // TODO: why this amount?
+    expect(fromWei(proposalState.stakesAgainst)).toEqual('100')
     expect(fromWei(proposalState.stakesFor)).toEqual('0')
 
     expect(proposalState).toMatchObject({

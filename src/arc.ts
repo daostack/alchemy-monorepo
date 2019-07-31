@@ -88,7 +88,6 @@ export class Arc extends GraphNodeObserver {
     // reset the cache
     this.contracts = {}
     this.contractsR = {}
-    //  get the contract addresses from the subgraph
     this.contractInfos = contractInfos
   }
 
