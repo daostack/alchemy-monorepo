@@ -1,6 +1,6 @@
 {
   "name": "@daostack/client",
-  "version": "0.2.3",
+  "version": "0.2.5",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -98,7 +98,7 @@
     "u": "^0.1.0"
   },
   "dependencies": {
-    "@daostack/migration": "0.0.1-rc.21-v0",
+    "@daostack/migration": "0.0.1-rc.23-v0",
     "apollo-cache-inmemory": "^1.6.2",
     "apollo-client": "^2.6.3",
     "apollo-client-ws": "^2.5.0",

@@ -52,8 +52,7 @@ describe('Claim rewards', () => {
 
     // vote for the proposal with all the votest
     await voteToAcceptProposal(proposal)
-
-    // check if prposal is indeed accepted etc
+    // check if proposal is indeed accepted etc
     proposal.state().subscribe(((next) => states.push(next)))
 
     await waitUntilTrue(() => {
@@ -133,4 +132,8 @@ describe('Claim rewards', () => {
     await proposal.claimRewards().send()
   })
 
+  it('claimRewards should also work for expired proposals', async () => {
+     const proposal: Proposal = await arc.proposal(testAddresses.test.queuedProposalId)
+     await proposal.claimRewards().send()
+   })
 })

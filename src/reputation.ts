@@ -3,6 +3,7 @@ import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
+import { REPUTATION_CONTRACT_VERSION } from './settings'
 import { Address, ICommonQueryOptions, IStateful, Web3Receipt } from './types'
 import { BN, createGraphQlQuery, isAddress } from './utils'
 
@@ -115,9 +116,7 @@ export class Reputation implements IStateful<IReputationState> {
    * get a web3 contract instance for this token
    */
   public contract() {
-    // TODO: this a  bit hacky
-    const LATEST_ARC_VERSION = '0.0.1-rc.19'
-    const abi = require(`@daostack/migration/abis/${LATEST_ARC_VERSION}/Reputation.json`)
+    const abi = require(`@daostack/migration/abis/${REPUTATION_CONTRACT_VERSION}/Reputation.json`)
     return this.context.getContract(this.address, abi)
   }
 

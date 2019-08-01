@@ -12,6 +12,7 @@ import { Scheme } from './scheme'
 import * as ContributionReward from './schemes/contributionReward'
 import * as GenericScheme from './schemes/genericScheme'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
+import { REDEEMER_CONTRACT_VERSION } from './settings'
 import { IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
 import { BN, isAddress } from './utils'
@@ -548,8 +549,11 @@ export class Proposal implements IStateful<IProposalState> {
    * @return a web3 Contract instance
    */
   public redeemerContract() {
-    const LATEST_ARC_VERSION = '0.0.1-rc.19'
-    const contractInfo = this.context.getContractInfoByName('Redeemer', LATEST_ARC_VERSION)
+    // TODO: the Redeemer contract version is hardcoced until we find a way around issues
+    // https://github.com/daostack/subgraph/issues/290
+    // const contractInfoOfScheme = this.context.getContractInfo(this.schemeAddress)
+    // const REDEEMER_CONTRACT_VERSION = contractInfoOfScheme.version
+    const contractInfo = this.context.getContractInfoByName('Redeemer', REDEEMER_CONTRACT_VERSION)
     return this.context.getContract(contractInfo.address)
   }
 
@@ -717,6 +721,8 @@ export class Proposal implements IStateful<IProposalState> {
       first(),
       concatMap((state) => {
         const transaction = this.redeemerContract().methods.redeem(
+          state.scheme.address, // contributionreward address
+          state.votingMachine, // genesisProtocol address
           this.id,
           state.dao.id,
           beneficiary
