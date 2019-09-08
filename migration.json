@@ -132,7 +132,7 @@
     },
     "dao": {
       "0.0.1-rc.16": {
-        "name": "Sclerotic Colorist",
+        "name": "Baleful Coppersmith",
         "Avatar": "0x5017A545b09ab9a30499DE7F431DF0855bCb7275",
         "DAOToken": "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D",
         "Reputation": "0x7C728214be9A0049e6a86f2137ec61030D0AA964",
@@ -140,7 +140,7 @@
         "Schemes": {}
       },
       "0.0.1-rc.17": {
-        "name": "Meretricious Shop foreman",
+        "name": "Strident Cookies",
         "Avatar": "0x10fB2Ab116E2Eb3a8B5a1Ca912E05f63c3D969E4",
         "DAOToken": "0x81920CAF1F99Bb0f7D72Fdfba840cff21d63CcC5",
         "Reputation": "0xd99748782d7643b00C36a4Bb296C4A099dF98Ff3",
@@ -148,7 +148,7 @@
         "Schemes": {}
       },
       "0.0.1-rc.18": {
-        "name": "Tenacious Locomotive",
+        "name": "Friable Colorist",
         "Avatar": "0x1932400a9A132D20c3961E2848DE4bA3Ce8Ff30B",
         "DAOToken": "0x457f0f599CC62A41B221cC94bC9d5Cf0012D21A8",
         "Reputation": "0x0937F524C8A7d3D6Af3023875CF6c7f293F3B994",
@@ -156,7 +156,7 @@
         "Schemes": {}
       },
       "0.0.1-rc.19": {
-        "name": "Spasmodic Nibblets",
+        "name": "Rebarbative Ukulele",
         "Avatar": "0xC739aB616866B180017ee4a594364A761A921bA6",
         "DAOToken": "0x5568CA4C8fc2ACd7D3f814A03a54A84Af9167CbC",
         "Reputation": "0xa390Fa8d4F032cCfCeC1CFF34f2eb549928DcEad",
@@ -164,7 +164,7 @@
         "Schemes": {}
       },
       "0.0.1-rc.21": {
-        "name": "Risible Silversmith",
+        "name": "Animistic Mermaid eggs",
         "Avatar": "0xa6bdC6E136DDA9362a65f86A6441CaCf8571F9f9",
         "DAOToken": "0x3d7Eec9C41c7A99489fD17e6B087f9C827b16d3F",
         "Reputation": "0xae9FddaFfCA85dFAd7E325F6Cea96B1216C60317",
@@ -172,7 +172,7 @@
         "Schemes": {}
       },
       "0.0.1-rc.22": {
-        "name": "Loquacious Plant operator",
+        "name": "Obtuse Wheelwright",
         "Avatar": "0x366b3001D730E58D45895cf635D5582f8B88Abe9",
         "DAOToken": "0xCc5c0EbA633E35861252d955383880C5c6485668",
         "Reputation": "0xa95Fc1a5C9eB48FBc51dD4421B2d267a544c2201",
@@ -180,7 +180,7 @@
         "Schemes": {}
       },
       "0.0.1-rc.23": {
-        "name": "Feckless Artist",
+        "name": "Voluble Unicorn",
         "Avatar": "0xA92A766d62318B9c06Eb548753bD34acbD7C5f3c",
         "DAOToken": "0xf25e92D6092122bd7190BC8aDaF36FcF26aB1110",
         "Reputation": "0xBeF75D93f5f25da0896e4623783D685eDc6d2FC5",
@@ -190,7 +190,7 @@
     },
     "test": {
       "0.0.1-rc.16": {
-        "name": "Meretricious Musician",
+        "name": "Sclerotic Jellybeans",
         "Avatar": "0xE7A2C59e134ee81D4035Ae6DB2254f79308e334f",
         "DAOToken": "0xcDbe8b52A6c60A5f101d4A0F1f049f19a9e1D35F",
         "Reputation": "0x93cdbf39fB9e13BD253CA5819247D52fbabf0F2f",
@@ -207,7 +207,7 @@
         }
       },
       "0.0.1-rc.17": {
-        "name": "Redolent Stylist",
+        "name": "Ubiquitous Artisan",
         "Avatar": "0x5C814a2F009da910b40FfF41f6FBEcB5655d76a7",
         "DAOToken": "0x99bE2D39E2DefA3920cb95b9631bAeF059a78479",
         "Reputation": "0x3Ea09eAEd806f7a3DA9D85205563DcabC077E0Df",
@@ -224,7 +224,7 @@
         }
       },
       "0.0.1-rc.18": {
-        "name": "Amatory Inker",
+        "name": "Redolent Carnival",
         "Avatar": "0x77D814480bcC4256Ccbdd1144D273327f1eacf06",
         "DAOToken": "0x75B117d2fA4b056E33bc9629ea3Ae9015C71d09e",
         "Reputation": "0x03821D51B53ADdd5B8548b623C9196301Adbbac6",
@@ -241,7 +241,7 @@
         }
       },
       "0.0.1-rc.19": {
-        "name": "Mannered Ukulele",
+        "name": "Adroit Pancake",
         "Avatar": "0x2C43216ac40D0DCb151d59f00AFA0C0e88154875",
         "DAOToken": "0xEF84B23009E86c0962A004510Bf0E6e6C41A19d6",
         "Reputation": "0x0166a0C4589C494372F57FE6E4Eb646e6f582052",
@@ -258,7 +258,7 @@
         }
       },
       "0.0.1-rc.21": {
-        "name": "Intransigent Ninja",
+        "name": "Serpentine Bunny",
         "Avatar": "0x307eBdd67935F501043E6De3494C8E03745f84C4",
         "DAOToken": "0xB84693CA90A974aC0dF31B6aF791A11dA4DaEC54",
         "Reputation": "0xD84B4f7aC9c8D87023652Cdb84c4f15E73c5d6e9",
@@ -275,7 +275,7 @@
         }
       },
       "0.0.1-rc.22": {
-        "name": "Munificent Toilet",
+        "name": "Fulsome Scenographer",
         "Avatar": "0xDb8bdA9F3651128DA65cD262D43ABf5504904539",
         "DAOToken": "0xaDC8266883145a1b9490E9CD843EFAEd071eD6dB",
         "Reputation": "0x46b8DAe41fd8A680fb67e98dc95bC9368C62F0d6",
@@ -292,7 +292,7 @@
         }
       },
       "0.0.1-rc.23": {
-        "name": "Amatory Dolls",
+        "name": "Endemic Designer",
         "Avatar": "0xc5Bcf85D8DFDa36De97Fd1C2785bc9e124EBB546",
         "DAOToken": "0x67eD5A48586E41e8f1941f74cD4Ae1C73964F24a",
         "Reputation": "0xeB590b73cD256ed72dcda2542D9a59B7DD36F0Ef",
