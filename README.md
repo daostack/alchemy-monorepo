@@ -245,20 +245,20 @@ Example migration parameters object:
   "tokenSymbol": "TDT", // Sets the name of your DAO token symbol
 
   // Needed only if you would like to use Contribution Reward scheme in your DAO
-  "ContributionReward": {
+  "ContributionReward": [{
     "voteParams": 0 // The index of the parameters in the voting machines parameters array
-  },
+  }],
   // Needed only if you would like to use Generic Scheme scheme in your DAO
-  "GenericScheme": {
+  "GenericScheme": [{
     // The address of the contract the Generic Scheme can call.
     "targetContract": "0x0000000000000000000000000000000000000000"
     "votingMachine": "0x00000000000000000000votingmachineaddress" // The address of your voting machine (default is Genesis Protocol address)
     "voteParams": 1 // The index of the parameters in the voting machines parameters array (default is 0)
-  },
+  }],
   // Allows you to register and deploy custom schemes
   "CustomSchemes": {
      // You should have an contract build file with identical name inside `custom-abis` folder
-    "MyCustomScheme": {
+    "MyCustomScheme": [{
       // If true will call setParameters() else will call initialized() with the avatar address as a first parameter
       "isUniversal": true,  
       // Parameters to use in the setParameters() / initialized() method
@@ -274,7 +274,7 @@ Example migration parameters object:
       "address": "0xaddress...",
       // The permissions your scheme need from the controller
       "permissions": "0x00000001"
-    }
+    }]
   },
   // Parameters list your DAO will use with the voting machines
   // You can add here either Genesis Protocol parameters which will set the parameters in the GP voting machine or add a pre-set parameters hash to any voting machine

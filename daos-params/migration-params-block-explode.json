@@ -1,0 +1,66 @@
+{
+  "orgName": "BlockExplode",
+  "tokenName": "FBC",
+  "tokenSymbol": "FBC",
+  "VotingMachinesParams": [
+    {
+      "queuedVoteRequiredPercentage": 51,
+      "queuedVotePeriodLimit": 1083600,
+      "thresholdConst": 1200,
+      "proposingRepReward": 50,
+      "minimumDaoBounty": 1000,
+      "boostedVotePeriodLimit": 259200,
+      "daoBountyConst": 10,
+      "activationTime": 0,
+      "preBoostedVotePeriodLimit": 93600,
+      "quietEndingPeriod": 43200,
+      "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+      "votersReputationLossRatio": 3
+    },
+    {
+      "queuedVoteRequiredPercentage": 55,
+      "queuedVotePeriodLimit": 1814400,
+      "thresholdConst": 1500,
+      "proposingRepReward": 200,
+      "minimumDaoBounty": 1500,
+      "boostedVotePeriodLimit": 518400,
+      "daoBountyConst": 10,
+      "activationTime": 0,
+      "preBoostedVotePeriodLimit": 172800,
+      "quietEndingPeriod": 345600,
+      "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+      "votersReputationLossRatio": 3
+    }
+  ],
+  "schemes": {
+    "ContributionReward": true,
+    "SchemeRegistrar": true
+  },
+  "ContributionReward": {
+    "voteParams": 0
+  },
+  "SchemeRegistrar": {
+    "voteRegisterParams": 1,
+    "voteRemoveParams": 1
+  },
+  "unregisterOwner": true,
+  "useUController": false,
+  "useDaoCreator": true,
+  "founders": [
+    {
+      "address": "0x80E7041b85488C0AA64eB9c3E6c326209F5954dE",
+      "tokens": 1000,
+      "reputation": 100
+    },
+    {
+      "address": "0x36d3066691B397a2Dc1d642a4162feCB76fa7148",
+      "tokens": 500,
+      "reputation": 50
+    },
+    {
+      "address": "0x8a6Be0E3CC0A87791eF30B064C679d870700fAF6",
+      "tokens": 500,
+      "reputation": 50
+    }
+  ]
+}

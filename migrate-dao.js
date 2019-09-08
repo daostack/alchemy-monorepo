@@ -326,181 +326,197 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   }
 
   if (migrationParams.schemes.SchemeRegistrar) {
-    spinner.start('Setting Scheme Registrar parameters...')
-    const schemeRegistrarSetParams = schemeRegistrar.methods.setParameters(
-      migrationParams.SchemeRegistrar.voteRegisterParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.SchemeRegistrar.voteRegisterParams],
-      migrationParams.SchemeRegistrar.voteRemoveParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.SchemeRegistrar.voteRemoveParams],
-      migrationParams.SchemeRegistrar.votingMachine === undefined ? GenesisProtocol : migrationParams.SchemeRegistrar.votingMachine
-    )
-    schemeRegistrarParams = await schemeRegistrarSetParams.call()
-    tx = await schemeRegistrarSetParams.send({ nonce: ++nonce })
-    await logTx(tx, 'Scheme Registrar parameters set.')
-    schemeNames.push('Scheme Registrar')
-    schemes.push(SchemeRegistrar)
-    params.push(schemeRegistrarParams)
-    permissions.push('0x0000001F')
+    for (let i in migrationParams.SchemeRegistrar) {
+      spinner.start('Setting Scheme Registrar parameters...')
+      const schemeRegistrarSetParams = schemeRegistrar.methods.setParameters(
+        migrationParams.SchemeRegistrar[i].voteRegisterParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.SchemeRegistrar[i].voteRegisterParams],
+        migrationParams.SchemeRegistrar[i].voteRemoveParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.SchemeRegistrar[i].voteRemoveParams],
+        migrationParams.SchemeRegistrar[i].votingMachine === undefined ? GenesisProtocol : migrationParams.SchemeRegistrar[i].votingMachine
+      )
+      schemeRegistrarParams = await schemeRegistrarSetParams.call()
+      tx = await schemeRegistrarSetParams.send({ nonce: ++nonce })
+      await logTx(tx, 'Scheme Registrar parameters set.')
+      schemeNames.push('Scheme Registrar')
+      schemes.push(SchemeRegistrar)
+      params.push(schemeRegistrarParams)
+      permissions.push('0x0000001F')
+    }
   }
 
   if (migrationParams.schemes.ContributionReward) {
-    spinner.start('Setting Contribution Reward parameters...')
-    const contributionRewardSetParams = contributionReward.methods.setParameters(
-      migrationParams.ContributionReward.voteParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.ContributionReward.voteParams],
-      migrationParams.ContributionReward.votingMachine === undefined ? GenesisProtocol : migrationParams.ContributionReward.votingMachine
-    )
-    contributionRewardParams = await contributionRewardSetParams.call()
-    tx = await contributionRewardSetParams.send({ nonce: ++nonce })
-    await logTx(tx, 'Contribution Reward parameters set.')
-    schemeNames.push('Contribution Reward')
-    schemes.push(ContributionReward)
-    params.push(contributionRewardParams)
-    permissions.push('0x00000000')
+    for (let i in migrationParams.ContributionReward) {
+      spinner.start('Setting Contribution Reward parameters...')
+      const contributionRewardSetParams = contributionReward.methods.setParameters(
+        migrationParams.ContributionReward[i].voteParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.ContributionReward[i].voteParams],
+        migrationParams.ContributionReward[i].votingMachine === undefined ? GenesisProtocol : migrationParams.ContributionReward[i].votingMachine
+      )
+      contributionRewardParams = await contributionRewardSetParams.call()
+      tx = await contributionRewardSetParams.send({ nonce: ++nonce })
+      await logTx(tx, 'Contribution Reward parameters set.')
+      schemeNames.push('Contribution Reward')
+      schemes.push(ContributionReward)
+      params.push(contributionRewardParams)
+      permissions.push('0x00000000')
+    }
   }
 
   if (migrationParams.schemes.GenericScheme) {
-    spinner.start('Setting Generic Scheme parameters...')
-    const genericSchemeSetParams = genericScheme.methods.setParameters(
-      migrationParams.GenericScheme.voteParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.GenericScheme.voteParams],
-      migrationParams.GenericScheme.votingMachine === undefined ? GenesisProtocol : migrationParams.GenericScheme.votingMachine,
-      migrationParams.genericScheme.targetContract
-    )
-    genericSchemeParams = await genericSchemeSetParams.call()
-    tx = await genericSchemeSetParams.send({ nonce: ++nonce })
-    await logTx(tx, 'Generic Scheme parameters set.')
-    schemeNames.push('Generic Scheme')
-    schemes.push(GenericScheme)
-    params.push(genericSchemeParams)
-    permissions.push('0x00000010')
+    for (let i in migrationParams.GenericScheme) {
+      spinner.start('Setting Generic Scheme parameters...')
+      const genericSchemeSetParams = genericScheme.methods.setParameters(
+        migrationParams.GenericScheme[i].voteParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.GenericScheme[i].voteParams],
+        migrationParams.GenericScheme[i].votingMachine === undefined ? GenesisProtocol : migrationParams.GenericScheme[i].votingMachine,
+        migrationParams.genericScheme[i].targetContract
+      )
+      genericSchemeParams = await genericSchemeSetParams.call()
+      tx = await genericSchemeSetParams.send({ nonce: ++nonce })
+      await logTx(tx, 'Generic Scheme parameters set.')
+      schemeNames.push('Generic Scheme')
+      schemes.push(GenericScheme)
+      params.push(genericSchemeParams)
+      permissions.push('0x00000010')
+    }
   }
 
   if (migrationParams.schemes.GlobalConstraintRegistrar) {
-    spinner.start('Setting Global Constraint Registrar parameters...')
-    const globalConstraintRegistrarSetParams = globalConstraintRegistrar.methods.setParameters(
-      migrationParams.GlobalConstraintRegistrar.voteParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.GlobalConstraintRegistrar.voteParams],
-      migrationParams.GlobalConstraintRegistrar.votingMachine === undefined ? GenesisProtocol : migrationParams.GlobalConstraintRegistrar.votingMachine
-    )
-    globalConstraintRegistrarParams = await globalConstraintRegistrarSetParams.call()
-    tx = await globalConstraintRegistrarSetParams.send({ nonce: ++nonce })
-    await logTx(tx, 'Global Constraints Registrar parameters set.')
-    schemeNames.push('Global Constraints Registrar')
-    schemes.push(GlobalConstraintRegistrar)
-    params.push(globalConstraintRegistrarParams)
-    permissions.push('0x00000004')
+    for (let i in migrationParams.GlobalConstraintRegistrar) {
+      spinner.start('Setting Global Constraint Registrar parameters...')
+      const globalConstraintRegistrarSetParams = globalConstraintRegistrar.methods.setParameters(
+        migrationParams.GlobalConstraintRegistrar[i].voteParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.GlobalConstraintRegistrar[i].voteParams],
+        migrationParams.GlobalConstraintRegistrar[i].votingMachine === undefined ? GenesisProtocol : migrationParams.GlobalConstraintRegistrar[i].votingMachine
+      )
+      globalConstraintRegistrarParams = await globalConstraintRegistrarSetParams.call()
+      tx = await globalConstraintRegistrarSetParams.send({ nonce: ++nonce })
+      await logTx(tx, 'Global Constraints Registrar parameters set.')
+      schemeNames.push('Global Constraints Registrar')
+      schemes.push(GlobalConstraintRegistrar)
+      params.push(globalConstraintRegistrarParams)
+      permissions.push('0x00000004')
+    }
   }
 
   if (migrationParams.schemes.UpgradeScheme) {
-    spinner.start('Setting Upgrade Scheme parameters...')
-    const upgradeSchemeSetParams = upgradeScheme.methods.setParameters(
-      migrationParams.UpgradeScheme.voteParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.UpgradeScheme.voteParams],
-      migrationParams.UpgradeScheme.votingMachine === undefined ? GenesisProtocol : migrationParams.UpgradeScheme.votingMachine
-    )
-    upgradeSchemeParams = await upgradeSchemeSetParams.call()
-    tx = await upgradeSchemeSetParams.send({ nonce: ++nonce })
-    await logTx(tx, 'Upgrade Scheme parameters set.')
-    schemeNames.push('Upgrade Scheme')
-    schemes.push(UpgradeScheme)
-    params.push(upgradeSchemeParams)
-    permissions.push('0x0000000A')
+    for (let i in migrationParams.UpgradeScheme) {
+      spinner.start('Setting Upgrade Scheme parameters...')
+      const upgradeSchemeSetParams = upgradeScheme.methods.setParameters(
+        migrationParams.UpgradeScheme[i].voteParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.UpgradeScheme[i].voteParams],
+        migrationParams.UpgradeScheme[i].votingMachine === undefined ? GenesisProtocol : migrationParams.UpgradeScheme[i].votingMachine
+      )
+      upgradeSchemeParams = await upgradeSchemeSetParams.call()
+      tx = await upgradeSchemeSetParams.send({ nonce: ++nonce })
+      await logTx(tx, 'Upgrade Scheme parameters set.')
+      schemeNames.push('Upgrade Scheme')
+      schemes.push(UpgradeScheme)
+      params.push(upgradeSchemeParams)
+      permissions.push('0x0000000A')
+    }
   }
 
   if (migrationParams.schemes.ReputationFromToken) {
     let { abi: reputationFromTokenABI, bytecode: reputationFromTokenBytecode } = require('@daostack/arc/build/contracts/ReputationFromToken.json')
-    spinner.start('Migrating ReputationFromToken...')
-    const reputationFromTokenContract = new web3.eth.Contract(reputationFromTokenABI, undefined, opts)
-    const reputationFromTokenDeployedContract = reputationFromTokenContract.deploy({
-      data: reputationFromTokenBytecode,
-      arguments: null
-    }).send({ nonce: ++nonce })
-    tx = await new Promise(resolve => reputationFromTokenDeployedContract.on('receipt', resolve))
-    const reputationFromToken = await reputationFromTokenDeployedContract
-    await logTx(tx, `${reputationFromToken.options.address} => ReputationFromToken`)
-
-    spinner.start('Setting ReputationFromToken...')
-    let tokenContract = migrationParams.ReputationFromToken.tokenContract
-    if (tokenContract === undefined || tokenContract === null) {
-      let { abi: repAllocationABI, bytecode: repAllocationBytecode } = require('@daostack/arc/build/contracts/RepAllocation.json')
-      spinner.start('Migrating RepAllocation...')
-      const repAllocationContract = new web3.eth.Contract(repAllocationABI, undefined, opts)
-      const repAllocationDeployedContract = repAllocationContract.deploy({
-        data: repAllocationBytecode,
+    Schemes.ReputationFromToken = []
+    for (let i in migrationParams.ReputationFromToken) {
+      spinner.start('Migrating ReputationFromToken...')
+      const reputationFromTokenContract = new web3.eth.Contract(reputationFromTokenABI, undefined, opts)
+      const reputationFromTokenDeployedContract = reputationFromTokenContract.deploy({
+        data: reputationFromTokenBytecode,
         arguments: null
       }).send({ nonce: ++nonce })
-      tx = await new Promise(resolve => repAllocationDeployedContract.on('receipt', resolve))
-      const repAllocation = await repAllocationDeployedContract
-      await logTx(tx, `${repAllocation.options.address} => RepAllocation`)
-      tokenContract = repAllocation.options.address
-    }
-    const reputationFromTokenInit = reputationFromToken.methods.initialize(
-      avatar.options.address,
-      tokenContract,
-      migrationParams.ReputationFromToken.curve === undefined ? '0x0000000000000000000000000000000000000000' : migrationParams.ReputationFromToken.curve
-    )
-    tx = await reputationFromTokenInit.send({ nonce: ++nonce })
-    await logTx(tx, 'Reputation From Token Scheme Initialized.')
+      tx = await new Promise(resolve => reputationFromTokenDeployedContract.on('receipt', resolve))
+      const reputationFromToken = await reputationFromTokenDeployedContract
+      await logTx(tx, `${reputationFromToken.options.address} => ReputationFromToken`)
 
-    schemeNames.push('ReputationFromToken')
-    schemes.push(reputationFromToken.options.address)
-    params.push('0x0000000000000000000000000000000000000000000000000000000000000000')
-    permissions.push('0x00000001')
-    Schemes.ReputationFromToken = reputationFromToken.options.address
+      spinner.start('Setting ReputationFromToken...')
+      let tokenContract = migrationParams.ReputationFromToken[i].tokenContract
+      if (tokenContract === undefined || tokenContract === null) {
+        let { abi: repAllocationABI, bytecode: repAllocationBytecode } = require('@daostack/arc/build/contracts/RepAllocation.json')
+        spinner.start('Migrating RepAllocation...')
+        const repAllocationContract = new web3.eth.Contract(repAllocationABI, undefined, opts)
+        const repAllocationDeployedContract = repAllocationContract.deploy({
+          data: repAllocationBytecode,
+          arguments: null
+        }).send({ nonce: ++nonce })
+        tx = await new Promise(resolve => repAllocationDeployedContract.on('receipt', resolve))
+        const repAllocation = await repAllocationDeployedContract
+        await logTx(tx, `${repAllocation.options.address} => RepAllocation`)
+        tokenContract = repAllocation.options.address
+      }
+      const reputationFromTokenInit = reputationFromToken.methods.initialize(
+        avatar.options.address,
+        tokenContract,
+        migrationParams.ReputationFromToken[i].curve === undefined ? '0x0000000000000000000000000000000000000000' : migrationParams.ReputationFromToken[i].curve
+      )
+      tx = await reputationFromTokenInit.send({ nonce: ++nonce })
+      await logTx(tx, 'Reputation From Token Scheme Initialized.')
+
+      schemeNames.push('ReputationFromToken')
+      schemes.push(reputationFromToken.options.address)
+      params.push('0x0000000000000000000000000000000000000000000000000000000000000000')
+      permissions.push('0x00000001')
+      Schemes.ReputationFromToken.push(reputationFromToken.options.address)
+    }
   }
 
   for (const schemeName in migrationParams.CustomSchemes) {
-    let scheme = migrationParams.CustomSchemes[schemeName]
-    const path = require('path')
-    let { abi, bytecode } = require(path.resolve(`${customabislocation}/${schemeName}.json`))
-    let schemeContract
-    if (scheme.address === undefined) {
-      spinner.start(`Migrating ${schemeName}...`)
-      const SchemeContract = new web3.eth.Contract(abi, undefined, opts)
-      const schemeDeployedContract = SchemeContract.deploy({
-        data: bytecode,
-        arguments: null
-      }).send({ nonce: ++nonce })
-      tx = await new Promise(resolve => schemeDeployedContract.on('receipt', resolve))
-      schemeContract = await schemeDeployedContract
-      await logTx(tx, `${schemeContract.options.address} => ${schemeName}`)
-    } else {
-      schemeContract = new web3.eth.Contract(abi, scheme.address, opts)
-    }
-
-    let schemeParamsHash = '0x0000000000000000000000000000000000000000000000000000000000000000'
-    if (scheme.isUniversal) {
-      spinner.start(`Setting ${schemeName} parameters...`)
-      let schemeParams = []
-      for (let i in scheme.params) {
-        if (scheme.params[i].voteParams !== undefined) {
-          schemeParams.push(votingMachinesParams[scheme.params[i].voteParams])
-        } else if (scheme.params[i] === 'GenesisProtocolAddress') {
-          schemeParams.push(GenesisProtocol)
-        } else {
-          schemeParams.push(scheme.params[i])
-        }
+    Schemes[schemeName] = []
+    for (let i in migrationParams.CustomSchemes[schemeName]) {
+      let scheme = migrationParams.CustomSchemes[schemeName][i]
+      const path = require('path')
+      let { abi, bytecode } = require(path.resolve(`${customabislocation}/${schemeName}.json`))
+      let schemeContract
+      if (scheme.address === undefined) {
+        spinner.start(`Migrating ${schemeName}...`)
+        const SchemeContract = new web3.eth.Contract(abi, undefined, opts)
+        const schemeDeployedContract = SchemeContract.deploy({
+          data: bytecode,
+          arguments: null
+        }).send({ nonce: ++nonce })
+        tx = await new Promise(resolve => schemeDeployedContract.on('receipt', resolve))
+        schemeContract = await schemeDeployedContract
+        await logTx(tx, `${schemeContract.options.address} => ${schemeName}`)
+      } else {
+        schemeContract = new web3.eth.Contract(abi, scheme.address, opts)
       }
-      const schemeSetParams = schemeContract.methods.setParameters(...schemeParams)
-      schemeParamsHash = await schemeSetParams.call()
-      tx = await schemeSetParams.send({ nonce: ++nonce })
-      await logTx(tx, `${schemeName} parameters set.`)
-    } else {
-      spinner.start(`Initializing ${schemeName}...`)
-      let schemeParams = [avatar.options.address]
-      for (let i in scheme.params) {
-        if (scheme.params[i].voteParams !== undefined) {
-          schemeParams.push(votingMachinesParams[scheme.params[i].voteParams])
-        } else {
-          schemeParams.push(scheme.params[i])
+
+      let schemeParamsHash = '0x0000000000000000000000000000000000000000000000000000000000000000'
+      if (scheme.isUniversal) {
+        spinner.start(`Setting ${schemeName} parameters...`)
+        let schemeParams = []
+        for (let i in scheme.params) {
+          if (scheme.params[i].voteParams !== undefined) {
+            schemeParams.push(votingMachinesParams[scheme.params[i].voteParams])
+          } else if (scheme.params[i] === 'GenesisProtocolAddress') {
+            schemeParams.push(GenesisProtocol)
+          } else {
+            schemeParams.push(scheme.params[i])
+          }
         }
-        const schemeSetParams = schemeContract.methods.initialize(...schemeParams)
+        const schemeSetParams = schemeContract.methods.setParameters(...schemeParams)
         schemeParamsHash = await schemeSetParams.call()
         tx = await schemeSetParams.send({ nonce: ++nonce })
-        await logTx(tx, `${schemeName} initialized.`)
+        await logTx(tx, `${schemeName} parameters set.`)
+      } else {
+        spinner.start(`Initializing ${schemeName}...`)
+        let schemeParams = [avatar.options.address]
+        for (let i in scheme.params) {
+          if (scheme.params[i].voteParams !== undefined) {
+            schemeParams.push(votingMachinesParams[scheme.params[i].voteParams])
+          } else {
+            schemeParams.push(scheme.params[i])
+          }
+          const schemeSetParams = schemeContract.methods.initialize(...schemeParams)
+          schemeParamsHash = await schemeSetParams.call()
+          tx = await schemeSetParams.send({ nonce: ++nonce })
+          await logTx(tx, `${schemeName} initialized.`)
+        }
       }
-    }
 
-    schemeNames.push(schemeName)
-    schemes.push(schemeContract.options.address)
-    params.push(schemeParamsHash)
-    permissions.push(scheme.permissions)
-    Schemes[schemeName] = schemeContract.options.address
+      schemeNames.push(schemeName)
+      schemes.push(schemeContract.options.address)
+      params.push(schemeParamsHash)
+      permissions.push(scheme.permissions)
+      Schemes[schemeName].push(schemeContract.options.address)
+    }
   }
 
   if (migrationParams.useDaoCreator === true) {

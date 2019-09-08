@@ -1,15 +1,11 @@
 {
-  "ContributionReward": {
-  },
-  "GenericScheme": {
+  "ContributionReward": [{}],
+  "GenericScheme": [{
     "targetContract": "0x0000000000000000000000000000000000000000"
-  },
-  "SchemeRegistrar": {
-  },
-  "GlobalConstraintRegistrar": {
-  },
-  "UpgradeScheme": {
-  },
+  }],
+  "SchemeRegistrar": [{}],
+  "GlobalConstraintRegistrar": [{}],
+  "UpgradeScheme": [{}],
   "VotingMachinesParams": [
     {
       "boostedVotePeriodLimit": 600,
