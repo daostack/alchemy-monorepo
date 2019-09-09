@@ -62,7 +62,7 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
 
   const ActionMock = await migrateActionMock()
 
-  const gsParamsHash = await setGenericSchemeParams(gpParamsHash, ActionMock) // FIXME
+  const gsParamsHash = await setUGenericSchemeParams(gpParamsHash, ActionMock) // FIXME
 
   const srParamsHash = await setSchemeRegistrarParams(gpParamsHash) // FIXME
 
@@ -73,7 +73,7 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
       permissions: '0x00000000' /* no special params */
     },
     {
-      address: this.base.GenericScheme,
+      address: this.base.UGenericScheme,
       params: gsParamsHash,
       permissions: '0x00000010'
     },
@@ -399,19 +399,19 @@ async function setContributionRewardParams (gpParamsHash) {
   return crParamsHash
 }
 
-async function setGenericSchemeParams (gpParamsHash, actionMock) {
+async function setUGenericSchemeParams (gpParamsHash, actionMock) {
   this.spinner.start('Setting Generic Scheme Parameters...')
 
   const {
-    GenericScheme,
+    UGenericScheme,
     GenesisProtocol
   } = this.base
 
   let tx
 
   const genericScheme = new this.web3.eth.Contract(
-    require('@daostack/arc/build/contracts/GenericScheme.json').abi,
-    GenericScheme,
+    require('@daostack/arc/build/contracts/UGenericScheme.json').abi,
+    UGenericScheme,
     this.opts
   )
 
@@ -549,14 +549,14 @@ async function submitGSProposal ({
   this.spinner.start('Submitting a new Proposal...')
 
   const {
-    GenericScheme
+    UGenericScheme
   } = this.base
 
   let tx
 
   const genericScheme = new this.web3.eth.Contract(
-    require('@daostack/arc/build/contracts/GenericScheme.json').abi,
-    GenericScheme,
+    require('@daostack/arc/build/contracts/UGenericScheme.json').abi,
+    UGenericScheme,
     this.opts
   )
 

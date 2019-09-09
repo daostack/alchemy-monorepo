@@ -24,7 +24,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     DAORegistry,
     SchemeRegistrar,
     ContributionReward,
-    GenericScheme,
+    UGenericScheme,
     GenesisProtocol,
     GlobalConstraintRegistrar,
     UpgradeScheme
@@ -55,8 +55,8 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   )
 
   const genericScheme = new web3.eth.Contract(
-    require('@daostack/arc/build/contracts/GenericScheme.json').abi,
-    GenericScheme,
+    require('@daostack/arc/build/contracts/UGenericScheme.json').abi,
+    UGenericScheme,
     opts
   )
 
@@ -360,19 +360,19 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     }
   }
 
-  if (migrationParams.schemes.GenericScheme) {
-    for (let i in migrationParams.GenericScheme) {
+  if (migrationParams.schemes.UGenericScheme) {
+    for (let i in migrationParams.UGenericScheme) {
       spinner.start('Setting Generic Scheme parameters...')
       const genericSchemeSetParams = genericScheme.methods.setParameters(
-        migrationParams.GenericScheme[i].voteParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.GenericScheme[i].voteParams],
-        migrationParams.GenericScheme[i].votingMachine === undefined ? GenesisProtocol : migrationParams.GenericScheme[i].votingMachine,
-        migrationParams.genericScheme[i].targetContract
+        migrationParams.UGenericScheme[i].voteParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.UGenericScheme[i].voteParams],
+        migrationParams.UGenericScheme[i].votingMachine === undefined ? GenesisProtocol : migrationParams.UGenericScheme[i].votingMachine,
+        migrationParams.UGenericScheme[i].targetContract
       )
       genericSchemeParams = await genericSchemeSetParams.call()
       tx = await genericSchemeSetParams.send({ nonce: ++nonce })
       await logTx(tx, 'Generic Scheme parameters set.')
       schemeNames.push('Generic Scheme')
-      schemes.push(GenericScheme)
+      schemes.push(UGenericScheme)
       params.push(genericSchemeParams)
       permissions.push('0x00000010')
     }

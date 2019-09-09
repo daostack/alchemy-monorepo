@@ -142,7 +142,7 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
   if (Number(arcVersion.slice(-2)) >= 22) {
     await deploy(require('@daostack/arc/build/contracts/Redeemer.json'))
   }
-  await deploy(require('@daostack/arc/build/contracts/GenericScheme.json'))
+  await deploy(require('@daostack/arc/build/contracts/UGenericScheme.json'))
   let migration = { 'base': previousMigration.base || {} }
   migration.base[arcVersion] = addresses
   return migration

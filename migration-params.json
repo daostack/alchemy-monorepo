@@ -1,6 +1,6 @@
 {
   "ContributionReward": [{}],
-  "GenericScheme": [{
+  "UGenericScheme": [{
     "targetContract": "0x0000000000000000000000000000000000000000"
   }],
   "SchemeRegistrar": [{}],
@@ -24,7 +24,7 @@
   ],
   "schemes": {
     "ContributionReward": true,
-    "GenericScheme": false,
+    "UGenericScheme": true,
     "SchemeRegistrar": true,
     "GlobalConstraintRegistrar": true,
     "UpgradeScheme": true
