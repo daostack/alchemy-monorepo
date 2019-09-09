@@ -29,6 +29,18 @@
     "GlobalConstraintRegistrar": true,
     "UpgradeScheme": true
   },
+  "CustomSchemes": {
+    "ReputationFromToken": [{
+      "isUniversal": false,
+      "params": [
+        "0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1",
+        "0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1"
+      ],
+      "address": "0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1",
+      "permissions": "0x00000001",
+      "alias" : "ReputationFromTokenAlias"
+    }]
+  },
   "unregisterOwner": true,
   "useUController": false,
   "useDaoCreator": false,
