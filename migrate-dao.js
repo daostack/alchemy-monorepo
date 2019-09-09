@@ -92,7 +92,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   let reputation
   let Controller
   let controller
-  let Schemes = { }
+  let Schemes = []
 
   if (migrationParams.useDaoCreator === true) {
     spinner.start('Creating a new organization...')
@@ -453,73 +453,78 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       schemes.push(reputationFromToken.options.address)
       params.push('0x0000000000000000000000000000000000000000000000000000000000000000')
       permissions.push('0x00000001')
-      Schemes.ReputationFromToken.push(reputationFromToken.options.address)
+      Schemes.push({ name: 'ReputationFromToken', alias: 'ReputationFromToken', address: reputationFromToken.options.address })
     }
   }
-
-  for (const schemeName in migrationParams.CustomSchemes) {
-    Schemes[schemeName] = []
-    for (let i in migrationParams.CustomSchemes[schemeName]) {
-      let scheme = migrationParams.CustomSchemes[schemeName][i]
-      const path = require('path')
-      let { abi, bytecode } = require(path.resolve(`${customabislocation}/${schemeName}.json`))
-      let schemeContract
-      if (scheme.address === undefined) {
-        spinner.start(`Migrating ${schemeName}...`)
-        const SchemeContract = new web3.eth.Contract(abi, undefined, opts)
-        const schemeDeployedContract = SchemeContract.deploy({
-          data: bytecode,
-          arguments: null
-        }).send({ nonce: ++nonce })
-        tx = await new Promise(resolve => schemeDeployedContract.on('receipt', resolve))
-        schemeContract = await schemeDeployedContract
-        await logTx(tx, `${schemeContract.options.address} => ${schemeName}`)
-      } else {
-        schemeContract = new web3.eth.Contract(abi, scheme.address, opts)
-      }
-
-      let schemeParamsHash = '0x0000000000000000000000000000000000000000000000000000000000000000'
-      if (scheme.isUniversal) {
-        spinner.start(`Setting ${schemeName} parameters...`)
-        let schemeParams = []
-        for (let i in scheme.params) {
-          if (scheme.params[i].voteParams !== undefined) {
-            schemeParams.push(votingMachinesParams[scheme.params[i].voteParams])
-          } else if (scheme.params[i] === 'GenesisProtocolAddress') {
-            schemeParams.push(GenesisProtocol)
-          } else {
-            schemeParams.push(scheme.params[i])
-          }
-        }
-        const schemeSetParams = schemeContract.methods.setParameters(...schemeParams)
-        schemeParamsHash = await schemeSetParams.call()
-        tx = await schemeSetParams.send({ nonce: ++nonce })
-        await logTx(tx, `${schemeName} parameters set.`)
-      } else {
-        spinner.start(`Initializing ${schemeName}...`)
-        let schemeParams = [avatar.options.address]
-        for (let i in scheme.params) {
-          if (scheme.params[i].voteParams !== undefined) {
-            schemeParams.push(votingMachinesParams[scheme.params[i].voteParams])
-          } else {
-            schemeParams.push(scheme.params[i])
-          }
-        }
-        const schemeSetParams = schemeContract.methods.initialize(...schemeParams)
-        schemeParamsHash = await schemeSetParams.call()
-        if (schemeParamsHash.Result === undefined) {
-          schemeParamsHash = '0x0000000000000000000000000000000000000000000000000000000000000000'
-        }
-        tx = await schemeSetParams.send({ nonce: ++nonce })
-        await logTx(tx, `${schemeName} initialized.`)
-      }
-
-      schemeNames.push(schemeName)
-      schemes.push(schemeContract.options.address)
-      params.push(schemeParamsHash)
-      permissions.push(scheme.permissions)
-      Schemes[schemeName] = { alias: scheme.alias, address: schemeContract.options.address }
+  for (var i = 0, len = migrationParams.CustomSchemes.length; i < len; i++) {
+    let customeScheme = migrationParams.CustomSchemes[i]
+    const path = require('path')
+    let contractJson
+    if (customeScheme.fromArc) {
+      contractJson = require(`@daostack/arc/build/contracts/${customeScheme.name}.json`)
+    } else {
+      contractJson = require(path.resolve(`${customabislocation}/${customeScheme.name}.json`))
     }
+    let abi = contractJson.abi
+    let bytecode = contractJson.bytecode
+    let schemeContract
+    if (customeScheme.address === undefined) {
+      spinner.start(`Migrating ${customeScheme.name}...`)
+      const SchemeContract = new web3.eth.Contract(abi, undefined, opts)
+      const schemeDeployedContract = SchemeContract.deploy({
+        data: bytecode,
+        arguments: null
+      }).send({ nonce: ++nonce })
+      tx = await new Promise(resolve => schemeDeployedContract.on('receipt', resolve))
+      schemeContract = await schemeDeployedContract
+      await logTx(tx, `${schemeContract.options.address} => ${customeScheme.name}`)
+    } else {
+      schemeContract = new web3.eth.Contract(abi, customeScheme.name.address, opts)
+    }
+
+    let schemeParamsHash = '0x0000000000000000000000000000000000000000000000000000000000000000'
+    if (customeScheme.isUniversal) {
+      spinner.start(`Setting ${customeScheme.name} parameters...`)
+      let schemeParams = []
+      for (let i in customeScheme.params) {
+        if (customeScheme.params[i].voteParams !== undefined) {
+          schemeParams.push(votingMachinesParams[customeScheme.params[i].voteParams])
+        } else if (customeScheme.params[i] === 'GenesisProtocolAddress') {
+          schemeParams.push(GenesisProtocol)
+        } else {
+          schemeParams.push(customeScheme.params[i])
+        }
+      }
+      const schemeSetParams = schemeContract.methods.setParameters(...schemeParams)
+      schemeParamsHash = await schemeSetParams.call()
+      tx = await schemeSetParams.send({ nonce: ++nonce })
+      await logTx(tx, `${customeScheme.name} parameters set.`)
+    } else {
+      spinner.start(`Initializing ${customeScheme.name}...`)
+      let schemeParams = [avatar.options.address]
+      for (let i in customeScheme.params) {
+        if (customeScheme.params[i].voteParams !== undefined) {
+          schemeParams.push(votingMachinesParams[customeScheme.params[i].voteParams])
+        } else if (customeScheme.params[i] === 'GenesisProtocolAddress') {
+          schemeParams.push(GenesisProtocol)
+        } else {
+          schemeParams.push(customeScheme.params[i])
+        }
+      }
+      const schemeSetParams = schemeContract.methods.initialize(...schemeParams)
+      schemeParamsHash = await schemeSetParams.call()
+      if (schemeParamsHash.Result === undefined) {
+        schemeParamsHash = '0x0000000000000000000000000000000000000000000000000000000000000000'
+      }
+      tx = await schemeSetParams.send({ nonce: ++nonce })
+      await logTx(tx, `${customeScheme.schemeName} initialized.`)
+    }
+
+    schemeNames.push(customeScheme.schemeName)
+    schemes.push(schemeContract.options.address)
+    params.push(schemeParamsHash)
+    permissions.push(customeScheme.permissions)
+    Schemes.push({ name: customeScheme.name, alias: customeScheme.alias, address: schemeContract.options.address })
   }
 
   if (migrationParams.useDaoCreator === true) {

@@ -29,18 +29,30 @@
     "GlobalConstraintRegistrar": true,
     "UpgradeScheme": true
   },
-  "CustomSchemes": {
-    "ReputationFromToken": [{
+  "CustomSchemes": [
+     {
+      "name": "GenericScheme",
+      "params": [
+        "GenesisProtocolAddress",
+        {"voteParams": 0},
+        "0x0000000000000000000000000000000000000000"
+      ],
+      "permissions": "0x00000010",
+      "alias" : "GenericSchemeAlias",
+      "fromArc": true
+    },
+    {
+      "name": "GenericScheme",
       "isUniversal": false,
       "params": [
-        "0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1",
-        "0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1"
+        "GenesisProtocolAddress",
+        {"voteParams": 0},
+        "0x0000000000000000000000000000000000000000"
       ],
-      "address": "0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1",
-      "permissions": "0x00000001",
-      "alias" : "ReputationFromTokenAlias"
-    }]
-  },
+      "permissions": "0x00000010",
+      "alias" : "GenericSchemeAlias2",
+      "fromArc": true
+    }],
   "unregisterOwner": true,
   "useUController": false,
   "useDaoCreator": false,

@@ -128,6 +128,25 @@
         "OrganizationRegister": "0xab0a464a85FBC742d8778cDE35DfB7397724c90e",
         "Redeemer": "0x720CbF673330Ee034CbfF5f203F5a0311D89fd35",
         "GenericScheme": "0xd28C61112D5B8ED61fD3934e6Bc4A201B63434d1"
+      },
+      "0.0.1-rc.24": {
+        "GEN": "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
+        "DAORegistry": "0x67B5656d60a809915323Bf2C40A8bEF15A152e3e",
+        "ControllerCreator": "0x2612Af3A521c2df9EAF28422Ca335b04AdF3ac66",
+        "DaoCreator": "0xA57B8a5584442B467b4689F1144D269d096A3daF",
+        "UController": "0x26b4AFb60d6C903165150C6F0AA14F8016bE4aec",
+        "GenesisProtocol": "0x630589690929E9cdEFDeF0734717a9eF3Ec7Fcfe",
+        "SchemeRegistrar": "0x0E696947A06550DEf604e82C26fd9E493e576337",
+        "UpgradeScheme": "0xDb56f2e9369E0D7bD191099125a3f6C370F8ed15",
+        "GlobalConstraintRegistrar": "0xA94B7f0465E98609391C623d0560C5720a3f2D33",
+        "ContributionReward": "0x6eD79Aa1c71FD7BdBC515EfdA3Bd4e26394435cC",
+        "AbsoluteVote": "0xb09bCc172050fBd4562da8b229Cf3E45Dc3045A6",
+        "QuorumVote": "0xFC628dd79137395F3C9744e33b1c5DE554D94882",
+        "TokenCapGC": "0x5f8e26fAcC23FA4cbd87b8d9Dbbd33D5047abDE1",
+        "VoteInOrganizationScheme": "0x21a59654176f2689d12E828B77a783072CD26680",
+        "OrganizationRegister": "0xD86C8F0327494034F60e25074420BcCF560D5610",
+        "Redeemer": "0x4bf749ec68270027C5910220CEAB30Cc284c7BA2",
+        "UGenericScheme": "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D"
       }
     },
     "dao": {
@@ -186,6 +205,25 @@
         "Reputation": "0xBeF75D93f5f25da0896e4623783D685eDc6d2FC5",
         "Controller": "0x4b38ACFF6A4A3FD2D5A53B02b38654078c0Ba752",
         "Schemes": {}
+      },
+      "0.0.1-rc.24": {
+        "name": "Defamatory Designer",
+        "Avatar": "0xb0fe9E2Bb72e4Ec53e30F708414F4bE4D06352e6",
+        "DAOToken": "0xC20a36EB5F3750829f71A421426b68D29810588C",
+        "Reputation": "0x9c4A615FcD0E4c40FD3614D43a009725c9E53308",
+        "Controller": "0x267639506101BbF4f91127a5211069f5ab70c518",
+        "Schemes": [
+          {
+            "name": "GenericScheme",
+            "alias": "GenericSchemeAlias",
+            "address": "0xF6ae1A8bD48307609353388fFB0ab91dC7cc28C1"
+          },
+          {
+            "name": "GenericScheme",
+            "alias": "GenericSchemeAlias2",
+            "address": "0x39033d82B422eAF9DF2e9B53799586809aCA671B"
+          }
+        ]
       }
     },
     "test": {
