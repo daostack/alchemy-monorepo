@@ -12,7 +12,7 @@ import { Scheme } from './scheme'
 import * as ContributionReward from './schemes/contributionReward'
 import * as GenericScheme from './schemes/genericScheme'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
-import { REDEEMER_CONTRACT_VERSION } from './settings'
+import { LATEST_ARC_VERSION, REDEEMER_CONTRACT_VERSION } from './settings'
 import { IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
 import { BN, isAddress } from './utils'
@@ -720,8 +720,15 @@ export class Proposal implements IStateful<IProposalState> {
     const observable = this.state().pipe(
       first(),
       concatMap((state) => {
+        let schemeAddress: Address|null
+        if (state.contributionReward) {
+          schemeAddress = state.scheme.address
+        } else {
+          // we use a dymmy contributionreward, as a workaround for https://github.com/daostack/arc/issues/655
+          schemeAddress = this.context.getContractInfoByName('ContributionReward', LATEST_ARC_VERSION).address
+        }
         const transaction = this.redeemerContract().methods.redeem(
-          state.scheme.address, // contributionreward address
+          schemeAddress, // contributionreward address
           state.votingMachine, // genesisProtocol address
           this.id,
           state.dao.id,

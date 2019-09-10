@@ -7,7 +7,7 @@ import { createAProposal, fromWei, getTestAddresses, getTestDAO, ITestAddresses,
   newArc, timeTravel, toWei,
   voteToAcceptProposal, waitUntilTrue } from './utils'
 
-jest.setTimeout(20000)
+jest.setTimeout(40000)
 
 describe('Proposal execute()', () => {
   let arc: Arc

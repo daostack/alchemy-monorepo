@@ -1,9 +1,9 @@
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { IProposalStage, IProposalState, Proposal } from '../src/proposal'
+import { IProposalOutcome, IProposalStage, IProposalState, Proposal } from '../src/proposal'
 import { BN } from './utils'
-import { createAProposal, firstResult, getTestAddresses, getTestDAO, ITestAddresses, newArc, toWei,
-  voteToAcceptProposal, waitUntilTrue } from './utils'
+import { createAProposal, firstResult, getTestAddresses, getTestDAO, ITestAddresses, LATEST_ARC_VERSION, newArc,
+  toWei, voteToAcceptProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(60000)
 
@@ -135,5 +135,43 @@ describe('Claim rewards', () => {
   it('claimRewards should also work for expired proposals', async () => {
      const proposal: Proposal = await arc.proposal(testAddresses.test.queuedProposalId)
      await proposal.claimRewards().send()
-   })
+  })
+
+  it('works with non-CR proposal', async () => {
+    const beneficiary = arc.web3.eth.defaultAccount
+    const stakeAmount = new BN(123456789)
+    await arc.GENToken().transfer(dao.id, stakeAmount).send()
+    const actionMockABI = require(`@daostack/migration/abis/${LATEST_ARC_VERSION}/ActionMock.json`)
+    const actionMock = new arc.web3.eth.Contract(actionMockABI, testAddresses.test.ActionMock)
+    const callData = await actionMock.methods.test2(dao.id).encodeABI()
+
+    const proposal = await createAProposal(dao, {
+      callData,
+      scheme: testAddresses.base.GenericScheme,
+      schemeToRegister: actionMock.options.address,
+      value: 0
+    })
+
+    const proposalState = await proposal.fetchStaticState()
+    await arc.GENToken().approveForStaking(proposalState.votingMachine, stakeAmount).send()
+    await proposal.stake(IProposalOutcome.Pass, stakeAmount).send()
+
+    // vote for the proposal with all the votest
+    await voteToAcceptProposal(proposal)
+    // check if prposal is indeed accepted etc
+    const states: IProposalState[] = []
+    proposal.state().subscribe(((next) => states.push(next)))
+    const lastState = () => states[states.length - 1]
+
+    await waitUntilTrue(() => {
+      return lastState() && lastState().stage === IProposalStage.Executed
+    })
+
+    const prevBalance =  await firstResult(arc.GENToken().balanceOf(beneficiary))
+    await proposal.claimRewards(beneficiary).send()
+    const newBalance =  await firstResult(arc.GENToken().balanceOf(beneficiary))
+    expect(newBalance.sub(prevBalance).toString()).toEqual(stakeAmount.toString())
+
+  })
+
 })

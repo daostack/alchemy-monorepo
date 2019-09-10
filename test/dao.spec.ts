@@ -11,6 +11,8 @@ import { fromWei,
   waitUntilTrue
 } from './utils'
 
+jest.setTimeout(20000)
+
 /**
  * DAO test
  */
