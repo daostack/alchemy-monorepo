@@ -171,16 +171,15 @@ export class Scheme implements IStateful<ISchemeState> {
         throw Error(`No scheme with id ${this.id} was found in the subgraph`)
       }
       this.staticState = {
-        id: this.id,
         address: state.address,
         dao: state.dao,
+        id: this.id,
         name: state.name,
         paramsHash: state.paramsHash
       }
       if (this.staticState.name ===  'ReputationFromToken') {
         this.ReputationFromToken = new ReputationFromTokenScheme(this)
       }
-
       return state
     }
   }
