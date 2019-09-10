@@ -113,7 +113,7 @@ export class Stake implements IStateful<IStakeState> {
     }
   }
 
-  public state(): Observable<IStakeState> {
+  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<IStakeState> {
     const query = gql`
       {
         proposalStake (id: "${this.id}") {
@@ -142,7 +142,7 @@ export class Stake implements IStateful<IStakeState> {
         staker: item.staker
       }
     }
-    return this.context.getObservableObject(query, itemMap)
+    return this.context.getObservableObject(query, itemMap, apolloQueryOptions)
   }
 
   public setStaticState(opts: IStakeStaticState) {

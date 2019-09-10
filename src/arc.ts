@@ -2,7 +2,8 @@ import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
 import { first, map } from 'rxjs/operators'
 import { DAO, IDAOQueryOptions } from './dao'
-import { GraphNodeObserver } from './graphnode'
+import { GraphNodeObserver, IApolloQueryOptions } from './graphnode'
+export { IApolloQueryOptions } from './graphnode'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { IProposalQueryOptions, Proposal } from './proposal'
@@ -96,7 +97,7 @@ export class Arc extends GraphNodeObserver {
    * fetch contractInfos from the subgraph
    * @return a list of IContractInfo instances
    */
-  public async fetchContractInfos(): Promise<IContractInfo[]> {
+  public async fetchContractInfos(apolloQueryOptions: IApolloQueryOptions = {}): Promise<IContractInfo[]> {
     const query = gql`{
       contractInfos {
         id
@@ -108,7 +109,7 @@ export class Arc extends GraphNodeObserver {
     const itemMap = (record: any): IContractInfo => {
       return record
     }
-    const result = await this.getObservableList(query, itemMap).pipe(first()).toPromise()
+    const result = await this.getObservableList(query, itemMap, apolloQueryOptions).pipe(first()).toPromise()
     this.setContractInfos(result)
     return result
   }
@@ -128,24 +129,30 @@ export class Arc extends GraphNodeObserver {
    * @param options options to pass on to the query
    * @return [description]
    */
-  public daos(options: IDAOQueryOptions = {}): Observable<DAO[]> {
-    return DAO.search(this, options)
+  public daos(options: IDAOQueryOptions = {}, apolloQueryOptions: IApolloQueryOptions = {}): Observable<DAO[]> {
+    return DAO.search(this, options, apolloQueryOptions)
   }
 
   public scheme(id: string): Scheme {
     return new Scheme(id, this)
   }
 
-  public schemes(options: ISchemeQueryOptions = {}): Observable<Scheme[]> {
-    return Scheme.search(this, options)
+  public schemes(
+    options: ISchemeQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Scheme[]> {
+    return Scheme.search(this, options, apolloQueryOptions)
   }
 
   public proposal(id: string): Proposal {
     return new Proposal(id, this)
   }
 
-  public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
-    return Proposal.search(this, options)
+  public proposals(
+    options: IProposalQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Proposal[]> {
+    return Proposal.search(this, options, apolloQueryOptions)
   }
 
   public ethBalance(owner: Address): Observable<typeof BN> {
@@ -406,10 +413,6 @@ export class Arc extends GraphNodeObserver {
     Logger.debug(`Data saved successfully as ${descriptionHash}`)
     return descriptionHash
   }
-}
-
-export interface IApolloQueryOptions {
-  fetchPolicy?: 'cache-first' | 'cache-and-network' | 'network-only' | 'cache-only' | 'no-cache' | 'standby'
 }
 
 export interface IContractAddresses {

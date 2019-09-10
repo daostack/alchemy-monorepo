@@ -93,7 +93,7 @@ export class Token implements IStateful<ITokenState> {
     this.address = id
   }
 
-  public state(): Observable<ITokenState> {
+  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<ITokenState> {
     const query = gql`{
       token(id: "${this.address.toLowerCase()}") {
         id,
@@ -118,7 +118,7 @@ export class Token implements IStateful<ITokenState> {
         totalSupply: new BN(item.totalSupply)
       }
     }
-    return this.context.getObservableObject(query, itemMap) as Observable<ITokenState>
+    return  this.context.getObservableObject(query, itemMap, apolloQueryOptions) as Observable<ITokenState>
   }
 
   /*

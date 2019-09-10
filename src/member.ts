@@ -118,7 +118,7 @@ export class Member implements IStateful<IMemberState> {
     }
   }
 
-  public state(): Observable<IMemberState> {
+  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<IMemberState> {
     let query: any
     if (this.id) {
       query = gql`{
@@ -172,7 +172,7 @@ export class Member implements IStateful<IMemberState> {
           reputation: new BN(item.balance)
         }
       }
-    return this.context.getObservableObject(query, itemMap) as Observable<IMemberState>
+    return  this.context.getObservableObject(query, itemMap, apolloQueryOptions) as Observable<IMemberState>
   }
 
   public async dao(): Promise<DAO> {
@@ -180,42 +180,45 @@ export class Member implements IStateful<IMemberState> {
     return new DAO(staticState.dao, this.context)
   }
 
-  public rewards(): Observable < Reward[] > {
+  public rewards(): Observable<Reward[]> {
     throw new Error('not implemented')
   }
 
-  public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
+  public proposals(
+    options: IProposalQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Proposal[]> {
     const observable = Observable.create(async (observer: any) => {
       const state = await this.fetchStaticState()
       if (!options.where) { options.where = {} }
       options.where.proposer = state.address
       options.where.dao = state.dao
-      const sub = Proposal.search(this.context, options).subscribe(observer)
+      const sub = Proposal.search(this.context, options, apolloQueryOptions).subscribe(observer)
       return () => sub.unsubscribe()
     })
 
     return toIOperationObservable(observable)
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable <Stake[]> {
+  public stakes(options: IStakeQueryOptions = {}, apolloQueryOptions: IApolloQueryOptions = {}): Observable <Stake[]> {
     const observable = Observable.create(async (observer: any) => {
       const state = await this.fetchStaticState()
       if (!options.where) { options.where = {} }
       options.where.staker = state.address
       options.where.dao = state.dao
-      const sub = Stake.search(this.context, options).subscribe(observer)
+      const sub = Stake.search(this.context, options, apolloQueryOptions) .subscribe(observer)
       return () => sub.unsubscribe()
     })
 
     return toIOperationObservable(observable)
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<Vote[]> {
+  public votes(options: IVoteQueryOptions = {}, apolloQueryOptions: IApolloQueryOptions = {}): Observable<Vote[]> {
     const observable = Observable.create(async (observer: any) => {
       const state = await this.fetchStaticState()
       if (!options.where) { options.where = {} }
       options.where.voter = state.address
-      const sub = Vote.search(this.context, options).subscribe(observer)
+      const sub = Vote.search(this.context, options, apolloQueryOptions) .subscribe(observer)
       return () => sub.unsubscribe()
     })
 

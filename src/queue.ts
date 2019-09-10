@@ -93,7 +93,7 @@ export class Queue implements IStateful<IQueueState> {
     this.context = context
   }
 
-  public state(): Observable<IQueueState> {
+  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<IQueueState> {
     //
     const query = gql`
       {
@@ -144,6 +144,6 @@ export class Queue implements IStateful<IQueueState> {
         votingMachine: item.votingMachine
       }
     }
-    return this.context.getObservableObject(query, itemMap) as Observable<IQueueState>
+    return  this.context.getObservableObject(query, itemMap, apolloQueryOptions) as Observable<IQueueState>
   }
 }

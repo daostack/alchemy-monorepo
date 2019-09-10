@@ -1,7 +1,8 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { first, map } from 'rxjs/operators'
-import { Arc, IApolloQueryOptions } from './arc'
+import { Arc } from './arc'
+import { IApolloQueryOptions } from './graphnode'
 import { IMemberQueryOptions, Member } from './member'
 import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './proposal'
 import { Reputation } from './reputation'
@@ -121,7 +122,7 @@ export class DAO implements IStateful<IDAOState> {
    * get the current state of the DAO
    * @return an Observable of IDAOState
    */
-  public state(): Observable<IDAOState> {
+  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<IDAOState> {
     const query = gql`{
       dao(id: "${this.id}") {
         id
@@ -149,7 +150,7 @@ export class DAO implements IStateful<IDAOState> {
         tokenTotalSupply: item.nativeToken.totalSupply
       }
     }
-    return this.context.getObservableObject(query, itemMap)
+    return this.context.getObservableObject(query, itemMap, apolloQueryOptions)
   }
 
   /*
@@ -160,10 +161,13 @@ export class DAO implements IStateful<IDAOState> {
     return this.state().pipe(first()).pipe(map((r) => r.reputation))
   }
 
-  public schemes(options: ISchemeQueryOptions = {}): Observable<Scheme[]> {
+  public schemes(
+    options: ISchemeQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Scheme[]> {
     if (!options.where) { options.where = {}}
     options.where.dao = this.id
-    return Scheme.search(this.context, options)
+    return Scheme.search(this.context, options, apolloQueryOptions)
   }
 
   public async scheme(options: ISchemeQueryOptions): Promise<Scheme> {
@@ -174,7 +178,10 @@ export class DAO implements IStateful<IDAOState> {
       throw Error('Could not find a unique scheme satisfying these options')
     }
   }
-  public members(options: IMemberQueryOptions = {}): Observable<Member[]> {
+  public members(
+    options: IMemberQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Member[]> {
     let where = ''
     if (!options.where) { options.where = {}}
     options.where.dao = this.id
@@ -188,7 +195,7 @@ export class DAO implements IStateful<IDAOState> {
       }
     }`
     const itemMap = (item: any): Member => new Member({address: item.address, dao: this.id}, this.context)
-    return this.context.getObservableList(query, itemMap) as Observable<Member[]>
+    return this.context.getObservableList(query, itemMap, apolloQueryOptions) as Observable<Member[]>
   }
 
   public member(address: Address): Member {
@@ -205,34 +212,46 @@ export class DAO implements IStateful<IDAOState> {
     return Proposal.create(options, this.context)
   }
 
-  public proposals(options: IProposalQueryOptions = {}): Observable<Proposal[]> {
+  public proposals(
+    options: IProposalQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Proposal[]> {
     if (!options.where) {
       options.where = {}
     }
     options.where.dao = this.id
-    return Proposal.search(this.context, options)
+    return Proposal.search(this.context, options, apolloQueryOptions)
   }
 
-  public proposal(proposalId: string): Proposal {
+  public proposal(proposalId: string ): Proposal {
     return new Proposal(proposalId, this.context)
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable<Reward[]> {
+  public rewards(
+    options: IRewardQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Reward[]> {
     if (!options.where) { options.where = {}}
     options.where.dao = this.id
-    return Reward.search(this.context, options)
+    return Reward.search(this.context, options, apolloQueryOptions)
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<Vote[]> {
+  public votes(
+    options: IVoteQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Vote[]> {
     if (!options.where) { options.where = {}}
     options.where.dao = this.id
-    return Vote.search(this.context, options)
+    return Vote.search(this.context, options, apolloQueryOptions)
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable<Stake[]> {
+  public stakes(
+    options: IStakeQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Stake[]> {
     if (!options.where) { options.where = {}}
     options.where.dao = this.id
-    return Stake.search(this.context, options)
+    return Stake.search(this.context, options, apolloQueryOptions)
   }
 
   public ethBalance(): Observable<typeof BN> {

@@ -1,11 +1,4 @@
-import { InMemoryCache } from 'apollo-cache-inmemory'
-import { ApolloClient } from 'apollo-client'
-import { split } from 'apollo-link'
 import { Observable as ZenObservable } from 'apollo-link'
-import { HttpLink } from 'apollo-link-http'
-import { WebSocketLink } from 'apollo-link-ws'
-import { getMainDefinition } from 'apollo-utilities'
-import fetch from 'isomorphic-fetch'
 import * as WebSocket from 'isomorphic-ws'
 import { Observable, Observer } from 'rxjs'
 import { IContractInfo } from './arc'
@@ -19,65 +12,6 @@ export function fromWei(amount: typeof BN): string {
 
 export function toWei(amount: string | number): typeof BN {
   return Web3.utils.toWei(amount.toString(), 'ether')
-}
-
-export function createApolloClient(options: {
-  graphqlHttpProvider: string
-  graphqlWsProvider: string
-}) {
-  const httpLink = new HttpLink({
-    credentials: 'same-origin',
-    fetch,
-    uri: options.graphqlHttpProvider
-  })
-
-  const wsLink = new WebSocketLink({
-    options: {
-      reconnect: true
-    },
-    uri: options.graphqlWsProvider,
-    webSocketImpl: WebSocket
-  })
-
-  const wsOrHttpLink = split(
-    // split based on operation type
-    ({ query }) => {
-      const definition = getMainDefinition(query)
-      return definition.kind === 'OperationDefinition' && definition.operation === 'subscription'
-    },
-    wsLink,
-    httpLink
-  )
-  // we can also add error handling
-  // const errorHandlingLink = apollolink.from([
-  //     onerror(({ graphqlerrors, networkerror }) => {
-  //       if (graphqlerrors) {
-  //         graphqlerrors.map(({ message, locations, path }) =>
-  //           console.log(
-  //             `[graphql error]: message: ${message}, location: ${locations}, path: ${path}`,
-  //           ),
-  //         );
-  //       if (networkerror) { console.log(`[network error]: ${networkerror}`)}
-  //       }
-  //     }),
-  //     wsorhttplink
-  //   ])
-  const client = new ApolloClient({
-    cache: new InMemoryCache({
-      cacheRedirects: {
-        Query: {
-          dao: (_, args, { getCacheKey }) =>  getCacheKey({ __typename: 'DAO', id: args.id }),
-          proposal: (_, args, { getCacheKey }) => {
-            // console.log('cache key: ', [args, getCacheKey({ __typename: 'Proposal', id: args.id })])
-            return getCacheKey({ __typename: 'Proposal', id: args.id })
-          }
-        }
-      }
-    }),
-    connectToDevTools: true,
-    link: wsOrHttpLink
-  })
-  return client
 }
 
 export function checkWebsocket(options: { url: string }) {

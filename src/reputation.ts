@@ -68,7 +68,7 @@ export class Reputation implements IStateful<IReputationState> {
     isAddress(id)
     this.address = id
   }
-  public state(): Observable<IReputationState> {
+  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<IReputationState> {
     const query = gql`{
       rep (id: "${this.address.toLowerCase()}") {
         id
@@ -88,7 +88,7 @@ export class Reputation implements IStateful<IReputationState> {
         totalSupply: item.totalSupply
       }
     }
-    return this.context.getObservableObject(query, itemMap) as Observable<IReputationState>
+    return  this.context.getObservableObject(query, itemMap, apolloQueryOptions) as Observable<IReputationState>
   }
 
   public reputationOf(address: Address): Observable<typeof BN> {

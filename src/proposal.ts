@@ -257,7 +257,7 @@ export class Proposal implements IStateful<IProposalState> {
   /**
    * `state` is an observable of the proposal state
    */
-  public state(): Observable<IProposalState> {
+  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<IProposalState> {
     const query = gql`
       {
         proposal(id: "${this.id}") {
@@ -528,7 +528,7 @@ export class Proposal implements IStateful<IProposalState> {
       }
     }
 
-    const result = this.context.getObservableObject(query, itemMap) as Observable<IProposalState>
+    const result = this.context.getObservableObject(query, itemMap, apolloQueryOptions) as Observable<IProposalState>
     return result
   }
 
@@ -557,10 +557,10 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.getContract(contractInfo.address)
   }
 
-  public votes(options: IVoteQueryOptions = {}): Observable<Vote[]> {
+  public votes(options: IVoteQueryOptions = {}, apolloQueryOptions: IApolloQueryOptions = {}): Observable<Vote[]> {
     if (!options.where) { options.where = {}}
     options.where.proposal = this.id
-    return Vote.search(this.context, options)
+    return Vote.search(this.context, options, apolloQueryOptions)
   }
 
   /**
@@ -626,10 +626,10 @@ export class Proposal implements IStateful<IProposalState> {
     return this.context.GENToken()
   }
 
-  public stakes(options: IStakeQueryOptions = {}): Observable<Stake[]> {
+  public stakes(options: IStakeQueryOptions = {}, apolloQueryOptions: IApolloQueryOptions = {}): Observable<Stake[]> {
     if (!options.where) { options.where = {}}
     options.where.proposal = this.id
-    return Stake.search(this.context, options)
+    return Stake.search(this.context, options, apolloQueryOptions)
   }
 
   public stake(outcome: IProposalOutcome, amount: typeof BN ): Operation<Stake> {
@@ -698,10 +698,13 @@ export class Proposal implements IStateful<IProposalState> {
 
   }
 
-  public rewards(options: IRewardQueryOptions = {}): Observable < Reward[] > {
+  public rewards(
+    options: IRewardQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Reward[]> {
     if (!options.where) { options.where = {}}
     options.where.proposal = this.id
-    return Reward.search(this.context, options)
+    return Reward.search(this.context, options, apolloQueryOptions)
   }
 
   /**

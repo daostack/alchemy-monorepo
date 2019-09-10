@@ -120,7 +120,7 @@ export class Vote implements IStateful<IVoteState> {
     }
   }
 
-  public state(): Observable<IVoteState> {
+  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<IVoteState> {
     const query = gql`{
       proposalVote (id: "${this.id}") {
         id
@@ -150,7 +150,7 @@ export class Vote implements IStateful<IVoteState> {
         voter: item.voter
       }
     }
-    return this.context.getObservableObject(query, itemMap)
+    return this.context.getObservableObject(query, itemMap, apolloQueryOptions)
   }
 
   public setStaticState(opts: IVoteStaticState) {

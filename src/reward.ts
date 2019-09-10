@@ -80,7 +80,7 @@ export class Reward implements IStateful<IRewardState> {
     this.context = context
   }
 
-  public state(): Observable<IRewardState> {
+  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<IRewardState> {
 
     const query = gql`{
       gpreward ( id: "${this.id}" )
@@ -124,7 +124,7 @@ export class Reward implements IStateful<IRewardState> {
       }
     }
 
-    return this.context.getObservableObject(query, itemMap)
+    return this.context.getObservableObject(query, itemMap, apolloQueryOptions)
   }
 
 }
