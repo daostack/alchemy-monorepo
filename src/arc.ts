@@ -55,7 +55,7 @@ export class Arc extends GraphNodeObserver {
     ipfsProvider?: IPFSProvider
     web3Provider?: string
     web3ProviderRead?: string
-}) {
+  }) {
     super({
       graphqlHttpProvider: options.graphqlHttpProvider,
       graphqlWsProvider: options.graphqlWsProvider
