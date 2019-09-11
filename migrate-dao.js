@@ -25,6 +25,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     SchemeRegistrar,
     ContributionReward,
     UGenericScheme,
+    GenericScheme,
     GenesisProtocol,
     GlobalConstraintRegistrar,
     UpgradeScheme
@@ -55,8 +56,8 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   )
 
   const genericScheme = new web3.eth.Contract(
-    require('@daostack/arc/build/contracts/UGenericScheme.json').abi,
-    UGenericScheme,
+    Number(arcVersion.slice(-2)) >= 24 ? require('@daostack/arc/build/contracts/UGenericScheme.json').abi : require('@daostack/arc/build/contracts/GenericScheme.json').abi,
+    Number(arcVersion.slice(-2)) >= 24 ? UGenericScheme : GenericScheme,
     opts
   )
 
@@ -372,7 +373,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       tx = await genericSchemeSetParams.send({ nonce: ++nonce })
       await logTx(tx, 'Generic Scheme parameters set.')
       schemeNames.push('Generic Scheme')
-      schemes.push(UGenericScheme)
+      schemes.push(Number(arcVersion.slice(-2)) >= 24 ? UGenericScheme : GenericScheme)
       params.push(genericSchemeParams)
       permissions.push('0x00000010')
     }

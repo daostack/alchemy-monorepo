@@ -73,7 +73,7 @@ async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams,
       permissions: '0x00000000' /* no special params */
     },
     {
-      address: this.base.UGenericScheme,
+      address: Number(this.arcVersion.slice(-2)) >= 24 ? this.base.UGenericScheme : this.base.GenericScheme,
       params: gsParamsHash,
       permissions: '0x00000010'
     },
@@ -404,14 +404,15 @@ async function setUGenericSchemeParams (gpParamsHash, actionMock) {
 
   const {
     UGenericScheme,
+    GenericScheme,
     GenesisProtocol
   } = this.base
 
   let tx
 
   const genericScheme = new this.web3.eth.Contract(
-    require('@daostack/arc/build/contracts/UGenericScheme.json').abi,
-    UGenericScheme,
+    Number(this.arcVersion.slice(-2)) >= 24 ? require('@daostack/arc/build/contracts/UGenericScheme.json').abi : require('@daostack/arc/build/contracts/GenericScheme.json').abi,
+    Number(this.arcVersion.slice(-2)) >= 24 ? UGenericScheme : GenericScheme,
     this.opts
   )
 
@@ -549,14 +550,15 @@ async function submitGSProposal ({
   this.spinner.start('Submitting a new Proposal...')
 
   const {
-    UGenericScheme
+    UGenericScheme,
+    GenericScheme
   } = this.base
 
   let tx
 
   const genericScheme = new this.web3.eth.Contract(
-    require('@daostack/arc/build/contracts/UGenericScheme.json').abi,
-    UGenericScheme,
+    Number(this.arcVersion.slice(-2)) >= 24 ? require('@daostack/arc/build/contracts/UGenericScheme.json').abi : require('@daostack/arc/build/contracts/GenericScheme.json').abi,
+    Number(this.arcVersion.slice(-2)) >= 24 ? UGenericScheme : GenericScheme,
     this.opts
   )
 
