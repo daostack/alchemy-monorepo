@@ -24,7 +24,7 @@ jest.setTimeout(20000)
 describe('apolloClient', () => {
   // let client: any
 
-  it('pre-fetching DAOs works', async () => {
+  it.skip('pre-fetching DAOs works', async () => {
     const arc = new Arc({
       contractInfos: getContractAddressesFromMigration('private'),
       graphqlHttpProvider,
