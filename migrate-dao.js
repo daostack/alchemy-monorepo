@@ -500,7 +500,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       schemeParamsHash = await schemeSetParams.call()
       tx = await schemeSetParams.send({ nonce: ++nonce })
       await logTx(tx, `${customeScheme.name} parameters set.`)
-    } else {
+    } else if (schemeContract.methods.initialize !== undefined) {
       spinner.start(`Initializing ${customeScheme.name}...`)
       let schemeParams = [avatar.options.address]
       for (let i in customeScheme.params) {
@@ -519,6 +519,8 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       }
       tx = await schemeSetParams.send({ nonce: ++nonce })
       await logTx(tx, `${customeScheme.schemeName} initialized.`)
+    } else {
+      continue
     }
 
     schemeNames.push(customeScheme.schemeName)

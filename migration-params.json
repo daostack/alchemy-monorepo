@@ -47,7 +47,7 @@
       "params": [
         "GenesisProtocolAddress",
         {"voteParams": 0},
-        "0x0000000000000000000000000000000000000000"
+        "0x0000000000000000000000000000000000000001"
       ],
       "permissions": "0x00000010",
       "alias" : "GenericSchemeAlias2",
