@@ -29,6 +29,25 @@
     "GlobalConstraintRegistrar": true,
     "UpgradeScheme": true
   },
+
+  "StandAloneContracts":[
+    {
+     "name": "Reputation",
+     "fromArc": true
+    },
+    {
+    "name": "NectarRepAllocation",
+    "params": [
+      100000,
+      1573128000,
+      1573236000,
+      8549305,
+      {"StandAloneContract": 0}
+    ],
+    "fromArc": true
+  }
+  ],
+
   "CustomSchemes": [
      {
       "name": "GenericScheme",
@@ -52,7 +71,19 @@
       "permissions": "0x00000010",
       "alias" : "GenericSchemeAlias2",
       "fromArc": true
-    }],
+    },
+    {
+      "name": "ReputationFromToken",
+      "isUniversal": false,
+      "params": [
+        {"StandAloneContract":1},
+        "0x0000000000000000000000000000000000000001"
+      ],
+      "alias" : "ReputationFromToken",
+      "fromArc": true,
+      "permissions": "0x00000000"
+    }
+  ],
   "unregisterOwner": true,
   "useUController": false,
   "useDaoCreator": false,

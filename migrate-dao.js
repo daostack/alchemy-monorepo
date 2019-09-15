@@ -94,6 +94,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   let Controller
   let controller
   let Schemes = []
+  let StandAloneContracts = []
 
   if (migrationParams.useDaoCreator === true) {
     spinner.start('Creating a new organization...')
@@ -413,50 +414,49 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     }
   }
 
-  if (migrationParams.schemes.ReputationFromToken) {
-    let { abi: reputationFromTokenABI, bytecode: reputationFromTokenBytecode } = require('@daostack/arc/build/contracts/ReputationFromToken.json')
-    Schemes.ReputationFromToken = []
-    for (let i in migrationParams.ReputationFromToken) {
-      spinner.start('Migrating ReputationFromToken...')
-      const reputationFromTokenContract = new web3.eth.Contract(reputationFromTokenABI, undefined, opts)
-      const reputationFromTokenDeployedContract = reputationFromTokenContract.deploy({
-        data: reputationFromTokenBytecode,
+  if (migrationParams.StandAloneContracts) {
+    for (let i = 0, len = migrationParams.StandAloneContracts.length; i < len; i++) {
+      let standAlone = migrationParams.StandAloneContracts[i]
+
+      const path = require('path')
+      let contractJson
+      if (standAlone.fromArc) {
+        contractJson = require(`@daostack/arc/build/contracts/${standAlone.name}.json`)
+      } else {
+        contractJson = require(path.resolve(`${customabislocation}/${standAlone.name}.json`))
+      }
+      let abi = contractJson.abi
+      let bytecode = contractJson.bytecode
+      let standAloneContract
+
+      spinner.start(`Migrating ${standAlone.name}...`)
+      const StandAloneContract = new web3.eth.Contract(abi, undefined, opts)
+      const standAloneDeployedContract = StandAloneContract.deploy({
+        data: bytecode,
         arguments: null
       }).send({ nonce: ++nonce })
-      tx = await new Promise(resolve => reputationFromTokenDeployedContract.on('receipt', resolve))
-      const reputationFromToken = await reputationFromTokenDeployedContract
-      await logTx(tx, `${reputationFromToken.options.address} => ReputationFromToken`)
+      tx = await new Promise(resolve => standAloneDeployedContract.on('receipt', resolve))
+      standAloneContract = await standAloneDeployedContract
+      await logTx(tx, `${standAloneContract.options.address} => ${standAlone.name}`)
 
-      spinner.start('Setting ReputationFromToken...')
-      let tokenContract = migrationParams.ReputationFromToken[i].tokenContract
-      if (tokenContract === undefined || tokenContract === null) {
-        let { abi: repAllocationABI, bytecode: repAllocationBytecode } = require('@daostack/arc/build/contracts/RepAllocation.json')
-        spinner.start('Migrating RepAllocation...')
-        const repAllocationContract = new web3.eth.Contract(repAllocationABI, undefined, opts)
-        const repAllocationDeployedContract = repAllocationContract.deploy({
-          data: repAllocationBytecode,
-          arguments: null
-        }).send({ nonce: ++nonce })
-        tx = await new Promise(resolve => repAllocationDeployedContract.on('receipt', resolve))
-        const repAllocation = await repAllocationDeployedContract
-        await logTx(tx, `${repAllocation.options.address} => RepAllocation`)
-        tokenContract = repAllocation.options.address
+      if (standAlone.params !== undefined) {
+        let contractParams = []
+        for (let i in standAlone.params) {
+          if (standAlone.params[i].StandAloneContract !== undefined) {
+            contractParams.push(StandAloneContracts[standAlone.params[i].StandAloneContract].address)
+          } else {
+            contractParams.push(standAlone.params[i])
+          }
+        }
+        const contractSetParams = standAloneContract.methods.initialize(...contractParams)
+
+        tx = await contractSetParams.send({ nonce: ++nonce })
+        await logTx(tx, `${standAlone.name} initialized.`)
       }
-      const reputationFromTokenInit = reputationFromToken.methods.initialize(
-        avatar.options.address,
-        tokenContract,
-        migrationParams.ReputationFromToken[i].curve === undefined ? '0x0000000000000000000000000000000000000000' : migrationParams.ReputationFromToken[i].curve
-      )
-      tx = await reputationFromTokenInit.send({ nonce: ++nonce })
-      await logTx(tx, 'Reputation From Token Scheme Initialized.')
-
-      schemeNames.push('ReputationFromToken')
-      schemes.push(reputationFromToken.options.address)
-      params.push('0x0000000000000000000000000000000000000000000000000000000000000000')
-      permissions.push('0x00000001')
-      Schemes.push({ name: 'ReputationFromToken', alias: 'ReputationFromToken', address: reputationFromToken.options.address })
+      StandAloneContracts.push({ name: standAlone.name, alias: standAlone.alias, address: standAloneContract.options.address })
     }
   }
+
   for (var i = 0, len = migrationParams.CustomSchemes.length; i < len; i++) {
     let customeScheme = migrationParams.CustomSchemes[i]
     const path = require('path')
@@ -508,6 +508,10 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
           schemeParams.push(votingMachinesParams[customeScheme.params[i].voteParams])
         } else if (customeScheme.params[i] === 'GenesisProtocolAddress') {
           schemeParams.push(GenesisProtocol)
+        } else if (customeScheme.params[i].StandAloneContract !== undefined) {
+          schemeParams.push(StandAloneContracts[customeScheme.params[i].StandAloneContract].address)
+        } else if (customeScheme.params[i] === 'AvatarAddress') {
+          schemeParams.push(avatar.options.address)
         } else {
           schemeParams.push(customeScheme.params[i])
         }
@@ -518,12 +522,12 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
         schemeParamsHash = '0x0000000000000000000000000000000000000000000000000000000000000000'
       }
       tx = await schemeSetParams.send({ nonce: ++nonce })
-      await logTx(tx, `${customeScheme.schemeName} initialized.`)
+      await logTx(tx, `${customeScheme.name} initialized.`)
     } else {
       continue
     }
 
-    schemeNames.push(customeScheme.schemeName)
+    schemeNames.push(customeScheme.name)
     schemes.push(schemeContract.options.address)
     params.push(schemeParamsHash)
     permissions.push(customeScheme.permissions)
