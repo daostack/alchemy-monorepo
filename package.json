@@ -20,7 +20,7 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "build": "tsc && typedoc --out docs --target commonjs --theme minimal --mode file src",
+    "build": "tsc && typedoc --out docs --target commonjs --theme markdown --mode file --plugin typedoc-plugin-markdown src",
     "build:watch": "tsc --watch",
     "bundle": "rollup -c rollup.config.ts -w",
     "deploy-docs": "ts-node tools/gh-pages-publish",
@@ -94,6 +94,7 @@
     "tslint": "^5.18.0",
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.14.2",
+    "typedoc-plugin-markdown": "^2.2.4",
     "typescript": "^3.5.3",
     "u": "^0.1.0"
   },

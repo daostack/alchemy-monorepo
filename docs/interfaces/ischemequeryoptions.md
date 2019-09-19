@@ -1,0 +1,81 @@
+[@daostack/client](../README.md) › [Globals](../globals.md) › [ISchemeQueryOptions](ischemequeryoptions.md)
+
+# Interface: ISchemeQueryOptions
+
+## Hierarchy
+
+* [ICommonQueryOptions](icommonqueryoptions.md)
+
+* [ICommonQueryOptions](icommonqueryoptions.md)
+
+  ↳ **ISchemeQueryOptions**
+
+## Index
+
+### Properties
+
+* [first](ischemequeryoptions.md#optional-first)
+* [orderBy](ischemequeryoptions.md#optional-orderby)
+* [orderDirection](ischemequeryoptions.md#optional-orderdirection)
+* [skip](ischemequeryoptions.md#optional-skip)
+* [where](ischemequeryoptions.md#optional-where)
+
+## Properties
+
+### `Optional` first
+
+• **first**? : *undefined | number*
+
+*Inherited from [ICommonQueryOptions](icommonqueryoptions.md).[first](icommonqueryoptions.md#optional-first)*
+
+*Overrides [ICommonQueryOptions](icommonqueryoptions.md).[first](icommonqueryoptions.md#optional-first)*
+
+*Defined in [types.ts:15](https://github.com/daostack/client/blob/3edf873/src/types.ts#L15)*
+
+___
+
+### `Optional` orderBy
+
+• **orderBy**? : *undefined | string*
+
+*Inherited from [ICommonQueryOptions](icommonqueryoptions.md).[orderBy](icommonqueryoptions.md#optional-orderby)*
+
+*Overrides [ICommonQueryOptions](icommonqueryoptions.md).[orderBy](icommonqueryoptions.md#optional-orderby)*
+
+*Defined in [types.ts:16](https://github.com/daostack/client/blob/3edf873/src/types.ts#L16)*
+
+___
+
+### `Optional` orderDirection
+
+• **orderDirection**? : *"asc" | "desc"*
+
+*Inherited from [ICommonQueryOptions](icommonqueryoptions.md).[orderDirection](icommonqueryoptions.md#optional-orderdirection)*
+
+*Overrides [ICommonQueryOptions](icommonqueryoptions.md).[orderDirection](icommonqueryoptions.md#optional-orderdirection)*
+
+*Defined in [types.ts:17](https://github.com/daostack/client/blob/3edf873/src/types.ts#L17)*
+
+___
+
+### `Optional` skip
+
+• **skip**? : *undefined | number*
+
+*Inherited from [ICommonQueryOptions](icommonqueryoptions.md).[skip](icommonqueryoptions.md#optional-skip)*
+
+*Overrides [ICommonQueryOptions](icommonqueryoptions.md).[skip](icommonqueryoptions.md#optional-skip)*
+
+*Defined in [types.ts:14](https://github.com/daostack/client/blob/3edf873/src/types.ts#L14)*
+
+___
+
+### `Optional` where
+
+• **where**? : *undefined | object*
+
+*Overrides [ICommonQueryOptions](icommonqueryoptions.md).[where](icommonqueryoptions.md#optional-where)*
+
+*Defined in [scheme.ts:47](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L47)*
+
+*Defined in [scheme.ts:62](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L62)*
