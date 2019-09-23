@@ -109,7 +109,7 @@ export class Scheme implements IStateful<ISchemeState> {
       where += `${key}: ${options.where[key] as string}\n`
     }
 
-    const query = gql`{
+    const query = gql`query SchemeSearch {
       controllerSchemes ${createGraphQlQuery(options, where)}
       {
           id
@@ -166,7 +166,7 @@ export class Scheme implements IStateful<ISchemeState> {
     if (!!this.staticState) {
       return this.staticState
     } else {
-      const state = await this.state().pipe(first()).toPromise()
+      const state = await this.state({ subscribe: false}).pipe(first()).toPromise()
       if (state === null) {
         throw Error(`No scheme with id ${this.id} was found in the subgraph`)
       }
@@ -185,8 +185,8 @@ export class Scheme implements IStateful<ISchemeState> {
   }
 
   public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<ISchemeState> {
-    const query = gql`
-        {
+    const query = gql`query SchemeState
+      {
         controllerScheme (id: "${this.id}") {
           id
           address

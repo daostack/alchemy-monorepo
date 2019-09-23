@@ -29,7 +29,7 @@
 
 • **alreadyRedeemedEthPeriods**: *number*
 
-*Defined in [schemes/contributionReward.ts:19](https://github.com/daostack/client/blob/3edf873/src/schemes/contributionReward.ts#L19)*
+*Defined in [schemes/contributionReward.ts:19](https://github.com/daostack/client/blob/c62f433/src/schemes/contributionReward.ts#L19)*
 
 ___
 
@@ -37,7 +37,7 @@ ___
 
 • **alreadyRedeemedExternalTokenPeriods**: *number*
 
-*Defined in [schemes/contributionReward.ts:18](https://github.com/daostack/client/blob/3edf873/src/schemes/contributionReward.ts#L18)*
+*Defined in [schemes/contributionReward.ts:18](https://github.com/daostack/client/blob/c62f433/src/schemes/contributionReward.ts#L18)*
 
 ___
 
@@ -45,7 +45,7 @@ ___
 
 • **alreadyRedeemedNativeTokenPeriods**: *number*
 
-*Defined in [schemes/contributionReward.ts:16](https://github.com/daostack/client/blob/3edf873/src/schemes/contributionReward.ts#L16)*
+*Defined in [schemes/contributionReward.ts:16](https://github.com/daostack/client/blob/c62f433/src/schemes/contributionReward.ts#L16)*
 
 ___
 
@@ -53,7 +53,7 @@ ___
 
 • **alreadyRedeemedReputationPeriods**: *number*
 
-*Defined in [schemes/contributionReward.ts:17](https://github.com/daostack/client/blob/3edf873/src/schemes/contributionReward.ts#L17)*
+*Defined in [schemes/contributionReward.ts:17](https://github.com/daostack/client/blob/c62f433/src/schemes/contributionReward.ts#L17)*
 
 ___
 
@@ -61,7 +61,7 @@ ___
 
 • **beneficiary**: *[Address](../globals.md#address)*
 
-*Defined in [schemes/contributionReward.ts:8](https://github.com/daostack/client/blob/3edf873/src/schemes/contributionReward.ts#L8)*
+*Defined in [schemes/contributionReward.ts:8](https://github.com/daostack/client/blob/c62f433/src/schemes/contributionReward.ts#L8)*
 
 ___
 
@@ -69,7 +69,7 @@ ___
 
 • **ethReward**: *BN*
 
-*Defined in [schemes/contributionReward.ts:11](https://github.com/daostack/client/blob/3edf873/src/schemes/contributionReward.ts#L11)*
+*Defined in [schemes/contributionReward.ts:11](https://github.com/daostack/client/blob/c62f433/src/schemes/contributionReward.ts#L11)*
 
 ___
 
@@ -77,7 +77,7 @@ ___
 
 • **externalToken**: *[Address](../globals.md#address)*
 
-*Defined in [schemes/contributionReward.ts:10](https://github.com/daostack/client/blob/3edf873/src/schemes/contributionReward.ts#L10)*
+*Defined in [schemes/contributionReward.ts:10](https://github.com/daostack/client/blob/c62f433/src/schemes/contributionReward.ts#L10)*
 
 ___
 
@@ -85,7 +85,7 @@ ___
 
 • **externalTokenReward**: *BN*
 
-*Defined in [schemes/contributionReward.ts:9](https://github.com/daostack/client/blob/3edf873/src/schemes/contributionReward.ts#L9)*
+*Defined in [schemes/contributionReward.ts:9](https://github.com/daostack/client/blob/c62f433/src/schemes/contributionReward.ts#L9)*
 
 ___
 
@@ -93,7 +93,7 @@ ___
 
 • **nativeTokenReward**: *BN*
 
-*Defined in [schemes/contributionReward.ts:12](https://github.com/daostack/client/blob/3edf873/src/schemes/contributionReward.ts#L12)*
+*Defined in [schemes/contributionReward.ts:12](https://github.com/daostack/client/blob/c62f433/src/schemes/contributionReward.ts#L12)*
 
 ___
 
@@ -101,7 +101,7 @@ ___
 
 • **periodLength**: *number*
 
-*Defined in [schemes/contributionReward.ts:14](https://github.com/daostack/client/blob/3edf873/src/schemes/contributionReward.ts#L14)*
+*Defined in [schemes/contributionReward.ts:14](https://github.com/daostack/client/blob/c62f433/src/schemes/contributionReward.ts#L14)*
 
 ___
 
@@ -109,7 +109,7 @@ ___
 
 • **periods**: *number*
 
-*Defined in [schemes/contributionReward.ts:13](https://github.com/daostack/client/blob/3edf873/src/schemes/contributionReward.ts#L13)*
+*Defined in [schemes/contributionReward.ts:13](https://github.com/daostack/client/blob/c62f433/src/schemes/contributionReward.ts#L13)*
 
 ___
 
@@ -117,4 +117,4 @@ ___
 
 • **reputationReward**: *BN*
 
-*Defined in [schemes/contributionReward.ts:15](https://github.com/daostack/client/blob/3edf873/src/schemes/contributionReward.ts#L15)*
+*Defined in [schemes/contributionReward.ts:15](https://github.com/daostack/client/blob/c62f433/src/schemes/contributionReward.ts#L15)*

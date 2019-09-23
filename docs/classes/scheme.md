@@ -40,7 +40,7 @@ A Scheme represents a scheme instance that is registered at a DAO
 
 \+ **new Scheme**(`idOrOpts`: [Address](../globals.md#address) | [ISchemeStaticState](../interfaces/ischemestaticstate.md), `context`: [Arc](arc.md)): *[Scheme](scheme.md)*
 
-*Defined in [scheme.ts:144](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L144)*
+*Defined in [scheme.ts:144](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L144)*
 
 **Parameters:**
 
@@ -57,7 +57,7 @@ Name | Type |
 
 • **ReputationFromToken**: *[ReputationFromTokenScheme](reputationfromtokenscheme.md) | null* =  null
 
-*Defined in [scheme.ts:144](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L144)*
+*Defined in [scheme.ts:144](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L144)*
 
 ___
 
@@ -65,7 +65,7 @@ ___
 
 • **context**: *[Arc](arc.md)*
 
-*Defined in [scheme.ts:146](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L146)*
+*Defined in [scheme.ts:146](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L146)*
 
 ___
 
@@ -73,7 +73,7 @@ ___
 
 • **id**: *[Address](../globals.md#address)*
 
-*Defined in [scheme.ts:142](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L142)*
+*Defined in [scheme.ts:142](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L142)*
 
 ___
 
@@ -81,7 +81,7 @@ ___
 
 • **staticState**: *[ISchemeStaticState](../interfaces/ischemestaticstate.md) | null* =  null
 
-*Defined in [scheme.ts:143](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L143)*
+*Defined in [scheme.ts:143](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L143)*
 
 ## Methods
 
@@ -89,7 +89,7 @@ ___
 
 ▸ **createProposal**(`options`: [IProposalCreateOptions](../globals.md#iproposalcreateoptions)): *[Operation](../globals.md#operation)‹[Proposal](proposal.md)›*
 
-*Defined in [scheme.ts:314](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L314)*
+*Defined in [scheme.ts:314](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L314)*
 
 create a new proposal in this DAO
 TODO: move this to the schemes - we should call proposal.scheme.createProposal
@@ -110,7 +110,7 @@ ___
 
 ▸ **fetchStaticState**(): *Promise‹[ISchemeStaticState](../interfaces/ischemestaticstate.md)›*
 
-*Defined in [scheme.ts:165](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L165)*
+*Defined in [scheme.ts:165](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L165)*
 
 fetch the static state from the subgraph
 
@@ -124,7 +124,7 @@ ___
 
 ▸ **proposals**(`options`: [IProposalQueryOptions](../interfaces/iproposalqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Proposal](proposal.md)[]›*
 
-*Defined in [scheme.ts:352](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L352)*
+*Defined in [scheme.ts:352](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L352)*
 
 **Parameters:**
 
@@ -141,7 +141,7 @@ ___
 
 ▸ **setStaticState**(`opts`: [ISchemeStaticState](../interfaces/ischemestaticstate.md)): *void*
 
-*Defined in [scheme.ts:157](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L157)*
+*Defined in [scheme.ts:157](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L157)*
 
 **Parameters:**
 
@@ -157,7 +157,7 @@ ___
 
 ▸ **state**(`apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[ISchemeState](../interfaces/ischemestate.md)›*
 
-*Defined in [scheme.ts:187](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L187)*
+*Defined in [scheme.ts:187](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L187)*
 
 **Parameters:**
 
@@ -173,7 +173,7 @@ ___
 
 ▸ **search**(`context`: [Arc](arc.md), `options`: [ISchemeQueryOptions](../interfaces/ischemequeryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Scheme](scheme.md)[]›*
 
-*Defined in [scheme.ts:86](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L86)*
+*Defined in [scheme.ts:86](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L86)*
 
 Scheme.search(context, options) searches for scheme entities
 

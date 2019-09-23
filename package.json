@@ -1,6 +1,6 @@
 {
   "name": "@daostack/client",
-  "version": "0.2.7",
+  "version": "0.2.9",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -20,8 +20,9 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "build": "tsc && typedoc --out docs --target commonjs --theme markdown --mode file --plugin typedoc-plugin-markdown src",
+    "build": "tsc && npm run build:docs",
     "build:watch": "tsc --watch",
+    "build:docs": "typedoc --out docs --target commonjs --theme markdown --mode file --plugin typedoc-plugin-markdown src",
     "bundle": "rollup -c rollup.config.ts -w",
     "deploy-docs": "ts-node tools/gh-pages-publish",
     "lint": "npm run tslint",

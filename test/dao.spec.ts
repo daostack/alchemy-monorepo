@@ -21,7 +21,7 @@ describe('DAO', () => {
 
   beforeAll(async () => {
     arc = await newArc()
-})
+  })
 
   it('is instantiable', () => {
     const address = '0x12345'
@@ -37,6 +37,12 @@ describe('DAO', () => {
     expect(result.length).toEqual(0)
     result = await DAO.search(arc, {where: { register: 'registered'}}).pipe(first()).toPromise()
     expect(result.length).toBeGreaterThan(0)
+  })
+
+  it('fetchAllData in DAO.search works', async () => {
+    let result: DAO[]
+    result = await DAO.search(arc, {}, { fetchAllData: true}).pipe(first()).toPromise()
+    expect(result.length).toBeGreaterThan(1)
   })
 
   it('should be possible to get the token balance of the DAO', async () => {
@@ -64,6 +70,7 @@ describe('DAO', () => {
     const state = await dao.state().pipe(first()).toPromise()
     expect(Object.keys(state)).toEqual([
       'address',
+      'dao',
       'id',
       'memberCount',
       'name',
@@ -113,7 +120,7 @@ describe('DAO', () => {
     const dao = await getTestDAO()
     const proposals = await dao.proposals().pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
-    expect(proposals.length).toBeGreaterThanOrEqual(6)
+    expect(proposals.length).toBeGreaterThanOrEqual(4)
   })
 
   it('createProposal should work', async () => {
@@ -133,7 +140,8 @@ describe('DAO', () => {
     const proposal = response.result as Proposal
     let proposals: Proposal[] = []
     const proposalIsIndexed = async () => {
-      proposals = await Proposal.search(arc, {where: {id: proposal.id}}).pipe(first()).toPromise()
+      proposals = await Proposal.search(arc, {where: {id: proposal.id}}, { fetchPolicy: 'network-only'})
+        .pipe(first()).toPromise()
       return proposals.length > 0
     }
     await waitUntilTrue(proposalIsIndexed)

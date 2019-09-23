@@ -25,7 +25,7 @@
 
 • **amount**: *any*
 
-*Defined in [stake.ts:14](https://github.com/daostack/client/blob/3edf873/src/stake.ts#L14)*
+*Defined in [stake.ts:14](https://github.com/daostack/client/blob/c62f433/src/stake.ts#L14)*
 
 ___
 
@@ -33,7 +33,7 @@ ___
 
 • **createdAt**: *Date | undefined*
 
-*Defined in [stake.ts:12](https://github.com/daostack/client/blob/3edf873/src/stake.ts#L12)*
+*Defined in [stake.ts:12](https://github.com/daostack/client/blob/c62f433/src/stake.ts#L12)*
 
 ___
 
@@ -41,7 +41,7 @@ ___
 
 • **id**? : *undefined | string*
 
-*Defined in [stake.ts:10](https://github.com/daostack/client/blob/3edf873/src/stake.ts#L10)*
+*Defined in [stake.ts:10](https://github.com/daostack/client/blob/c62f433/src/stake.ts#L10)*
 
 ___
 
@@ -49,7 +49,7 @@ ___
 
 • **outcome**: *[IProposalOutcome](../enums/iproposaloutcome.md)*
 
-*Defined in [stake.ts:13](https://github.com/daostack/client/blob/3edf873/src/stake.ts#L13)*
+*Defined in [stake.ts:13](https://github.com/daostack/client/blob/c62f433/src/stake.ts#L13)*
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 • **proposal**: *string*
 
-*Defined in [stake.ts:15](https://github.com/daostack/client/blob/3edf873/src/stake.ts#L15)*
+*Defined in [stake.ts:15](https://github.com/daostack/client/blob/c62f433/src/stake.ts#L15)*
 
 ___
 
@@ -65,4 +65,4 @@ ___
 
 • **staker**: *[Address](../globals.md#address)*
 
-*Defined in [stake.ts:11](https://github.com/daostack/client/blob/3edf873/src/stake.ts#L11)*
+*Defined in [stake.ts:11](https://github.com/daostack/client/blob/c62f433/src/stake.ts#L11)*

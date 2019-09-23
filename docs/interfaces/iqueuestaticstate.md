@@ -22,7 +22,7 @@
 
 • **dao**: *[DAO](../classes/dao.md)*
 
-*Defined in [queue.ts:10](https://github.com/daostack/client/blob/3edf873/src/queue.ts#L10)*
+*Defined in [queue.ts:10](https://github.com/daostack/client/blob/c62f433/src/queue.ts#L10)*
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [queue.ts:11](https://github.com/daostack/client/blob/3edf873/src/queue.ts#L11)*
+*Defined in [queue.ts:11](https://github.com/daostack/client/blob/c62f433/src/queue.ts#L11)*
 
 ___
 
@@ -38,4 +38,4 @@ ___
 
 • **name**: *string*
 
-*Defined in [queue.ts:12](https://github.com/daostack/client/blob/3edf873/src/queue.ts#L12)*
+*Defined in [queue.ts:12](https://github.com/daostack/client/blob/c62f433/src/queue.ts#L12)*

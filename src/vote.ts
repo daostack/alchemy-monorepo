@@ -13,6 +13,7 @@ export interface IVoteStaticState {
   outcome: IProposalOutcome
   amount: typeof BN // amount of reputation that was voted with
   proposal: string
+  dao?: Address
 }
 
 export interface IVoteState extends IVoteStaticState {
@@ -66,7 +67,7 @@ export class Vote implements IStateful<IVoteState> {
       }
     }
 
-    const query = gql`
+    const query = gql`query ProposalVotesSearch
       {
         proposalVotes ${createGraphQlQuery(options, where)} {
           id
@@ -97,6 +98,7 @@ export class Vote implements IStateful<IVoteState> {
         return new Vote({
           amount: new BN(r.reputation || 0),
           createdAt: r.createdAt,
+          dao: r.dao.id,
           id: r.id,
           outcome,
           proposal: r.proposal.id,
@@ -121,7 +123,7 @@ export class Vote implements IStateful<IVoteState> {
   }
 
   public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<IVoteState> {
-    const query = gql`{
+    const query = gql`query ProposalVoteById {
       proposalVote (id: "${this.id}") {
         id
         createdAt
@@ -144,6 +146,7 @@ export class Vote implements IStateful<IVoteState> {
       return {
         amount: item.reputation,
         createdAt: item.createdAt,
+        dao: item.dao.id,
         id: item.id,
         outcome: item.outcome,
         proposal: item.proppsal,

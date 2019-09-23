@@ -33,7 +33,7 @@
 
 *Inherited from [ISchemeStaticState](ischemestaticstate.md).[address](ischemestaticstate.md#address)*
 
-*Defined in [scheme.ts:17](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L17)*
+*Defined in [scheme.ts:17](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L17)*
 
 ___
 
@@ -41,7 +41,7 @@ ___
 
 • **canDelegateCall**: *boolean*
 
-*Defined in [scheme.ts:24](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L24)*
+*Defined in [scheme.ts:24](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L24)*
 
 ___
 
@@ -49,7 +49,7 @@ ___
 
 • **canManageGlobalConstraints**: *boolean*
 
-*Defined in [scheme.ts:27](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L27)*
+*Defined in [scheme.ts:27](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L27)*
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 • **canRegisterSchemes**: *boolean*
 
-*Defined in [scheme.ts:25](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L25)*
+*Defined in [scheme.ts:25](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L25)*
 
 ___
 
@@ -65,7 +65,7 @@ ___
 
 • **canUpgradeController**: *boolean*
 
-*Defined in [scheme.ts:26](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L26)*
+*Defined in [scheme.ts:26](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L26)*
 
 ___
 
@@ -73,7 +73,7 @@ ___
 
 • **contributionRewardParams**? : *object | null*
 
-*Defined in [scheme.ts:30](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L30)*
+*Defined in [scheme.ts:30](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L30)*
 
 ___
 
@@ -83,7 +83,7 @@ ___
 
 *Overrides [ISchemeStaticState](ischemestaticstate.md).[dao](ischemestaticstate.md#dao)*
 
-*Defined in [scheme.ts:28](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L28)*
+*Defined in [scheme.ts:28](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L28)*
 
 ___
 
@@ -91,7 +91,7 @@ ___
 
 • **genericSchemeParams**? : *object | null*
 
-*Defined in [scheme.ts:34](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L34)*
+*Defined in [scheme.ts:34](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L34)*
 
 ___
 
@@ -101,7 +101,7 @@ ___
 
 *Inherited from [ISchemeStaticState](ischemestaticstate.md).[id](ischemestaticstate.md#id)*
 
-*Defined in [scheme.ts:16](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L16)*
+*Defined in [scheme.ts:16](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L16)*
 
 ___
 
@@ -111,7 +111,7 @@ ___
 
 *Inherited from [ISchemeStaticState](ischemestaticstate.md).[name](ischemestaticstate.md#name)*
 
-*Defined in [scheme.ts:19](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L19)*
+*Defined in [scheme.ts:19](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L19)*
 
 ___
 
@@ -121,7 +121,7 @@ ___
 
 *Overrides [ISchemeStaticState](ischemestaticstate.md).[paramsHash](ischemestaticstate.md#paramshash)*
 
-*Defined in [scheme.ts:29](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L29)*
+*Defined in [scheme.ts:29](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L29)*
 
 ___
 
@@ -129,4 +129,4 @@ ___
 
 • **schemeRegistrarParams**? : *object | null*
 
-*Defined in [scheme.ts:39](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L39)*
+*Defined in [scheme.ts:39](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L39)*

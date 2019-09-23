@@ -49,15 +49,21 @@ export class Arc extends GraphNodeObserver {
   } = {}
 
   constructor(options: {
+    /** Information about the contracts. Cf. [[setContractInfos]] and [[fetchContractInfos]] */
     contractInfos?: IContractInfo[]
     graphqlHttpProvider?: string
     graphqlWsProvider?: string
     ipfsProvider?: IPFSProvider
     web3Provider?: string
     web3ProviderRead?: string
+    /** this function will be called before a query is sent to the graphql provider */
+    graphqlPrefetchHook?: (query: any) => void
+    /** determines whether a query should subscribe to updates from the graphProvider. Default is true.  */
+    graphqlSubscribeToQueries?: boolean
   }) {
     super({
       graphqlHttpProvider: options.graphqlHttpProvider,
+      graphqlSubscribeToQueries: options.graphqlSubscribeToQueries,
       graphqlWsProvider: options.graphqlWsProvider
     })
     this.ipfsProvider = options.ipfsProvider || ''
@@ -79,6 +85,11 @@ export class Arc extends GraphNodeObserver {
     if (this.ipfsProvider) {
       this.ipfs = IPFSClient(this.ipfsProvider)
     }
+
+    // by default, we subscribe to queries
+    if (options.graphqlSubscribeToQueries === undefined) {
+      options.graphqlSubscribeToQueries = true
+    }
   }
 
   /**
@@ -98,7 +109,7 @@ export class Arc extends GraphNodeObserver {
    * @return a list of IContractInfo instances
    */
   public async fetchContractInfos(apolloQueryOptions: IApolloQueryOptions = {}): Promise<IContractInfo[]> {
-    const query = gql`{
+    const query = gql`query AllContractInfos {
       contractInfos {
         id
         name
@@ -180,21 +191,33 @@ export class Arc extends GraphNodeObserver {
 
       // set up the blockheadersubscription if it does not exist yet
       if (!this.blockHeaderSubscription) {
-        this.blockHeaderSubscription = this.web3Read.eth.subscribe('newBlockHeaders', (err: Error) => {
-          Object.keys(this.observedAccounts).forEach((addr) => {
-            const accInfo = this.observedAccounts[addr]
-            if (err) {
-              (accInfo.observer as Observer<typeof BN>).error(err)
-            } else {
-              this.web3Read.eth.getBalance(addr).then((balance: any) => {
-                if (balance !== accInfo.lastBalance) {
-                  (accInfo.observer as Observer<typeof BN>).next(new BN(balance))
-                  accInfo.lastBalance = balance
-                }
-              })
-            }
+        const subscribeToBlockHeaders = () =>   {
+          this.blockHeaderSubscription = this.web3Read.eth.subscribe('newBlockHeaders', (err: Error) => {
+            Object.keys(this.observedAccounts).forEach((addr) => {
+              const accInfo = this.observedAccounts[addr]
+              if (err) {
+                (accInfo.observer as Observer<typeof BN>).error(err)
+              } else {
+                this.web3Read.eth.getBalance(addr).then((balance: any) => {
+                  if (balance !== accInfo.lastBalance) {
+                    (accInfo.observer as Observer<typeof BN>).next(new BN(balance))
+                    accInfo.lastBalance = balance
+                  }
+                })
+              }
+            })
           })
-        })
+        }
+        try {
+          subscribeToBlockHeaders()
+        } catch (err) {
+          if (err.message.match(/connection not open/g)) {
+            // we need to re-establish the connection and then resubscribe
+            this.web3Read = new Web3(this.web3ProviderRead)
+            subscribeToBlockHeaders()
+          }
+          throw err
+        }
       }
       // unsubscribe
       return () => {

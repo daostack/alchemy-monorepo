@@ -6,6 +6,7 @@ import { IProposalCreateOptions, IProposalOutcome, Proposal } from '../src/propo
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
 import { BN } from '../src/utils'
+
 const Web3 = require('web3')
 
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack'
@@ -180,7 +181,7 @@ export async function waitUntilTrue(test: () => Promise<boolean> | boolean) {
   return new Promise((resolve) => {
     (async function waitForIt(): Promise<void> {
       if (await test()) { return resolve() }
-      setTimeout(waitForIt, 30)
+      setTimeout(waitForIt, 100)
     })()
   })
 }
@@ -190,7 +191,10 @@ export async function voteToAcceptProposal(proposal: Proposal) {
   const arc = proposal.context
   const accounts = arc.web3.eth.accounts.wallet
   // make sure the proposal is indexed
-  await waitUntilTrue(async () => !!(await proposal.state().pipe(first()).toPromise()))
+  await waitUntilTrue(async () => {
+    const state = await proposal.state({ fetchPolicy: 'network-only'}).pipe(first()).toPromise()
+    return !!state
+  })
 
   for (let i = 0; i <= 3; i ++) {
     try {

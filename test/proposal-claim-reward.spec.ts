@@ -50,14 +50,12 @@ describe('Claim rewards', () => {
     const response = await dao.createProposal(options).send()
     const proposal = response.result as Proposal
 
-    // vote for the proposal with all the votest
+    // vote for the proposal
     await voteToAcceptProposal(proposal)
     // check if proposal is indeed accepted etc
     proposal.state().subscribe(((next) => states.push(next)))
 
     await waitUntilTrue(() => {
-      // console.log(lastState() && lastState().stage)
-      // console.log(IProposalStage.Executed)
       return lastState() && lastState().stage === IProposalStage.Executed
     })
 

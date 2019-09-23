@@ -70,7 +70,8 @@ export class Token implements IStateful<ITokenState> {
       where += `${key}: "${options[key] as string}"\n`
     }
 
-    const query = gql`{
+    const query = gql`query TokenSearch
+    {
       tokens ${createGraphQlQuery(options, where)} {
         id
       }
@@ -94,7 +95,7 @@ export class Token implements IStateful<ITokenState> {
   }
 
   public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<ITokenState> {
-    const query = gql`{
+    const query = gql`query tokenState {
       token(id: "${this.address.toLowerCase()}") {
         id,
         dao {
@@ -159,7 +160,14 @@ export class Token implements IStateful<ITokenState> {
             })
         })
         .catch(async (err: Error) => {
-          observer.error(await errHandler(err))
+          if (err.message.match(/connection not open/g)) {
+            // reset provider and resubscribe
+            this.context.web3.setProvider(this.context.web3Provider)
+            throw Error(`Please reconnect: ${err.message}`)
+          } else {
+            observer.error(await errHandler(err))
+
+          }
         })
       return () => {
         if (subscription) { subscription.unsubscribe() }

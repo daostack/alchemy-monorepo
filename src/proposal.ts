@@ -4,6 +4,7 @@ import { concatMap, filter, first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
 import { IGenesisProtocolParams, mapGenesisProtocolParams } from './genesisProtocol'
+import { IObservable } from './graphnode'
 import { Operation, toIOperationObservable } from './operation'
 import { IQueueState } from './queue'
 import { IRewardQueryOptions, Reward } from './reward'
@@ -102,6 +103,114 @@ export interface IProposalState extends IProposalStaticState {
 }
 
 export class Proposal implements IStateful<IProposalState> {
+  public static fragments = {
+    ProposalFields: gql`fragment ProposalFields on Proposal {
+      id
+      accountsWithUnclaimedRewards
+      boostedAt
+      confidenceThreshold
+      contributionReward {
+        id
+        beneficiary
+        ethReward
+        externalToken
+        externalTokenReward
+        externalToken
+        nativeTokenReward
+        periods
+        periodLength
+        reputationReward
+        alreadyRedeemedReputationPeriods
+        alreadyRedeemedExternalTokenPeriods
+        alreadyRedeemedNativeTokenPeriods
+        alreadyRedeemedEthPeriods
+      }
+      createdAt
+      dao {
+        id
+        schemes {
+          id
+          address
+        }
+      }
+      description
+      descriptionHash
+      executedAt
+      executionState
+      expiresInQueueAt
+      genericScheme {
+        id
+        contractToCall
+        callData
+        executed
+        returnValue
+      }
+      genesisProtocolParams {
+        activationTime
+        boostedVotePeriodLimit
+        daoBountyConst
+        limitExponentValue
+        minimumDaoBounty
+        preBoostedVotePeriodLimit
+        proposingRepReward
+        queuedVotePeriodLimit
+        queuedVoteRequiredPercentage
+        quietEndingPeriod
+        thresholdConst
+        votersReputationLossRatio
+      }
+      gpRewards {
+        id
+      }
+      scheme {
+        id
+        paramsHash
+        name
+        address
+        canDelegateCall
+        canManageGlobalConstraints
+        canRegisterSchemes
+        canUpgradeController
+        name
+      }
+      gpQueue {
+        id
+        threshold
+        votingMachine
+      }
+      organizationId
+      preBoostedAt
+      proposer
+      quietEndingPeriodBeganAt
+      schemeRegistrar {
+        id
+        schemeToRegister
+        schemeToRegisterParamsHash
+        schemeToRegisterPermission
+        schemeToRemove
+        decision
+        schemeRegistered
+        schemeRemoved
+      }
+      stage
+      stakes {
+        id
+      }
+      stakesFor
+      stakesAgainst
+      totalRepWhenCreated
+      totalRepWhenExecuted
+      title
+      url
+      votes {
+        id
+      }
+      votesAgainst
+      votesFor
+      votingMachine
+      winningOutcome
+    }`
+  }
 
   /**
    * Proposal.create() creates a new proposal
@@ -190,34 +299,46 @@ export class Proposal implements IStateful<IProposalState> {
         }
       }
     }
+    let query
 
-    const query = gql`
-      {
-        proposals ${createGraphQlQuery(options, where)} {
-          id
-          dao {
-            id
-          }
-          votingMachine
-          scheme {
-            id
-            address
+    if (apolloQueryOptions.fetchAllData === true) {
+        query = gql`query ProposalsSearchAllData
+        {
+          proposals ${createGraphQlQuery(options, where)} {
+            ...ProposalFields
           }
         }
-      }
-    `
+        ${Proposal.fragments.ProposalFields}
+      `
+
+    } else {
+      query = gql`query ProposalSearchPartialData
+        {
+          proposals ${createGraphQlQuery(options, where)} {
+            id
+            dao {
+              id
+            }
+            votingMachine
+            scheme {
+              id
+              address
+            }
+          }
+        }
+      `
+    }
 
     return context.getObservableList(
       query,
       (r: any) => new Proposal(r.id, context),
       apolloQueryOptions
-    ) as Observable<Proposal[]>
+    ) as IObservable<Proposal[]>
   }
 
   public context: Arc
   public id: string
   public staticState: IProposalStaticState|undefined
-
   constructor(
     idOrOpts: string|IProposalStaticState,
     context: Arc
@@ -239,7 +360,7 @@ export class Proposal implements IStateful<IProposalState> {
     if (!!this.staticState) {
       return this.staticState
     } else {
-      const state = await this.state().pipe(first()).toPromise()
+      const state = await this.state({subscribe: false}).pipe(first()).toPromise()
       if (state === null) {
         throw Error(`No proposal with id ${this.id} was found in the subgraph`)
       }
@@ -258,115 +379,13 @@ export class Proposal implements IStateful<IProposalState> {
    * `state` is an observable of the proposal state
    */
   public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<IProposalState> {
-    const query = gql`
+    const query = gql`query ProposalState
       {
         proposal(id: "${this.id}") {
-          id
-          accountsWithUnclaimedRewards
-          boostedAt
-          confidenceThreshold
-          contributionReward {
-            id
-            beneficiary
-            ethReward
-            externalToken
-            externalTokenReward
-            externalToken
-            nativeTokenReward
-            periods
-            periodLength
-            reputationReward
-            alreadyRedeemedReputationPeriods
-            alreadyRedeemedExternalTokenPeriods
-            alreadyRedeemedNativeTokenPeriods
-            alreadyRedeemedEthPeriods
-          }
-          createdAt
-          dao {
-            id
-            schemes {
-              id
-              address
-            }
-          }
-          description
-          descriptionHash
-          executedAt
-          executionState
-          expiresInQueueAt
-          genericScheme {
-            id
-            contractToCall
-            callData
-            executed
-            returnValue
-          }
-          genesisProtocolParams {
-            activationTime
-            boostedVotePeriodLimit
-            daoBountyConst
-            limitExponentValue
-            minimumDaoBounty
-            preBoostedVotePeriodLimit
-            proposingRepReward
-            queuedVotePeriodLimit
-            queuedVoteRequiredPercentage
-            quietEndingPeriod
-            thresholdConst
-            votersReputationLossRatio
-          }
-          gpRewards {
-            id
-          }
-          scheme {
-            id
-            paramsHash
-            name
-            address
-            canDelegateCall
-            canManageGlobalConstraints
-            canRegisterSchemes
-            canUpgradeController
-            name
-          }
-          gpQueue {
-            id
-            threshold
-            votingMachine
-          }
-          organizationId
-          preBoostedAt
-          proposer
-          quietEndingPeriodBeganAt
-          schemeRegistrar {
-            id
-            schemeToRegister
-            schemeToRegisterParamsHash
-            schemeToRegisterPermission
-            schemeToRemove
-            decision
-            schemeRegistered
-            schemeRemoved
-          }
-          stage
-          stakes {
-            id
-          }
-          stakesFor
-          stakesAgainst
-          totalRepWhenCreated
-          totalRepWhenExecuted
-          title
-          url
-          votes {
-            id
-          }
-          votesAgainst
-          votesFor
-          votingMachine
-          winningOutcome
+          ...ProposalFields
         }
       }
+      ${Proposal.fragments.ProposalFields}
     `
 
     const itemMap = (item: any): IProposalState|null => {
@@ -429,7 +448,7 @@ export class Proposal implements IStateful<IProposalState> {
           schemeToRemove: item.schemeRegistrar.schemeToRemove
         }
       } else {
-        throw Error(`Unknown proposal type`)
+        throw Error(`Unknown proposal type or incomplete proposal data`)
       }
       // the  formule to enter into the preboosted state is:
       // (S+/S-) > AlphaConstant^NumberOfBoostedProposal.

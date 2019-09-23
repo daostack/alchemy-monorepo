@@ -1,6 +1,7 @@
 export { Arc, IContractInfo } from './arc'
 export { DAO, IDAOState, IDAOStaticState, IDAOQueryOptions } from './dao'
 export { IGenesisProtocolParams } from './genesisProtocol'
+export { createApolloClient } from './graphnode'
 export { Member, IMemberState, IMemberStaticState, IMemberQueryOptions } from './member'
 export { ITransactionUpdate, ITransactionState } from './operation'
 export { IExecutionState, Proposal, IProposalCreateOptions, IProposalState, IProposalStaticState,

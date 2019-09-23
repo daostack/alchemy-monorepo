@@ -26,7 +26,7 @@
 
 • **address**: *[Address](../globals.md#address)*
 
-*Defined in [dao.ts:19](https://github.com/daostack/client/blob/3edf873/src/dao.ts#L19)*
+*Defined in [dao.ts:19](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L19)*
 
 ___
 
@@ -34,7 +34,7 @@ ___
 
 • **id**: *[Address](../globals.md#address)*
 
-*Defined in [dao.ts:18](https://github.com/daostack/client/blob/3edf873/src/dao.ts#L18)*
+*Defined in [dao.ts:18](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L18)*
 
 ___
 
@@ -42,7 +42,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [dao.ts:20](https://github.com/daostack/client/blob/3edf873/src/dao.ts#L20)*
+*Defined in [dao.ts:20](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L20)*
 
 ___
 
@@ -50,7 +50,7 @@ ___
 
 • **reputation**: *[Reputation](../classes/reputation.md)*
 
-*Defined in [dao.ts:21](https://github.com/daostack/client/blob/3edf873/src/dao.ts#L21)*
+*Defined in [dao.ts:21](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L21)*
 
 ___
 
@@ -58,7 +58,7 @@ ___
 
 • **token**: *[Token](../classes/token.md)*
 
-*Defined in [dao.ts:22](https://github.com/daostack/client/blob/3edf873/src/dao.ts#L22)*
+*Defined in [dao.ts:22](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L22)*
 
 ___
 
@@ -66,7 +66,7 @@ ___
 
 • **tokenName**: *string*
 
-*Defined in [dao.ts:23](https://github.com/daostack/client/blob/3edf873/src/dao.ts#L23)*
+*Defined in [dao.ts:23](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L23)*
 
 ___
 
@@ -74,4 +74,4 @@ ___
 
 • **tokenSymbol**: *string*
 
-*Defined in [dao.ts:24](https://github.com/daostack/client/blob/3edf873/src/dao.ts#L24)*
+*Defined in [dao.ts:24](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L24)*

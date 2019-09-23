@@ -59,7 +59,7 @@ export class Stake implements IStateful<IStakeState> {
       where += `${key}: "${options.where[key] as string}"\n`
     }
 
-    const query = gql`
+    const query = gql`query StakeSearch
       {
         proposalStakes ${createGraphQlQuery(options, where)} {
           id
@@ -114,7 +114,7 @@ export class Stake implements IStateful<IStakeState> {
   }
 
   public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<IStakeState> {
-    const query = gql`
+    const query = gql`query StakeState
       {
         proposalStake (id: "${this.id}") {
           id

@@ -13,7 +13,8 @@
 ### Properties
 
 * [address](imemberstate.md#address)
-* [dao](imemberstate.md#dao)
+* [contract](imemberstate.md#contract)
+* [dao](imemberstate.md#optional-dao)
 * [id](imemberstate.md#id)
 * [reputation](imemberstate.md#reputation)
 
@@ -25,17 +26,27 @@
 
 *Inherited from [IMemberStaticState](imemberstaticstate.md).[address](imemberstaticstate.md#address)*
 
-*Defined in [member.ts:16](https://github.com/daostack/client/blob/3edf873/src/member.ts#L16)*
+*Defined in [member.ts:20](https://github.com/daostack/client/blob/c62f433/src/member.ts#L20)*
 
 ___
 
-###  dao
+###  contract
 
-• **dao**: *[Address](../globals.md#address)*
+• **contract**: *[Address](../globals.md#address)*
 
-*Inherited from [IMemberStaticState](imemberstaticstate.md).[dao](imemberstaticstate.md#dao)*
+*Overrides [IMemberStaticState](imemberstaticstate.md).[contract](imemberstaticstate.md#optional-contract)*
 
-*Defined in [member.ts:17](https://github.com/daostack/client/blob/3edf873/src/member.ts#L17)*
+*Defined in [member.ts:25](https://github.com/daostack/client/blob/c62f433/src/member.ts#L25)*
+
+___
+
+### `Optional` dao
+
+• **dao**? : *[Address](../globals.md#address)*
+
+*Inherited from [IMemberStaticState](imemberstaticstate.md).[dao](imemberstaticstate.md#optional-dao)*
+
+*Defined in [member.ts:22](https://github.com/daostack/client/blob/c62f433/src/member.ts#L22)*
 
 ___
 
@@ -43,7 +54,9 @@ ___
 
 • **id**: *string*
 
-*Defined in [member.ts:20](https://github.com/daostack/client/blob/3edf873/src/member.ts#L20)*
+*Overrides [IMemberStaticState](imemberstaticstate.md).[id](imemberstaticstate.md#optional-id)*
+
+*Defined in [member.ts:26](https://github.com/daostack/client/blob/c62f433/src/member.ts#L26)*
 
 ___
 
@@ -51,4 +64,4 @@ ___
 
 • **reputation**: *any*
 
-*Defined in [member.ts:21](https://github.com/daostack/client/blob/3edf873/src/member.ts#L21)*
+*Defined in [member.ts:27](https://github.com/daostack/client/blob/c62f433/src/member.ts#L27)*

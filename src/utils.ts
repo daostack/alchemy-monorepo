@@ -36,6 +36,14 @@ export function checkWebsocket(options: { url: string }) {
   }
 }
 
+export function hexStringToUint8Array(hexString: string) {
+  if (hexString.startsWith('0x')) {
+    hexString = hexString.substring(2)
+  }
+  // @ts-ignore
+  return new Uint8Array(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)))
+}
+
 // function lifted and adapted from @daostack/subgraph/src/utils to generate unique ids
 export function concat(a: Uint8Array, b: Uint8Array): Uint8Array {
 
@@ -46,10 +54,7 @@ export function concat(a: Uint8Array, b: Uint8Array): Uint8Array {
   for (let j = 0; j < b.length; j++) {
     out[a.length + j] = b[j]
   }
-  // return out as ByteArray
-  // return web3.utils.bytesToHex(out)
   return out
-  // return web3.utils.keccak256(out)
 }
 
 type EthereumEvent = any

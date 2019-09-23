@@ -48,7 +48,7 @@ export class Reputation implements IStateful<IReputationState> {
       where += `${key}: "${options[key] as string}"\n`
     }
 
-    const query = gql`{
+    const query = gql`query ReputationSearch {
       reps
       ${createGraphQlQuery(options, where)}
       {
@@ -69,7 +69,8 @@ export class Reputation implements IStateful<IReputationState> {
     this.address = id
   }
   public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<IReputationState> {
-    const query = gql`{
+    const query = gql`query ReputationState
+    {
       rep (id: "${this.address.toLowerCase()}") {
         id
         totalSupply
@@ -94,7 +95,7 @@ export class Reputation implements IStateful<IReputationState> {
   public reputationOf(address: Address): Observable<typeof BN> {
     isAddress(address)
 
-    const query = gql`{
+    const query = gql`query ReputationHolderReputation {
       reputationHolders (
         where: { address:"${address}",
         contract: "${this.address}"}

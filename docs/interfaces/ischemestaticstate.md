@@ -24,7 +24,7 @@
 
 • **address**: *[Address](../globals.md#address)*
 
-*Defined in [scheme.ts:17](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L17)*
+*Defined in [scheme.ts:17](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L17)*
 
 ___
 
@@ -32,7 +32,7 @@ ___
 
 • **dao**: *[Address](../globals.md#address)*
 
-*Defined in [scheme.ts:18](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L18)*
+*Defined in [scheme.ts:18](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L18)*
 
 ___
 
@@ -40,7 +40,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [scheme.ts:16](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L16)*
+*Defined in [scheme.ts:16](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L16)*
 
 ___
 
@@ -48,7 +48,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [scheme.ts:19](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L19)*
+*Defined in [scheme.ts:19](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L19)*
 
 ___
 
@@ -56,4 +56,4 @@ ___
 
 • **paramsHash**: *string*
 
-*Defined in [scheme.ts:20](https://github.com/daostack/client/blob/3edf873/src/scheme.ts#L20)*
+*Defined in [scheme.ts:20](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L20)*

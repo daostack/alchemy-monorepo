@@ -57,7 +57,7 @@ export class Queue implements IStateful<IQueueState> {
     }
 
     // use the following query once https://github.com/daostack/subgraph/issues/217 is resolved
-    const query = gql`
+    const query = gql`query QueueSearch
       {
         gpqueues ${createGraphQlQuery(options, where)} {
           id
@@ -95,7 +95,7 @@ export class Queue implements IStateful<IQueueState> {
 
   public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<IQueueState> {
     //
-    const query = gql`
+    const query = gql`query QueueState
       {
         gpqueue (id: "${this.id}") {
           id
