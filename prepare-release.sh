@@ -17,7 +17,7 @@ readonly ARC=$(cat package.json | jq -r '.dependencies."@daostack/arc"' | rev | 
 # migrate ganache
 for (( version=$INITIAL_VERSION; version<=$ARC; version++ ))
 do
-if [ "$version" == "20" ]; then
+if [ "$version" == "20" ] || [ "$version" == "26" ]; then
 continue
 fi
 echo "Installing Arc version $version..."

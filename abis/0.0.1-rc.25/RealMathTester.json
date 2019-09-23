@@ -1,0 +1,52 @@
+[
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "num",
+        "type": "uint216"
+      },
+      {
+        "name": "den",
+        "type": "uint216"
+      },
+      {
+        "name": "exp",
+        "type": "uint256"
+      }
+    ],
+    "name": "power",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "num",
+        "type": "uint216"
+      },
+      {
+        "name": "den",
+        "type": "uint216"
+      }
+    ],
+    "name": "fraction",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "pure",
+    "type": "function"
+  }
+]
