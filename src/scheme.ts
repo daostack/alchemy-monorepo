@@ -325,6 +325,7 @@ export class Scheme implements IStateful<ISchemeState> {
             map = ContributionReward.createTransactionMap(options, this.context)
             break
 
+          case 'UGenericScheme':
           case 'GenericScheme':
             createTransaction  = GenericScheme.createTransaction(options, this.context)
             map = GenericScheme.createTransactionMap(options, this.context)

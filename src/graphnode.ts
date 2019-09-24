@@ -14,7 +14,7 @@ import { Logger } from './logger'
 import { zenToRxjsObservable } from './utils'
 
 export interface IApolloQueryOptions {
-  fetchPolicy?: 'cache-first' | 'cache-and-network' | 'network-only' | 'cache-only' | 'no-cache' | 'standby',
+  fetchPolicy?: 'cache-first' | 'network-only' | 'cache-only' | 'no-cache' | 'standby',
   subscribe?: true | false,
   fetchAllData?: true | false
 }
@@ -304,12 +304,12 @@ export class GraphNodeObserver {
     return observable
   }
 
-  public sendQuery(query: any) {
+  public sendQuery(query: any, apolloQueryOptions: IApolloQueryOptions = {}) {
     if (!this.apolloClient) {
       throw Error(`No connection to the graph - did you set graphqlHttpProvider and graphqlWsProvider?`)
     }
     const apolloClient = this.apolloClient as ApolloClient<object>
-    return apolloClient.query({ query })
+    return apolloClient.query({...apolloQueryOptions, ...{query}})
   }
 
 }

@@ -15,7 +15,8 @@ export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/d
 export const web3Provider: string = 'ws://127.0.0.1:8545'
 export const ipfsProvider: string = '/ip4/127.0.0.1/tcp/5001'
 
-export const LATEST_ARC_VERSION = '0.0.1-rc.19'
+export const LATEST_ARC_VERSION = '0.0.1-rc.24'
+// export const LATEST_ARC_VERSION = '0.0.1-rc.19'
 
 export { BN }
 
@@ -44,8 +45,8 @@ export function toWei(amount: string | number): typeof BN {
 }
 
 export interface ITestAddresses {
-  base: { [key: string]: Address }
-  dao: { [key: string]: Address }
+  base: { [key: string]: Address },
+  dao: { [key: string]: Address },
   test: {
     organs: { [key: string]: Address },
     Avatar: Address,
@@ -58,7 +59,7 @@ export interface ITestAddresses {
 }
 
 export function getTestAddresses(): ITestAddresses {
-  const path = '@daostack/migration/migration.json'
+  const path = './migration.json'
   const migration = require(path).private
   const version = LATEST_ARC_VERSION
   const addresses = {

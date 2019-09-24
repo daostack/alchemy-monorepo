@@ -1,6 +1,6 @@
 import gql from 'graphql-tag'
 import { Observable, Observer, of, Subscription } from 'rxjs'
-import { first, map } from 'rxjs/operators'
+import { map } from 'rxjs/operators'
 import { DAO, IDAOQueryOptions } from './dao'
 import { GraphNodeObserver, IApolloQueryOptions } from './graphnode'
 export { IApolloQueryOptions } from './graphnode'
@@ -8,7 +8,6 @@ import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { IProposalQueryOptions, Proposal } from './proposal'
 import { ISchemeQueryOptions, Scheme } from './scheme'
-import { LATEST_ARC_VERSION } from './settings'
 import { Token } from './token'
 import { Address, IPFSProvider, Web3Provider } from './types'
 import { BN } from './utils'
@@ -110,17 +109,16 @@ export class Arc extends GraphNodeObserver {
    */
   public async fetchContractInfos(apolloQueryOptions: IApolloQueryOptions = {}): Promise<IContractInfo[]> {
     const query = gql`query AllContractInfos {
-      contractInfos {
+      contractInfos (first: 1000) {
         id
         name
         version
         address
       }
     }`
-    const itemMap = (record: any): IContractInfo => {
-      return record
-    }
-    const result = await this.getObservableList(query, itemMap, apolloQueryOptions).pipe(first()).toPromise()
+    // const result = await this.getObservableList(query, itemMap, apolloQueryOptions).pipe(first()).toPromise()
+    const response = await this.sendQuery(query, apolloQueryOptions)
+    const result = response.data.contractInfos as IContractInfo[]
     this.setContractInfos(result)
     return result
   }
@@ -276,6 +274,14 @@ export class Arc extends GraphNodeObserver {
         abiName = 'ERC20'
       }
     }
+    // TODO: workaround for https://github.com/daostack/subgraph/pull/336
+    if (abiName === 'UGenericScheme') {
+      const versionNumber = Number(version.split('rc.')[1])
+      if (versionNumber < 24) {
+        abiName = 'GenericScheme'
+      }
+    }
+    // //End of workaround
 
     const abi = require(`@daostack/migration/abis/${version}/${abiName}.json`)
     return abi
@@ -318,16 +324,6 @@ export class Arc extends GraphNodeObserver {
    */
   public GENToken() {
     if (this.contractInfos) {
-      if (this.contractInfos) {
-        for (const contractInfo of this.contractInfos) {
-          // TODO: remove this reference to LATEST_ARC_VERSION
-          // (it's aworkaround for https://github.com/daostack/subgraph/issues/257)
-          if (contractInfo.name === 'GEN' && contractInfo.version === LATEST_ARC_VERSION) {
-            return new Token(contractInfo.address, this)
-          }
-        }
-      }
-
       for (const contractInfo of this.contractInfos) {
         if (contractInfo.name === 'GEN') {
           return new Token(contractInfo.address, this)

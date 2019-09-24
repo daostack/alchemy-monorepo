@@ -41,7 +41,7 @@ describe('Proposal', () => {
 
     const proposal = await createAProposal(dao, {
       callData,
-      scheme: testAddresses.base.GenericScheme,
+      scheme: testAddresses.base.UGenericScheme,
       schemeToRegister: actionMock.options.address,
       value: 0
     })

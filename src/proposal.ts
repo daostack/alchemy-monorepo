@@ -746,7 +746,7 @@ export class Proposal implements IStateful<IProposalState> {
         if (state.contributionReward) {
           schemeAddress = state.scheme.address
         } else {
-          // we use a dymmy contributionreward, as a workaround for https://github.com/daostack/arc/issues/655
+          // we use a dummy contributionreward, as a workaround for https://github.com/daostack/arc/issues/655
           schemeAddress = this.context.getContractInfoByName('ContributionReward', LATEST_ARC_VERSION).address
         }
         const transaction = this.redeemerContract().methods.redeem(

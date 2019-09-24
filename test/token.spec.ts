@@ -71,7 +71,7 @@ describe('Token', () => {
     expect(balances[1].sub(balances[0]).toString()).toEqual(amount.toString())
   })
 
-  it('balanceOf GEN token also works', async () => {
+  it('balanceOf GEN token works', async () => {
     const token = arc.GENToken()
     const account = '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1'
     const balances: Array<typeof BN> = []

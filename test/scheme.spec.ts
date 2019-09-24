@@ -49,7 +49,7 @@ describe('Scheme', () => {
       schemeStates.push(state)
     }))
     expect((schemeStates.map((r) => r.name)).sort()).toEqual([
-      'GenericScheme',
+      'UGenericScheme',
       'ContributionReward',
       'SchemeRegistrar'
     ].sort())
@@ -57,17 +57,17 @@ describe('Scheme', () => {
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
-    result = await Scheme.search(arc, {where: {dao: dao.id, name: 'GenericScheme'}})
+    result = await Scheme.search(arc, {where: {dao: dao.id, name: 'UGenericScheme'}})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
 
     result = await Scheme.search(arc, {where: {dao: dao.id, name: 'SchemeRegistrar'}})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
-    result = await Scheme.search(arc, {where: {dao: dao.id, name_in: ['SchemeRegistrar', 'GenericScheme']}})
+    result = await Scheme.search(arc, {where: {dao: dao.id, name_in: ['SchemeRegistrar', 'UGenericScheme']}})
         .pipe(first()).toPromise()
     expect(result.length).toEqual(2)
-    result = await Scheme.search(arc, {where: {dao: dao.id, name_not_in: ['GenericScheme']}})
+    result = await Scheme.search(arc, {where: {dao: dao.id, name_not_in: ['UGenericScheme']}})
         .pipe(first()).toPromise()
     expect(result.length).toBeGreaterThan(1)
     })
@@ -88,18 +88,18 @@ describe('Scheme', () => {
 
   })
 
-  it('Scheme.state() is working for GenericScheme schemes', async () => {
+  it('Scheme.state() is working for UGenericScheme schemes', async () => {
     const dao = await getTestDAO()
     const result = await Scheme
-      .search(arc, {where: {dao: dao.id, name: 'GenericScheme'}})
+      .search(arc, {where: {dao: dao.id, name: 'UGenericScheme'}})
       .pipe(first()).toPromise()
 
     const scheme = result[0]
     const state = await scheme.state().pipe(first()).toPromise()
     expect(state).toMatchObject({
-      address: testAddresses.base.GenericScheme.toLowerCase(),
+      address: testAddresses.base.UGenericScheme.toLowerCase(),
       id: scheme.id,
-      name: 'GenericScheme'
+      name: 'UGenericScheme'
     })
 
   })
