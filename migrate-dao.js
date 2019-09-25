@@ -307,17 +307,17 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     }
     const genesisProtocolSetParams = genesisProtocol.methods.setParameters(
       [
-        migrationParams.VotingMachinesParams[i].queuedVoteRequiredPercentage,
-        migrationParams.VotingMachinesParams[i].queuedVotePeriodLimit,
-        migrationParams.VotingMachinesParams[i].boostedVotePeriodLimit,
-        migrationParams.VotingMachinesParams[i].preBoostedVotePeriodLimit,
-        migrationParams.VotingMachinesParams[i].thresholdConst,
-        migrationParams.VotingMachinesParams[i].quietEndingPeriod,
+        migrationParams.VotingMachinesParams[i].queuedVoteRequiredPercentage.toString(),
+        migrationParams.VotingMachinesParams[i].queuedVotePeriodLimit.toString(),
+        migrationParams.VotingMachinesParams[i].boostedVotePeriodLimit.toString(),
+        migrationParams.VotingMachinesParams[i].preBoostedVotePeriodLimit.toString(),
+        migrationParams.VotingMachinesParams[i].thresholdConst.toString(),
+        migrationParams.VotingMachinesParams[i].quietEndingPeriod.toString(),
         web3.utils.toWei(migrationParams.VotingMachinesParams[i].proposingRepReward.toString()),
-        migrationParams.VotingMachinesParams[i].votersReputationLossRatio,
+        migrationParams.VotingMachinesParams[i].votersReputationLossRatio.toString(),
         web3.utils.toWei(migrationParams.VotingMachinesParams[i].minimumDaoBounty.toString()),
-        migrationParams.VotingMachinesParams[i].daoBountyConst,
-        migrationParams.VotingMachinesParams[i].activationTime
+        migrationParams.VotingMachinesParams[i].daoBountyConst.toString(),
+        migrationParams.VotingMachinesParams[i].activationTime.toString()
       ],
       migrationParams.VotingMachinesParams[i].voteOnBehalf
     )
