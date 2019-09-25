@@ -17,7 +17,7 @@ describe('Token', () => {
 
   beforeAll(async () => {
     arc = await newArc()
-    addresses = getTestAddresses()
+    addresses = getTestAddresses(arc)
     address = addresses.dao.DAOToken
   })
 

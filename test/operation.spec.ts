@@ -8,6 +8,7 @@ describe('Operation', () => {
 
   it('returns the correct sequence of states', async () => {
     const dao = await getTestDAO()
+    const arc = dao.context
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       dao: dao.id,
@@ -15,7 +16,7 @@ describe('Operation', () => {
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
       nativeTokenReward: toWei('1'),
-      scheme: getTestAddresses().base.ContributionReward
+      scheme: getTestAddresses(arc).base.ContributionReward
     }
 
     // collect the first 4 results of the observable in a a listOfUpdates array

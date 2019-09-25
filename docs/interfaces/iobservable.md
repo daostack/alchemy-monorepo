@@ -80,7 +80,7 @@ ___
 
 • **first**: *function*
 
-*Defined in [graphnode.ts:23](https://github.com/daostack/client/blob/c62f433/src/graphnode.ts#L23)*
+*Defined in [graphnode.ts:23](https://github.com/daostack/client/blob/a73e635/src/graphnode.ts#L23)*
 
 #### Type declaration:
 

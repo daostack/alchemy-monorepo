@@ -15,7 +15,7 @@ describe('Scheme', () => {
 
   beforeAll(async () => {
     arc = await newArc()
-    testAddresses = await getTestAddresses()
+    testAddresses = await getTestAddresses(arc)
   })
 
   it('Scheme is instantiable', () => {
@@ -123,7 +123,6 @@ describe('Scheme', () => {
     const ls2 = await Scheme.search(arc, { first: 2, skip: 2, orderBy: 'address' }).pipe(first()).toPromise()
     expect(ls2.length).toEqual(2)
     expect((await firstResult(ls1[2].state())).address <= (await firstResult(ls2[0].state())).address).toBeTruthy()
-    // expect(ls1[2].address).toEqual(ls2[0].address)
 
     const ls3 = await Scheme.search(arc, {  orderBy: 'address', orderDirection: 'desc'}).pipe(first()).toPromise()
     expect((await firstResult(ls3[0].state())).address >= (await firstResult(ls3[1].state())).address).toBeTruthy()

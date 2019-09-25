@@ -21,7 +21,7 @@ describe('Proposal', () => {
 
   beforeAll(async () => {
     arc = await newArc()
-    testAddresses = getTestAddresses()
+    testAddresses = getTestAddresses(arc)
     dao = await getTestDAO()
   })
 

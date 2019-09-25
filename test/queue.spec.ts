@@ -17,7 +17,7 @@ describe('Queue', () => {
 
   beforeAll(async () => {
     arc = await newArc()
-    addresses = await getTestAddresses()
+    addresses = await getTestAddresses(arc)
     dao = await getTestDAO()
   })
 

@@ -275,7 +275,20 @@ export class Scheme implements IStateful<ISchemeState> {
       if (!item) {
         return null
       }
-      const name = item.name || this.context.getContractInfo(item.address).name
+
+      let name = item.name
+      if (!name) {
+
+        try {
+          name = this.context.getContractInfo(item.address).name
+        } catch (err) {
+          if (err.message.match(/no contract/ig)) {
+            // continue
+          } else {
+            throw err
+          }
+        }
+      }
       return {
         address: item.address,
         canDelegateCall: item.canDelegateCall,

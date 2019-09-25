@@ -30,7 +30,7 @@
 
 *Overrides [ICommonQueryOptions](icommonqueryoptions.md).[first](icommonqueryoptions.md#optional-first)*
 
-*Defined in [types.ts:15](https://github.com/daostack/client/blob/c62f433/src/types.ts#L15)*
+*Defined in [types.ts:15](https://github.com/daostack/client/blob/a73e635/src/types.ts#L15)*
 
 ___
 
@@ -42,7 +42,7 @@ ___
 
 *Overrides [ICommonQueryOptions](icommonqueryoptions.md).[orderBy](icommonqueryoptions.md#optional-orderby)*
 
-*Defined in [types.ts:16](https://github.com/daostack/client/blob/c62f433/src/types.ts#L16)*
+*Defined in [types.ts:16](https://github.com/daostack/client/blob/a73e635/src/types.ts#L16)*
 
 ___
 
@@ -54,7 +54,7 @@ ___
 
 *Overrides [ICommonQueryOptions](icommonqueryoptions.md).[orderDirection](icommonqueryoptions.md#optional-orderdirection)*
 
-*Defined in [types.ts:17](https://github.com/daostack/client/blob/c62f433/src/types.ts#L17)*
+*Defined in [types.ts:17](https://github.com/daostack/client/blob/a73e635/src/types.ts#L17)*
 
 ___
 
@@ -66,7 +66,7 @@ ___
 
 *Overrides [ICommonQueryOptions](icommonqueryoptions.md).[skip](icommonqueryoptions.md#optional-skip)*
 
-*Defined in [types.ts:14](https://github.com/daostack/client/blob/c62f433/src/types.ts#L14)*
+*Defined in [types.ts:14](https://github.com/daostack/client/blob/a73e635/src/types.ts#L14)*
 
 ___
 
@@ -76,6 +76,6 @@ ___
 
 *Overrides [ICommonQueryOptions](icommonqueryoptions.md).[where](icommonqueryoptions.md#optional-where)*
 
-*Defined in [scheme.ts:47](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L47)*
+*Defined in [scheme.ts:47](https://github.com/daostack/client/blob/a73e635/src/scheme.ts#L47)*
 
-*Defined in [scheme.ts:62](https://github.com/daostack/client/blob/c62f433/src/scheme.ts#L62)*
+*Defined in [scheme.ts:62](https://github.com/daostack/client/blob/a73e635/src/scheme.ts#L62)*

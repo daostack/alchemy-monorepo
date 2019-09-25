@@ -51,7 +51,7 @@
 
 \+ **new DAO**(`idOrOpts`: [Address](../globals.md#address) | [IDAOStaticState](../interfaces/idaostaticstate.md), `context`: [Arc](arc.md)): *[DAO](dao.md)*
 
-*Defined in [dao.ts:125](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L125)*
+*Defined in [dao.ts:125](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L125)*
 
 **Parameters:**
 
@@ -68,7 +68,7 @@ Name | Type |
 
 • **context**: *[Arc](arc.md)*
 
-*Defined in [dao.ts:127](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L127)*
+*Defined in [dao.ts:127](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L127)*
 
 ___
 
@@ -76,7 +76,7 @@ ___
 
 • **id**: *[Address](../globals.md#address)*
 
-*Defined in [dao.ts:124](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L124)*
+*Defined in [dao.ts:124](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L124)*
 
 ___
 
@@ -84,7 +84,7 @@ ___
 
 • **staticState**: *[IDAOStaticState](../interfaces/idaostaticstate.md) | undefined*
 
-*Defined in [dao.ts:125](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L125)*
+*Defined in [dao.ts:125](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L125)*
 
 ## Methods
 
@@ -92,7 +92,7 @@ ___
 
 ▸ **createProposal**(`options`: [IProposalCreateOptions](../globals.md#iproposalcreateoptions)): *[IOperationObservable](../interfaces/ioperationobservable.md)‹[ITransactionUpdate](../interfaces/itransactionupdate.md)‹[Proposal](proposal.md)››*
 
-*Defined in [dao.ts:253](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L253)*
+*Defined in [dao.ts:253](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L253)*
 
 create a new proposal in this DAO
 
@@ -112,7 +112,7 @@ ___
 
 ▸ **ethBalance**(): *Observable‹any›*
 
-*Defined in [dao.ts:300](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L300)*
+*Defined in [dao.ts:300](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L300)*
 
 **Returns:** *Observable‹any›*
 
@@ -122,7 +122,7 @@ ___
 
 ▸ **fetchStaticState**(): *Promise‹[IDAOStaticState](../interfaces/idaostaticstate.md)›*
 
-*Defined in [dao.ts:140](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L140)*
+*Defined in [dao.ts:140](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L140)*
 
 **Returns:** *Promise‹[IDAOStaticState](../interfaces/idaostaticstate.md)›*
 
@@ -132,7 +132,7 @@ ___
 
 ▸ **member**(`address`: [Address](../globals.md#address)): *[Member](member.md)*
 
-*Defined in [dao.ts:238](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L238)*
+*Defined in [dao.ts:238](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L238)*
 
 **Parameters:**
 
@@ -148,7 +148,7 @@ ___
 
 ▸ **members**(`options`: [IMemberQueryOptions](../interfaces/imemberqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Member](member.md)[]›*
 
-*Defined in [dao.ts:229](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L229)*
+*Defined in [dao.ts:229](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L229)*
 
 **Parameters:**
 
@@ -165,7 +165,7 @@ ___
 
 ▸ **nativeReputation**(): *Observable‹[Reputation](reputation.md)›*
 
-*Defined in [dao.ts:208](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L208)*
+*Defined in [dao.ts:208](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L208)*
 
 **Returns:** *Observable‹[Reputation](reputation.md)›*
 
@@ -175,7 +175,7 @@ ___
 
 ▸ **proposal**(`proposalId`: string): *[Proposal](proposal.md)*
 
-*Defined in [dao.ts:269](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L269)*
+*Defined in [dao.ts:269](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L269)*
 
 **Parameters:**
 
@@ -191,7 +191,7 @@ ___
 
 ▸ **proposals**(`options`: [IProposalQueryOptions](../interfaces/iproposalqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Proposal](proposal.md)[]›*
 
-*Defined in [dao.ts:258](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L258)*
+*Defined in [dao.ts:258](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L258)*
 
 **Parameters:**
 
@@ -208,7 +208,7 @@ ___
 
 ▸ **rewards**(`options`: [IRewardQueryOptions](../interfaces/irewardqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Reward](reward.md)[]›*
 
-*Defined in [dao.ts:273](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L273)*
+*Defined in [dao.ts:273](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L273)*
 
 **Parameters:**
 
@@ -225,7 +225,7 @@ ___
 
 ▸ **scheme**(`options`: [ISchemeQueryOptions](../interfaces/ischemequeryoptions.md)): *Promise‹[Scheme](scheme.md)›*
 
-*Defined in [dao.ts:221](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L221)*
+*Defined in [dao.ts:221](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L221)*
 
 **Parameters:**
 
@@ -241,7 +241,7 @@ ___
 
 ▸ **schemes**(`options`: [ISchemeQueryOptions](../interfaces/ischemequeryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Scheme](scheme.md)[]›*
 
-*Defined in [dao.ts:212](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L212)*
+*Defined in [dao.ts:212](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L212)*
 
 **Parameters:**
 
@@ -258,7 +258,7 @@ ___
 
 ▸ **setStaticState**(`opts`: [IDAOStaticState](../interfaces/idaostaticstate.md)): *void*
 
-*Defined in [dao.ts:136](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L136)*
+*Defined in [dao.ts:136](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L136)*
 
 **Parameters:**
 
@@ -274,7 +274,7 @@ ___
 
 ▸ **stakes**(`options`: [IStakeQueryOptions](../interfaces/istakequeryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Stake](stake.md)[]›*
 
-*Defined in [dao.ts:291](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L291)*
+*Defined in [dao.ts:291](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L291)*
 
 **Parameters:**
 
@@ -291,7 +291,7 @@ ___
 
 ▸ **state**(`apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[IDAOState](../interfaces/idaostate.md)›*
 
-*Defined in [dao.ts:163](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L163)*
+*Defined in [dao.ts:163](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L163)*
 
 get the current state of the DAO
 
@@ -311,7 +311,7 @@ ___
 
 ▸ **votes**(`options`: [IVoteQueryOptions](../interfaces/ivotequeryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Vote](vote.md)[]›*
 
-*Defined in [dao.ts:282](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L282)*
+*Defined in [dao.ts:282](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L282)*
 
 **Parameters:**
 
@@ -328,7 +328,7 @@ ___
 
 ▸ **search**(`context`: [Arc](arc.md), `options`: [IDAOQueryOptions](../interfaces/idaoqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[DAO](dao.md)[]›*
 
-*Defined in [dao.ts:61](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L61)*
+*Defined in [dao.ts:61](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L61)*
 
 DAO.search(context, options) searches for DAO entities
 
@@ -350,7 +350,7 @@ an observable of DAO objects
 
 ### ▪ **fragments**: *object*
 
-*Defined in [dao.ts:44](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L44)*
+*Defined in [dao.ts:44](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L44)*
 
 ###  DAOFields
 
@@ -363,4 +363,4 @@ an observable of DAO objects
         reputationHoldersCount
     }`
 
-*Defined in [dao.ts:45](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L45)*
+*Defined in [dao.ts:45](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L45)*

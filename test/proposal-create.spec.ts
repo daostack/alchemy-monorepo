@@ -28,7 +28,7 @@ describe('Create a ContributionReward proposal', () => {
     web3 = arc.web3
     accounts = web3.eth.accounts.wallet
     web3.eth.defaultAccount = accounts[0].address
-    testAddresses = getTestAddresses()
+    testAddresses = getTestAddresses(arc)
     dao = await getTestDAO()
   })
 
@@ -125,7 +125,7 @@ describe('Create a ContributionReward proposal', () => {
   it('handles the fact that the ipfs url is not set elegantly', async () => {
     const arcWithoutIPFS = await newArc()
     arcWithoutIPFS.ipfsProvider = ''
-    const contractAddresses = await getTestAddresses()
+    const contractAddresses = await getTestAddresses(arc)
     const anotherDAO = arcWithoutIPFS.dao(contractAddresses.dao.Avatar)
     const options = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',

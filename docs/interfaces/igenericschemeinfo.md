@@ -20,7 +20,7 @@
 
 • **contractToCall**: *[Address](../globals.md#address)*
 
-*Defined in [schemes/genericScheme.ts:7](https://github.com/daostack/client/blob/c62f433/src/schemes/genericScheme.ts#L7)*
+*Defined in [schemes/genericScheme.ts:7](https://github.com/daostack/client/blob/a73e635/src/schemes/genericScheme.ts#L7)*
 
 ___
 
@@ -28,7 +28,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [schemes/genericScheme.ts:6](https://github.com/daostack/client/blob/c62f433/src/schemes/genericScheme.ts#L6)*
+*Defined in [schemes/genericScheme.ts:6](https://github.com/daostack/client/blob/a73e635/src/schemes/genericScheme.ts#L6)*
 
 ___
 
@@ -36,4 +36,4 @@ ___
 
 • **votingMachine**: *[Address](../globals.md#address)*
 
-*Defined in [schemes/genericScheme.ts:8](https://github.com/daostack/client/blob/c62f433/src/schemes/genericScheme.ts#L8)*
+*Defined in [schemes/genericScheme.ts:8](https://github.com/daostack/client/blob/a73e635/src/schemes/genericScheme.ts#L8)*

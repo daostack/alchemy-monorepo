@@ -30,7 +30,7 @@ describe('Proposal', () => {
 
   beforeAll(async () => {
     arc = await newArc()
-    addresses = await getTestAddresses()
+    addresses = await getTestAddresses(arc)
     const { Avatar, executedProposalId, queuedProposalId, preBoostedProposalId } = addresses.test
     dao = arc.dao(Avatar.toLowerCase())
     // check if the executedProposalId indeed has the correct state
@@ -161,7 +161,7 @@ describe('Proposal', () => {
       periodLength: 0,
       periods: 1,
       reputationReward: toWei('10'),
-      scheme: getTestAddresses().base.ContributionReward
+      scheme: getTestAddresses(arc).base.ContributionReward
     }
 
     const response = await (dao as DAO).createProposal(options as IProposalCreateOptions).send()

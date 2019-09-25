@@ -32,7 +32,7 @@ describe('Proposal', () => {
       descriptionHash: '',
       parametersHash: '0x0000000000000000000000000000000000000000000000000000000000001234',
       permissions: '0x0000001f',
-      scheme: getTestAddresses().base.SchemeRegistrar,
+      scheme: getTestAddresses(arc).base.SchemeRegistrar,
       schemeToRegister,
       type: IProposalType.SchemeRegistrarAdd
     })
@@ -83,7 +83,7 @@ describe('Proposal', () => {
       descriptionHash: '',
       parametersHash: '0x0000000000000000000000000000000000000000000000000000000000001234',
       permissions: '0x0000001f',
-      scheme: getTestAddresses().base.SchemeRegistrar,
+      scheme: getTestAddresses(arc).base.SchemeRegistrar,
       schemeToRegister: schemeToRegister.toLowerCase(),
       type: IProposalType.SchemeRegistrarEdit
     })
@@ -109,7 +109,7 @@ describe('Proposal', () => {
 
     // we now uregister the new scheme
     const proposalToRemove = await createAProposal(dao, {
-      scheme: getTestAddresses().base.SchemeRegistrar,
+      scheme: getTestAddresses(arc).base.SchemeRegistrar,
       schemeToRegister,
       type: IProposalType.SchemeRegistrarRemove
     })

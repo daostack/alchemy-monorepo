@@ -166,7 +166,7 @@ describe('Arc ', () => {
 
   it('arc.proposal() should work', async () => {
     const arc = await newArc()
-    const proposal = arc.proposal(getTestAddresses().test.executedProposalId)
+    const proposal = arc.proposal(getTestAddresses(arc).test.executedProposalId)
     expect(proposal).toBeInstanceOf(Proposal)
   })
 

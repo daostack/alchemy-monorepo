@@ -58,16 +58,23 @@ export interface ITestAddresses {
   }
 }
 
-export function getTestAddresses(): ITestAddresses {
+export function getTestAddresses(arc: Arc): ITestAddresses {
+  const version = LATEST_ARC_VERSION
+  // const contractInfos = arc.contractInfos
   const path = './migration.json'
   const migration = require(path).private
-  const version = LATEST_ARC_VERSION
   const addresses = {
-    base: migration.base[version],
+    base: {
+      ContributionReward: arc.getContractInfoByName('ContributionReward', version).address,
+      GEN: arc.GENToken().address,
+      SchemeRegistrar: arc.getContractInfoByName('SchemeRegistrar', version).address,
+      UGenericScheme: arc.getContractInfoByName('UGenericScheme', version).address
+    },
     dao: migration.dao[version],
     test: migration.test[version]
   }
   return addresses
+
 }
 export async function getOptions(web3: any) {
   const block = await web3.eth.getBlock('latest')
@@ -128,7 +135,7 @@ export async function getTestDAO(arc?: Arc) {
   if (!arc) {
     arc = await newArc()
   }
-  const addresses = await getTestAddresses()
+  const addresses = await getTestAddresses(arc)
   if (!addresses.test.Avatar) {
     const msg = `Expected to find ".test.avatar" in the migration file, found ${addresses} instead`
     throw Error(msg)
@@ -143,8 +150,7 @@ export async function createAProposal(
   if (!dao) {
     dao = await getTestDAO()
   }
-
-  options   = {
+  options  = {
     beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
     ethReward: toWei('300'),
     externalTokenAddress: undefined,
@@ -153,7 +159,7 @@ export async function createAProposal(
     periodLength: 0,
     periods: 1,
     reputationReward: toWei('10'),
-    scheme: getTestAddresses().base.ContributionReward,
+    scheme: getTestAddresses(dao.context).base.ContributionReward,
     ...options
   }
 
@@ -168,7 +174,7 @@ export async function createAProposal(
 
 export async function mintSomeReputation() {
   const arc = await newArc()
-  const addresses = getTestAddresses()
+  const addresses = getTestAddresses(arc)
   const token = new Reputation(addresses.test.organs.DemoReputation, arc)
   const accounts = arc.web3.eth.accounts.wallet
   await token.mint(accounts[1].address, new BN('99')).send()

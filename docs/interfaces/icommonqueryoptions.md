@@ -44,7 +44,7 @@
 
 • **first**? : *undefined | number*
 
-*Defined in [types.ts:15](https://github.com/daostack/client/blob/c62f433/src/types.ts#L15)*
+*Defined in [types.ts:15](https://github.com/daostack/client/blob/a73e635/src/types.ts#L15)*
 
 ___
 
@@ -52,7 +52,7 @@ ___
 
 • **orderBy**? : *undefined | string*
 
-*Defined in [types.ts:16](https://github.com/daostack/client/blob/c62f433/src/types.ts#L16)*
+*Defined in [types.ts:16](https://github.com/daostack/client/blob/a73e635/src/types.ts#L16)*
 
 ___
 
@@ -60,7 +60,7 @@ ___
 
 • **orderDirection**? : *"asc" | "desc"*
 
-*Defined in [types.ts:17](https://github.com/daostack/client/blob/c62f433/src/types.ts#L17)*
+*Defined in [types.ts:17](https://github.com/daostack/client/blob/a73e635/src/types.ts#L17)*
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 • **skip**? : *undefined | number*
 
-*Defined in [types.ts:14](https://github.com/daostack/client/blob/c62f433/src/types.ts#L14)*
+*Defined in [types.ts:14](https://github.com/daostack/client/blob/a73e635/src/types.ts#L14)*
 
 ___
 
@@ -76,4 +76,4 @@ ___
 
 • **where**? : *any*
 
-*Defined in [types.ts:18](https://github.com/daostack/client/blob/c62f433/src/types.ts#L18)*
+*Defined in [types.ts:18](https://github.com/daostack/client/blob/a73e635/src/types.ts#L18)*

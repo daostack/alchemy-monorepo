@@ -19,7 +19,7 @@
 
 • **Boosted**:
 
-*Defined in [proposal.ts:46](https://github.com/daostack/client/blob/c62f433/src/proposal.ts#L46)*
+*Defined in [proposal.ts:46](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L46)*
 
 ___
 
@@ -27,7 +27,7 @@ ___
 
 • **Executed**:
 
-*Defined in [proposal.ts:43](https://github.com/daostack/client/blob/c62f433/src/proposal.ts#L43)*
+*Defined in [proposal.ts:43](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L43)*
 
 ___
 
@@ -35,7 +35,7 @@ ___
 
 • **ExpiredInQueue**:
 
-*Defined in [proposal.ts:42](https://github.com/daostack/client/blob/c62f433/src/proposal.ts#L42)*
+*Defined in [proposal.ts:42](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L42)*
 
 ___
 
@@ -43,7 +43,7 @@ ___
 
 • **PreBoosted**:
 
-*Defined in [proposal.ts:45](https://github.com/daostack/client/blob/c62f433/src/proposal.ts#L45)*
+*Defined in [proposal.ts:45](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L45)*
 
 ___
 
@@ -51,7 +51,7 @@ ___
 
 • **Queued**:
 
-*Defined in [proposal.ts:44](https://github.com/daostack/client/blob/c62f433/src/proposal.ts#L44)*
+*Defined in [proposal.ts:44](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L44)*
 
 ___
 
@@ -59,4 +59,4 @@ ___
 
 • **QuietEndingPeriod**:
 
-*Defined in [proposal.ts:47](https://github.com/daostack/client/blob/c62f433/src/proposal.ts#L47)*
+*Defined in [proposal.ts:47](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L47)*

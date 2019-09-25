@@ -20,15 +20,15 @@
 
 • **fetchAllData**? : *true | false*
 
-*Defined in [graphnode.ts:19](https://github.com/daostack/client/blob/c62f433/src/graphnode.ts#L19)*
+*Defined in [graphnode.ts:19](https://github.com/daostack/client/blob/a73e635/src/graphnode.ts#L19)*
 
 ___
 
 ### `Optional` fetchPolicy
 
-• **fetchPolicy**? : *"cache-first" | "cache-and-network" | "network-only" | "cache-only" | "no-cache" | "standby"*
+• **fetchPolicy**? : *"cache-first" | "network-only" | "cache-only" | "no-cache" | "standby"*
 
-*Defined in [graphnode.ts:17](https://github.com/daostack/client/blob/c62f433/src/graphnode.ts#L17)*
+*Defined in [graphnode.ts:17](https://github.com/daostack/client/blob/a73e635/src/graphnode.ts#L17)*
 
 ___
 
@@ -36,4 +36,4 @@ ___
 
 • **subscribe**? : *true | false*
 
-*Defined in [graphnode.ts:18](https://github.com/daostack/client/blob/c62f433/src/graphnode.ts#L18)*
+*Defined in [graphnode.ts:18](https://github.com/daostack/client/blob/a73e635/src/graphnode.ts#L18)*

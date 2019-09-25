@@ -1,6 +1,6 @@
 {
   "name": "@daostack/client",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -94,13 +94,13 @@
     "ts-node": "^7.0.1",
     "tslint": "^5.18.0",
     "tslint-config-standard": "^8.0.1",
-    "typedoc": "^0.14.2",
+    "typedoc": "^0.15.0",
     "typedoc-plugin-markdown": "^2.2.4",
     "typescript": "^3.5.3",
     "u": "^0.1.0"
   },
   "dependencies": {
-    "@daostack/migration": "0.0.1-rc.24-v3",
+    "@daostack/migration": "0.0.1-rc.27-v0",
     "apollo-cache-inmemory": "^1.6.2",
     "apollo-client": "^2.6.3",
     "apollo-client-ws": "^2.5.0",

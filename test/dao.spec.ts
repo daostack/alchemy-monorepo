@@ -112,7 +112,7 @@ describe('DAO', () => {
 
   it('dao.proposal() should work', async () => {
     const dao = await getTestDAO()
-    const proposal = await dao.proposal(getTestAddresses().test.executedProposalId)
+    const proposal = await dao.proposal(getTestAddresses(arc).test.executedProposalId)
     expect(proposal).toBeInstanceOf(Proposal)
   })
 
@@ -133,7 +133,7 @@ describe('DAO', () => {
       externalTokenReward: toWei('0'),
       nativeTokenReward: toWei('1'),
       reputationReward: toWei('10'),
-      scheme: getTestAddresses().base.ContributionReward
+      scheme: getTestAddresses(arc).base.ContributionReward
     }
 
     const response = await dao.createProposal(options).send()
@@ -160,7 +160,7 @@ describe('DAO', () => {
       externalTokenReward: toWei('0'),
       nativeTokenReward: toWei('1'),
       reputationReward: toWei('10'),
-      scheme: getTestAddresses().base.ContributionReward
+      scheme: getTestAddresses(arc).base.ContributionReward
     }
 
     await dao.createProposal(options).send()

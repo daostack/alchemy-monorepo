@@ -14,7 +14,7 @@ describe('Claim rewards', () => {
 
   beforeAll(async () => {
     arc = await newArc()
-    testAddresses = getTestAddresses()
+    testAddresses = getTestAddresses(arc)
     dao = await getTestDAO()
   })
 

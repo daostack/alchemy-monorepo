@@ -32,7 +32,7 @@
 
 *Inherited from [IDAOStaticState](idaostaticstate.md).[address](idaostaticstate.md#address)*
 
-*Defined in [dao.ts:19](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L19)*
+*Defined in [dao.ts:19](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L19)*
 
 ___
 
@@ -40,7 +40,7 @@ ___
 
 • **dao**: *[DAO](../classes/dao.md)*
 
-*Defined in [dao.ts:31](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L31)*
+*Defined in [dao.ts:31](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L31)*
 
 ___
 
@@ -50,7 +50,7 @@ ___
 
 *Inherited from [IDAOStaticState](idaostaticstate.md).[id](idaostaticstate.md#id)*
 
-*Defined in [dao.ts:18](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L18)*
+*Defined in [dao.ts:18](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L18)*
 
 ___
 
@@ -58,7 +58,7 @@ ___
 
 • **memberCount**: *number*
 
-*Defined in [dao.ts:28](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L28)*
+*Defined in [dao.ts:28](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L28)*
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 *Inherited from [IDAOStaticState](idaostaticstate.md).[name](idaostaticstate.md#name)*
 
-*Defined in [dao.ts:20](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L20)*
+*Defined in [dao.ts:20](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L20)*
 
 ___
 
@@ -78,7 +78,7 @@ ___
 
 *Inherited from [IDAOStaticState](idaostaticstate.md).[reputation](idaostaticstate.md#reputation)*
 
-*Defined in [dao.ts:21](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L21)*
+*Defined in [dao.ts:21](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L21)*
 
 ___
 
@@ -86,7 +86,7 @@ ___
 
 • **reputationTotalSupply**: *any*
 
-*Defined in [dao.ts:29](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L29)*
+*Defined in [dao.ts:29](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L29)*
 
 ___
 
@@ -96,7 +96,7 @@ ___
 
 *Inherited from [IDAOStaticState](idaostaticstate.md).[token](idaostaticstate.md#token)*
 
-*Defined in [dao.ts:22](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L22)*
+*Defined in [dao.ts:22](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L22)*
 
 ___
 
@@ -106,7 +106,7 @@ ___
 
 *Inherited from [IDAOStaticState](idaostaticstate.md).[tokenName](idaostaticstate.md#tokenname)*
 
-*Defined in [dao.ts:23](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L23)*
+*Defined in [dao.ts:23](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L23)*
 
 ___
 
@@ -116,7 +116,7 @@ ___
 
 *Inherited from [IDAOStaticState](idaostaticstate.md).[tokenSymbol](idaostaticstate.md#tokensymbol)*
 
-*Defined in [dao.ts:24](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L24)*
+*Defined in [dao.ts:24](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L24)*
 
 ___
 
@@ -124,4 +124,4 @@ ___
 
 • **tokenTotalSupply**: *any*
 
-*Defined in [dao.ts:30](https://github.com/daostack/client/blob/c62f433/src/dao.ts#L30)*
+*Defined in [dao.ts:30](https://github.com/daostack/client/blob/a73e635/src/dao.ts#L30)*

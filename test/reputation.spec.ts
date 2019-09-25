@@ -16,9 +16,9 @@ describe('Reputation', () => {
   let accounts: any
 
   beforeAll(async () => {
-    addresses = getTestAddresses()
-    address = addresses.dao.Reputation
     arc = await newArc()
+    addresses = getTestAddresses(arc)
+    address = addresses.dao.Reputation
     accounts = arc.web3.eth.accounts.wallet
   })
 

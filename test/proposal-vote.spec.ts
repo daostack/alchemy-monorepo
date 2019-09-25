@@ -18,7 +18,7 @@ describe('Vote on a ContributionReward', () => {
 
   beforeAll(async () => {
     arc = await newArc()
-    addresses = await getTestAddresses()
+    addresses = await getTestAddresses(arc)
     dao = await getTestDAO()
     const { executedProposalId} = addresses.test
     executedProposal = await dao.proposal(executedProposalId)
