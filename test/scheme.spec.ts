@@ -1,5 +1,6 @@
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
+import { IProposalStage } from '../src/proposal'
 import { ISchemeState, Scheme } from '../src/scheme'
 import { firstResult, getTestAddresses, getTestDAO,  ITestAddresses, newArc } from './utils'
 
@@ -104,7 +105,7 @@ describe('Scheme', () => {
 
   })
 
-  it('Scheme.state() should be equal to proposal.state().scheme', async () => {
+  it('state() should be equal to proposal.state().scheme', async () => {
     const { queuedProposalId } = testAddresses.test
     const dao = await getTestDAO()
     const proposal = await dao.proposal(queuedProposalId)
@@ -112,6 +113,26 @@ describe('Scheme', () => {
     const schemes = await firstResult(Scheme.search(arc, {where: {id: proposalState.scheme.id}}))
     const schemeState = await firstResult(schemes[0].state())
     expect(schemeState).toMatchObject(proposalState.scheme)
+  })
+
+  it('numberOfProposals counts are correct', async () =>  {
+    const { queuedProposalId } = testAddresses.test
+    const dao = await getTestDAO()
+    const proposal = await dao.proposal(queuedProposalId)
+    const proposalState = await proposal.state().pipe(first()).toPromise()
+    const schemes = await firstResult(Scheme.search(arc, {where: {id: proposalState.scheme.id}}))
+    const scheme = schemes[0]
+    const schemeState = await firstResult(scheme.state())
+
+    const queuedProposals = await scheme.proposals({ where: { stage: IProposalStage.Queued}, first: 1000})
+      .pipe(first()).toPromise()
+    expect(schemeState.numberOfQueuedProposals).toEqual(queuedProposals.length)
+    const preBoostedProposals = await scheme.proposals({ where: { stage: IProposalStage.PreBoosted}, first: 1000})
+      .pipe(first()).toPromise()
+    expect(schemeState.numberOfPreBoostedProposals).toEqual(preBoostedProposals.length)
+    const boostedProposals = await scheme.proposals({ where: { stage: IProposalStage.Boosted}, first: 1000})
+      .pipe(first()).toPromise()
+    expect(schemeState.numberOfBoostedProposals).toEqual(boostedProposals.length)
   })
 
   it('paging and sorting works', async () => {

@@ -29,6 +29,9 @@ export interface IDAOState extends IDAOStaticState {
   reputationTotalSupply: typeof BN
   tokenTotalSupply: typeof BN
   dao: DAO
+  numberOfQueuedProposals: number
+  numberOfPreBoostedProposals: number
+  numberOfBoostedProposals: number
 }
 
 export interface IDAOQueryOptions extends ICommonQueryOptions {
@@ -49,6 +52,9 @@ export class DAO implements IStateful<IDAOState> {
         nativeReputation { id, totalSupply }
         nativeToken { id, name, symbol, totalSupply }
         reputationHoldersCount
+        numberOfQueuedProposals
+        numberOfPreBoostedProposals
+        numberOfBoostedProposals
     }`
   }
 
@@ -190,6 +196,9 @@ export class DAO implements IStateful<IDAOState> {
         id: item.id,
         memberCount: Number(item.reputationHoldersCount),
         name: item.name,
+        numberOfBoostedProposals: Number(item.numberOfBoostedProposals),
+        numberOfPreBoostedProposals: Number(item.numberOfPreBoostedProposals),
+        numberOfQueuedProposals: Number(item.numberOfQueuedProposals),
         reputation,
         reputationTotalSupply: new BN(item.nativeReputation.totalSupply),
         token,
@@ -297,6 +306,11 @@ export class DAO implements IStateful<IDAOState> {
     return Stake.search(this.context, options, apolloQueryOptions)
   }
 
+  /**
+   * get (an observable of) the Ether balance of the DAO from the web3Provider
+   *
+   * @return an observable stream of BN number instances
+   */
   public ethBalance(): Observable<typeof BN> {
     return this.context.ethBalance(this.id)
   }

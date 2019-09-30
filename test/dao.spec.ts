@@ -1,7 +1,7 @@
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { Proposal } from '../src/proposal'
+import { IProposalStage, Proposal } from '../src/proposal'
 import { fromWei,
   getTestAddresses,
   getTestDAO,
@@ -74,6 +74,9 @@ describe('DAO', () => {
       'id',
       'memberCount',
       'name',
+      'numberOfBoostedProposals',
+      'numberOfPreBoostedProposals',
+      'numberOfQueuedProposals',
       'reputation',
       'reputationTotalSupply',
       'token',
@@ -121,6 +124,20 @@ describe('DAO', () => {
     const proposals = await dao.proposals().pipe(first()).toPromise()
     expect(typeof proposals).toEqual(typeof [])
     expect(proposals.length).toBeGreaterThanOrEqual(4)
+  })
+
+  it('dao numberOfProposals counts are correct', async () =>  {
+    const dao = await getTestDAO()
+    const daoState = await dao.state().pipe(first()).toPromise()
+    const queuedProposals = await dao.proposals({ where: { stage: IProposalStage.Queued}, first: 1000})
+      .pipe(first()).toPromise()
+    expect(daoState.numberOfQueuedProposals).toEqual(queuedProposals.length)
+    const preBoostedProposals = await dao.proposals({ where: { stage: IProposalStage.PreBoosted}, first: 1000})
+      .pipe(first()).toPromise()
+    expect(daoState.numberOfPreBoostedProposals).toEqual(preBoostedProposals.length)
+    const boostedProposals = await dao.proposals({ where: { stage: IProposalStage.Boosted}, first: 1000})
+      .pipe(first()).toPromise()
+    expect(daoState.numberOfBoostedProposals).toEqual(boostedProposals.length)
   })
 
   it('createProposal should work', async () => {

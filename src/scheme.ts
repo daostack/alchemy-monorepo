@@ -41,6 +41,9 @@ export interface ISchemeState extends ISchemeStaticState {
     voteRemoveParams: IGenesisProtocolParams
     voteRegisterParams: IGenesisProtocolParams
   } | null
+  numberOfQueuedProposals: number
+  numberOfPreBoostedProposals: number
+  numberOfBoostedProposals: number
   uGenericSchemeParams?: {
     votingMachine: Address
     contractToCall: Address
@@ -272,6 +275,9 @@ export class Scheme implements IStateful<ISchemeState> {
               voteOnBehalf
             }
           }
+          numberOfQueuedProposals
+          numberOfPreBoostedProposals
+          numberOfBoostedProposals
           uGenericSchemeParams {
             votingMachine
             contractToCall
@@ -290,9 +296,9 @@ export class Scheme implements IStateful<ISchemeState> {
               activationTime
               voteOnBehalf
             }
-          }        }
-      }
-        `
+          }
+        }
+      }`
 
     const itemMap = (item: any): ISchemeState|null => {
       if (!item) {
@@ -330,6 +336,9 @@ export class Scheme implements IStateful<ISchemeState> {
         } : null,
         id: item.id,
         name,
+        numberOfBoostedProposals: Number(item.numberOfBoostedProposals),
+        numberOfPreBoostedProposals: Number(item.numberOfPreBoostedProposals),
+        numberOfQueuedProposals: Number(item.numberOfQueuedProposals),
         paramsHash: item.paramsHash,
         schemeRegistrarParams: item.schemeRegistrarParams ? {
           voteRegisterParams: mapGenesisProtocolParams(item.schemeRegistrarParams.voteRegisterParams),

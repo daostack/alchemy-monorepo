@@ -172,6 +172,9 @@ export class Proposal implements IStateful<IProposalState> {
         canRegisterSchemes
         canUpgradeController
         name
+        numberOfQueuedProposals
+        numberOfPreBoostedProposals
+        numberOfBoostedProposals
       }
       gpQueue {
         id
@@ -492,6 +495,9 @@ export class Proposal implements IStateful<IProposalState> {
         dao: item.dao.id,
         id: scheme.id,
         name: schemeName,
+        numberOfBoostedProposals: Number(scheme.numberOfBoostedProposals),
+        numberOfPreBoostedProposals: Number(scheme.numberOfPreBoostedProposals),
+        numberOfQueuedProposals: Number(scheme.numberOfQueuedProposals),
         paramsHash: scheme.paramsHash
       }
       const queueState: IQueueState = {
