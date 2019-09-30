@@ -41,6 +41,11 @@ export interface ISchemeState extends ISchemeStaticState {
     voteRemoveParams: IGenesisProtocolParams
     voteRegisterParams: IGenesisProtocolParams
   } | null
+  uGenericSchemeParams?: {
+    votingMachine: Address
+    contractToCall: Address
+    voteParams: IGenesisProtocolParams
+  } | null
 }
 
 export interface ISchemeQueryOptions extends ICommonQueryOptions {
@@ -267,7 +272,25 @@ export class Scheme implements IStateful<ISchemeState> {
               voteOnBehalf
             }
           }
-        }
+          uGenericSchemeParams {
+            votingMachine
+            contractToCall
+            voteParams {
+              queuedVoteRequiredPercentage
+              queuedVotePeriodLimit
+              boostedVotePeriodLimit
+              preBoostedVotePeriodLimit
+              thresholdConst
+              limitExponentValue
+              quietEndingPeriod
+              proposingRepReward
+              votersReputationLossRatio
+              minimumDaoBounty
+              daoBountyConst
+              activationTime
+              voteOnBehalf
+            }
+          }        }
       }
         `
 
@@ -312,7 +335,13 @@ export class Scheme implements IStateful<ISchemeState> {
           voteRegisterParams: mapGenesisProtocolParams(item.schemeRegistrarParams.voteRegisterParams),
           voteRemoveParams: mapGenesisProtocolParams(item.schemeRegistrarParams.voteRemoveParams),
           votingMachine: item.schemeRegistrarParams.votingMachine
+        } : null,
+        uGenericSchemeParams: item.uGenericSchemeParams ? {
+          contractToCall: item.uGenericSchemeParams.contractToCall,
+          voteParams: mapGenesisProtocolParams(item.uGenericSchemeParams.voteParams),
+          votingMachine: item.uGenericSchemeParams.votingMachine
         } : null
+
       }
     }
     return  this.context.getObservableObject(query, itemMap, apolloQueryOptions) as Observable<ISchemeState>
