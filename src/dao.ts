@@ -15,30 +15,31 @@ import { BN, createGraphQlQuery, isAddress } from './utils'
 import { IVoteQueryOptions, Vote } from './vote'
 
 export interface IDAOStaticState {
-  id: Address
-  address: Address // address of the avatar
-  name: string
-  reputation: Reputation
-  token: Token
-  tokenName: string
+  id: Address,
+  address: Address, // address of the avatar
+  name: string,
+  register: 'na'|'proposed'|'registered'|'unRegistered',
+  reputation: Reputation,
+  token: Token,
+  tokenName: string,
   tokenSymbol: string
 }
 
 export interface IDAOState extends IDAOStaticState {
-  memberCount: number
-  reputationTotalSupply: typeof BN
-  tokenTotalSupply: typeof BN
-  dao: DAO
-  numberOfQueuedProposals: number
-  numberOfPreBoostedProposals: number
+  memberCount: number,
+  reputationTotalSupply: typeof BN,
+  tokenTotalSupply: typeof BN,
+  dao: DAO,
+  numberOfQueuedProposals: number,
+  numberOfPreBoostedProposals: number,
   numberOfBoostedProposals: number
 }
 
 export interface IDAOQueryOptions extends ICommonQueryOptions {
   where?: {
-    address?: Address
-    name?: string
-    register?: 'na'|'proposed'|'registered'|'unRegistered'
+    address?: Address,
+    name?: string,
+    register?: 'na'|'proposed'|'registered'|'unRegistered',
     [key: string]: any
   }
 }
@@ -51,10 +52,11 @@ export class DAO implements IStateful<IDAOState> {
         name
         nativeReputation { id, totalSupply }
         nativeToken { id, name, symbol, totalSupply }
-        reputationHoldersCount
         numberOfQueuedProposals
         numberOfPreBoostedProposals
         numberOfBoostedProposals
+        register
+        reputationHoldersCount
     }`
   }
 
@@ -114,6 +116,7 @@ export class DAO implements IStateful<IDAOState> {
             address: r.id,
             id: r.id,
             name: r.name,
+            register: r.register,
             reputation,
             token,
             tokenName: r.tokenName,
@@ -152,6 +155,7 @@ export class DAO implements IStateful<IDAOState> {
         address: state.address,
         id: state.id,
         name: state.name,
+        register: state.register,
         reputation: state.reputation,
         token: state.token,
         tokenName: state.tokenName,
@@ -185,6 +189,7 @@ export class DAO implements IStateful<IDAOState> {
         address: item.id,
         id: item.id,
         name: item.name,
+        register: item.register,
         reputation,
         token,
         tokenName: item.nativeToken.name,
@@ -199,6 +204,7 @@ export class DAO implements IStateful<IDAOState> {
         numberOfBoostedProposals: Number(item.numberOfBoostedProposals),
         numberOfPreBoostedProposals: Number(item.numberOfPreBoostedProposals),
         numberOfQueuedProposals: Number(item.numberOfQueuedProposals),
+        register: item.register,
         reputation,
         reputationTotalSupply: new BN(item.nativeReputation.totalSupply),
         token,

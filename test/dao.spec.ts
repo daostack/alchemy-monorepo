@@ -77,6 +77,7 @@ describe('DAO', () => {
       'numberOfBoostedProposals',
       'numberOfPreBoostedProposals',
       'numberOfQueuedProposals',
+      'register',
       'reputation',
       'reputationTotalSupply',
       'token',

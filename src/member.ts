@@ -172,7 +172,7 @@ export class Member implements IStateful<IMemberState> {
       return this.context.getObservableObject(
         query,
         (r: any) => {
-          if (r === null) {
+          if (r === null || r === undefined || r.id === undefined) {
             // we return a dummy object with 0 reputation
             const staticState = this.staticState as IMemberStaticState
             if (staticState) {
