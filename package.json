@@ -50,6 +50,7 @@
     "ganache-cli": "^6.4.1",
     "hdwallet-accounts": "0.0.1",
     "inquirer": "^6.2.2",
+    "jsonschema": "^1.2.4",
     "mkdirp": "^0.5.1",
     "moment": "^2.24.0",
     "ora": "^3.2.0",

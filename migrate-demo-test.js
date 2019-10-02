@@ -1,4 +1,6 @@
 const utils = require('./utils.js')
+const sanitize = require('./sanitize')
+
 async function assignGlobalVariables (web3, spinner, opts, logTx, previousMigration) {
   this.arcVersion = require('./package.json').dependencies['@daostack/arc']
   this.web3 = web3
@@ -9,6 +11,9 @@ async function assignGlobalVariables (web3, spinner, opts, logTx, previousMigrat
 }
 
 async function migrateDemoTest ({ web3, spinner, confirm, opts, migrationParams, logTx, previousMigration }) {
+  // sanitize the parameters
+  sanitize(migrationParams)
+
   if (!(await confirm('About to migrate new Demo Test. Continue?'))) {
     return
   }
