@@ -16,7 +16,8 @@ describe('Scheme', () => {
         dao: dao.id,
         id: '0.x123455',
         name: 'ReputationFromToken',
-        paramsHash: '0x124'
+        paramsHash: '0x124',
+        version: '0.0.1-rc.24'
     }, arc)
 
     expect(scheme.ReputationFromToken).not.toBeFalsy()

@@ -13,6 +13,7 @@ export { Scheme, ISchemeState, ISchemeStaticState, ISchemeQueryOptions } from '.
 export { ReputationFromTokenScheme } from './schemes/reputationFromToken'
 export { IContributionReward} from './schemes/contributionReward'
 export { IGenericScheme } from './schemes/genericScheme'
+export { IUGenericScheme } from './schemes/uGenericScheme'
 export { ISchemeRegistrar } from './schemes/schemeRegistrar'
 export { Token, ITokenState, ITokenQueryOptions } from './token'
 export { Stake, IStakeState, IStakeStaticState, IStakeQueryOptions } from './stake'

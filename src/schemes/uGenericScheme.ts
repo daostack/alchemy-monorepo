@@ -2,13 +2,13 @@ import { Arc } from '../arc'
 import { Proposal } from '../proposal'
 import { Address } from '../types'
 
-export interface IGenericSchemeInfo {
+export interface IUGenericSchemeInfo {
   id: string
   contractToCall: Address
   votingMachine: Address
 }
 
-export interface IGenericScheme {
+export interface IUGenericScheme {
   id: string
   contractToCall: Address
   callData: string
@@ -21,21 +21,22 @@ export interface IProposalCreateOptionsGS {
   value?: number
 }
 export enum IProposalType {
-  GenericScheme = 'GenericScheme' // propose a contributionReward
+  GenericScheme = 'UGenericScheme'
 }
 
 export function createTransaction(options: any, context: Arc) {
   if (!options.callData) {
-    throw new Error(`Missing argument "callData" for GenericScheme in Proposal.create()`)
+    throw new Error(`Missing argument "callData" for UGenericScheme in Proposal.create()`)
   }
   if (options.value === undefined) {
-    throw new Error(`Missing argument "value" for GenericScheme in Proposal.create()`)
+    throw new Error(`Missing argument "value" for UGenericScheme in Proposal.create()`)
   }
   return async () => {
     options.descriptionHash = await context.saveIPFSData(options)
 
     const genericScheme = context.getContract(options.scheme)
     const transaction = genericScheme.methods.proposeCall(
+      options.dao,
       options.callData,
       options.value,
       options.descriptionHash

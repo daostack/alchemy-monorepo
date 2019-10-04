@@ -1,4 +1,4 @@
-import { DAO } from '../src//dao'
+import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import {
   IProposalStage,
@@ -6,7 +6,7 @@ import {
   Proposal
   } from '../src/proposal'
 import { IGenericScheme} from '../src/schemes/genericScheme'
-import { createAProposal, getTestAddresses, getTestDAO, ITestAddresses, LATEST_ARC_VERSION,
+import { createAProposal, getTestAddresses, ITestAddresses, LATEST_ARC_VERSION,
   newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(60000)
@@ -17,23 +17,21 @@ jest.setTimeout(60000)
 describe('Proposal', () => {
   let arc: Arc
   let testAddresses: ITestAddresses
-  let dao: DAO
 
   beforeAll(async () => {
     arc = await newArc()
     testAddresses = getTestAddresses(arc)
-    dao = await getTestDAO()
-  })
-
-  it.skip('the calldata argument must be provided', async () => {
-    await expect(createAProposal(dao, {
-      scheme: testAddresses.base.GenericScheme
-    })).rejects.toThrow(/missing argument "callData"/i)
   })
 
   it('Check proposal state is correct', async () => {
+    const daos = await arc.daos({where: { name: 'Nectar DAO'}}).pipe(first()).toPromise()
+    const dao = daos[0]
     const states: IProposalState[] = []
     const lastState = (): IProposalState => states[states.length - 1]
+
+    // get a genericScheme contract
+    // console.log(arc.contractInfos.filter((r: any) => r.name === 'GenericScheme'))
+    const genericScheme = arc.getContractInfoByName('GenericScheme', '0.0.1-rc.28')
 
     const actionMockABI = require(`@daostack/migration/abis/${LATEST_ARC_VERSION}/ActionMock.json`)
     const actionMock = new arc.web3.eth.Contract(actionMockABI, testAddresses.test.ActionMock)
@@ -41,7 +39,7 @@ describe('Proposal', () => {
 
     const proposal = await createAProposal(dao, {
       callData,
-      scheme: testAddresses.base.UGenericScheme,
+      scheme: genericScheme.address,
       schemeToRegister: actionMock.options.address,
       value: 0
     })
@@ -69,7 +67,7 @@ describe('Proposal', () => {
     expect(lastState().genericScheme).toMatchObject({
       callData,
       executed: true,
-      returnValue: '0x0000000000000000000000000000000000000000000000000000000000000001'
+      returnValue: '0x'
     })
   })
 })

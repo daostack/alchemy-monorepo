@@ -8,6 +8,7 @@ import { Address } from '../src/types'
 import { BN } from '../src/utils'
 
 const Web3 = require('web3')
+const path =require('path')
 
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack'
 export const graphqlHttpMetaProvider: string = 'http://127.0.0.1:8000/subgraphs'
@@ -15,8 +16,7 @@ export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/d
 export const web3Provider: string = 'ws://127.0.0.1:8545'
 export const ipfsProvider: string = '/ip4/127.0.0.1/tcp/5001'
 
-export const LATEST_ARC_VERSION = '0.0.1-rc.24'
-// export const LATEST_ARC_VERSION = '0.0.1-rc.19'
+export const LATEST_ARC_VERSION = '0.0.1-rc.28'
 
 export { BN }
 
@@ -58,17 +58,28 @@ export interface ITestAddresses {
   }
 }
 
-export function getTestAddresses(arc: Arc): ITestAddresses {
-  const version = LATEST_ARC_VERSION
+export function getTestAddresses(arc: Arc, version: string = LATEST_ARC_VERSION): ITestAddresses {
   // const contractInfos = arc.contractInfos
-  const path = './migration.json'
-  const migration = require(path).private
+  const migrationFile = path.resolve(`${require.resolve('@daostack/migration' )}/../migration.json`)
+  const migration = require(migrationFile).private
+  let UGenericScheme: string = ''
+  try {
+    UGenericScheme = arc.getContractInfoByName('UGenericScheme', version).address
+  } catch (err) {
+    if (err.message.match(/no contract/i)) {
+      // pass
+    } else {
+      throw err
+    }
+  }
+
   const addresses = {
     base: {
       ContributionReward: arc.getContractInfoByName('ContributionReward', version).address,
       GEN: arc.GENToken().address,
+      GenericScheme: arc.getContractInfoByName('GenericScheme', version).address,
       SchemeRegistrar: arc.getContractInfoByName('SchemeRegistrar', version).address,
-      UGenericScheme: arc.getContractInfoByName('UGenericScheme', version).address
+      UGenericScheme
     },
     dao: migration.dao[version],
     test: migration.test[version]
@@ -129,13 +140,11 @@ export async function newArcWithoutGraphql(): Promise<Arc> {
   return arc
 }
 
-export async function getTestDAO(arc?: Arc) {
-  // we have two indexed daos with the same name, but one has 6 members, and that is the one
-  // we are using for testing
+export async function getTestDAO(arc?: Arc, version: string = LATEST_ARC_VERSION) {
   if (!arc) {
     arc = await newArc()
   }
-  const addresses = await getTestAddresses(arc)
+  const addresses = await getTestAddresses(arc, version)
   if (!addresses.test.Avatar) {
     const msg = `Expected to find ".test.avatar" in the migration file, found ${addresses} instead`
     throw Error(msg)
@@ -172,9 +181,9 @@ export async function createAProposal(
   return proposal
 }
 
-export async function mintSomeReputation() {
+export async function mintSomeReputation(version:string = LATEST_ARC_VERSION) {
   const arc = await newArc()
-  const addresses = getTestAddresses(arc)
+  const addresses = getTestAddresses(arc, version)
   const token = new Reputation(addresses.test.organs.DemoReputation, arc)
   const accounts = arc.web3.eth.accounts.wallet
   await token.mint(accounts[1].address, new BN('99')).send()

@@ -118,6 +118,7 @@ export class Queue implements IStateful<IQueueState> {
             numberOfBoostedProposals
             numberOfPreBoostedProposals
             numberOfQueuedProposals
+            version
           }
           votingMachine
           threshold
@@ -147,7 +148,8 @@ export class Queue implements IStateful<IQueueState> {
           numberOfBoostedProposals: Number(item.scheme.numberOfBoostedProposals),
           numberOfPreBoostedProposals: Number(item.scheme.numberOfPreBoostedProposals),
           numberOfQueuedProposals: Number(item.scheme.numberOfQueuedProposals),
-          paramsHash: item.scheme.paramsHash
+          paramsHash: item.scheme.paramsHash,
+          version: item.scheme.version
         },
         threshold,
         votingMachine: item.votingMachine
