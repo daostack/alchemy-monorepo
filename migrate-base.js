@@ -58,6 +58,8 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
 
   let GENToken = '0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf'
 
+  let DAOTracker
+
   if (network === 'private') {
     GENToken = await deploy(
       require('@daostack/arc/build/contracts/DAOToken.json'),
@@ -98,6 +100,9 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
       [],
       web3.eth.accounts.wallet[0].address
     )
+    if (Number(arcVersion.slice(-2)) >= 29) {
+      DAOTracker = await deploy(require('@daostack/arc/build/contracts/DAOTracker.json'))
+    }
   } else {
     addresses['GEN'] = GENToken
     if (network === 'main') {
@@ -106,22 +111,53 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
         [],
         '0x85e7fa550b534656d04d143b9a23a11e05077da3' // DAOstack's controlled account
       )
+      if (Number(arcVersion.slice(-2)) >= 29) {
+        DAOTracker = await deploy(require('@daostack/arc/build/contracts/DAOTracker.json'))
+        const daoTracker = new web3.eth.Contract(
+          require('@daostack/arc/build/contracts/DAOTracker.json').abi,
+          DAOTracker,
+          opts
+        )
+        spinner.start('Transfering DAOTracker Ownership')
+        let tx = await daoTracker.methods.transferOwnership('0x85e7fa550b534656d04d143b9a23a11e05077da3').send()
+        await logTx(tx, 'Finished Transfering DAOTracker Ownership')
+      }
     } else {
       await deploy(
         require('@daostack/arc-hive/build/contracts/DAORegistry.json'),
         [],
         '0x73Db6408abbea97C5DB8A2234C4027C315094936'
       )
+      if (Number(arcVersion.slice(-2)) >= 29) {
+        DAOTracker = await deploy(require('@daostack/arc/build/contracts/DAOTracker.json'))
+        const daoTracker = new web3.eth.Contract(
+          require('@daostack/arc/build/contracts/DAOTracker.json').abi,
+          DAOTracker,
+          opts
+        )
+        spinner.start('Transfering DAOTracker Ownership')
+        let tx = await daoTracker.methods.transferOwnership('0x73Db6408abbea97C5DB8A2234C4027C315094936').send()
+        await logTx(tx, 'Finished Transfering DAOTracker Ownership')
+      }
     }
   }
 
   const ControllerCreator = await deploy(require('@daostack/arc/build/contracts/ControllerCreator.json'))
 
-  await deploy(
-    require('@daostack/arc/build/contracts/DaoCreator.json'),
-    ['ControllerCreator'],
-    ControllerCreator
-  )
+  if (Number(arcVersion.slice(-2)) >= 29) {
+    await deploy(
+      require('@daostack/arc/build/contracts/DaoCreator.json'),
+      ['ControllerCreator', 'DAOTracker'],
+      ControllerCreator,
+      DAOTracker
+    )
+  } else {
+    await deploy(
+      require('@daostack/arc/build/contracts/DaoCreator.json'),
+      ['ControllerCreator'],
+      ControllerCreator
+    )
+  }
   await deploy(require('@daostack/arc/build/contracts/UController.json'))
   await deploy(
     require('@daostack/arc/build/contracts/GenesisProtocol.json'),

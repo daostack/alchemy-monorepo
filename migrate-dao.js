@@ -27,6 +27,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     UController,
     DaoCreator,
     DAORegistry,
+    DAOTracker,
     SchemeRegistrar,
     ContributionReward,
     UGenericScheme,
@@ -260,6 +261,17 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
         arguments: [avatar.options.address]
       }).send({ nonce: ++nonce }))
       Controller = controller.options.address
+    }
+
+    if (migrationParams.noTrack !== true && Number(arcVersion.slice(-2)) >= 29) {
+      const daoTracker = new web3.eth.Contract(
+        require('@daostack/arc/build/contracts/DAOTracker.json').abi,
+        DAOTracker,
+        opts
+      )
+      spinner.start('Registering DAO in DAOTracker')
+      tx = await daoTracker.methods.track(avatar.options.address, Controller).send({ nonce: ++nonce })
+      await logTx(tx, 'Finished Registering DAO in DAOTracker')
     }
 
     spinner.start('Transfer Avatar to Controller ownership')

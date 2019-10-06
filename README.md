@@ -312,6 +312,8 @@ Example migration parameters object:
   "useUController": false,
   // True if should use the DAO Creator to deploy the DAO (default false).
   "useDaoCreator": false,
+  // If not using DaoCreator, set to true to prevent automatic tracking on DAOTracker, otherwise the DAO will be tracked as part of the script
+  "noTrack": false,
   // List of addresses to mint initial tokens and reputation to
   "founders": [
     {
