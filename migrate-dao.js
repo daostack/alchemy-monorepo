@@ -566,14 +566,15 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   }
 
   console.log(
-    {
+    JSON.stringify({
       name: orgName,
       Avatar: avatar.options.address,
       DAOToken: daoToken.options.address,
       Reputation: reputation.options.address,
       Controller,
-      Schemes
-    }
+      Schemes,
+      arcVersion
+    }, null, 2)
   )
   let migration = { 'dao': previousMigration.dao || {} }
   migration.dao[arcVersion] = {
@@ -582,7 +583,8 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     DAOToken: daoToken.options.address,
     Reputation: reputation.options.address,
     Controller,
-    Schemes
+    Schemes,
+    arcVersion
   }
   return migration
 }
