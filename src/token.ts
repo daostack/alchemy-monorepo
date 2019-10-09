@@ -144,16 +144,22 @@ export class Token implements IStateful<ITokenState> {
     }
     const observable = Observable.create(async (observer: Observer<typeof BN>) => {
       const contract = this.contract('readonly')
-      let subscription: Subscription
+      let subscriptionReceive: Subscription
+      let subscriptionSend: Subscription
       contract.methods.balanceOf(owner).call()
         .then((balance: number) => {
           if (balance === null) {
             observer.error(`balanceOf ${owner} returned null`)
           }
           observer.next(new BN(balance))
-          subscription = contract.events.Transfer({ filter: { _to: owner }})
-            .on('data', () => {
-              // const newBalance = data.returnValues.value
+          subscriptionReceive = contract.events.Transfer({ filter: { to: owner }})
+            .on('data', (data: any) => {
+              contract.methods.balanceOf(owner).call().then((newBalance: number) => {
+                observer.next(new BN(newBalance))
+              })
+            })
+          subscriptionSend = contract.events.Transfer({ filter: { from: owner }})
+            .on('data', (data: any) => {
               contract.methods.balanceOf(owner).call().then((newBalance: number) => {
                 observer.next(new BN(newBalance))
               })
@@ -166,11 +172,11 @@ export class Token implements IStateful<ITokenState> {
             throw Error(`Please reconnect: ${err.message}`)
           } else {
             observer.error(await errHandler(err))
-
           }
         })
       return () => {
-        if (subscription) { subscription.unsubscribe() }
+        if (subscriptionReceive) { subscriptionReceive.unsubscribe() }
+        if (subscriptionSend) { subscriptionSend.unsubscribe() }
       }
     })
     observable.first = () => observable.pipe(first()).toPromise()

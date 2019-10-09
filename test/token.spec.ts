@@ -75,13 +75,17 @@ describe('Token', () => {
     const token = arc.GENToken()
     const account = '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1'
     const balances: Array<typeof BN> = []
-    const amount = new BN('1234')
+    const amountToMint = new BN('12345')
     token.balanceOf(account).subscribe((next: typeof BN) => balances.push(next))
     await waitUntilTrue(() => balances.length > 0)
     expect(typeof balances[0]).toEqual(typeof new BN(0))
-    await token.mint(account, amount).send()
+    await token.mint(account, amountToMint).send()
     await waitUntilTrue(() => balances.length > 1)
-    expect(balances[1].sub(balances[0]).toString()).toEqual(amount.toString())
+    expect(balances[1].sub(balances[0]).toString()).toEqual(amountToMint.toString())
+    const amountToSend = new BN('23456')
+    await token.transfer('0x72939947e7a1c4ac94bb840e3304b322237ad1a8', amountToSend).send()
+    await waitUntilTrue(() => balances.length > 2)
+    expect(balances[1].sub(balances[2]).toString()).toEqual(amountToSend.toString())
   })
 
   it('approveForStaking() and allowance() work', async () => {
