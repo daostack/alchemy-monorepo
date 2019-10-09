@@ -29,7 +29,7 @@
 
 • **activationTime**: *number*
 
-*Defined in [genesisProtocol.ts:4](https://github.com/daostack/client/blob/a73e635/src/genesisProtocol.ts#L4)*
+*Defined in [genesisProtocol.ts:4](https://github.com/daostack/client/blob/0eadcce/src/genesisProtocol.ts#L4)*
 
 ___
 
@@ -37,7 +37,7 @@ ___
 
 • **boostedVotePeriodLimit**: *number*
 
-*Defined in [genesisProtocol.ts:5](https://github.com/daostack/client/blob/a73e635/src/genesisProtocol.ts#L5)*
+*Defined in [genesisProtocol.ts:5](https://github.com/daostack/client/blob/0eadcce/src/genesisProtocol.ts#L5)*
 
 ___
 
@@ -45,7 +45,7 @@ ___
 
 • **daoBountyConst**: *number*
 
-*Defined in [genesisProtocol.ts:6](https://github.com/daostack/client/blob/a73e635/src/genesisProtocol.ts#L6)*
+*Defined in [genesisProtocol.ts:6](https://github.com/daostack/client/blob/0eadcce/src/genesisProtocol.ts#L6)*
 
 ___
 
@@ -53,7 +53,7 @@ ___
 
 • **limitExponentValue**: *number*
 
-*Defined in [genesisProtocol.ts:7](https://github.com/daostack/client/blob/a73e635/src/genesisProtocol.ts#L7)*
+*Defined in [genesisProtocol.ts:7](https://github.com/daostack/client/blob/0eadcce/src/genesisProtocol.ts#L7)*
 
 ___
 
@@ -61,7 +61,7 @@ ___
 
 • **minimumDaoBounty**: *any*
 
-*Defined in [genesisProtocol.ts:8](https://github.com/daostack/client/blob/a73e635/src/genesisProtocol.ts#L8)*
+*Defined in [genesisProtocol.ts:8](https://github.com/daostack/client/blob/0eadcce/src/genesisProtocol.ts#L8)*
 
 ___
 
@@ -69,7 +69,7 @@ ___
 
 • **preBoostedVotePeriodLimit**: *number*
 
-*Defined in [genesisProtocol.ts:9](https://github.com/daostack/client/blob/a73e635/src/genesisProtocol.ts#L9)*
+*Defined in [genesisProtocol.ts:9](https://github.com/daostack/client/blob/0eadcce/src/genesisProtocol.ts#L9)*
 
 ___
 
@@ -77,7 +77,7 @@ ___
 
 • **proposingRepReward**: *any*
 
-*Defined in [genesisProtocol.ts:10](https://github.com/daostack/client/blob/a73e635/src/genesisProtocol.ts#L10)*
+*Defined in [genesisProtocol.ts:10](https://github.com/daostack/client/blob/0eadcce/src/genesisProtocol.ts#L10)*
 
 ___
 
@@ -85,7 +85,7 @@ ___
 
 • **queuedVotePeriodLimit**: *number*
 
-*Defined in [genesisProtocol.ts:12](https://github.com/daostack/client/blob/a73e635/src/genesisProtocol.ts#L12)*
+*Defined in [genesisProtocol.ts:12](https://github.com/daostack/client/blob/0eadcce/src/genesisProtocol.ts#L12)*
 
 ___
 
@@ -93,7 +93,7 @@ ___
 
 • **queuedVoteRequiredPercentage**: *number*
 
-*Defined in [genesisProtocol.ts:11](https://github.com/daostack/client/blob/a73e635/src/genesisProtocol.ts#L11)*
+*Defined in [genesisProtocol.ts:11](https://github.com/daostack/client/blob/0eadcce/src/genesisProtocol.ts#L11)*
 
 ___
 
@@ -101,7 +101,7 @@ ___
 
 • **quietEndingPeriod**: *number*
 
-*Defined in [genesisProtocol.ts:13](https://github.com/daostack/client/blob/a73e635/src/genesisProtocol.ts#L13)*
+*Defined in [genesisProtocol.ts:13](https://github.com/daostack/client/blob/0eadcce/src/genesisProtocol.ts#L13)*
 
 ___
 
@@ -109,7 +109,7 @@ ___
 
 • **thresholdConst**: *number*
 
-*Defined in [genesisProtocol.ts:14](https://github.com/daostack/client/blob/a73e635/src/genesisProtocol.ts#L14)*
+*Defined in [genesisProtocol.ts:14](https://github.com/daostack/client/blob/0eadcce/src/genesisProtocol.ts#L14)*
 
 ___
 
@@ -117,4 +117,4 @@ ___
 
 • **votersReputationLossRatio**: *number*
 
-*Defined in [genesisProtocol.ts:15](https://github.com/daostack/client/blob/a73e635/src/genesisProtocol.ts#L15)*
+*Defined in [genesisProtocol.ts:15](https://github.com/daostack/client/blob/0eadcce/src/genesisProtocol.ts#L15)*

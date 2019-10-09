@@ -23,7 +23,7 @@
 
 • **dao**: *[DAO](../classes/dao.md)*
 
-*Defined in [proposal.ts:61](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L61)*
+*Defined in [proposal.ts:61](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L61)*
 
 ___
 
@@ -31,7 +31,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [proposal.ts:60](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L60)*
+*Defined in [proposal.ts:60](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L60)*
 
 ___
 
@@ -39,7 +39,7 @@ ___
 
 • **scheme**: *[ISchemeState](ischemestate.md)*
 
-*Defined in [proposal.ts:62](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L62)*
+*Defined in [proposal.ts:62](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L62)*
 
 ___
 
@@ -47,4 +47,4 @@ ___
 
 • **votingMachine**: *[Address](../globals.md#address)*
 
-*Defined in [proposal.ts:63](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L63)*
+*Defined in [proposal.ts:63](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L63)*

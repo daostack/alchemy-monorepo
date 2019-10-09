@@ -20,7 +20,7 @@
 
 • **parametersHash**? : *undefined | string*
 
-*Defined in [schemes/schemeRegistrar.ts:17](https://github.com/daostack/client/blob/a73e635/src/schemes/schemeRegistrar.ts#L17)*
+*Defined in [schemes/schemeRegistrar.ts:17](https://github.com/daostack/client/blob/0eadcce/src/schemes/schemeRegistrar.ts#L17)*
 
 ___
 
@@ -28,7 +28,7 @@ ___
 
 • **permissions**? : *undefined | string*
 
-*Defined in [schemes/schemeRegistrar.ts:18](https://github.com/daostack/client/blob/a73e635/src/schemes/schemeRegistrar.ts#L18)*
+*Defined in [schemes/schemeRegistrar.ts:18](https://github.com/daostack/client/blob/0eadcce/src/schemes/schemeRegistrar.ts#L18)*
 
 ___
 
@@ -36,4 +36,4 @@ ___
 
 • **schemeToRegister**? : *[Address](../globals.md#address)*
 
-*Defined in [schemes/schemeRegistrar.ts:19](https://github.com/daostack/client/blob/a73e635/src/schemes/schemeRegistrar.ts#L19)*
+*Defined in [schemes/schemeRegistrar.ts:19](https://github.com/daostack/client/blob/0eadcce/src/schemes/schemeRegistrar.ts#L19)*

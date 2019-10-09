@@ -20,7 +20,7 @@
 
 • **address**: *[Address](../globals.md#address)*
 
-*Defined in [reputation.ts:11](https://github.com/daostack/client/blob/a73e635/src/reputation.ts#L11)*
+*Defined in [reputation.ts:11](https://github.com/daostack/client/blob/0eadcce/src/reputation.ts#L11)*
 
 ___
 
@@ -28,7 +28,7 @@ ___
 
 • **dao**: *[Address](../globals.md#address)*
 
-*Defined in [reputation.ts:13](https://github.com/daostack/client/blob/a73e635/src/reputation.ts#L13)*
+*Defined in [reputation.ts:13](https://github.com/daostack/client/blob/0eadcce/src/reputation.ts#L13)*
 
 ___
 
@@ -36,4 +36,4 @@ ___
 
 • **totalSupply**: *number*
 
-*Defined in [reputation.ts:12](https://github.com/daostack/client/blob/a73e635/src/reputation.ts#L12)*
+*Defined in [reputation.ts:12](https://github.com/daostack/client/blob/0eadcce/src/reputation.ts#L12)*

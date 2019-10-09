@@ -59,7 +59,7 @@
 
 • **accountsWithUnclaimedRewards**: *[Address](../globals.md#address)[]*
 
-*Defined in [proposal.ts:67](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L67)*
+*Defined in [proposal.ts:67](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L67)*
 
 ___
 
@@ -67,7 +67,7 @@ ___
 
 • **boostedAt**: *[Date](../globals.md#date)*
 
-*Defined in [proposal.ts:68](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L68)*
+*Defined in [proposal.ts:68](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L68)*
 
 ___
 
@@ -75,7 +75,7 @@ ___
 
 • **confidenceThreshold**: *number*
 
-*Defined in [proposal.ts:70](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L70)*
+*Defined in [proposal.ts:70](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L70)*
 
 ___
 
@@ -83,7 +83,7 @@ ___
 
 • **contributionReward**: *[IContributionReward](icontributionreward.md) | null*
 
-*Defined in [proposal.ts:69](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L69)*
+*Defined in [proposal.ts:69](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L69)*
 
 ___
 
@@ -91,7 +91,7 @@ ___
 
 • **createdAt**: *[Date](../globals.md#date)*
 
-*Defined in [proposal.ts:71](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L71)*
+*Defined in [proposal.ts:71](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L71)*
 
 ___
 
@@ -101,7 +101,7 @@ ___
 
 *Inherited from [IProposalStaticState](iproposalstaticstate.md).[dao](iproposalstaticstate.md#dao)*
 
-*Defined in [proposal.ts:61](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L61)*
+*Defined in [proposal.ts:61](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L61)*
 
 ___
 
@@ -109,7 +109,7 @@ ___
 
 • **description**? : *undefined | string*
 
-*Defined in [proposal.ts:73](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L73)*
+*Defined in [proposal.ts:73](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L73)*
 
 ___
 
@@ -117,7 +117,7 @@ ___
 
 • **descriptionHash**? : *undefined | string*
 
-*Defined in [proposal.ts:72](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L72)*
+*Defined in [proposal.ts:72](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L72)*
 
 ___
 
@@ -125,7 +125,7 @@ ___
 
 • **downStakeNeededToQueue**: *any*
 
-*Defined in [proposal.ts:74](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L74)*
+*Defined in [proposal.ts:74](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L74)*
 
 ___
 
@@ -133,7 +133,7 @@ ___
 
 • **executedAt**: *[Date](../globals.md#date)*
 
-*Defined in [proposal.ts:75](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L75)*
+*Defined in [proposal.ts:75](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L75)*
 
 ___
 
@@ -141,7 +141,7 @@ ___
 
 • **executionState**: *[IExecutionState](../enums/iexecutionstate.md)*
 
-*Defined in [proposal.ts:76](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L76)*
+*Defined in [proposal.ts:76](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L76)*
 
 ___
 
@@ -149,7 +149,7 @@ ___
 
 • **expiresInQueueAt**: *[Date](../globals.md#date)*
 
-*Defined in [proposal.ts:77](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L77)*
+*Defined in [proposal.ts:77](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L77)*
 
 ___
 
@@ -157,7 +157,7 @@ ___
 
 • **genericScheme**: *[IGenericScheme](igenericscheme.md) | null*
 
-*Defined in [proposal.ts:78](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L78)*
+*Defined in [proposal.ts:78](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L78)*
 
 ___
 
@@ -165,7 +165,7 @@ ___
 
 • **genesisProtocolParams**: *[IGenesisProtocolParams](igenesisprotocolparams.md)*
 
-*Defined in [proposal.ts:79](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L79)*
+*Defined in [proposal.ts:79](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L79)*
 
 ___
 
@@ -175,7 +175,7 @@ ___
 
 *Inherited from [IProposalStaticState](iproposalstaticstate.md).[id](iproposalstaticstate.md#id)*
 
-*Defined in [proposal.ts:60](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L60)*
+*Defined in [proposal.ts:60](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L60)*
 
 ___
 
@@ -183,7 +183,7 @@ ___
 
 • **organizationId**: *string*
 
-*Defined in [proposal.ts:80](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L80)*
+*Defined in [proposal.ts:80](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L80)*
 
 ___
 
@@ -191,7 +191,7 @@ ___
 
 • **paramsHash**: *string*
 
-*Defined in [proposal.ts:81](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L81)*
+*Defined in [proposal.ts:81](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L81)*
 
 ___
 
@@ -199,7 +199,7 @@ ___
 
 • **preBoostedAt**: *[Date](../globals.md#date)*
 
-*Defined in [proposal.ts:82](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L82)*
+*Defined in [proposal.ts:82](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L82)*
 
 ___
 
@@ -207,7 +207,7 @@ ___
 
 • **proposal**: *[Proposal](../classes/proposal.md)*
 
-*Defined in [proposal.ts:83](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L83)*
+*Defined in [proposal.ts:83](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L83)*
 
 ___
 
@@ -215,7 +215,7 @@ ___
 
 • **proposer**: *[Address](../globals.md#address)*
 
-*Defined in [proposal.ts:84](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L84)*
+*Defined in [proposal.ts:84](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L84)*
 
 ___
 
@@ -223,7 +223,7 @@ ___
 
 • **queue**: *[IQueueState](iqueuestate.md)*
 
-*Defined in [proposal.ts:85](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L85)*
+*Defined in [proposal.ts:85](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L85)*
 
 ___
 
@@ -231,7 +231,7 @@ ___
 
 • **quietEndingPeriodBeganAt**: *[Date](../globals.md#date)*
 
-*Defined in [proposal.ts:86](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L86)*
+*Defined in [proposal.ts:86](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L86)*
 
 ___
 
@@ -239,7 +239,7 @@ ___
 
 • **resolvedAt**: *[Date](../globals.md#date)*
 
-*Defined in [proposal.ts:88](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L88)*
+*Defined in [proposal.ts:88](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L88)*
 
 ___
 
@@ -249,7 +249,7 @@ ___
 
 *Inherited from [IProposalStaticState](iproposalstaticstate.md).[scheme](iproposalstaticstate.md#scheme)*
 
-*Defined in [proposal.ts:62](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L62)*
+*Defined in [proposal.ts:62](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L62)*
 
 ___
 
@@ -257,7 +257,7 @@ ___
 
 • **schemeRegistrar**: *[ISchemeRegistrar](ischemeregistrar.md) | null*
 
-*Defined in [proposal.ts:87](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L87)*
+*Defined in [proposal.ts:87](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L87)*
 
 ___
 
@@ -265,7 +265,7 @@ ___
 
 • **stage**: *[IProposalStage](../enums/iproposalstage.md)*
 
-*Defined in [proposal.ts:89](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L89)*
+*Defined in [proposal.ts:89](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L89)*
 
 ___
 
@@ -273,7 +273,7 @@ ___
 
 • **stakesAgainst**: *any*
 
-*Defined in [proposal.ts:91](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L91)*
+*Defined in [proposal.ts:91](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L91)*
 
 ___
 
@@ -281,7 +281,7 @@ ___
 
 • **stakesFor**: *any*
 
-*Defined in [proposal.ts:90](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L90)*
+*Defined in [proposal.ts:90](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L90)*
 
 ___
 
@@ -289,7 +289,7 @@ ___
 
 • **title**? : *undefined | string*
 
-*Defined in [proposal.ts:92](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L92)*
+*Defined in [proposal.ts:92](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L92)*
 
 ___
 
@@ -297,7 +297,7 @@ ___
 
 • **totalRepWhenCreated**: *any*
 
-*Defined in [proposal.ts:93](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L93)*
+*Defined in [proposal.ts:93](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L93)*
 
 ___
 
@@ -305,7 +305,7 @@ ___
 
 • **totalRepWhenExecuted**: *any*
 
-*Defined in [proposal.ts:94](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L94)*
+*Defined in [proposal.ts:94](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L94)*
 
 ___
 
@@ -313,7 +313,7 @@ ___
 
 • **type**: *[IProposalType](../globals.md#const-iproposaltype)*
 
-*Defined in [proposal.ts:95](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L95)*
+*Defined in [proposal.ts:95](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L95)*
 
 ___
 
@@ -321,7 +321,7 @@ ___
 
 • **upstakeNeededToPreBoost**: *any*
 
-*Defined in [proposal.ts:96](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L96)*
+*Defined in [proposal.ts:96](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L96)*
 
 ___
 
@@ -329,7 +329,7 @@ ___
 
 • **url**? : *undefined | string*
 
-*Defined in [proposal.ts:97](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L97)*
+*Defined in [proposal.ts:97](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L97)*
 
 ___
 
@@ -337,7 +337,7 @@ ___
 
 • **voteOnBehalf**: *[Address](../globals.md#address)*
 
-*Defined in [proposal.ts:101](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L101)*
+*Defined in [proposal.ts:101](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L101)*
 
 ___
 
@@ -345,7 +345,7 @@ ___
 
 • **votesAgainst**: *any*
 
-*Defined in [proposal.ts:99](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L99)*
+*Defined in [proposal.ts:99](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L99)*
 
 ___
 
@@ -353,7 +353,7 @@ ___
 
 • **votesCount**: *number*
 
-*Defined in [proposal.ts:100](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L100)*
+*Defined in [proposal.ts:100](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L100)*
 
 ___
 
@@ -361,7 +361,7 @@ ___
 
 • **votesFor**: *any*
 
-*Defined in [proposal.ts:98](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L98)*
+*Defined in [proposal.ts:98](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L98)*
 
 ___
 
@@ -371,7 +371,7 @@ ___
 
 *Inherited from [IProposalStaticState](iproposalstaticstate.md).[votingMachine](iproposalstaticstate.md#votingmachine)*
 
-*Defined in [proposal.ts:63](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L63)*
+*Defined in [proposal.ts:63](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L63)*
 
 ___
 
@@ -379,4 +379,4 @@ ___
 
 • **winningOutcome**: *[IProposalOutcome](../enums/iproposaloutcome.md)*
 
-*Defined in [proposal.ts:102](https://github.com/daostack/client/blob/a73e635/src/proposal.ts#L102)*
+*Defined in [proposal.ts:102](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L102)*

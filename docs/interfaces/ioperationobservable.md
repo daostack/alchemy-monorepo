@@ -52,7 +52,7 @@ An operation is a stream of transaction updates
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:19
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:19
 
 **`constructor`** 
 
@@ -72,7 +72,7 @@ Name | Type | Description |
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:15
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:15
 
 Internal implementation detail, do not use directly.
 
@@ -84,7 +84,7 @@ ___
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:19
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:19
 
 **`deprecated`** This is an internal implementation detail, do not use.
 
@@ -94,7 +94,7 @@ ___
 
 • **send**: *function*
 
-*Defined in [operation.ts:36](https://github.com/daostack/client/blob/a73e635/src/operation.ts#L36)*
+*Defined in [operation.ts:36](https://github.com/daostack/client/blob/0eadcce/src/operation.ts#L36)*
 
 #### Type declaration:
 
@@ -108,7 +108,7 @@ ___
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:17
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:17
 
 **`deprecated`** This is an internal implementation detail, do not use.
 
@@ -120,7 +120,7 @@ ___
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:38
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:38
 
 Creates a new cold Observable by calling the Observable constructor
 
@@ -146,7 +146,7 @@ ___
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:71
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:71
 
 **`nocollapse`** 
 
@@ -160,7 +160,7 @@ ___
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:76
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:76
 
 **`nocollapse`** 
 
@@ -174,7 +174,7 @@ Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Obse
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:66
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:66
 
 **`internal`** This is an internal implementation detail, do not use.
 
@@ -194,7 +194,7 @@ ___
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:56
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:56
 
 **`deprecated`** This is an internal implementation detail, do not use.
 
@@ -214,7 +214,7 @@ ___
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:64
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:64
 
 **`method`** forEach
 
@@ -247,7 +247,7 @@ ___
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:46
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:46
 
 Creates a new Observable, with this Observable as the source, and the passed
 operator defined as the new observable's operator.
@@ -276,7 +276,7 @@ ___
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:77
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:77
 
 **Returns:** *Observable‹T›*
 
@@ -284,7 +284,7 @@ Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Obse
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:78
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:78
 
 **Type parameters:**
 
@@ -302,7 +302,7 @@ Name | Type |
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:79
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:79
 
 **Type parameters:**
 
@@ -323,7 +323,7 @@ Name | Type |
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:80
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:80
 
 **Type parameters:**
 
@@ -347,7 +347,7 @@ Name | Type |
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:81
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:81
 
 **Type parameters:**
 
@@ -374,7 +374,7 @@ Name | Type |
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:82
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:82
 
 **Type parameters:**
 
@@ -404,7 +404,7 @@ Name | Type |
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:83
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:83
 
 **Type parameters:**
 
@@ -437,7 +437,7 @@ Name | Type |
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:84
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:84
 
 **Type parameters:**
 
@@ -473,7 +473,7 @@ Name | Type |
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:85
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:85
 
 **Type parameters:**
 
@@ -512,7 +512,7 @@ Name | Type |
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:86
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:86
 
 **Type parameters:**
 
@@ -554,7 +554,7 @@ Name | Type |
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:87
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:87
 
 **Type parameters:**
 
@@ -601,7 +601,7 @@ ___
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:47
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:47
 
 **Parameters:**
 
@@ -615,7 +615,7 @@ Name | Type |
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:49
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:49
 
 **`deprecated`** Use an observer instead of a complete callback
 
@@ -635,7 +635,7 @@ Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Obse
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:51
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:51
 
 **`deprecated`** Use an observer instead of an error callback
 
@@ -661,7 +661,7 @@ Name | Type |
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:53
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:53
 
 **`deprecated`** Use an observer instead of a complete callback
 
@@ -689,7 +689,7 @@ Name | Type |
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:54
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:54
 
 **Parameters:**
 
@@ -709,7 +709,7 @@ ___
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:88
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:88
 
 **Type parameters:**
 
@@ -727,7 +727,7 @@ Name | Type |
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:89
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:89
 
 **Type parameters:**
 
@@ -746,7 +746,7 @@ Name | Type |
 
 *Inherited from void*
 
-Defined in /media/data2/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:90
+Defined in /home/jelle/projects/daostack/client/node_modules/rxjs/internal/Observable.d.ts:90
 
 **Type parameters:**
 

@@ -27,7 +27,7 @@
 
 *Inherited from [IQueueStaticState](iqueuestaticstate.md).[dao](iqueuestaticstate.md#dao)*
 
-*Defined in [queue.ts:10](https://github.com/daostack/client/blob/a73e635/src/queue.ts#L10)*
+*Defined in [queue.ts:10](https://github.com/daostack/client/blob/0eadcce/src/queue.ts#L10)*
 
 ___
 
@@ -37,7 +37,7 @@ ___
 
 *Inherited from [IQueueStaticState](iqueuestaticstate.md).[id](iqueuestaticstate.md#id)*
 
-*Defined in [queue.ts:11](https://github.com/daostack/client/blob/a73e635/src/queue.ts#L11)*
+*Defined in [queue.ts:11](https://github.com/daostack/client/blob/0eadcce/src/queue.ts#L11)*
 
 ___
 
@@ -47,7 +47,7 @@ ___
 
 *Inherited from [IQueueStaticState](iqueuestaticstate.md).[name](iqueuestaticstate.md#name)*
 
-*Defined in [queue.ts:12](https://github.com/daostack/client/blob/a73e635/src/queue.ts#L12)*
+*Defined in [queue.ts:12](https://github.com/daostack/client/blob/0eadcce/src/queue.ts#L12)*
 
 ___
 
@@ -55,7 +55,7 @@ ___
 
 • **scheme**: *[ISchemeState](ischemestate.md)*
 
-*Defined in [queue.ts:16](https://github.com/daostack/client/blob/a73e635/src/queue.ts#L16)*
+*Defined in [queue.ts:16](https://github.com/daostack/client/blob/0eadcce/src/queue.ts#L16)*
 
 ___
 
@@ -63,7 +63,7 @@ ___
 
 • **threshold**: *number*
 
-*Defined in [queue.ts:17](https://github.com/daostack/client/blob/a73e635/src/queue.ts#L17)*
+*Defined in [queue.ts:17](https://github.com/daostack/client/blob/0eadcce/src/queue.ts#L17)*
 
 ___
 
@@ -71,4 +71,4 @@ ___
 
 • **votingMachine**: *[Address](../globals.md#address)*
 
-*Defined in [queue.ts:18](https://github.com/daostack/client/blob/a73e635/src/queue.ts#L18)*
+*Defined in [queue.ts:18](https://github.com/daostack/client/blob/0eadcce/src/queue.ts#L18)*

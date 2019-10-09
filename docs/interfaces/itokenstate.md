@@ -22,7 +22,7 @@
 
 • **address**: *[Address](../globals.md#address)*
 
-*Defined in [token.ts:11](https://github.com/daostack/client/blob/a73e635/src/token.ts#L11)*
+*Defined in [token.ts:11](https://github.com/daostack/client/blob/0eadcce/src/token.ts#L11)*
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [token.ts:12](https://github.com/daostack/client/blob/a73e635/src/token.ts#L12)*
+*Defined in [token.ts:12](https://github.com/daostack/client/blob/0eadcce/src/token.ts#L12)*
 
 ___
 
@@ -38,7 +38,7 @@ ___
 
 • **owner**: *[Address](../globals.md#address)*
 
-*Defined in [token.ts:13](https://github.com/daostack/client/blob/a73e635/src/token.ts#L13)*
+*Defined in [token.ts:13](https://github.com/daostack/client/blob/0eadcce/src/token.ts#L13)*
 
 ___
 
@@ -46,7 +46,7 @@ ___
 
 • **symbol**: *string*
 
-*Defined in [token.ts:14](https://github.com/daostack/client/blob/a73e635/src/token.ts#L14)*
+*Defined in [token.ts:14](https://github.com/daostack/client/blob/0eadcce/src/token.ts#L14)*
 
 ___
 
@@ -54,4 +54,4 @@ ___
 
 • **totalSupply**: *any*
 
-*Defined in [token.ts:15](https://github.com/daostack/client/blob/a73e635/src/token.ts#L15)*
+*Defined in [token.ts:15](https://github.com/daostack/client/blob/0eadcce/src/token.ts#L15)*

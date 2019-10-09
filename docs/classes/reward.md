@@ -32,7 +32,7 @@
 
 \+ **new Reward**(`id`: string, `context`: [Arc](arc.md)): *[Reward](reward.md)*
 
-*Defined in [reward.ts:77](https://github.com/daostack/client/blob/a73e635/src/reward.ts#L77)*
+*Defined in [reward.ts:77](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L77)*
 
 **Parameters:**
 
@@ -49,7 +49,7 @@ Name | Type |
 
 • **context**: *[Arc](arc.md)*
 
-*Defined in [reward.ts:79](https://github.com/daostack/client/blob/a73e635/src/reward.ts#L79)*
+*Defined in [reward.ts:79](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L79)*
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [reward.ts:79](https://github.com/daostack/client/blob/a73e635/src/reward.ts#L79)*
+*Defined in [reward.ts:79](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L79)*
 
 ## Methods
 
@@ -65,7 +65,7 @@ ___
 
 ▸ **state**(`apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[IRewardState](../interfaces/irewardstate.md)›*
 
-*Defined in [reward.ts:84](https://github.com/daostack/client/blob/a73e635/src/reward.ts#L84)*
+*Defined in [reward.ts:84](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L84)*
 
 **Parameters:**
 
@@ -81,7 +81,7 @@ ___
 
 ▸ **search**(`context`: [Arc](arc.md), `options`: [IRewardQueryOptions](../interfaces/irewardqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Reward](reward.md)[]›*
 
-*Defined in [reward.ts:44](https://github.com/daostack/client/blob/a73e635/src/reward.ts#L44)*
+*Defined in [reward.ts:44](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L44)*
 
 Reward.search(context, options) searches for reward entities
 

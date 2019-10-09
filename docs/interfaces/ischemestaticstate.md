@@ -17,6 +17,7 @@
 * [id](ischemestaticstate.md#id)
 * [name](ischemestaticstate.md#name)
 * [paramsHash](ischemestaticstate.md#paramshash)
+* [version](ischemestaticstate.md#version)
 
 ## Properties
 
@@ -24,7 +25,7 @@
 
 • **address**: *[Address](../globals.md#address)*
 
-*Defined in [scheme.ts:17](https://github.com/daostack/client/blob/a73e635/src/scheme.ts#L17)*
+*Defined in [scheme.ts:18](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L18)*
 
 ___
 
@@ -32,7 +33,7 @@ ___
 
 • **dao**: *[Address](../globals.md#address)*
 
-*Defined in [scheme.ts:18](https://github.com/daostack/client/blob/a73e635/src/scheme.ts#L18)*
+*Defined in [scheme.ts:19](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L19)*
 
 ___
 
@@ -40,7 +41,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [scheme.ts:16](https://github.com/daostack/client/blob/a73e635/src/scheme.ts#L16)*
+*Defined in [scheme.ts:17](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L17)*
 
 ___
 
@@ -48,7 +49,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [scheme.ts:19](https://github.com/daostack/client/blob/a73e635/src/scheme.ts#L19)*
+*Defined in [scheme.ts:20](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L20)*
 
 ___
 
@@ -56,4 +57,12 @@ ___
 
 • **paramsHash**: *string*
 
-*Defined in [scheme.ts:20](https://github.com/daostack/client/blob/a73e635/src/scheme.ts#L20)*
+*Defined in [scheme.ts:21](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L21)*
+
+___
+
+###  version
+
+• **version**: *string*
+
+*Defined in [scheme.ts:22](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L22)*
