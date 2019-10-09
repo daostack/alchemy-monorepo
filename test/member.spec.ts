@@ -52,7 +52,7 @@ describe('Member', () => {
     expect(memberState).toEqual(newMemberState)
   })
 
-  it('Member state also works if address has no reputation', async () => {
+  it('Member state works if address has no reputation', async () => {
     const member = new Member({
       address: '0xe3016a92b6c728f5a55fe45029804de60148c689',
       contract: daoState.reputation.address,
@@ -63,6 +63,19 @@ describe('Member', () => {
     expect(memberState.address).toEqual('0xe3016a92b6c728f5a55fe45029804de60148c689')
     expect(memberState.dao).toBe(dao.id.toLowerCase())
   })
+
+  it('Member state works for a non-existent member, using cache-only', async () => {
+    const member = new Member({
+      address: '0xe3016a92b6c728f5a55fe45029804de601481234',
+      contract: daoState.reputation.address,
+      dao: dao.id
+    }, arc)
+    const memberState = await member.state({ fetchPolicy: 'cache-only'}).pipe(first()).toPromise()
+    expect(Number(memberState.reputation)).toEqual(0)
+    expect(memberState.address).toEqual('0xe3016a92b6c728f5a55fe45029804de601481234')
+    expect(memberState.dao).toBe(dao.id.toLowerCase())
+  })
+
 
   it('Member proposals() works', async () => {
     const member = new Member({ address: defaultAccount, dao: dao.id, contract: daoState.reputation.address}, arc)
