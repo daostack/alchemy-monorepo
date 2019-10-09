@@ -44,7 +44,7 @@ export class ReputationFromTokenScheme {
     return amount
   }
 
-  private async getContract() {
+  public async getContract() {
     const state = await this.scheme.fetchStaticState()
     const contract =  this.scheme.context.getContract(state.address)
     return contract

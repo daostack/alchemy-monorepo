@@ -329,7 +329,7 @@ export class Arc extends GraphNodeObserver {
           return new Token(contractInfo.address, this)
         }
       }
-      throw Error(`Cannot find address of GEN Token`)
+      throw Error(`Cannot find address of GEN Token - did you call setContractInfos?`)
     } else {
       throw Error(`No contract addresses known - did you run arc.setContractInfos()?`)
     }

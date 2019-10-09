@@ -8,7 +8,7 @@ export { IExecutionState, Proposal, IProposalCreateOptions, IProposalState, IPro
          IProposalQueryOptions, IProposalOutcome, IProposalStage, IProposalType } from './proposal'
 export { Queue, IQueueState, IQueueStaticState, IQueueQueryOptions } from './queue'
 export { Reputation, IReputationState, IReputationQueryOptions } from './reputation'
-export { Reward, IRewardState, IRewardQueryOptions } from './reward'
+export { Reward, IRewardState, IRewardStaticState, IRewardQueryOptions } from './reward'
 export { Scheme, ISchemeState, ISchemeStaticState, ISchemeQueryOptions } from './scheme'
 export { ReputationFromTokenScheme } from './schemes/reputationFromToken'
 export { IContributionReward} from './schemes/contributionReward'

@@ -659,6 +659,12 @@ export class Proposal implements IStateful<IProposalState> {
     return Stake.search(this.context, options, apolloQueryOptions)
   }
 
+  /**
+   * Stake on this proposal
+   * @param  outcome the outcome that is staked on, of type IProposalOutcome
+   * @param  amount  the amount, in GEn, to stake
+   * @return  An observable that can be sent, or subscribed to
+   */
   public stake(outcome: IProposalOutcome, amount: typeof BN ): Operation<Stake> {
     const map = (receipt: any) => { // map extracts Stake instance from receipt
         const event = receipt.events.Stake

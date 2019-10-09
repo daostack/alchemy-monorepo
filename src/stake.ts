@@ -133,6 +133,14 @@ export class Stake implements IStateful<IStakeState> {
       if (item === null) {
         throw Error(`Could not find a Stake with id ${this.id}`)
       }
+      this.setStaticState({
+        amount: item.reputation,
+        createdAt: item.createdAt,
+        id: item.id,
+        outcome: item.outcome,
+        proposal: item.proppsal,
+        staker: item.staker
+      })
       return {
         amount: item.reputation,
         createdAt: item.createdAt,
@@ -153,9 +161,9 @@ export class Stake implements IStateful<IStakeState> {
     if (!!this.staticState) {
       return this.staticState
     } else {
-      const state = await this.state().pipe(first()).toPromise()
-      this.staticState = state
-      return this.staticState
+      const state = await this.state({subscribe: false}).pipe(first()).toPromise()
+      this.setStaticState(state)
+      return state
     }
   }
 
