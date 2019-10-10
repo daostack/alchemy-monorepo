@@ -87,6 +87,113 @@ export interface ISchemeQueryOptions extends ICommonQueryOptions {
  * A Scheme represents a scheme instance that is registered at a DAO
  */
 export class Scheme implements IStateful<ISchemeState> {
+  public static fragments = {
+    SchemeFields: gql`
+    fragment SchemeFields on ControllerScheme {
+      id
+      address
+      name
+      dao { id }
+      canDelegateCall
+      canRegisterSchemes
+      canUpgradeController
+      canManageGlobalConstraints
+      paramsHash
+      contributionRewardParams {
+        votingMachine
+        voteParams {
+          queuedVoteRequiredPercentage
+          queuedVotePeriodLimit
+          boostedVotePeriodLimit
+          preBoostedVotePeriodLimit
+          thresholdConst
+          limitExponentValue
+          quietEndingPeriod
+          proposingRepReward
+          votersReputationLossRatio
+          minimumDaoBounty
+          daoBountyConst
+          activationTime
+          voteOnBehalf
+        }
+      }
+      genericSchemeParams {
+        votingMachine
+        contractToCall
+        voteParams {
+          queuedVoteRequiredPercentage
+          queuedVotePeriodLimit
+          boostedVotePeriodLimit
+          preBoostedVotePeriodLimit
+          thresholdConst
+          limitExponentValue
+          quietEndingPeriod
+          proposingRepReward
+          votersReputationLossRatio
+          minimumDaoBounty
+          daoBountyConst
+          activationTime
+          voteOnBehalf
+        }
+      }
+      schemeRegistrarParams {
+        votingMachine
+        voteRemoveParams {
+          queuedVoteRequiredPercentage
+          queuedVotePeriodLimit
+          boostedVotePeriodLimit
+          preBoostedVotePeriodLimit
+          thresholdConst
+          limitExponentValue
+          quietEndingPeriod
+          proposingRepReward
+          votersReputationLossRatio
+          minimumDaoBounty
+          daoBountyConst
+          activationTime
+          voteOnBehalf
+        }
+        voteRegisterParams {
+          queuedVoteRequiredPercentage
+          queuedVotePeriodLimit
+          boostedVotePeriodLimit
+          preBoostedVotePeriodLimit
+          thresholdConst
+          limitExponentValue
+          quietEndingPeriod
+          proposingRepReward
+          votersReputationLossRatio
+          minimumDaoBounty
+          daoBountyConst
+          activationTime
+          voteOnBehalf
+        }
+      }
+      numberOfQueuedProposals
+      numberOfPreBoostedProposals
+      numberOfBoostedProposals
+      uGenericSchemeParams {
+        votingMachine
+        contractToCall
+        voteParams {
+          queuedVoteRequiredPercentage
+          queuedVotePeriodLimit
+          boostedVotePeriodLimit
+          preBoostedVotePeriodLimit
+          thresholdConst
+          limitExponentValue
+          quietEndingPeriod
+          proposingRepReward
+          votersReputationLossRatio
+          minimumDaoBounty
+          daoBountyConst
+          activationTime
+          voteOnBehalf
+        }
+      }
+      version
+    }`
+  }
   /**
    * Scheme.search(context, options) searches for scheme entities
    * @param  context an Arc instance that provides connection information
@@ -118,18 +225,29 @@ export class Scheme implements IStateful<ISchemeState> {
       }
       where += `${key}: ${options.where[key] as string}\n`
     }
-
-    const query = gql`query SchemeSearch {
-      controllerSchemes ${createGraphQlQuery(options, where)}
-      {
-          id
-          address
-          name
-          dao { id }
-          paramsHash
-          version
+    let query
+    if (apolloQueryOptions.fetchAllData === true) {
+      query = gql`query SchemeSearchAllData {
+        controllerSchemes ${createGraphQlQuery(options, where)}
+        {
+          ...SchemeFields
+        }
       }
-    }   `
+      ${Scheme.fragments.SchemeFields}`
+    } else {
+      query = gql`query SchemeSearch {
+        controllerSchemes ${createGraphQlQuery(options, where)}
+        {
+            id
+            address
+            name
+            dao { id }
+            paramsHash
+            version
+        }
+      }`
+    }
+
     const itemMap = (item: any): Scheme|null => {
       if (!options.where) { options.where = {}}
 
@@ -201,110 +319,11 @@ export class Scheme implements IStateful<ISchemeState> {
     const query = gql`query SchemeState
       {
         controllerScheme (id: "${this.id}") {
-          id
-          address
-          name
-          dao { id }
-          canDelegateCall
-          canRegisterSchemes
-          canUpgradeController
-          canManageGlobalConstraints
-          paramsHash
-          contributionRewardParams {
-            votingMachine
-            voteParams {
-              queuedVoteRequiredPercentage
-              queuedVotePeriodLimit
-              boostedVotePeriodLimit
-              preBoostedVotePeriodLimit
-              thresholdConst
-              limitExponentValue
-              quietEndingPeriod
-              proposingRepReward
-              votersReputationLossRatio
-              minimumDaoBounty
-              daoBountyConst
-              activationTime
-              voteOnBehalf
-            }
-          }
-          genericSchemeParams {
-            votingMachine
-            contractToCall
-            voteParams {
-              queuedVoteRequiredPercentage
-              queuedVotePeriodLimit
-              boostedVotePeriodLimit
-              preBoostedVotePeriodLimit
-              thresholdConst
-              limitExponentValue
-              quietEndingPeriod
-              proposingRepReward
-              votersReputationLossRatio
-              minimumDaoBounty
-              daoBountyConst
-              activationTime
-              voteOnBehalf
-            }
-          }
-          schemeRegistrarParams {
-            votingMachine
-            voteRemoveParams {
-              queuedVoteRequiredPercentage
-              queuedVotePeriodLimit
-              boostedVotePeriodLimit
-              preBoostedVotePeriodLimit
-              thresholdConst
-              limitExponentValue
-              quietEndingPeriod
-              proposingRepReward
-              votersReputationLossRatio
-              minimumDaoBounty
-              daoBountyConst
-              activationTime
-              voteOnBehalf
-            }
-            voteRegisterParams {
-              queuedVoteRequiredPercentage
-              queuedVotePeriodLimit
-              boostedVotePeriodLimit
-              preBoostedVotePeriodLimit
-              thresholdConst
-              limitExponentValue
-              quietEndingPeriod
-              proposingRepReward
-              votersReputationLossRatio
-              minimumDaoBounty
-              daoBountyConst
-              activationTime
-              voteOnBehalf
-            }
-          }
-          numberOfQueuedProposals
-          numberOfPreBoostedProposals
-          numberOfBoostedProposals
-          uGenericSchemeParams {
-            votingMachine
-            contractToCall
-            voteParams {
-              queuedVoteRequiredPercentage
-              queuedVotePeriodLimit
-              boostedVotePeriodLimit
-              preBoostedVotePeriodLimit
-              thresholdConst
-              limitExponentValue
-              quietEndingPeriod
-              proposingRepReward
-              votersReputationLossRatio
-              minimumDaoBounty
-              daoBountyConst
-              activationTime
-              voteOnBehalf
-            }
-          }
-          version
+          ...SchemeFields
         }
-      }`
+      }
+      ${Scheme.fragments.SchemeFields}
+    `
 
     const itemMap = (item: any): ISchemeState|null => {
       if (!item) {

@@ -314,7 +314,6 @@ export class Proposal implements IStateful<IProposalState> {
         }
         ${Proposal.fragments.ProposalFields}
       `
-
     } else {
       query = gql`query ProposalSearchPartialData
         {
@@ -393,7 +392,7 @@ export class Proposal implements IStateful<IProposalState> {
     `
 
     const itemMap = (item: any): IProposalState|null => {
-      if (item === null) {
+      if (item === null || item === undefined) {
         // no proposal was found - we return null
         return null
       }

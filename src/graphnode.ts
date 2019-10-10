@@ -73,6 +73,9 @@ export function createApolloClient(options: {
     cache: new InMemoryCache({
       cacheRedirects: {
         Query: {
+          controllerScheme: (_, args, { getCacheKey }) => {
+            return getCacheKey({ __typename: 'ControllerScheme', id: args.id })
+          },
           dao: (_, args, { getCacheKey }) =>  {
             return getCacheKey({ __typename: 'DAO', id: args.id })
           },
@@ -81,7 +84,14 @@ export function createApolloClient(options: {
           },
           reputationHolder: (_, args, { getCacheKey }) => {
             return getCacheKey({ __typename: 'ReputationHolder', id: args.id })
+          },
+          proposalVote: (_, args, { getCacheKey }) => {
+            return getCacheKey({ __typename: 'ProposalVote', id: args.id })
+          },
+          proposalStake: (_, args, { getCacheKey }) => {
+            return getCacheKey({ __typename: 'ProposalStake', id: args.id })
           }
+
         }
       }
     }),

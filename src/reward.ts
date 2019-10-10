@@ -131,13 +131,13 @@ export class Reward implements IStateful<IRewardState> {
   public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<IRewardState> {
 
     const query = gql`
-    query RewardState {
-      gpreward ( id: "${this.id}" )
-      {
-        ...RewardFields
+      query RewardState {
+        gpreward (id: "${this.id}")
+        {
+          ...RewardFields
+        }
       }
-    }
-    ${Reward.fragments.RewardFields}
+      ${Reward.fragments.RewardFields}
     `
 
     const itemMap = (item: any): IRewardState => {
