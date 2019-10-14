@@ -31,6 +31,21 @@ export interface IStakeQueryOptions extends ICommonQueryOptions {
 }
 
 export class Stake implements IStateful<IStakeState> {
+  public static fragments = {
+    StakeFields: gql`fragment StakeFields on ProposalStake {
+      id
+      createdAt
+      dao {
+        id
+      }
+      staker
+      proposal {
+        id
+      }
+      outcome
+      amount
+    }`
+  }
 
   /**
    * Stake.search(context, options) searches for stake entities
@@ -45,6 +60,14 @@ export class Stake implements IStateful<IStakeState> {
   ): Observable <Stake[]> {
     if (!options.where) { options.where = {}}
     let where = ''
+
+    const proposalId = options.where.proposal
+    // if we are searching for stakes on a specific proposal (a common case), we
+    // will structure the query so that stakes are stored in the cache together wit the proposal
+    if (proposalId) {
+      delete options.where.proposal
+    }
+
     for (const key of Object.keys(options.where)) {
       if (options.where[key] === undefined) {
         continue
@@ -59,43 +82,66 @@ export class Stake implements IStateful<IStakeState> {
       where += `${key}: "${options.where[key] as string}"\n`
     }
 
-    const query = gql`query StakeSearch
-      {
-        proposalStakes ${createGraphQlQuery(options, where)} {
-          id
-          createdAt
-          staker
-          proposal {
-            id
-          }
-          outcome
-          amount
-        }
+    let query
+    const itemMap = (r: any) => {
+      let outcome: IProposalOutcome = IProposalOutcome.Pass
+      if (r.outcome === 'Pass') {
+        outcome = IProposalOutcome.Pass
+      } else if (r.outcome === 'Fail') {
+        outcome = IProposalOutcome.Fail
+      } else {
+        throw new Error(`Unexpected value for proposalStakes.outcome: ${r.outcome}`)
       }
-    `
+      return new Stake({
+        amount: new BN(r.amount || 0),
+        createdAt: r.createdAt,
+        id: r.id,
+        outcome,
+        proposal: r.proposal.id,
+        staker: r.staker
+      }, context)
+    }
 
-    return context.getObservableList(
-      query,
-      (r: any) => {
-        let outcome: IProposalOutcome = IProposalOutcome.Pass
-        if (r.outcome === 'Pass') {
-          outcome = IProposalOutcome.Pass
-        } else if (r.outcome === 'Fail') {
-          outcome = IProposalOutcome.Fail
-        } else {
-          throw new Error(`Unexpected value for proposalStakes.outcome: ${r.outcome}`)
+    if (proposalId) {
+      query = gql`query ProposalStakesSearchFromProposal
+        {
+          proposal (id: "${proposalId}") {
+            id
+            stakes ${createGraphQlQuery(options, where)} {
+              ...StakeFields
+            }
+          }
         }
-        return new Stake({
-          amount: new BN(r.amount || 0),
-          createdAt: r.createdAt,
-          id: r.id,
-          outcome,
-          proposal: r.proposal.id,
-          staker: r.staker
-        }, context)
-      },
-      apolloQueryOptions
-    ) as Observable<Stake[]>
+        ${Stake.fragments.StakeFields}
+      `
+
+      return context.getObservableObject(
+        query,
+        (r: any) => {
+          if (r === null) { // no such proposal was found
+            return []
+          }
+          const stakes = r.stakes
+          return stakes.map(itemMap)
+        },
+        apolloQueryOptions
+      ) as Observable<Stake[]>
+    } else {
+      query = gql`query ProposalStakesSearch
+        {
+          proposalStakes ${createGraphQlQuery(options, where)} {
+              ...StakeFields
+          }
+        }
+        ${Stake.fragments.StakeFields}
+      `
+
+      return context.getObservableList(
+        query,
+        itemMap,
+        apolloQueryOptions
+      ) as Observable<Stake[]>
+    }
   }
 
   public id: string|undefined
@@ -138,7 +184,7 @@ export class Stake implements IStateful<IStakeState> {
         createdAt: item.createdAt,
         id: item.id,
         outcome: item.outcome,
-        proposal: item.proppsal,
+        proposal: item.proposal.id,
         staker: item.staker
       })
       return {
@@ -146,7 +192,7 @@ export class Stake implements IStateful<IStakeState> {
         createdAt: item.createdAt,
         id: item.id,
         outcome: item.outcome,
-        proposal: item.proppsal,
+        proposal: item.proposal.id,
         staker: item.staker
       }
     }

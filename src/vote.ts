@@ -87,8 +87,6 @@ export class Vote implements IStateful<IVoteState> {
       }
     }
 
-    // if we are searching for votes of a specific proposal (a common case), we
-    // will structure the query so that votes are stored in the cache with the proposal
     let query
     const itemMap = (r: any) => {
       let outcome: IProposalOutcome = IProposalOutcome.Pass

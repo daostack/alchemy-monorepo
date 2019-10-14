@@ -2,11 +2,11 @@ import { getMainDefinition } from 'apollo-utilities'
 import gql from 'graphql-tag'
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
-import { DAO } from '../src/dao'
 import { createApolloClient } from '../src/graphnode'
 import { Member } from '../src/member'
 import { Proposal } from '../src/proposal'
 import { Scheme } from '../src/scheme'
+import { Stake } from '../src/stake'
 import { getContractAddressesFromMigration } from '../src/utils'
 import { Vote } from '../src/vote'
 import { graphqlHttpProvider, graphqlWsProvider, waitUntilTrue } from './utils'
@@ -112,7 +112,7 @@ describe('apolloClient caching checks', () => {
         ...ProposalFields
         votes (where: { voter: "${voterAddress}"}) {
           ...VoteFields
-        }
+          }
         }
       }
       ${Proposal.fragments.ProposalFields}
@@ -128,43 +128,51 @@ describe('apolloClient caching checks', () => {
     // we now get all proposal data without hitting the cache
     const proposalData = await proposal.state({ fetchPolicy: 'cache-only'}).pipe(first()).toPromise()
     expect(proposalData.scheme.id).toEqual(scheme.id)
-    //
-    // const voteQuery = gql`query {
-    //   proposal (id: "${proposal.id}") {
-    //     votes (where: { voter: "${voterAddress}"}) {
-    //       id
-    //     }
-    //   }
-    // }
-    // `
-    // const xxx = await arc.getObservable(voteQuery, { fetchPolicy: 'cache-only' }).pipe(first()).toPromise()
-    // console.log(xxx.data.proposal)
-      // console.log(arc.apolloClient.cache.data.data)
     const proposalVotes = await proposal.votes({ where: { voter: voterAddress}}, { fetchPolicy: 'cache-only'})
       .pipe(first()).toPromise()
-    // console.log(proposalVotes)
     expect(proposalVotes.map((v: Vote) => v.id)).toContain(vote.id)
-    // get the votes of the proposal for our member
-    // console.log(vote.staticState)
-    // @ts-ignore
-    const dao = new DAO(vote.staticState.dao as string, arc)
-    // @ts-ignore
-    // @ts-ignore
-    const member = dao.member(vote.staticState.voter)
-    // expect(networkQueries.length).toEqual(1)
-    // expect(networkSubscriptions.length).toEqual(1)
-    let hasResults = false
-    await member.votes().subscribe(() => hasResults = true)
-    await waitUntilTrue(() => hasResults)
-    // expect(networkQueries.length).toEqual(2)
-    // expect(networkSubscriptions.length).toEqual(2)
+  })
 
-    // if we now get the vote of this member for a particualr proposal, we should not send a query at all
-    // @ts-ignore
-    // await proposal.votes({ where: { voter: vote.staticState.voter}})
-    // console.log(networkQueries)
-    // @ts-ignore
-    // console.log(arc.apolloClient.cache.data.data)
+  it('pre-fetching ProposalStakes works', async () => {
+    // find a proposal in a scheme that has some votes
+    const stakes = await Stake.search(arc).pipe(first()).toPromise()
+    const stake = stakes[0] as Stake
+    const stakeState = await stake.state().pipe(first()).toPromise()
+    const stakerAddress = stakeState.staker
+    const proposal = new Proposal(stakeState.proposal, arc)
+    const proposalState = await proposal.state().pipe(first()).toPromise()
+    const scheme = new Scheme(proposalState.scheme.id, arc)
+
+    // now we have our objects, reset the cache
+    await arc.apolloClient.cache.reset()
+    expect(arc.apolloClient.cache.data.data).toEqual({})
+
+    // construct our superquery
+    const query = gql`query {
+      proposals (where: { scheme: "${scheme.id}"}){
+        ...ProposalFields
+        stakes (where: { staker: "${stakerAddress}"}) {
+          ...StakeFields
+          }
+        }
+      }
+      ${Proposal.fragments.ProposalFields}
+      ${Stake.fragments.StakeFields}
+    `
+    let subscribed = false
+    //
+    arc.getObservable(query, { subscribe: true }).subscribe((x: any) => {
+      subscribed = true
+    })
+    await waitUntilTrue(() => subscribed)
+
+    // we now get all proposal data without hitting the cache
+    const proposalData = await proposal.state({ fetchPolicy: 'cache-only'}).pipe(first()).toPromise()
+    expect(proposalData.scheme.id).toEqual(scheme.id)
+
+    const proposalStakes = await proposal.stakes({ where: { staker: stakerAddress}}, { fetchPolicy: 'cache-only'})
+      .pipe(first()).toPromise()
+    expect(proposalStakes.map((v: Stake) => v.id)).toContain(stake.id)
 
   })
 
