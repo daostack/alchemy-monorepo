@@ -82,16 +82,15 @@ export function createApolloClient(options: {
           proposal: (_, args, { getCacheKey }) => {
             return getCacheKey({ __typename: 'Proposal', id: args.id })
           },
-          reputationHolder: (_, args, { getCacheKey }) => {
-            return getCacheKey({ __typename: 'ReputationHolder', id: args.id })
+          proposalStake: (_, args, { getCacheKey }) => {
+            return getCacheKey({ __typename: 'ProposalStake', id: args.id })
           },
           proposalVote: (_, args, { getCacheKey }) => {
             return getCacheKey({ __typename: 'ProposalVote', id: args.id })
           },
-          proposalStake: (_, args, { getCacheKey }) => {
-            return getCacheKey({ __typename: 'ProposalStake', id: args.id })
+          reputationHolder: (_, args, { getCacheKey }) => {
+            return getCacheKey({ __typename: 'ReputationHolder', id: args.id })
           }
-
         }
       }
     }),
