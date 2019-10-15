@@ -75,6 +75,14 @@ export class Reward implements IStateful<IRewardState> {
   ): Observable<Reward[]> {
     let where = ''
     if (!options.where) { options.where = {}}
+
+    const proposalId = options.where.proposal
+    // if we are searching for stakes on a specific proposal (a common case), we
+    // will structure the query so that stakes are stored in the cache together wit the proposal
+    if (proposalId) {
+      delete options.where.proposal
+    }
+
     for (const key of Object.keys(options.where)) {
       if (options.where[key] === undefined) {
         continue
@@ -89,28 +97,56 @@ export class Reward implements IStateful<IRewardState> {
       where += `${key}: "${options.where[key] as string}"\n`
     }
 
-    const query = gql`query RewardSearch
-    {
-      gprewards ${createGraphQlQuery(options, where)} {
-        ...RewardFields
+    const itemMap = (item: any) => new Reward({
+      beneficiary: item.beneficiary,
+      createdAt: item.createdAt,
+      daoBountyForStaker: new BN(item.daoBountyForStaker),
+      id: item.id,
+      proposalId: item.proposalId,
+      reputationForProposer: new BN(item.reputationForProposer),
+      reputationForVoter: new BN(item.reputationForVoter),
+      tokenAddress: item.tokenAddress,
+      tokensForStaker: new BN(item.tokensForStaker)
+    }, context)
+
+    let query
+    if (proposalId) {
+      query = gql`query RewardSearchFromProposal
+      {
+        proposal (id: "${proposalId}") {
+          id
+          gpRewards ${createGraphQlQuery(options, where)} {
+            ...RewardFields
+          }
+        }
       }
+      ${Reward.fragments.RewardFields}
+      `
+      return context.getObservableObject(
+        query,
+        (r: any) => {
+          if (r === null) {
+            return []
+          }
+          const rewards = r.gpRewards
+          return rewards.map(itemMap)
+        },
+        apolloQueryOptions
+      ) as Observable<Reward[]>
+    } else {
+      query = gql`query RewardSearch
+      {
+        gprewards ${createGraphQlQuery(options, where)} {
+          ...RewardFields
+        }
+      }
+      ${Reward.fragments.RewardFields}
+      `
     }
-    ${Reward.fragments.RewardFields}
-    `
 
     return context.getObservableList(
       query,
-      (item: any) => new Reward({
-        beneficiary: item.beneficiary,
-        createdAt: item.createdAt,
-        daoBountyForStaker: new BN(item.daoBountyForStaker),
-        id: item.id,
-        proposalId: item.proposalId,
-        reputationForProposer: new BN(item.reputationForProposer),
-        reputationForVoter: new BN(item.reputationForVoter),
-        tokenAddress: item.tokenAddress,
-        tokensForStaker: new BN(item.tokensForStaker)
-      }, context),
+      itemMap,
       apolloQueryOptions
     ) as Observable<Reward[]>
   }

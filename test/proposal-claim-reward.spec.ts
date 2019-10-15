@@ -3,7 +3,7 @@ import { DAO } from '../src/dao'
 import { IProposalOutcome, IProposalStage, IProposalState, Proposal } from '../src/proposal'
 import { BN } from './utils'
 import { createAProposal, firstResult, getTestAddresses, getTestDAO, ITestAddresses, LATEST_ARC_VERSION, newArc,
-  toWei, voteToAcceptProposal, waitUntilTrue } from './utils'
+  toWei, voteToPassProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(60000)
 
@@ -51,7 +51,7 @@ describe('Claim rewards', () => {
     const proposal = response.result as Proposal
 
     // vote for the proposal
-    await voteToAcceptProposal(proposal)
+    await voteToPassProposal(proposal)
     // check if proposal is indeed accepted etc
     proposal.state().subscribe(((next) => states.push(next)))
 
@@ -106,7 +106,7 @@ describe('Claim rewards', () => {
     const proposal = response.result as Proposal
 
     // vote for the proposal with all the votest
-    await voteToAcceptProposal(proposal)
+    await voteToPassProposal(proposal)
     // check if prposal is indeed accepted etc
     const states: IProposalState[] = []
     proposal.state().subscribe(((next) => states.push(next)))
@@ -155,7 +155,7 @@ describe('Claim rewards', () => {
     await proposal.stake(IProposalOutcome.Pass, stakeAmount).send()
 
     // vote for the proposal with all the votest
-    await voteToAcceptProposal(proposal)
+    await voteToPassProposal(proposal)
     // check if prposal is indeed accepted etc
     const states: IProposalState[] = []
     proposal.state().subscribe(((next) => states.push(next)))

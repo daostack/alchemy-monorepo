@@ -5,7 +5,7 @@ import { IProposalOutcome, IProposalStage, IProposalState, Proposal } from '../s
 import { BN } from './utils'
 import { createAProposal, fromWei, getTestAddresses, getTestDAO, ITestAddresses,
   newArc, timeTravel, toWei,
-  voteToAcceptProposal, waitUntilTrue } from './utils'
+  voteToPassProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(40000)
 
@@ -130,7 +130,7 @@ describe('Proposal execute()', () => {
     expect(lastState().stage).toEqual(IProposalStage.Queued)
     expect(lastState().executedAt).toEqual(0)
 
-    await voteToAcceptProposal(proposal)
+    await voteToPassProposal(proposal)
     // wait until all votes have been counted
     await waitUntilTrue(() => {
       return lastState().executedAt !== 0
