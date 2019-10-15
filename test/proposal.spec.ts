@@ -301,8 +301,6 @@ describe('Proposal', () => {
       }
     })
 
-    // we expect our first state to be null
-    // (we just created the proposal and subscribed immediately)
     expect(Number(fromWei(states[states.length - 1].votesFor))).toBeGreaterThan(0)
     expect(states[states.length - 1].winningOutcome).toEqual(IProposalOutcome.Pass)
   })

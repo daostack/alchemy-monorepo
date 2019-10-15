@@ -203,7 +203,7 @@ export async function waitUntilTrue(test: () => Promise<boolean> | boolean) {
 }
 
 // Vote and vote and vote for proposal until it is accepted
-export async function voteToAcceptProposal(proposal: Proposal) {
+export async function voteToPassProposal(proposal: Proposal) {
   const arc = proposal.context
   const accounts = arc.web3.eth.accounts.wallet
   // make sure the proposal is indexed

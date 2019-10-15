@@ -59,7 +59,7 @@ describe('Vote on a ContributionReward', () => {
     const proposal = await createAProposal()
 
     const voteHistory: Vote[][] = []
-    Vote.search(arc, {where: {proposal: proposal.id}}).subscribe((next: Vote[]) => {
+    proposal.votes().subscribe((next: Vote[]) => {
       voteHistory.push(next)
     })
     const lastVotes = () => {
@@ -74,9 +74,7 @@ describe('Vote on a ContributionReward', () => {
       const ls = lastVotes()
       return ls.length > 0
     })
-    const proposalVotes = await proposal.votes().pipe(first()).toPromise()
-    expect(proposalVotes.length = 1)
-    const state = await proposalVotes[0].fetchStaticState()
+    const state = await lastVotes()[0].fetchStaticState()
     expect(state.outcome).toEqual(IProposalOutcome.Pass)
   })
 

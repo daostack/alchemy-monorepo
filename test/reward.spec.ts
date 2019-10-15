@@ -47,11 +47,7 @@ describe('Reward', () => {
     result = await Reward.search(arc)
         .pipe(first()).toPromise()
     expect(result.length).toBeGreaterThan(0)
-    //
-    // result = await Reward.search({proposal: proposal.id}, arc)
-    //     .pipe(first()).toPromise()
-    // expect(result.length).toEqual(1)
-
+    
     // search does not care about case in the address
     result = await Reward.search(arc, { where: {beneficiary}})
         .pipe(first()).toPromise()

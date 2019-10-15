@@ -169,7 +169,8 @@ export class Token implements IStateful<ITokenState> {
           if (err.message.match(/connection not open/g)) {
             // reset provider and resubscribe
             this.context.web3.setProvider(this.context.web3Provider)
-            throw Error(`Please reconnect: ${err.message}`)
+            observer.next(NaN)
+            // observer.error(`Please reconnect: ${err.message}`)
           } else {
             observer.error(await errHandler(err))
           }

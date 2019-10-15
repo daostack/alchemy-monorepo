@@ -32,6 +32,21 @@ export interface IVoteQueryOptions extends ICommonQueryOptions {
 }
 
 export class Vote implements IStateful<IVoteState> {
+  public static fragments = {
+    VoteFields: gql`fragment VoteFields on ProposalVote {
+      id
+      createdAt
+      dao {
+        id
+      }
+      voter
+      proposal {
+        id
+      }
+      outcome
+      reputation
+    }`
+  }
 
   /**
    * Vote.search(context, options) searches for vote entities
@@ -46,8 +61,13 @@ export class Vote implements IStateful<IVoteState> {
   ): Observable <Vote[]> {
     if (!options.where) { options.where = {}}
     let where = ''
-    let daoFilter: (r: any) => boolean
-    daoFilter = () => true
+
+    const proposalId = options.where.proposal
+    // if we are searching for votes of a specific proposal (a common case), we
+    // will structure the query so that votes are stored in the cache together wit the proposal
+    if (proposalId) {
+      delete options.where.proposal
+    }
 
     for (const key of Object.keys(options.where)) {
       if (options.where[key] === undefined) {
@@ -67,47 +87,68 @@ export class Vote implements IStateful<IVoteState> {
       }
     }
 
-    const query = gql`query ProposalVotesSearch
-      {
-        proposalVotes ${createGraphQlQuery(options, where)} {
-          id
-          createdAt
-          dao {
-            id
-          }
-          voter
-          proposal {
-            id
-          }
-          outcome
-          reputation
-        }
+    let query
+    const itemMap = (r: any) => {
+      let outcome: IProposalOutcome = IProposalOutcome.Pass
+      if (r.outcome === 'Pass') {
+        outcome = IProposalOutcome.Pass
+      } else if (r.outcome === 'Fail') {
+        outcome = IProposalOutcome.Fail
+      } else {
+        throw new Error(`Unexpected value for proposalVote.outcome: ${r.outcome}`)
       }
-    `
-    return context.getObservableListWithFilter(
-      query,
-      (r: any) => {
-        let outcome: IProposalOutcome = IProposalOutcome.Pass
-        if (r.outcome === 'Pass') {
-          outcome = IProposalOutcome.Pass
-        } else if (r.outcome === 'Fail') {
-          outcome = IProposalOutcome.Fail
-        } else {
-          throw new Error(`Unexpected value for proposalVote.outcome: ${r.outcome}`)
+      return new Vote({
+        amount: new BN(r.reputation || 0),
+        createdAt: r.createdAt,
+        dao: r.dao.id,
+        id: r.id,
+        outcome,
+        proposal: r.proposal.id,
+        voter: r.voter
+      }, context)
+    }
+
+    if (proposalId) {
+      query = gql`query ProposalVotesSearchFromProposal
+        {
+          proposal (id: "${proposalId}") {
+            id
+            votes ${createGraphQlQuery(options, where)} {
+              ...VoteFields
+            }
+          }
         }
-        return new Vote({
-          amount: new BN(r.reputation || 0),
-          createdAt: r.createdAt,
-          dao: r.dao.id,
-          id: r.id,
-          outcome,
-          proposal: r.proposal.id,
-          voter: r.voter
-        }, context)
-      },
-      daoFilter,
-      apolloQueryOptions
-    ) as Observable<Vote[]>
+        ${Vote.fragments.VoteFields}
+      `
+
+      return context.getObservableObject(
+        query,
+        (r: any) => {
+          if (r === null) { // no such proposal was found
+            return []
+          }
+          const votes = r.votes
+          return votes.map(itemMap)
+        },
+        apolloQueryOptions
+      ) as Observable<Vote[]>
+
+    } else {
+      query = gql`query ProposalVotesSearch
+        {
+          proposalVotes ${createGraphQlQuery(options, where)} {
+            ...VoteFields
+          }
+        }
+        ${Vote.fragments.VoteFields}
+      `
+
+      return context.getObservableList(
+        query,
+        itemMap,
+        apolloQueryOptions
+      ) as Observable<Vote[]>
+    }
   }
   public id: string|undefined
   public staticState: IVoteStaticState|undefined
@@ -125,19 +166,11 @@ export class Vote implements IStateful<IVoteState> {
   public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<IVoteState> {
     const query = gql`query ProposalVoteById {
       proposalVote (id: "${this.id}") {
-        id
-        createdAt
-        dao {
-          id
-        }
-        voter
-        proposal {
-          id
-        }
-        outcome
-        reputation
+        ...VoteFields
       }
-    }`
+    }
+    ${Vote.fragments.VoteFields}
+    `
 
     const itemMap = (item: any): IVoteState => {
       if (item === null) {
@@ -149,7 +182,7 @@ export class Vote implements IStateful<IVoteState> {
         dao: item.dao.id,
         id: item.id,
         outcome: item.outcome,
-        proposal: item.proppsal,
+        proposal: item.proposal.id,
         voter: item.voter
       }
     }

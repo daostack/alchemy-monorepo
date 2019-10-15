@@ -155,4 +155,13 @@ describe('Scheme', () => {
     const state = await scheme.fetchStaticState()
     expect(Object.keys(state)).toContain('address')
   })
+
+  it('fetchAllData works', async () => {
+    const schemes = await Scheme.search(arc, {}, { fetchAllData: true }).pipe(first()).toPromise()
+    const scheme = schemes[0]
+    // now we have all data in the cache - and we can get the whole state from the cache without error
+    const schemeStateFromCache = await scheme.state({ fetchPolicy: 'cache-only'}).pipe(first()).toPromise()
+    const schemeStateFromServer = await scheme.state({ fetchPolicy: 'no-cache'}).pipe(first()).toPromise()
+    expect(schemeStateFromCache).toEqual(schemeStateFromServer)
+  })
 })

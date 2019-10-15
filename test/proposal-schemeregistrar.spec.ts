@@ -8,7 +8,7 @@ import {
 import { Scheme } from '../src/scheme'
 import { ISchemeRegistrar } from '../src/schemes/schemeRegistrar'
 import { createAProposal, firstResult, getTestAddresses, getTestDAO,
-  newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
+  newArc, voteToPassProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(60000)
 
@@ -55,7 +55,7 @@ describe('Proposal', () => {
     expect(lastProposalToAddState().type).toEqual('SchemeRegistrarAdd')
 
     // accept the proposal by voting the hell out of it
-    await voteToAcceptProposal(proposalToAdd)
+    await voteToPassProposal(proposalToAdd)
 
     await proposalToAdd.execute()
     await waitUntilTrue(() => (lastProposalToAddState().schemeRegistrar as ISchemeRegistrar).schemeRegistered)
@@ -134,7 +134,7 @@ describe('Proposal', () => {
     })
 
     // accept the proposal by voting the hell out of it
-    await voteToAcceptProposal(proposalToRemove)
+    await voteToPassProposal(proposalToRemove)
     await proposalToRemove.execute()
     await waitUntilTrue(() => (lastProposalToRemoveState().schemeRegistrar as ISchemeRegistrar).schemeRemoved)
     expect(lastProposalToRemoveState()).toMatchObject({

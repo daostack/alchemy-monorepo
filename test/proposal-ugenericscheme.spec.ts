@@ -7,7 +7,7 @@ import {
   } from '../src/proposal'
 import { IGenericScheme} from '../src/schemes/genericScheme'
 import { createAProposal, getTestAddresses, getTestDAO, ITestAddresses, LATEST_ARC_VERSION,
-  newArc, voteToAcceptProposal, waitUntilTrue } from './utils'
+  newArc, voteToPassProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(60000)
 
@@ -60,7 +60,7 @@ describe('Proposal', () => {
     })
 
     // accept the proposal by voting the hell out of it
-    await voteToAcceptProposal(proposal)
+    await voteToPassProposal(proposal)
 
     await waitUntilTrue(() => (lastState().genericScheme as IGenericScheme).executed)
     expect(lastState()).toMatchObject({
@@ -105,7 +105,7 @@ describe('Proposal', () => {
     })
 
     // accept the proposal by voting the hell out of it
-    await voteToAcceptProposal(proposal)
+    await voteToPassProposal(proposal)
 
     await waitUntilTrue(() => (lastState().genericScheme as IGenericScheme).executed)
     expect(lastState()).toMatchObject({
