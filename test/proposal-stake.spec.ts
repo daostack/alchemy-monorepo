@@ -94,4 +94,28 @@ describe('Stake on a ContributionReward', () => {
       /No proposal/i
     )
   })
+
+  it('stake gets correctly indexed on the proposal entity', async () => {
+    const proposal = await createAProposal()
+
+    const stakeHistory: Stake[][] = []
+    proposal.stakes().subscribe((next: Stake[]) => {
+      stakeHistory.push(next)
+    })
+    const lastStake = () => {
+      if (stakeHistory.length > 0) {
+       return stakeHistory[stakeHistory.length - 1]
+     } else {
+       return []
+     }
+    }
+    await proposal.stake(IProposalOutcome.Pass, new BN(100)).send()
+    await waitUntilTrue(() => {
+      const ls = lastStake()
+      return ls.length > 0
+    })
+    const state = await lastStake()[0].fetchStaticState()
+    expect(state.outcome).toEqual(IProposalOutcome.Pass)
+  })
+
 })
