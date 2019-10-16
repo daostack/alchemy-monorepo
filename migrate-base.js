@@ -118,9 +118,11 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
           DAOTracker,
           opts
         )
-        spinner.start('Transfering DAOTracker Ownership')
-        let tx = await daoTracker.methods.transferOwnership('0x85e7fa550b534656d04d143b9a23a11e05077da3').send()
-        await logTx(tx, 'Finished Transfering DAOTracker Ownership')
+        if (daoTracker.methods.owner().call() === web3.eth.accounts.wallet[0].address) {
+          spinner.start('Transfering DAOTracker Ownership')
+          let tx = await daoTracker.methods.transferOwnership('0x85e7fa550b534656d04d143b9a23a11e05077da3').send()
+          await logTx(tx, 'Finished Transfering DAOTracker Ownership')
+        }
       }
     } else {
       await deploy(
@@ -135,9 +137,11 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
           DAOTracker,
           opts
         )
-        spinner.start('Transfering DAOTracker Ownership')
-        let tx = await daoTracker.methods.transferOwnership('0x73Db6408abbea97C5DB8A2234C4027C315094936').send()
-        await logTx(tx, 'Finished Transfering DAOTracker Ownership')
+        if (daoTracker.methods.owner().call() === web3.eth.accounts.wallet[0].address) {
+          spinner.start('Transfering DAOTracker Ownership')
+          let tx = await daoTracker.methods.transferOwnership('0x73Db6408abbea97C5DB8A2234C4027C315094936').send()
+          await logTx(tx, 'Finished Transfering DAOTracker Ownership')
+        }
       }
     }
   }
