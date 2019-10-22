@@ -216,7 +216,16 @@ const stake = async function(_testSetup,_proposalId,_vote,_amount,_staker,eventN
     ["address","bytes32","uint", "uint","uint"],
     [_testSetup.genesisProtocol.address, _proposalId,_vote,_amount, nonce]
   ).toString("hex");
-  const signature = await web3.eth.sign(textMsg, _staker);
+  //https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethsign
+  let signature = await web3.eth.sign(textMsg, _staker);
+  const subSignature =  signature.substring(0, signature.length-2);
+  var v = signature.substring(signature.length-2, signature.length);
+
+  if (v === '00') {
+   signature = subSignature+'1b';
+ } else {
+   signature = subSignature+'1c';
+ }
   const encodeABI = await new web3.eth.Contract(_testSetup.genesisProtocol.abi).methods.stakeWithSignature(_proposalId,_vote,_amount,nonce,signatureType,signature).encodeABI();
 
   const transaction = await _testSetup.stakingToken.approveAndCall(

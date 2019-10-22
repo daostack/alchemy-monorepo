@@ -1,4 +1,4 @@
-pragma solidity ^0.5.4;
+pragma solidity ^0.5.11;
 
 import "./IntVoteInterface.sol";
 import { RealMath } from "../libs/RealMath.sol";
