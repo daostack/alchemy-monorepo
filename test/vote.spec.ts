@@ -30,7 +30,6 @@ describe('vote', () => {
   })
 
   it('Votes are searchable', async () => {
-
     let result: Vote[] = []
     const dao = await getTestDAO()
     const proposal = await createAProposal(dao)
@@ -46,7 +45,6 @@ describe('vote', () => {
     await waitUntilTrue(voteIsIndexed)
     if (result) {
       expect(result.length).toEqual(1)
-
       expect((await result[0].fetchStaticState()).outcome).toEqual(IProposalOutcome.Pass)
     }
     const vote = result[0]
@@ -71,7 +69,6 @@ describe('vote', () => {
     result = await Vote.search(arc, {where: {id: vote.id, voter: arc.web3.utils.toChecksumAddress(voteState.voter)}})
       .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
-
   })
 
   it('paging and sorting works', async () => {

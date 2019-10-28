@@ -89,6 +89,7 @@ export interface IProposalState extends IProposalStaticState {
   stage: IProposalStage
   stakesFor: typeof BN
   stakesAgainst: typeof BN
+  tags?: string[]
   title?: string
   totalRepWhenCreated: typeof BN
   totalRepWhenExecuted: typeof BN
@@ -202,6 +203,9 @@ export class Proposal implements IStateful<IProposalState> {
       }
       stakesFor
       stakesAgainst
+      tags {
+        id
+      }
       totalRepWhenCreated
       totalRepWhenExecuted
       title
@@ -244,7 +248,7 @@ export class Proposal implements IStateful<IProposalState> {
         if (schemes && schemes.length > 0) {
           return schemes[0].createProposal(options)
         } else {
-          throw Error(`No scheme was found with address ${options.scheme} registered with dao ${options.dao}`)
+          throw Error(`No scheme with address ${options.scheme} is registered with dao ${options.dao}`)
         }
       }
     ))
@@ -539,6 +543,7 @@ export class Proposal implements IStateful<IProposalState> {
         stage,
         stakesAgainst,
         stakesFor,
+        tags: item.tags.map((t: any) => t.id),
         title: item.title,
         totalRepWhenCreated: new BN(item.totalRepWhenCreated),
         totalRepWhenExecuted: new BN(item.totalRepWhenExecuted),
@@ -846,6 +851,7 @@ interface IProposalBaseCreateOptions {
   description?: string
   descriptionHash?: string
   title?: string
+  tags?: string[]
   scheme: Address
   url?: string
 }

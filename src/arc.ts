@@ -407,14 +407,16 @@ export class Arc extends GraphNodeObserver {
    * @param  options an Object to save. This object must have title, url and desction defined
    * @return  a Promise that resolves in the IPFS Hash where the file is saved
    */
-  public async saveIPFSData(options: { title: string, url: string, description: string}): Promise<string> {
+  public async saveIPFSData(options: { title: string, url: string, description: string, tags: string[]}):
+    Promise<string> {
     let ipfsDataToSave: object = {}
-    if (options.title || options.url || options.description) {
+    if (options.title || options.url || options.description || options.tags !== undefined) {
       if (!this.ipfsProvider) {
         throw Error(`No ipfsProvider set on Arc instance - cannot save data on IPFS`)
       }
       ipfsDataToSave = {
         description: options.description,
+        tags: options.tags,
         title: options.title,
         url: options.url
       }
