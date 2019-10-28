@@ -1,7 +1,12 @@
 const utils = require('./utils.js')
 const sanitize = require('./sanitize')
 
-async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logTx, previousMigration, customabislocation }) {
+async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logTx, previousMigration, customabislocation, restart, getState, setState, cleanState }) {
+  if (restart) {
+    cleanState()
+  }
+  let deploymentState = getState()
+
   // sanitize the parameters
   sanitize(migrationParams)
 
@@ -97,10 +102,12 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
   let avatar
   let daoToken
   let reputation
-  let Controller
   let controller
-  let Schemes = []
-  let StandAloneContracts = []
+
+  if (deploymentState.Schemes === undefined) {
+    deploymentState.Schemes = []
+    deploymentState.StandAloneContracts = []
+  }
 
   if (migrationParams.useDaoCreator === true) {
     spinner.start('Creating a new organization...')
@@ -113,43 +120,53 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
 
     const initFoundersBatchSize = 20
     const foundersBatchSize = 100
-    let foundersInitCount = founderAddresses.length < initFoundersBatchSize ? founderAddresses.length : initFoundersBatchSize
-    const forgeOrg = daoCreator.methods.forgeOrg(
-      orgName,
-      tokenName,
-      tokenSymbol,
-      founderAddresses.slice(0, foundersInitCount),
-      tokenDist.slice(0, foundersInitCount),
-      repDist.slice(0, foundersInitCount),
-      migrationParams.useUController === true ? UController : '0x0000000000000000000000000000000000000000',
-      '0'
-    )
+    if (deploymentState.Avatar === undefined) {
+      let foundersInitCount = founderAddresses.length < initFoundersBatchSize ? founderAddresses.length : initFoundersBatchSize
+      const forgeOrg = daoCreator.methods.forgeOrg(
+        orgName,
+        tokenName,
+        tokenSymbol,
+        founderAddresses.slice(0, foundersInitCount),
+        tokenDist.slice(0, foundersInitCount),
+        repDist.slice(0, foundersInitCount),
+        migrationParams.useUController === true ? UController : '0x0000000000000000000000000000000000000000',
+        '0'
+      )
 
-    tx = await forgeOrg.send({ nonce: ++nonce })
+      tx = await forgeOrg.send({ nonce: ++nonce })
 
-    const Avatar = tx.events.NewOrg.returnValues._avatar
+      await logTx(tx, 'Created new organization.')
+    }
 
-    await logTx(tx, 'Created new organization.')
+    if (deploymentState.Avatar === undefined) {
+      deploymentState.Avatar = tx.events.NewOrg.returnValues._avatar
+      setState(deploymentState)
+    }
 
-    let foundersToAddCount = founderAddresses.length - initFoundersBatchSize
-    let i = 0
-    while (foundersToAddCount > 0) {
+    deploymentState.foundersToAddCount = deploymentState.foundersToAddCount === undefined ? founderAddresses.length - initFoundersBatchSize : deploymentState.foundersToAddCount
+    deploymentState.foundersAdditionCounter = deploymentState.foundersAdditionCounter === undefined ? 0 : deploymentState.foundersAdditionCounter
+    while (deploymentState.foundersToAddCount > 0) {
       spinner.start('Adding founders...')
-      let currentBatchCount = foundersToAddCount < foundersBatchSize ? foundersToAddCount : foundersBatchSize
+      let currentBatchCount = deploymentState.foundersToAddCount < foundersBatchSize ? deploymentState.foundersToAddCount : foundersBatchSize
       tx = await daoCreator.methods.addFounders(
-        Avatar,
-        founderAddresses.slice(i * foundersBatchSize + initFoundersBatchSize, i * foundersBatchSize + currentBatchCount + initFoundersBatchSize),
-        tokenDist.slice(i * foundersBatchSize + initFoundersBatchSize, i * foundersBatchSize + currentBatchCount + initFoundersBatchSize),
-        repDist.slice(i * foundersBatchSize + initFoundersBatchSize, i * foundersBatchSize + currentBatchCount + initFoundersBatchSize)
+        deploymentState.Avatar,
+        founderAddresses.slice(deploymentState.foundersAdditionCounter * foundersBatchSize + initFoundersBatchSize,
+          deploymentState.foundersAdditionCounter * foundersBatchSize + currentBatchCount + initFoundersBatchSize),
+        tokenDist.slice(deploymentState.foundersAdditionCounter * foundersBatchSize + initFoundersBatchSize,
+          deploymentState.foundersAdditionCounter * foundersBatchSize + currentBatchCount + initFoundersBatchSize),
+        repDist.slice(deploymentState.foundersAdditionCounter * foundersBatchSize + initFoundersBatchSize,
+          deploymentState.foundersAdditionCounter * foundersBatchSize + currentBatchCount + initFoundersBatchSize)
       ).send({ nonce: ++nonce })
       await logTx(tx, 'Finished adding founders.')
-      foundersToAddCount -= foundersBatchSize
-      i++
+
+      deploymentState.foundersToAddCount -= foundersBatchSize
+      deploymentState.foundersAdditionCounter++
+      setState(deploymentState)
     }
 
     avatar = new web3.eth.Contract(
       require('@daostack/arc/build/contracts/Avatar.json').abi,
-      Avatar,
+      deploymentState.Avatar,
       opts
     )
 
@@ -165,7 +182,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       opts
     )
     if (migrationParams.useUController) {
-      Controller = UController
+      deploymentState.Controller = UController
       controller = uController
     } else {
       spinner.start('Deploying Controller')
@@ -174,122 +191,186 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
         await avatar.methods.owner().call(),
         opts
       )
-      Controller = controller.options.address
+      deploymentState.Controller = controller.options.address
     }
   } else {
-    spinner.start('Deploying DAO Token')
+    if (deploymentState.DAOToken === undefined) {
+      spinner.start('Deploying DAO Token')
+      daoToken = new web3.eth.Contract(
+        require('@daostack/arc/build/contracts/DAOToken.json').abi,
+        undefined,
+        opts
+      ).deploy({
+        data: require('@daostack/arc/build/contracts/DAOToken.json').bytecode,
+        arguments: [tokenName, tokenSymbol, 0]
+      }).send({ nonce: ++nonce })
+
+      tx = await new Promise(resolve => daoToken.on('receipt', resolve))
+      let c = await daoToken
+      await logTx(tx, `${c.options.address} => DAOToken`)
+      deploymentState.DAOToken = c.options.address
+      setState(deploymentState)
+    }
     daoToken = new web3.eth.Contract(
       require('@daostack/arc/build/contracts/DAOToken.json').abi,
-      undefined,
-      opts
-    ).deploy({
-      data: require('@daostack/arc/build/contracts/DAOToken.json').bytecode,
-      arguments: [tokenName, tokenSymbol, 0]
-    }).send({ nonce: ++nonce })
-
-    tx = await new Promise(resolve => daoToken.on('receipt', resolve))
-    let c = await daoToken
-    await logTx(tx, `${c.options.address} => DAOToken`)
-    daoToken = new web3.eth.Contract(
-      require('@daostack/arc/build/contracts/DAOToken.json').abi,
-      c.options.address,
+      deploymentState.DAOToken,
       opts
     )
 
-    spinner.start('Deploying Reputation')
+    if (deploymentState.Reputation === undefined) {
+      spinner.start('Deploying Reputation')
+      reputation = new web3.eth.Contract(
+        require('@daostack/arc/build/contracts/Reputation.json').abi,
+        undefined,
+        opts
+      ).deploy({
+        data: require('@daostack/arc/build/contracts/Reputation.json').bytecode
+      }).send({ nonce: ++nonce })
+
+      tx = await new Promise(resolve => reputation.on('receipt', resolve))
+      let c = await reputation
+      await logTx(tx, `${c.options.address} => Reputation`)
+      deploymentState.Reputation = c.options.address
+      setState(deploymentState)
+    }
     reputation = new web3.eth.Contract(
       require('@daostack/arc/build/contracts/Reputation.json').abi,
-      undefined,
-      opts
-    ).deploy({
-      data: require('@daostack/arc/build/contracts/Reputation.json').bytecode
-    }).send({ nonce: ++nonce })
-
-    tx = await new Promise(resolve => reputation.on('receipt', resolve))
-    c = await reputation
-    await logTx(tx, `${c.options.address} => Reputation`)
-    reputation = new web3.eth.Contract(
-      require('@daostack/arc/build/contracts/Reputation.json').abi,
-      c.options.address,
+      deploymentState.Reputation,
       opts
     )
 
-    spinner.start('Deploying Avatar.')
-    avatar = new web3.eth.Contract(
-      require('@daostack/arc/build/contracts/Avatar.json').abi,
-      undefined,
-      opts
-    ).deploy({
-      data: require('@daostack/arc/build/contracts/Avatar.json').bytecode,
-      arguments: [orgName, daoToken.options.address, reputation.options.address]
-    }).send({ nonce: ++nonce })
+    if (deploymentState.Avatar === undefined) {
+      spinner.start('Deploying Avatar.')
+      avatar = new web3.eth.Contract(
+        require('@daostack/arc/build/contracts/Avatar.json').abi,
+        undefined,
+        opts
+      ).deploy({
+        data: require('@daostack/arc/build/contracts/Avatar.json').bytecode,
+        arguments: [orgName, daoToken.options.address, reputation.options.address]
+      }).send({ nonce: ++nonce })
 
-    tx = await new Promise(resolve => avatar.on('receipt', resolve))
-    c = await avatar
-    await logTx(tx, `${c.options.address} => Avatar`)
+      tx = await new Promise(resolve => avatar.on('receipt', resolve))
+      let c = await avatar
+      await logTx(tx, `${c.options.address} => Avatar`)
+      deploymentState.Avatar = c.options.address
+      setState(deploymentState)
+    }
     avatar = new web3.eth.Contract(
       require('@daostack/arc/build/contracts/Avatar.json').abi,
-      c.options.address,
+      deploymentState.Avatar,
       opts
     )
 
-    spinner.start('Minting founders tokens and reputation')
-    for (let i in founders) {
-      let founder = founders[i]
+    if (deploymentState.foundersReputationMintedCounter === undefined) {
+      deploymentState.foundersReputationMintedCounter = 0
+    }
+    for (deploymentState.foundersReputationMintedCounter;
+      deploymentState.foundersReputationMintedCounter < founders.length;
+      deploymentState.foundersReputationMintedCounter++) {
+      spinner.start('Minting founders tokens and reputation')
+      setState(deploymentState)
+
+      let founder = founders[deploymentState.foundersReputationMintedCounter]
 
       if (founder.reputation > 0) {
         tx = await reputation.methods.mint(founder.address, web3.utils.toWei(`${founder.reputation}`)).send({ nonce: ++nonce })
         await logTx(tx, `Minted ${founder.reputation} reputation to ${founder.address}`)
       }
+    }
+    deploymentState.foundersReputationMintedCounter++
+    setState(deploymentState)
+
+    if (deploymentState.foundersTokenMintedCounter === undefined) {
+      deploymentState.foundersTokenMintedCounter = 0
+    }
+    for (deploymentState.foundersTokenMintedCounter;
+      deploymentState.foundersTokenMintedCounter < founders.length;
+      deploymentState.foundersTokenMintedCounter++) {
+      setState(deploymentState)
+
+      let founder = founders[deploymentState.foundersTokenMintedCounter]
+
       if (founder.tokens > 0) {
         tx = await daoToken.methods.mint(founder.address, web3.utils.toWei(`${founder.tokens}`)).send({ nonce: ++nonce })
         await logTx(tx, `Minted ${founder.tokens} tokens to ${founder.address}`)
       }
     }
+    deploymentState.foundersTokenMintedCounter++
+    setState(deploymentState)
 
     if (migrationParams.useUController) {
-      Controller = UController
+      deploymentState.Controller = UController
       controller = uController
     } else {
-      spinner.start('Deploying Controller')
-      controller = (await new web3.eth.Contract(
+      if (deploymentState.Controller === undefined) {
+        spinner.start('Deploying Controller')
+        controller = new web3.eth.Contract(
+          require('@daostack/arc/build/contracts/Controller.json').abi,
+          undefined,
+          opts
+        ).deploy({
+          data: require('@daostack/arc/build/contracts/Controller.json').bytecode,
+          arguments: [avatar.options.address]
+        }).send({ nonce: ++nonce })
+
+        tx = await new Promise(resolve => controller.on('receipt', resolve))
+        let c = await controller
+        await logTx(tx, `${c.options.address} => Controller`)
+
+        deploymentState.Controller = c.options.address
+        setState(deploymentState)
+      }
+      controller = new web3.eth.Contract(
         require('@daostack/arc/build/contracts/Controller.json').abi,
-        undefined,
+        deploymentState.Controller,
         opts
-      ).deploy({
-        data: require('@daostack/arc/build/contracts/Controller.json').bytecode,
-        arguments: [avatar.options.address]
-      }).send({ nonce: ++nonce }))
-      Controller = controller.options.address
+      )
     }
 
-    if (migrationParams.noTrack !== true && Number(arcVersion.slice(-2)) >= 29) {
+    if (migrationParams.noTrack !== true && Number(arcVersion.slice(-2)) >= 29 && deploymentState.trackedDAO !== true) {
       const daoTracker = new web3.eth.Contract(
         require('@daostack/arc/build/contracts/DAOTracker.json').abi,
         DAOTracker,
         opts
       )
       spinner.start('Registering DAO in DAOTracker')
-      tx = await daoTracker.methods.track(avatar.options.address, Controller).send({ nonce: ++nonce })
+      tx = await daoTracker.methods.track(avatar.options.address, deploymentState.Controller).send({ nonce: ++nonce })
       await logTx(tx, 'Finished Registering DAO in DAOTracker')
+      deploymentState.trackedDAO = true
+      setState(deploymentState)
     }
 
-    spinner.start('Transfer Avatar to Controller ownership')
-    tx = await avatar.methods.transferOwnership(Controller).send({ nonce: ++nonce })
-    await logTx(tx, 'Finished transferring Avatar to Controller ownership')
+    if (deploymentState.transferredAvatarOwnership !== true) {
+      spinner.start('Transfer Avatar to Controller ownership')
+      tx = await avatar.methods.transferOwnership(deploymentState.Controller).send({ nonce: ++nonce })
+      await logTx(tx, 'Finished transferring Avatar to Controller ownership')
+      deploymentState.transferredAvatarOwnership = true
+      setState(deploymentState)
+    }
 
-    spinner.start('Transfer Reputation to Controller ownership')
-    tx = await reputation.methods.transferOwnership(Controller).send({ nonce: ++nonce })
-    await logTx(tx, 'Finished transferring Reputation to Controller ownership')
+    if (deploymentState.transferredReputationOwnership !== true) {
+      spinner.start('Transfer Reputation to Controller ownership')
+      tx = await reputation.methods.transferOwnership(deploymentState.Controller).send({ nonce: ++nonce })
+      await logTx(tx, 'Finished transferring Reputation to Controller ownership')
+      deploymentState.transferredReputationOwnership = true
+      setState(deploymentState)
+    }
 
-    spinner.start('Transfer DAOToken to Controller ownership')
-    tx = await daoToken.methods.transferOwnership(Controller).send({ nonce: ++nonce })
-    await logTx(tx, 'Finished transferring DAOToken to Controller ownership')
+    if (deploymentState.transferredDAOTokenOwnership !== true) {
+      spinner.start('Transfer DAOToken to Controller ownership')
+      tx = await daoToken.methods.transferOwnership(deploymentState.Controller).send({ nonce: ++nonce })
+      await logTx(tx, 'Finished transferring DAOToken to Controller ownership')
+      deploymentState.transferredDAOTokenOwnership = true
+      setState(deploymentState)
+    }
 
-    if (migrationParams.useUController) {
+    if (migrationParams.useUController && deploymentState.registeredAvatarToUController !== true) {
       spinner.start('Register Avatar to UController')
       tx = await controller.methods.newOrganization(avatar.options.address).send({ nonce: ++nonce })
       await logTx(tx, 'Finished registerring Avatar')
+      deploymentState.registeredAvatarToUController = true
+      setState(deploymentState)
     }
   }
 
@@ -301,139 +382,236 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       DAORegistry,
       opts
     )
-    spinner.start('Registering DAO in DAORegistry')
-    let DAOname = await avatar.methods.orgName().call()
-    tx = await daoRegistry.methods.propose(avatar.options.address).send({ nonce: ++nonce })
-    tx = await daoRegistry.methods.register(avatar.options.address, DAOname).send({ nonce: ++nonce })
-    await logTx(tx, 'Finished Registering DAO in DAORegistry')
+
+    if (deploymentState.proposedRegisteringDAO !== true) {
+      spinner.start('Proposing DAO in DAORegistry')
+      tx = await daoRegistry.methods.propose(avatar.options.address).send({ nonce: ++nonce })
+      deploymentState.proposedRegisteringDAO = true
+      setState(deploymentState)
+      await logTx(tx, 'Finished Proposing DAO in DAORegistry')
+    }
+    if (deploymentState.registeredRegisteringDAO !== true) {
+      spinner.start('Registering DAO in DAORegistry')
+      let DAOname = await avatar.methods.orgName().call()
+      tx = await daoRegistry.methods.register(avatar.options.address, DAOname).send({ nonce: ++nonce })
+      deploymentState.registeredRegisteringDAO = true
+      setState(deploymentState)
+      await logTx(tx, 'Finished Registering DAO in DAORegistry')
+    }
   }
 
-  let schemeNames = []
-  let schemes = []
-  let params = []
-  let permissions = []
+  if (deploymentState.schemeNames === undefined) {
+    deploymentState.schemeNames = []
+    deploymentState.schemes = []
+    deploymentState.params = []
+    deploymentState.permissions = []
+    deploymentState.votingMachinesParams = []
+  }
 
-  spinner.start('Setting GenesisProtocol parameters...')
-
-  let votingMachinesParams = []
-
-  for (let i in migrationParams.VotingMachinesParams) {
-    if (migrationParams.VotingMachinesParams[i].votingParamsHash !== undefined) {
-      votingMachinesParams.push(migrationParams.VotingMachinesParams[i].votingParamsHash)
+  if (deploymentState.registeredGenesisProtocolParamsCount === undefined) {
+    deploymentState.registeredGenesisProtocolParamsCount = 0
+  }
+  for (deploymentState.registeredGenesisProtocolParamsCount;
+    deploymentState.registeredGenesisProtocolParamsCount < migrationParams.VotingMachinesParams.length;
+    deploymentState.registeredGenesisProtocolParamsCount++) {
+    spinner.start('Setting GenesisProtocol parameters...')
+    setState(deploymentState)
+    if (migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].votingParamsHash !== undefined) {
+      deploymentState.votingMachinesParams.push(migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].votingParamsHash)
+      setState(deploymentState)
       continue
     }
     const genesisProtocolSetParams = genesisProtocol.methods.setParameters(
       [
-        migrationParams.VotingMachinesParams[i].queuedVoteRequiredPercentage.toString(),
-        migrationParams.VotingMachinesParams[i].queuedVotePeriodLimit.toString(),
-        migrationParams.VotingMachinesParams[i].boostedVotePeriodLimit.toString(),
-        migrationParams.VotingMachinesParams[i].preBoostedVotePeriodLimit.toString(),
-        migrationParams.VotingMachinesParams[i].thresholdConst.toString(),
-        migrationParams.VotingMachinesParams[i].quietEndingPeriod.toString(),
-        web3.utils.toWei(migrationParams.VotingMachinesParams[i].proposingRepReward.toString()),
-        migrationParams.VotingMachinesParams[i].votersReputationLossRatio.toString(),
-        web3.utils.toWei(migrationParams.VotingMachinesParams[i].minimumDaoBounty.toString()),
-        migrationParams.VotingMachinesParams[i].daoBountyConst.toString(),
-        migrationParams.VotingMachinesParams[i].activationTime.toString()
+        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].queuedVoteRequiredPercentage.toString(),
+        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].queuedVotePeriodLimit.toString(),
+        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].boostedVotePeriodLimit.toString(),
+        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].preBoostedVotePeriodLimit.toString(),
+        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].thresholdConst.toString(),
+        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].quietEndingPeriod.toString(),
+        web3.utils.toWei(migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].proposingRepReward.toString()),
+        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].votersReputationLossRatio.toString(),
+        web3.utils.toWei(migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].minimumDaoBounty.toString()),
+        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].daoBountyConst.toString(),
+        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].activationTime.toString()
       ],
-      migrationParams.VotingMachinesParams[i].voteOnBehalf
+      migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].voteOnBehalf
     )
 
-    votingMachinesParams.push(await genesisProtocolSetParams.call())
     tx = await genesisProtocolSetParams.send({ nonce: ++nonce })
     await logTx(tx, 'GenesisProtocol parameters set.')
+    deploymentState.votingMachinesParams.push(await genesisProtocolSetParams.call())
+    setState(deploymentState)
   }
+  deploymentState.registeredGenesisProtocolParamsCount++
+  setState(deploymentState)
 
   if (migrationParams.schemes.SchemeRegistrar) {
-    for (let i in migrationParams.SchemeRegistrar) {
+    if (deploymentState.SchemeRegistrarParamsCount === undefined) {
+      deploymentState.SchemeRegistrarParamsCount = 0
+    }
+    for (deploymentState.SchemeRegistrarParamsCount;
+      deploymentState.SchemeRegistrarParamsCount < migrationParams.SchemeRegistrar.length;
+      deploymentState.SchemeRegistrarParamsCount++) {
+      setState(deploymentState)
+
       spinner.start('Setting Scheme Registrar parameters...')
       const schemeRegistrarSetParams = schemeRegistrar.methods.setParameters(
-        migrationParams.SchemeRegistrar[i].voteRegisterParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.SchemeRegistrar[i].voteRegisterParams],
-        migrationParams.SchemeRegistrar[i].voteRemoveParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.SchemeRegistrar[i].voteRemoveParams],
-        migrationParams.SchemeRegistrar[i].votingMachine === undefined ? GenesisProtocol : migrationParams.SchemeRegistrar[i].votingMachine
+        migrationParams.SchemeRegistrar[deploymentState.SchemeRegistrarParamsCount].voteRegisterParams === undefined
+          ? deploymentState.votingMachinesParams[0]
+          : deploymentState.votingMachinesParams[migrationParams.SchemeRegistrar[deploymentState.SchemeRegistrarParamsCount].voteRegisterParams],
+        migrationParams.SchemeRegistrar[deploymentState.SchemeRegistrarParamsCount].voteRemoveParams === undefined
+          ? deploymentState.votingMachinesParams[0]
+          : deploymentState.votingMachinesParams[migrationParams.SchemeRegistrar[deploymentState.SchemeRegistrarParamsCount].voteRemoveParams],
+        migrationParams.SchemeRegistrar[deploymentState.SchemeRegistrarParamsCount].votingMachine === undefined
+          ? GenesisProtocol
+          : migrationParams.SchemeRegistrar[deploymentState.SchemeRegistrarParamsCount].votingMachine
       )
       schemeRegistrarParams = await schemeRegistrarSetParams.call()
       tx = await schemeRegistrarSetParams.send({ nonce: ++nonce })
       await logTx(tx, 'Scheme Registrar parameters set.')
-      schemeNames.push('Scheme Registrar')
-      schemes.push(SchemeRegistrar)
-      params.push(schemeRegistrarParams)
-      permissions.push('0x0000001F')
+
+      deploymentState.schemeNames.push('Scheme Registrar')
+      deploymentState.schemes.push(SchemeRegistrar)
+      deploymentState.params.push(schemeRegistrarParams)
+      deploymentState.permissions.push('0x0000001F')
+      setState(deploymentState)
     }
+    deploymentState.SchemeRegistrarParamsCount++
+    setState(deploymentState)
   }
 
   if (migrationParams.schemes.ContributionReward) {
-    for (let i in migrationParams.ContributionReward) {
+    if (deploymentState.ContributionRewardParamsCount === undefined) {
+      deploymentState.ContributionRewardParamsCount = 0
+    }
+    for (deploymentState.ContributionRewardParamsCount;
+      deploymentState.ContributionRewardParamsCount < migrationParams.ContributionReward.length;
+      deploymentState.ContributionRewardParamsCount++) {
+      setState(deploymentState)
       spinner.start('Setting Contribution Reward parameters...')
       const contributionRewardSetParams = contributionReward.methods.setParameters(
-        migrationParams.ContributionReward[i].voteParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.ContributionReward[i].voteParams],
-        migrationParams.ContributionReward[i].votingMachine === undefined ? GenesisProtocol : migrationParams.ContributionReward[i].votingMachine
+        migrationParams.ContributionReward[deploymentState.ContributionRewardParamsCount].voteParams === undefined
+          ? deploymentState.votingMachinesParams[0]
+          : deploymentState.votingMachinesParams[migrationParams.ContributionReward[deploymentState.ContributionRewardParamsCount].voteParams],
+        migrationParams.ContributionReward[deploymentState.ContributionRewardParamsCount].votingMachine === undefined
+          ? GenesisProtocol
+          : migrationParams.ContributionReward[deploymentState.ContributionRewardParamsCount].votingMachine
       )
       contributionRewardParams = await contributionRewardSetParams.call()
       tx = await contributionRewardSetParams.send({ nonce: ++nonce })
       await logTx(tx, 'Contribution Reward parameters set.')
-      schemeNames.push('Contribution Reward')
-      schemes.push(ContributionReward)
-      params.push(contributionRewardParams)
-      permissions.push('0x00000000')
+
+      deploymentState.schemeNames.push('Contribution Reward')
+      deploymentState.schemes.push(ContributionReward)
+      deploymentState.params.push(contributionRewardParams)
+      deploymentState.permissions.push('0x00000000')
+      setState(deploymentState)
     }
+    deploymentState.ContributionRewardParamsCount++
+    setState(deploymentState)
   }
 
   if (migrationParams.schemes.UGenericScheme) {
-    for (let i in migrationParams.UGenericScheme) {
+    if (deploymentState.UGenericSchemeParamsCount === undefined) {
+      deploymentState.UGenericSchemeParamsCount = 0
+    }
+    for (deploymentState.UGenericSchemeParamsCount;
+      deploymentState.UGenericSchemeParamsCount < migrationParams.UGenericScheme.length;
+      deploymentState.UGenericSchemeParamsCount++) {
+      setState(deploymentState)
       spinner.start('Setting Generic Scheme parameters...')
       const genericSchemeSetParams = genericScheme.methods.setParameters(
-        migrationParams.UGenericScheme[i].voteParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.UGenericScheme[i].voteParams],
-        migrationParams.UGenericScheme[i].votingMachine === undefined ? GenesisProtocol : migrationParams.UGenericScheme[i].votingMachine,
-        migrationParams.UGenericScheme[i].targetContract
+        migrationParams.UGenericScheme[deploymentState.UGenericSchemeParamsCount].voteParams === undefined ? deploymentState.votingMachinesParams[0] : deploymentState.votingMachinesParams[migrationParams.UGenericScheme[deploymentState.UGenericSchemeParamsCount].voteParams],
+        migrationParams.UGenericScheme[deploymentState.UGenericSchemeParamsCount].votingMachine === undefined ? GenesisProtocol : migrationParams.UGenericScheme[deploymentState.UGenericSchemeParamsCount].votingMachine,
+        migrationParams.UGenericScheme[deploymentState.UGenericSchemeParamsCount].targetContract
       )
       genericSchemeParams = await genericSchemeSetParams.call()
       tx = await genericSchemeSetParams.send({ nonce: ++nonce })
       await logTx(tx, 'Generic Scheme parameters set.')
-      schemeNames.push('Generic Scheme')
-      schemes.push(Number(arcVersion.slice(-2)) >= 24 ? UGenericScheme : GenericScheme)
-      params.push(genericSchemeParams)
-      permissions.push('0x00000010')
+
+      deploymentState.schemeNames.push('Generic Scheme')
+      deploymentState.schemes.push(Number(arcVersion.slice(-2)) >= 24 ? UGenericScheme : GenericScheme)
+      deploymentState.params.push(genericSchemeParams)
+      deploymentState.permissions.push('0x00000010')
+      setState(deploymentState)
     }
+    deploymentState.UGenericSchemeParamsCount++
+    setState(deploymentState)
   }
 
   if (migrationParams.schemes.GlobalConstraintRegistrar) {
-    for (let i in migrationParams.GlobalConstraintRegistrar) {
+    if (deploymentState.GlobalConstraintRegistrarParamsCount === undefined) {
+      deploymentState.GlobalConstraintRegistrarParamsCount = 0
+    }
+    for (deploymentState.GlobalConstraintRegistrarParamsCount;
+      deploymentState.GlobalConstraintRegistrarParamsCount < migrationParams.GlobalConstraintRegistrar.length;
+      deploymentState.GlobalConstraintRegistrarParamsCount++) {
+      setState(deploymentState)
       spinner.start('Setting Global Constraint Registrar parameters...')
       const globalConstraintRegistrarSetParams = globalConstraintRegistrar.methods.setParameters(
-        migrationParams.GlobalConstraintRegistrar[i].voteParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.GlobalConstraintRegistrar[i].voteParams],
-        migrationParams.GlobalConstraintRegistrar[i].votingMachine === undefined ? GenesisProtocol : migrationParams.GlobalConstraintRegistrar[i].votingMachine
+        migrationParams.GlobalConstraintRegistrar[deploymentState.GlobalConstraintRegistrarParamsCount].voteParams === undefined
+          ? deploymentState.votingMachinesParams[0]
+          : deploymentState.votingMachinesParams[migrationParams.GlobalConstraintRegistrar[deploymentState.GlobalConstraintRegistrarParamsCount].voteParams],
+        migrationParams.GlobalConstraintRegistrar[deploymentState.GlobalConstraintRegistrarParamsCount].votingMachine === undefined
+          ? GenesisProtocol
+          : migrationParams.GlobalConstraintRegistrar[deploymentState.GlobalConstraintRegistrarParamsCount].votingMachine
       )
       globalConstraintRegistrarParams = await globalConstraintRegistrarSetParams.call()
       tx = await globalConstraintRegistrarSetParams.send({ nonce: ++nonce })
       await logTx(tx, 'Global Constraints Registrar parameters set.')
-      schemeNames.push('Global Constraints Registrar')
-      schemes.push(GlobalConstraintRegistrar)
-      params.push(globalConstraintRegistrarParams)
-      permissions.push('0x00000004')
+
+      deploymentState.schemeNames.push('Global Constraints Registrar')
+      deploymentState.schemes.push(GlobalConstraintRegistrar)
+      deploymentState.params.push(globalConstraintRegistrarParams)
+      deploymentState.permissions.push('0x00000004')
+      setState(deploymentState)
     }
+    deploymentState.GlobalConstraintRegistrarParamsCount++
+    setState(deploymentState)
   }
 
   if (migrationParams.schemes.UpgradeScheme) {
-    for (let i in migrationParams.UpgradeScheme) {
+    if (deploymentState.UpgradeSchemeParamsCount === undefined) {
+      deploymentState.UpgradeSchemeParamsCount = 0
+    }
+    for (deploymentState.UpgradeSchemeParamsCount;
+      deploymentState.UpgradeSchemeParamsCount < migrationParams.UpgradeScheme.length;
+      deploymentState.UpgradeSchemeParamsCount++) {
+      setState(deploymentState)
       spinner.start('Setting Upgrade Scheme parameters...')
       const upgradeSchemeSetParams = upgradeScheme.methods.setParameters(
-        migrationParams.UpgradeScheme[i].voteParams === undefined ? votingMachinesParams[0] : votingMachinesParams[migrationParams.UpgradeScheme[i].voteParams],
-        migrationParams.UpgradeScheme[i].votingMachine === undefined ? GenesisProtocol : migrationParams.UpgradeScheme[i].votingMachine
+        migrationParams.UpgradeScheme[deploymentState.UpgradeSchemeParamsCount].voteParams === undefined
+          ? deploymentState.votingMachinesParams[0]
+          : deploymentState.votingMachinesParams[migrationParams.UpgradeScheme[deploymentState.UpgradeSchemeParamsCount].voteParams],
+        migrationParams.UpgradeScheme[deploymentState.UpgradeSchemeParamsCount].votingMachine === undefined
+          ? GenesisProtocol
+          : migrationParams.UpgradeScheme[deploymentState.UpgradeSchemeParamsCount].votingMachine
       )
       upgradeSchemeParams = await upgradeSchemeSetParams.call()
       tx = await upgradeSchemeSetParams.send({ nonce: ++nonce })
       await logTx(tx, 'Upgrade Scheme parameters set.')
-      schemeNames.push('Upgrade Scheme')
-      schemes.push(UpgradeScheme)
-      params.push(upgradeSchemeParams)
-      permissions.push('0x0000000A')
+
+      deploymentState.schemeNames.push('Upgrade Scheme')
+      deploymentState.schemes.push(UpgradeScheme)
+      deploymentState.params.push(upgradeSchemeParams)
+      deploymentState.permissions.push('0x0000000A')
+      setState(deploymentState)
     }
+    deploymentState.UpgradeSchemeParamsCount++
+    setState(deploymentState)
   }
 
   if (migrationParams.StandAloneContracts) {
-    for (let i = 0, len = migrationParams.StandAloneContracts.length; i < len; i++) {
-      let standAlone = migrationParams.StandAloneContracts[i]
+    let len = migrationParams.StandAloneContracts.length
+    if (deploymentState.standAloneContractsCounter === undefined) {
+      deploymentState.standAloneContractsCounter = 0
+    }
+    for (deploymentState.standAloneContractsCounter;
+      deploymentState.standAloneContractsCounter < len;
+      deploymentState.standAloneContractsCounter++) {
+      setState(deploymentState)
+      let standAlone = migrationParams.StandAloneContracts[deploymentState.standAloneContractsCounter]
 
       const path = require('path')
       let contractJson
@@ -460,7 +638,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
         let contractParams = []
         for (let i in standAlone.params) {
           if (standAlone.params[i].StandAloneContract !== undefined) {
-            contractParams.push(StandAloneContracts[standAlone.params[i].StandAloneContract].address)
+            contractParams.push(deploymentState.StandAloneContracts[standAlone.params[i].StandAloneContract].address)
           } else {
             contractParams.push(standAlone.params[i])
           }
@@ -470,13 +648,23 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
         tx = await contractSetParams.send({ nonce: ++nonce })
         await logTx(tx, `${standAlone.name} initialized.`)
       }
-      StandAloneContracts.push({ name: standAlone.name, alias: standAlone.alias, address: standAloneContract.options.address })
+
+      deploymentState.StandAloneContracts.push({ name: standAlone.name, alias: standAlone.alias, address: standAloneContract.options.address })
+      setState(deploymentState)
     }
+    deploymentState.standAloneContractsCounter++
+    setState(deploymentState)
   }
 
   if (migrationParams.CustomSchemes) {
-    for (var i = 0, len = migrationParams.CustomSchemes.length; i < len; i++) {
-      let customeScheme = migrationParams.CustomSchemes[i]
+    let len = migrationParams.CustomSchemes.length
+    if (deploymentState.CustomSchemeCounter === undefined) {
+      deploymentState.CustomSchemeCounter = 0
+    }
+    for (deploymentState.CustomSchemeCounter;
+      deploymentState.CustomSchemeCounter < len; deploymentState.CustomSchemeCounter++) {
+      setState(deploymentState)
+      let customeScheme = migrationParams.CustomSchemes[deploymentState.CustomSchemeCounter]
       const path = require('path')
       let contractJson
       if (customeScheme.fromArc) {
@@ -507,7 +695,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
         let schemeParams = []
         for (let i in customeScheme.params) {
           if (customeScheme.params[i].voteParams !== undefined) {
-            schemeParams.push(votingMachinesParams[customeScheme.params[i].voteParams])
+            schemeParams.push(deploymentState.votingMachinesParams[customeScheme.params[i].voteParams])
           } else if (customeScheme.params[i] === 'GenesisProtocolAddress') {
             schemeParams.push(GenesisProtocol)
           } else {
@@ -523,11 +711,11 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
         let schemeParams = [avatar.options.address]
         for (let i in customeScheme.params) {
           if (customeScheme.params[i].voteParams !== undefined) {
-            schemeParams.push(votingMachinesParams[customeScheme.params[i].voteParams])
+            schemeParams.push(deploymentState.votingMachinesParams[customeScheme.params[i].voteParams])
           } else if (customeScheme.params[i] === 'GenesisProtocolAddress') {
             schemeParams.push(GenesisProtocol)
           } else if (customeScheme.params[i].StandAloneContract !== undefined) {
-            schemeParams.push(StandAloneContracts[customeScheme.params[i].StandAloneContract].address)
+            schemeParams.push(deploymentState.StandAloneContracts[customeScheme.params[i].StandAloneContract].address)
           } else if (customeScheme.params[i] === 'AvatarAddress') {
             schemeParams.push(avatar.options.address)
           } else {
@@ -545,24 +733,38 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
         continue
       }
 
-      schemeNames.push(customeScheme.name)
-      schemes.push(schemeContract.options.address)
-      params.push(schemeParamsHash)
-      permissions.push(customeScheme.permissions)
-      Schemes.push({ name: customeScheme.name, alias: customeScheme.alias, address: schemeContract.options.address })
+      deploymentState.schemeNames.push(customeScheme.name)
+      deploymentState.schemes.push(schemeContract.options.address)
+      deploymentState.params.push(schemeParamsHash)
+      deploymentState.permissions.push(customeScheme.permissions)
+      deploymentState.Schemes.push({ name: customeScheme.name, alias: customeScheme.alias, address: schemeContract.options.address })
+      setState(deploymentState)
     }
+    deploymentState.CustomSchemeCounter++
+    setState(deploymentState)
   }
 
-  if (migrationParams.useDaoCreator === true) {
-    spinner.start('Setting DAO schemes...')
-    tx = await daoCreator.methods.setSchemes(avatar.options.address, schemes, params, permissions, 'metaData').send({ nonce: ++nonce })
-    await logTx(tx, 'DAO schemes set.')
-  } else {
-    for (let i in schemes) {
-      spinner.start('Registering ' + schemeNames[i] + ' to the DAO...')
-      tx = await controller.methods.registerScheme(schemes[i], params[i], permissions[i], avatar.options.address).send({ nonce: ++nonce })
-      await logTx(tx, schemeNames[i] + ' was successfully registered to the DAO.')
+  if (deploymentState.schemesSet !== true) {
+    if (migrationParams.useDaoCreator === true) {
+      spinner.start('Setting DAO schemes...')
+      tx = await daoCreator.methods.setSchemes(avatar.options.address, deploymentState.schemes, deploymentState.params, deploymentState.permissions, 'metaData').send({ nonce: ++nonce })
+      await logTx(tx, 'DAO schemes set.')
+      deploymentState.schemesSet = true
+      setState(deploymentState)
+    } else {
+      for (let i = deploymentState.schemesSetCounter === undefined ? 0 : deploymentState.schemesSetCounter;
+        i < deploymentState.schemes.length; i++) {
+        deploymentState.schemesSetCounter = i
+        setState(deploymentState)
+        spinner.start('Registering ' + deploymentState.schemeNames[i] + ' to the DAO...')
+        tx = await controller.methods.registerScheme(deploymentState.schemes[i], deploymentState.params[i], deploymentState.permissions[i], avatar.options.address).send({ nonce: ++nonce })
+        await logTx(tx, deploymentState.schemeNames[i] + ' was successfully registered to the DAO.')
+      }
+      deploymentState.schemesSet = true
+      setState(deploymentState)
     }
+    deploymentState.schemesSetCounter++
+    setState(deploymentState)
   }
 
   console.log(
@@ -571,8 +773,8 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       Avatar: avatar.options.address,
       DAOToken: daoToken.options.address,
       Reputation: reputation.options.address,
-      Controller,
-      Schemes,
+      Controller: deploymentState.Controller,
+      Schemes: deploymentState.Schemes,
       arcVersion
     }, null, 2)
   )
@@ -582,10 +784,13 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
     Avatar: avatar.options.address,
     DAOToken: daoToken.options.address,
     Reputation: reputation.options.address,
-    Controller,
-    Schemes,
+    Controller: deploymentState.Controller,
+    Schemes: deploymentState.Schemes,
     arcVersion
   }
+
+  cleanState()
+  spinner.info('DAO Migration has Finished Successfully!')
   return migration
 }
 

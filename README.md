@@ -52,6 +52,8 @@ const options = {
   disable-confs: true,
   // force deploy everything
   force: true,
+  // delete previous deployment state and starts with clean state
+  restart: false,
   // filepath to output the migration results
   output: 'migration.json',
   // private key of the account used in migration (overrides the 'mnemonic' option)
@@ -111,6 +113,7 @@ Options:
   --gas-price, -g    gas price in GWei. If not specified, will use an automatically suggested price.            [number]
   --quiet, -q        suppress console output                                                  [boolean] [default: false]
   --force, -f        disable confirmation messages                                            [boolean] [default: false]
+  --restart, -t      delete previous deployment state and starts with clean state restart     [boolean] [default: false]
   --output, -o       filepath to output the migration results                       [string] [default: "migration.json"]
   --params, -i       path to the file containing the migration parameters           [string] [default: "migration-params.json"]
   --private-key, -s  private key of the account used in migration (cannot be used with the 'mnemonic' option)
@@ -154,6 +157,8 @@ const options = {
   quiet: true,
   // disable confirmation messages
   force: true,
+  // delete previous deployment state and starts with clean state
+  restart: false,
   // filepath to output the migration results
   output: 'migration.json',
   // private key of the account used in migration (overrides the 'mnemonic' option)
