@@ -279,15 +279,16 @@ describe('Proposal', () => {
     expect(stakes[stakes.length - 1].length).toEqual(1)
   })
 
-  it.only('get proposal votes', async () => {
+  it('get proposal votes', async () => {
     const proposal = await createAProposal()
     // vote with several accounts
     await voteToPassProposal(proposal)
-    const votes = await proposal.votes().pipe(first()).toPromise()
-    expect(votes.length).toBeGreaterThan(1)
+    const votes = await proposal.votes({}, { fetchPolicy: 'no-cache'}).pipe(first()).toPromise()
+    expect(votes.length).toBeGreaterThanOrEqual(1)
     // @ts-ignore
     const someAccount = votes[0].staticState.voter
-    const votesForAccount = await proposal.votes({where: {voter: someAccount}}, { fetchPolicy: "no-cache"}).pipe(first()).toPromise()
+    const votesForAccount = await proposal.votes({where: {voter: someAccount}}, { fetchPolicy: 'no-cache'})
+      .pipe(first()).toPromise()
     expect(votesForAccount.length).toEqual(1)
   })
 
