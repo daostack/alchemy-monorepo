@@ -2,15 +2,18 @@ import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
+import { Proposal } from './proposal'
 import { ICommonQueryOptions, IStateful } from './types'
 import { createGraphQlQuery } from './utils'
 
 export interface ITagStaticState {
   id: string
+  numberOfProposals: number
 }
 
 export interface ITagState extends ITagStaticState {
   id: string
+  proposals: Proposal[]
 }
 
 export interface ITagQueryOptions extends ICommonQueryOptions {
@@ -24,6 +27,8 @@ export class Tag implements IStateful<ITagState> {
   public static fragments = {
     TagFields: gql`fragment TagFields on Tag {
       id
+      numberOfProposals
+      proposals { id }
     }`
   }
 
@@ -58,7 +63,8 @@ export class Tag implements IStateful<ITagState> {
     let query
     const itemMap = (r: any) => {
       return new Tag({
-        id: r.id
+        id: r.id,
+        numberOfProposals: Number(r.numberOfProposals)
       }, context)
     }
 
@@ -122,9 +128,10 @@ export class Tag implements IStateful<ITagState> {
     const query = gql`query TagState
       {
         tag (id: "${this.id}") {
-          id
+          ...TagFields
         }
       }
+      ${Tag.fragments.TagFields}
     `
 
     const itemMap = (item: any): ITagState => {
@@ -132,10 +139,13 @@ export class Tag implements IStateful<ITagState> {
         throw Error(`Could not find a Tag with id ${this.id}`)
       }
       this.setStaticState({
-        id: item.id
+        id: item.id,
+        numberOfProposals: Number(item.numberOfProposals)
       })
       return {
-        id: item.id
+        id: item.id,
+        numberOfProposals: Number(item.numberOfProposals),
+        proposals: item.proposals.map((id: string) => new Proposal(id, this.context))
       }
     }
     return this.context.getObservableObject(query, itemMap, apolloQueryOptions)

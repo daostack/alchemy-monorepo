@@ -1,6 +1,8 @@
 import { first} from 'rxjs/operators'
 import { Arc, DAO, Proposal, Tag } from '../src'
-import { createAProposal, newArc, getTestDAO } from './utils'
+import { createAProposal, getTestDAO, newArc } from './utils'
+
+jest.setTimeout(20000)
 
 /**
  * Tag test
@@ -9,7 +11,7 @@ describe('Tag', () => {
 
   let arc: Arc
   let dao: DAO
-  const tags = ['tag1', 'tag2']
+  const tags = ['tag1', 'tag2', 'tag3']
   const moretags = ['tag3', 'tag4']
 
   beforeAll(async () => {
@@ -18,10 +20,10 @@ describe('Tag', () => {
   })
 
   it('Tag is instantiable', () => {
-    const tag = new Tag({
-      id: '0x1234id',
-    }, arc)
+    const tag = new Tag('0x1234id', arc)
     expect(tag).toBeInstanceOf(Tag)
+    const tag2 = new Tag({ id: '0x1234id', numberOfProposals: 2}, arc)
+    expect(tag2).toBeInstanceOf(Tag)
   })
 
   it('Tags are saved on a proposal', async () => {
@@ -36,17 +38,25 @@ describe('Tag', () => {
     expect(proposals.map((p: Proposal) => p.id)).toContain(proposal.id)
   })
 
-  it('Tag are searchable', async () => {
+  it('Tags are searchable', async () => {
     let result: any
     await createAProposal(dao, { tags })
+    await createAProposal(dao, { tags: moretags })
 
-    result = await Tag.search(arc, {where: {id: 'tag1'}})
-      .pipe(first()).toPromise()
-    expect(result.map((t: Tag) => t.id)).toEqual(['tag1'])
     result = await Tag
-      .search(arc, {where:  {id: 'hi_there'}})
+      .search(arc, {where:  {id: 'this tag does not exist'}})
       .pipe(first()).toPromise()
     expect(result).toEqual([])
+    result = await Tag.search(arc, {where: {id: 'tag3'}})
+      .pipe(first()).toPromise()
+    expect(result.map((t: Tag) => t.id)).toEqual(['tag3'])
+    const tag = result[0]
+    expect(tag.staticState.numberOfProposals).toBeGreaterThanOrEqual(2)
+
+  })
+
+  it('arc.tags(..) works', async () => {
+    await arc.tags().pipe(first()).toPromise()
   })
 
   it('paging and sorting works', async () => {

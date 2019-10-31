@@ -5,7 +5,9 @@ import { Proposal } from '../src/proposal'
 import { Scheme } from '../src/scheme'
 import { Address } from '../src/types'
 import { BN } from './utils'
-import { fromWei, getTestAddresses,
+import {
+  fromWei,
+  getTestAddresses,
   newArc,
   newArcWithoutEthereum,
   newArcWithoutGraphql,

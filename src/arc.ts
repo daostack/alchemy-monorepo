@@ -8,6 +8,7 @@ import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { IProposalQueryOptions, Proposal } from './proposal'
 import { ISchemeQueryOptions, Scheme } from './scheme'
+import { ITagQueryOptions, Tag } from './tag'
 import { Token } from './token'
 import { Address, IPFSProvider, Web3Provider } from './types'
 import { BN } from './utils'
@@ -140,6 +141,10 @@ export class Arc extends GraphNodeObserver {
    */
   public daos(options: IDAOQueryOptions = {}, apolloQueryOptions: IApolloQueryOptions = {}): Observable<DAO[]> {
     return DAO.search(this, options, apolloQueryOptions)
+  }
+
+  public tags(options: ITagQueryOptions = {}, apolloQueryOptions: IApolloQueryOptions = {}): Observable<Tag[]> {
+    return Tag.search(this, options, apolloQueryOptions)
   }
 
   public scheme(id: string): Scheme {
