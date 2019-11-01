@@ -68,6 +68,7 @@ export interface IProposalState extends IProposalStaticState {
   boostedAt: Date
   contributionReward: ContributionReward.IContributionReward|null
   confidenceThreshold: number
+  closingAt: Date
   createdAt: Date
   descriptionHash?: string
   description?: string
@@ -109,6 +110,7 @@ export class Proposal implements IStateful<IProposalState> {
       id
       accountsWithUnclaimedRewards
       boostedAt
+      closingAt
       confidenceThreshold
       contributionReward {
         id
@@ -198,9 +200,7 @@ export class Proposal implements IStateful<IProposalState> {
         schemeRemoved
       }
       stage
-      stakes {
-        id
-      }
+      # stakes { id }
       stakesFor
       stakesAgainst
       tags {
@@ -210,9 +210,7 @@ export class Proposal implements IStateful<IProposalState> {
       totalRepWhenExecuted
       title
       url
-      votes {
-        id
-      }
+      # votes { id }
       votesAgainst
       votesFor
       votingMachine
@@ -310,14 +308,25 @@ export class Proposal implements IStateful<IProposalState> {
     let query
 
     if (apolloQueryOptions.fetchAllData === true) {
-        query = gql`query ProposalsSearchAllData
+      query = gql`query ProposalsSearchAllData
         {
           proposals ${createGraphQlQuery(options, where)} {
             ...ProposalFields
+            votes {
+              id
+            }
+            stakes {
+              id
+            }
           }
         }
         ${Proposal.fragments.ProposalFields}
       `
+      return context.getObservableList(
+        query,
+        (r: any) => new Proposal(r, context),
+        apolloQueryOptions
+      ) as IObservable<Proposal[]>
     } else {
       query = gql`query ProposalSearchPartialData
         {
@@ -334,13 +343,12 @@ export class Proposal implements IStateful<IProposalState> {
           }
         }
       `
+      return context.getObservableList(
+        query,
+        (r: any) => new Proposal(r.id, context),
+        apolloQueryOptions
+      ) as IObservable<Proposal[]>
     }
-
-    return context.getObservableList(
-      query,
-      (r: any) => new Proposal(r.id, context),
-      apolloQueryOptions
-    ) as IObservable<Proposal[]>
   }
 
   public context: Arc
@@ -390,6 +398,12 @@ export class Proposal implements IStateful<IProposalState> {
       {
         proposal(id: "${this.id}") {
           ...ProposalFields
+          votes {
+            id
+          }
+          stakes {
+            id
+          }
         }
       }
       ${Proposal.fragments.ProposalFields}
@@ -517,6 +531,7 @@ export class Proposal implements IStateful<IProposalState> {
       return {
         accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
         boostedAt: Number(item.boostedAt),
+        closingAt: Number(item.closingAt),
         confidenceThreshold: Number(item.confidenceThreshold),
         contributionReward,
         createdAt: Number(item.createdAt),
