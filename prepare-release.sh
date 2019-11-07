@@ -30,7 +30,7 @@ echo "Pruning Arc build..."
 npm run prune-arc-build -- "$@"
 # migrating Arc version to ganache
 echo "Migrating ganache..."
-npm run migrate -- --force "$@"
+npm run migrate -- --force --restart "$@"
 done
 if [ ! -z "$kovan_private_key" ]; then
 # migrate kovan
