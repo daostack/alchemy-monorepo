@@ -140,13 +140,16 @@ export class Token implements IStateful<ITokenState> {
         }
       }
       return err
-
     }
     const observable = Observable.create(async (observer: Observer<typeof BN>) => {
       const contract = this.contract('readonly')
       let subscriptionReceive: Subscription
       let subscriptionSend: Subscription
-      contract.methods.balanceOf(owner).call()
+      const unsubscribe = () => {
+        if (subscriptionReceive) { subscriptionReceive.unsubscribe() }
+        if (subscriptionSend) { subscriptionSend.unsubscribe() }
+      }
+      const subscribe = () => contract.methods.balanceOf(owner).call()
         .then((balance: number) => {
           if (balance === null) {
             observer.error(`balanceOf ${owner} returned null`)
@@ -167,18 +170,13 @@ export class Token implements IStateful<ITokenState> {
         })
         .catch(async (err: Error) => {
           if (err.message.match(/connection not open/g)) {
-            // reset provider and resubscribe
-            this.context.web3.setProvider(this.context.web3Provider)
-            observer.next(NaN)
-            // observer.error(`Please reconnect: ${err.message}`)
+            observer.error(await errHandler(err))
           } else {
             observer.error(await errHandler(err))
           }
         })
-      return () => {
-        if (subscriptionReceive) { subscriptionReceive.unsubscribe() }
-        if (subscriptionSend) { subscriptionSend.unsubscribe() }
-      }
+      await subscribe()
+      return () => unsubscribe()
     })
     observable.first = () => observable.pipe(first()).toPromise()
     return observable

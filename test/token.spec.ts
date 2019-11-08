@@ -1,9 +1,6 @@
 import { first} from 'rxjs/operators'
-import { Arc  } from '../src/arc'
-import { Token } from '../src/token'
-import { Address } from '../src/types'
-import { BN } from './utils'
-import { fromWei, getTestAddresses, ITestAddresses,
+import { Address, Arc, Token  } from '../src'
+import { BN, fromWei, getTestAddresses, ITestAddresses,
    newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(20000)
