@@ -2,7 +2,7 @@ import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { IProposalOutcome, IProposalStage, IProposalState, Proposal } from '../src/proposal'
-import { BN } from './utils'
+import BN = require('bn.js')
 import { createAProposal, fromWei, getTestAddresses, getTestDAO, ITestAddresses,
   newArc, timeTravel, toWei,
   voteToPassProposal, waitUntilTrue } from './utils'

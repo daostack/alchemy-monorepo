@@ -1,17 +1,18 @@
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { IProposalOutcome } from './proposal'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import { BN, createGraphQlQuery, isAddress } from './utils'
+import { createGraphQlQuery, isAddress } from './utils'
 
 export interface IVoteStaticState {
   id?: string
   voter: Address
   createdAt: Date | undefined
   outcome: IProposalOutcome
-  amount: typeof BN // amount of reputation that was voted with
+  amount: BN // amount of reputation that was voted with
   proposal: string
   dao?: Address
 }

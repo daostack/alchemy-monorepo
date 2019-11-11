@@ -1,6 +1,6 @@
 import { IContractInfo } from '../src/arc'
 import { getContractAddressesFromMigration, realMathToNumber  } from '../src/utils'
-import { BN } from './utils'
+import BN = require('bn.js')
 
 /**
  * Token test

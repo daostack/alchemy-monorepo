@@ -1,20 +1,21 @@
 import { ApolloQueryResult } from 'apollo-client'
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { REPUTATION_CONTRACT_VERSION } from './settings'
 import { Address, ICommonQueryOptions, IStateful, Web3Receipt } from './types'
-import { BN, createGraphQlQuery, isAddress } from './utils'
+import { createGraphQlQuery, isAddress } from './utils'
 
 export interface IReputationState {
   address: Address
-  totalSupply: number
+  totalSupply: BN
   dao: Address
 }
 
 export interface IReputationQueryOptions extends ICommonQueryOptions {
-  id?: string,
+  id?: string
   dao?: Address
   [key: string]: any
 }
@@ -86,13 +87,13 @@ export class Reputation implements IStateful<IReputationState> {
       return {
         address: item.id,
         dao: item.dao.id,
-        totalSupply: item.totalSupply
+        totalSupply: new BN(item.totalSupply)
       }
     }
     return  this.context.getObservableObject(query, itemMap, apolloQueryOptions) as Observable<IReputationState>
   }
 
-  public reputationOf(address: Address): Observable<typeof BN> {
+  public reputationOf(address: Address): Observable<BN> {
     isAddress(address)
 
     const query = gql`query ReputationHolderReputation {
@@ -121,7 +122,7 @@ export class Reputation implements IStateful<IReputationState> {
     return this.context.getContract(this.address, abi)
   }
 
-  public mint(beneficiary: Address, amount: typeof BN) {
+  public mint(beneficiary: Address, amount: BN) {
     const contract = this.contract()
     const transaction = contract.methods.mint(beneficiary, amount.toString())
     const mapReceipt = (receipt: Web3Receipt) => receipt

@@ -5,7 +5,7 @@ import Arc from '../src/index'
 import { IProposalCreateOptions, IProposalOutcome, Proposal } from '../src/proposal'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
-import { BN } from '../src/utils'
+import BN = require('bn.js')
 
 const Web3 = require('web3')
 const path =require('path')
@@ -36,11 +36,11 @@ const pks = [
   '0xb0057716d5917badaf911b193b12b910811c1497b5bada8d7711f758981c3773' // 9
 ]
 
-export function fromWei(amount: typeof BN): string {
+export function fromWei(amount: BN): string {
   return Web3.utils.fromWei(amount, 'ether')
 }
 
-export function toWei(amount: string | number): typeof BN {
+export function toWei(amount: string | number): BN {
   return new BN(Web3.utils.toWei(amount.toString(), 'ether'))
 }
 

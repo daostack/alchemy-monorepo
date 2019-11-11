@@ -1,9 +1,9 @@
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { Address, ICommonQueryOptions, IStateful } from './types'
-import { BN } from './utils'
 import { createGraphQlQuery, isAddress } from './utils'
 
 export interface IRewardStaticState {
@@ -11,10 +11,10 @@ export interface IRewardStaticState {
   beneficiary: Address,
   createdAt: Date,
   proposalId: string,
-  reputationForVoter: typeof BN,
-  tokensForStaker: typeof BN,
-  daoBountyForStaker: typeof BN,
-  reputationForProposer: typeof BN,
+  reputationForVoter: BN,
+  tokensForStaker: BN,
+  daoBountyForStaker: BN,
+  reputationForProposer: BN,
   tokenAddress: Address,
 }
 

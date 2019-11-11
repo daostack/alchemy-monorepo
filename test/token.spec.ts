@@ -1,6 +1,7 @@
 import { first} from 'rxjs/operators'
 import { Address, Arc, Token  } from '../src'
-import { BN, fromWei, getTestAddresses, ITestAddresses,
+import BN = require('bn.js')
+import { fromWei, getTestAddresses, ITestAddresses,
    newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(20000)
@@ -60,9 +61,9 @@ describe('Token', () => {
     const token = new Token(addresses.test.organs.DemoDAOToken, arc)
     const account = '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1'
     // check if the currentAccount is the owner of the contract
-    const balances: Array<typeof BN> = []
+    const balances: Array<BN> = []
     const amount = new BN('1234')
-    token.balanceOf(account).subscribe((next: typeof BN) => balances.push(next))
+    token.balanceOf(account).subscribe((next: BN) => balances.push(next))
     await token.mint(account, amount).send()
     await waitUntilTrue(() => balances.length > 1)
     expect(balances[1].sub(balances[0]).toString()).toEqual(amount.toString())
@@ -71,9 +72,9 @@ describe('Token', () => {
   it('balanceOf GEN token works', async () => {
     const token = arc.GENToken()
     const account = '0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1'
-    const balances: Array<typeof BN> = []
+    const balances: Array<BN> = []
     const amountToMint = new BN('12345')
-    token.balanceOf(account).subscribe((next: typeof BN) => balances.push(next))
+    token.balanceOf(account).subscribe((next: BN) => balances.push(next))
     await waitUntilTrue(() => balances.length > 0)
     expect(typeof balances[0]).toEqual(typeof new BN(0))
     await token.mint(account, amountToMint).send()
@@ -88,7 +89,7 @@ describe('Token', () => {
   it('approveForStaking() and allowance() work', async () => {
     const token = arc.GENToken()
     const amount = toWei('31415')
-    const allowances: Array<typeof BN> = []
+    const allowances: Array<BN> = []
     const lastAllowance = () => allowances[allowances.length - 1]
     const someAddress = '0xffcf8fdee72ac11b5c542428b35eef5769c409f0'
 

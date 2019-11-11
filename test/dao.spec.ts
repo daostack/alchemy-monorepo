@@ -92,8 +92,8 @@ describe('DAO', () => {
 
   it('throws a reasonable error if the contract does not exist', async () => {
     expect.assertions(1)
-    const reputation = new DAO('0xfake', arc)
-    await expect(reputation.state().toPromise()).rejects.toThrow(
+    const dao = new DAO('0xfake', arc)
+    await expect(dao.state().toPromise()).rejects.toThrow(
       'Could not find a DAO with id 0xfake'
     )
   })

@@ -1,3 +1,4 @@
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { first, map } from 'rxjs/operators'
@@ -11,7 +12,7 @@ import { ISchemeQueryOptions, Scheme } from './scheme'
 import { IStakeQueryOptions, Stake } from './stake'
 import { Token } from './token'
 import { Address, ICommonQueryOptions, IStateful } from './types'
-import { BN, createGraphQlQuery, isAddress } from './utils'
+import { createGraphQlQuery, isAddress } from './utils'
 import { IVoteQueryOptions, Vote } from './vote'
 
 export interface IDAOStaticState {
@@ -27,8 +28,8 @@ export interface IDAOStaticState {
 
 export interface IDAOState extends IDAOStaticState {
   memberCount: number,
-  reputationTotalSupply: typeof BN,
-  tokenTotalSupply: typeof BN,
+  reputationTotalSupply: BN,
+  tokenTotalSupply: BN,
   dao: DAO,
   numberOfQueuedProposals: number,
   numberOfPreBoostedProposals: number,
@@ -317,7 +318,7 @@ export class DAO implements IStateful<IDAOState> {
    *
    * @return an observable stream of BN number instances
    */
-  public ethBalance(): Observable<typeof BN> {
+  public ethBalance(): Observable<BN> {
     return this.context.ethBalance(this.id)
   }
 }

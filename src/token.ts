@@ -1,10 +1,10 @@
+import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable, Observer, Subscription } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAOTOKEN_CONTRACT_VERSION } from './settings'
 import { Address, Hash, ICommonQueryOptions, IStateful, Web3Receipt } from './types'
-import { BN } from './utils'
 import { createGraphQlQuery, isAddress } from './utils'
 
 export interface ITokenState {
@@ -12,7 +12,7 @@ export interface ITokenState {
   name: string
   owner: Address
   symbol: string
-  totalSupply: typeof BN
+  totalSupply: BN
 }
 
 export interface ITokenQueryOptions extends ICommonQueryOptions {
@@ -31,14 +31,14 @@ export interface IApproval {
   contract: Address
   owner: Address
   spender: Address
-  value: typeof BN
+  value: BN
 }
 
 export interface IAllowance {
   token: Address
   owner: Address
   spender: Address
-  amount: typeof BN
+  amount: BN
 }
 
 export class Token implements IStateful<ITokenState> {
@@ -130,7 +130,7 @@ export class Token implements IStateful<ITokenState> {
     return this.context.getContract(this.address, abi, mode)
   }
 
-  public balanceOf(owner: string): Observable<typeof BN> {
+  public balanceOf(owner: string): Observable<BN> {
     const errHandler = async (err: Error) => {
       if (err.message.match(/Returned values aren't valid/g)) {
         // check if there is actually a contract deployed there
@@ -141,7 +141,7 @@ export class Token implements IStateful<ITokenState> {
       }
       return err
     }
-    const observable = Observable.create(async (observer: Observer<typeof BN>) => {
+    const observable = Observable.create(async (observer: Observer<BN>) => {
       const contract = this.contract('readonly')
       let subscriptionReceive: Subscription
       let subscriptionSend: Subscription
@@ -150,14 +150,14 @@ export class Token implements IStateful<ITokenState> {
         if (subscriptionSend) { subscriptionSend.unsubscribe() }
       }
       const subscribe = () => contract.methods.balanceOf(owner).call()
-        .then((balance: number) => {
+        .then((balance: string) => {
           if (balance === null) {
             observer.error(`balanceOf ${owner} returned null`)
           }
           observer.next(new BN(balance))
           subscriptionReceive = contract.events.Transfer({ filter: { to: owner }})
             .on('data', (data: any) => {
-              contract.methods.balanceOf(owner).call().then((newBalance: number) => {
+              contract.methods.balanceOf(owner).call().then((newBalance: string) => {
                 observer.next(new BN(newBalance))
               })
             })
@@ -182,12 +182,12 @@ export class Token implements IStateful<ITokenState> {
     return observable
   }
 
-  public allowance(owner: Address, spender: Address): Observable<typeof BN> {
-    return Observable.create(async (observer: Observer<typeof BN>) => {
+  public allowance(owner: Address, spender: Address): Observable<BN> {
+    return Observable.create(async (observer: Observer<BN>) => {
       let subscription: Subscription
       const contract = this.contract('readonly')
       contract.methods.allowance(owner, spender).call()
-        .then((balance: number) => {
+        .then((balance: string) => {
           if (balance === null) {
             observer.error(`balanceOf ${owner} returned null`)
           }
@@ -209,21 +209,21 @@ export class Token implements IStateful<ITokenState> {
     })
   }
 
-  public mint(beneficiary: Address, amount: typeof BN) {
+  public mint(beneficiary: Address, amount: BN) {
     const contract = this.contract()
     const transaction = contract.methods.mint(beneficiary, amount.toString())
     const mapReceipt = (receipt: Web3Receipt) => receipt
     return this.context.sendTransaction(transaction, mapReceipt)
   }
 
-  public transfer(beneficiary: Address, amount: typeof BN) {
+  public transfer(beneficiary: Address, amount: BN) {
     const contract = this.contract()
     const transaction = contract.methods.transfer(beneficiary, amount.toString())
     const mapReceipt = (receipt: Web3Receipt) => receipt
     return this.context.sendTransaction(transaction, mapReceipt)
   }
 
-  public approveForStaking(spender: Address, amount: typeof BN) {
+  public approveForStaking(spender: Address, amount: BN) {
     const stakingToken = this.contract()
     const transaction = stakingToken.methods.approve(spender, amount.toString())
     const mapReceipt = (receipt: Web3Receipt) => receipt

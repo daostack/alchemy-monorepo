@@ -1,13 +1,14 @@
-import { BN, realMathToNumber } from './utils'
+import BN = require('bn.js')
+import { realMathToNumber } from './utils'
 
 export interface IGenesisProtocolParams {
   activationTime: number
   boostedVotePeriodLimit: number
   daoBountyConst: number // ?
   limitExponentValue: number
-  minimumDaoBounty: typeof BN // in GEN
+  minimumDaoBounty: BN // in GEN
   preBoostedVotePeriodLimit: number
-  proposingRepReward: typeof BN // in REP
+  proposingRepReward: BN // in REP
   queuedVoteRequiredPercentage: number
   queuedVotePeriodLimit: number // in seconds (?)
   quietEndingPeriod: number

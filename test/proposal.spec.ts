@@ -9,7 +9,7 @@ import { IExecutionState,
   IProposalType,
   Proposal } from '../src/proposal'
 import { IContributionReward } from '../src/schemes/contributionReward'
-import { BN } from './utils'
+import BN = require('bn.js')
 import { createAProposal,
   fromWei,
   getTestAddresses,

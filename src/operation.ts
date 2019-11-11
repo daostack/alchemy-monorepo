@@ -3,7 +3,6 @@ import { first, take } from 'rxjs/operators'
 import { Arc } from './arc'
 import { Logger } from './logger'
 import { Web3Receipt } from './types'
-import { BN } from './utils'
 
 export enum ITransactionState {
   Sending,
@@ -98,7 +97,7 @@ export function sendTransaction<T>(
     } else {
       gas = 1000000
     }
-    gas = new BN(Math.min(1000000, gas))
+    gas = Math.min(1000000, gas)
     // gas = new BN(1000000)
     const options = {
       from,

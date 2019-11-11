@@ -1,7 +1,7 @@
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { IProposalOutcome, IProposalStage, IProposalState, Proposal } from '../src/proposal'
-import { BN } from './utils'
+import BN = require('bn.js')
 import { createAProposal, firstResult, getTestAddresses, getTestDAO, ITestAddresses, LATEST_ARC_VERSION, newArc,
   toWei, voteToPassProposal, waitUntilTrue } from './utils'
 
@@ -61,9 +61,9 @@ describe('Claim rewards', () => {
 
     const daoState = await firstResult(dao.state())
     const prevNativeTokenBalance = await firstResult(daoState.token.balanceOf(beneficiary))
-    const reputationBalances: Array<typeof BN> = []
+    const reputationBalances: Array<BN> = []
 
-    daoState.reputation.reputationOf(beneficiary).subscribe((next: typeof BN) => {
+    daoState.reputation.reputationOf(beneficiary).subscribe((next: BN) => {
       reputationBalances.push(next)
     })
     const prevEthBalance = new BN(await arc.web3.eth.getBalance(beneficiary))
