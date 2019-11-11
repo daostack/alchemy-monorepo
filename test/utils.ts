@@ -8,7 +8,7 @@ import { Address } from '../src/types'
 import BN = require('bn.js')
 
 const Web3 = require('web3')
-const path =require('path')
+const path = require('path')
 
 export const graphqlHttpProvider: string = 'http://127.0.0.1:8000/subgraphs/name/daostack'
 export const graphqlHttpMetaProvider: string = 'http://127.0.0.1:8000/subgraphs'
@@ -16,7 +16,7 @@ export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/d
 export const web3Provider: string = 'ws://127.0.0.1:8545'
 export const ipfsProvider: string = '/ip4/127.0.0.1/tcp/5001'
 
-export const LATEST_ARC_VERSION = '0.0.1-rc.31'
+export const LATEST_ARC_VERSION = '0.0.1-rc.32'
 
 export { BN }
 
@@ -181,7 +181,7 @@ export async function createAProposal(
   return proposal
 }
 
-export async function mintSomeReputation(version:string = LATEST_ARC_VERSION) {
+export async function mintSomeReputation(version: string = LATEST_ARC_VERSION) {
   const arc = await newArc()
   const addresses = getTestAddresses(arc, version)
   const token = new Reputation(addresses.test.organs.DemoReputation, arc)
