@@ -424,7 +424,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       setState(deploymentState)
       continue
     }
-    const genesisProtocolSetParams = genesisProtocol.methods.setParameters(
+    let parameters = [
       [
         migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].queuedVoteRequiredPercentage.toString(),
         migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].queuedVotePeriodLimit.toString(),
@@ -439,11 +439,17 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
         migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].activationTime.toString()
       ],
       migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].voteOnBehalf
-    )
+    ]
+    const genesisProtocolSetParams = genesisProtocol.methods.setParameters(...parameters)
 
     tx = await genesisProtocolSetParams.send({ nonce: ++nonce })
-    await logTx(tx, 'GenesisProtocol parameters set.')
-    deploymentState.votingMachinesParams.push(await genesisProtocolSetParams.call())
+    let votingMachinesParams = await genesisProtocolSetParams.call()
+    deploymentState.votingMachinesParams.push(votingMachinesParams)
+    await logTx(tx,
+      'GenesisProtocol parameters set. | Params Hash: ' +
+      votingMachinesParams + '\nParameters:\n' +
+      parameters.toString().replace(/,/g, ',\n')
+    )
     setState(deploymentState)
   }
   deploymentState.registeredGenesisProtocolParamsCount++
@@ -459,7 +465,7 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       setState(deploymentState)
 
       spinner.start('Setting Scheme Registrar parameters...')
-      const schemeRegistrarSetParams = schemeRegistrar.methods.setParameters(
+      let parameters = [
         migrationParams.SchemeRegistrar[deploymentState.SchemeRegistrarParamsCount].voteRegisterParams === undefined
           ? deploymentState.votingMachinesParams[0]
           : deploymentState.votingMachinesParams[migrationParams.SchemeRegistrar[deploymentState.SchemeRegistrarParamsCount].voteRegisterParams],
@@ -469,10 +475,15 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
         migrationParams.SchemeRegistrar[deploymentState.SchemeRegistrarParamsCount].votingMachine === undefined
           ? GenesisProtocol
           : migrationParams.SchemeRegistrar[deploymentState.SchemeRegistrarParamsCount].votingMachine
-      )
+      ]
+      const schemeRegistrarSetParams = schemeRegistrar.methods.setParameters(...parameters)
       schemeRegistrarParams = await schemeRegistrarSetParams.call()
       tx = await schemeRegistrarSetParams.send({ nonce: ++nonce })
-      await logTx(tx, 'Scheme Registrar parameters set.')
+      await logTx(tx,
+        'Scheme Registrar parameters set. | Params Hash: ' +
+        schemeRegistrarParams + '\nParameters:\n' +
+        parameters.toString().replace(/,/g, ',\n')
+      )
 
       deploymentState.schemeNames.push('Scheme Registrar')
       deploymentState.schemes.push(SchemeRegistrar)
@@ -493,17 +504,20 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       deploymentState.ContributionRewardParamsCount++) {
       setState(deploymentState)
       spinner.start('Setting Contribution Reward parameters...')
-      const contributionRewardSetParams = contributionReward.methods.setParameters(
-        migrationParams.ContributionReward[deploymentState.ContributionRewardParamsCount].voteParams === undefined
-          ? deploymentState.votingMachinesParams[0]
-          : deploymentState.votingMachinesParams[migrationParams.ContributionReward[deploymentState.ContributionRewardParamsCount].voteParams],
-        migrationParams.ContributionReward[deploymentState.ContributionRewardParamsCount].votingMachine === undefined
-          ? GenesisProtocol
-          : migrationParams.ContributionReward[deploymentState.ContributionRewardParamsCount].votingMachine
-      )
+      let parameters = [migrationParams.ContributionReward[deploymentState.ContributionRewardParamsCount].voteParams === undefined
+        ? deploymentState.votingMachinesParams[0]
+        : deploymentState.votingMachinesParams[migrationParams.ContributionReward[deploymentState.ContributionRewardParamsCount].voteParams],
+      migrationParams.ContributionReward[deploymentState.ContributionRewardParamsCount].votingMachine === undefined
+        ? GenesisProtocol
+        : migrationParams.ContributionReward[deploymentState.ContributionRewardParamsCount].votingMachine]
+      const contributionRewardSetParams = contributionReward.methods.setParameters(...parameters)
       contributionRewardParams = await contributionRewardSetParams.call()
       tx = await contributionRewardSetParams.send({ nonce: ++nonce })
-      await logTx(tx, 'Contribution Reward parameters set.')
+      await logTx(tx,
+        'Contribution Reward parameters set. | Params Hash: ' +
+        contributionRewardParams + '\nParameters:' +
+        parameters.toString().replace(/,/g, ',\n')
+      )
 
       deploymentState.schemeNames.push('Contribution Reward')
       deploymentState.schemes.push(ContributionReward)
@@ -524,14 +538,19 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       deploymentState.UGenericSchemeParamsCount++) {
       setState(deploymentState)
       spinner.start('Setting Generic Scheme parameters...')
-      const genericSchemeSetParams = genericScheme.methods.setParameters(
+      let parameters = [
         migrationParams.UGenericScheme[deploymentState.UGenericSchemeParamsCount].voteParams === undefined ? deploymentState.votingMachinesParams[0] : deploymentState.votingMachinesParams[migrationParams.UGenericScheme[deploymentState.UGenericSchemeParamsCount].voteParams],
         migrationParams.UGenericScheme[deploymentState.UGenericSchemeParamsCount].votingMachine === undefined ? GenesisProtocol : migrationParams.UGenericScheme[deploymentState.UGenericSchemeParamsCount].votingMachine,
         migrationParams.UGenericScheme[deploymentState.UGenericSchemeParamsCount].targetContract
-      )
+      ]
+      const genericSchemeSetParams = genericScheme.methods.setParameters(...parameters)
       genericSchemeParams = await genericSchemeSetParams.call()
       tx = await genericSchemeSetParams.send({ nonce: ++nonce })
-      await logTx(tx, 'Generic Scheme parameters set.')
+      await logTx(tx,
+        'Generic Scheme parameters set. | Params Hash: ' +
+        genericSchemeParams + '\nParameters:\n' +
+        parameters.toString().replace(/,/g, ',\n')
+      )
 
       deploymentState.schemeNames.push('Generic Scheme')
       deploymentState.schemes.push(Number(arcVersion.slice(-2)) >= 24 ? UGenericScheme : GenericScheme)
@@ -552,17 +571,22 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       deploymentState.GlobalConstraintRegistrarParamsCount++) {
       setState(deploymentState)
       spinner.start('Setting Global Constraint Registrar parameters...')
-      const globalConstraintRegistrarSetParams = globalConstraintRegistrar.methods.setParameters(
+      let parameters = [
         migrationParams.GlobalConstraintRegistrar[deploymentState.GlobalConstraintRegistrarParamsCount].voteParams === undefined
           ? deploymentState.votingMachinesParams[0]
           : deploymentState.votingMachinesParams[migrationParams.GlobalConstraintRegistrar[deploymentState.GlobalConstraintRegistrarParamsCount].voteParams],
         migrationParams.GlobalConstraintRegistrar[deploymentState.GlobalConstraintRegistrarParamsCount].votingMachine === undefined
           ? GenesisProtocol
           : migrationParams.GlobalConstraintRegistrar[deploymentState.GlobalConstraintRegistrarParamsCount].votingMachine
-      )
+      ]
+      const globalConstraintRegistrarSetParams = globalConstraintRegistrar.methods.setParameters(...parameters)
       globalConstraintRegistrarParams = await globalConstraintRegistrarSetParams.call()
       tx = await globalConstraintRegistrarSetParams.send({ nonce: ++nonce })
-      await logTx(tx, 'Global Constraints Registrar parameters set.')
+      await logTx(tx,
+        'Global Constraints Registrar parameters set. | Params Hash: ' +
+        globalConstraintRegistrarParams + '\nParameters:\n' +
+        parameters.toString().replace(/,/g, ',\n')
+      )
 
       deploymentState.schemeNames.push('Global Constraints Registrar')
       deploymentState.schemes.push(GlobalConstraintRegistrar)
@@ -583,17 +607,22 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
       deploymentState.UpgradeSchemeParamsCount++) {
       setState(deploymentState)
       spinner.start('Setting Upgrade Scheme parameters...')
-      const upgradeSchemeSetParams = upgradeScheme.methods.setParameters(
+      let parameters = [
         migrationParams.UpgradeScheme[deploymentState.UpgradeSchemeParamsCount].voteParams === undefined
           ? deploymentState.votingMachinesParams[0]
           : deploymentState.votingMachinesParams[migrationParams.UpgradeScheme[deploymentState.UpgradeSchemeParamsCount].voteParams],
         migrationParams.UpgradeScheme[deploymentState.UpgradeSchemeParamsCount].votingMachine === undefined
           ? GenesisProtocol
           : migrationParams.UpgradeScheme[deploymentState.UpgradeSchemeParamsCount].votingMachine
-      )
+      ]
+      const upgradeSchemeSetParams = upgradeScheme.methods.setParameters(...parameters)
       upgradeSchemeParams = await upgradeSchemeSetParams.call()
       tx = await upgradeSchemeSetParams.send({ nonce: ++nonce })
-      await logTx(tx, 'Upgrade Scheme parameters set.')
+      await logTx(tx,
+        'Upgrade Scheme parameters set. | Params Hash: ' +
+        upgradeSchemeParams + '\nParameters:\n' +
+        parameters.toString().replace(/,/g, ',\n')
+      )
 
       deploymentState.schemeNames.push('Upgrade Scheme')
       deploymentState.schemes.push(UpgradeScheme)
@@ -708,7 +737,11 @@ async function migrateDAO ({ web3, spinner, confirm, opts, migrationParams, logT
         const schemeSetParams = schemeContract.methods.setParameters(...schemeParams)
         schemeParamsHash = await schemeSetParams.call()
         tx = await schemeSetParams.send({ nonce: ++nonce })
-        await logTx(tx, `${customeScheme.name} parameters set.`)
+        await logTx(tx,
+          customeScheme.name + ' parameters set. | Params Hash: ' +
+          schemeParamsHash + '\nParameters:\n' +
+          schemeParams.toString().replace(/,/g, ',\n')
+        )
       } else if (schemeContract.methods.initialize !== undefined) {
         spinner.start(`Initializing ${customeScheme.name}...`)
         let schemeParams = [avatar.options.address]
