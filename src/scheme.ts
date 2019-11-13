@@ -387,7 +387,7 @@ export class Scheme implements IStateful<ISchemeState> {
      * @param  options [description ]
      * @return a Proposal instance
      */
-    public createProposal(options: IProposalCreateOptions): Operation < Proposal >  {
+    public createProposal(options: IProposalCreateOptions): Operation<Proposal>  {
       const observable = Observable.create(async (observer: any) => {
         let msg: string
         const context = this.context

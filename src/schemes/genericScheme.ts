@@ -20,6 +20,7 @@ export interface IProposalCreateOptionsGS {
   callData?: string
   value?: number
 }
+
 export enum IProposalType {
   GenericScheme = 'GenericScheme' // propose a contributionReward
 }
