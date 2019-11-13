@@ -42,6 +42,8 @@ let network = 'private'
 DAOstackMigration.migration(network);
 
 const options = {
+  // arc version
+  arcVersion: '0.0.1-rc.32',
   // web3 provider url
   provider: 'http://localhost:8545',
   // gas price in GWei. If not specified, will use an automatically suggested price.
@@ -109,6 +111,7 @@ Commands:
 
 Options:
   --version          Show version number                                                                       [boolean]
+  --arc-version, -a  Use a specific Arc package version                                       [string] [default: latest supported version]
   --provider, -p     web3 provider url                                       [string] [default: "http://localhost:8545"]
   --gas-price, -g    gas price in GWei. If not specified, will use an automatically suggested price.            [number]
   --quiet, -q        suppress console output                                                  [boolean] [default: false]
@@ -149,6 +152,8 @@ _Note: You can also use a mnemonic seed instead of a private key by replacing th
 const DAOstackMigration = require('@daostack/migration');
 
 const options = {
+  // arc version
+  arcVersion: '0.0.1-rc.32',
   // web3 provider url
   provider: 'http://localhost:8545',
   // gas price in GWei. If not specified, will use an automatically suggested price.
@@ -364,7 +369,6 @@ Example migration parameters object:
 
 ### Commands
 
-- `prune-arc-build` - prune unnecessary heavy data from Arc build JSON files.
 - `cleandb` - rm the existing local db.
 - `ganache` - run a ganache instance with local db.
 - `migrate ...` - run migration (same arguments as cli)

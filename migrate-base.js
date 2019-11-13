@@ -1,9 +1,7 @@
-async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigration }) {
+async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, previousMigration }) {
   if (!(await confirm('About to migrate base contracts. Continue?'))) {
     return
   }
-
-  let arcVersion = require('./package.json').dependencies['@daostack/arc']
 
   const addresses = {}
   const network = await web3.eth.net.getNetworkType()
@@ -62,7 +60,7 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
 
   if (network === 'private') {
     GENToken = await deploy(
-      require('@daostack/arc/build/contracts/DAOToken.json'),
+      require(`./contracts/${arcVersion}/DAOToken.json`),
       [],
       'DAOstack',
       'GEN',
@@ -70,7 +68,7 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
     )
 
     const GENTokenContract = await new web3.eth.Contract(
-      require('@daostack/arc/build/contracts/DAOToken.json').abi,
+      require(`./contracts/${arcVersion}/DAOToken.json`).abi,
       GENToken,
       opts
     )
@@ -96,25 +94,25 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
     }
 
     await deploy(
-      require('@daostack/arc-hive/build/contracts/DAORegistry.json'),
+      require(`./contracts/${arcVersion}/DAORegistry.json`),
       [],
       web3.eth.accounts.wallet[0].address
     )
     if (Number(arcVersion.slice(-2)) >= 29) {
-      DAOTracker = await deploy(require('@daostack/arc/build/contracts/DAOTracker.json'))
+      DAOTracker = await deploy(require(`./contracts/${arcVersion}/DAOTracker.json`))
     }
   } else {
     addresses['GEN'] = GENToken
     if (network === 'main') {
       await deploy(
-        require('@daostack/arc-hive/build/contracts/DAORegistry.json'),
+        require(`./contracts/${arcVersion}/DAORegistry.json`),
         [],
         '0x85e7fa550b534656d04d143b9a23a11e05077da3' // DAOstack's controlled account
       )
       if (Number(arcVersion.slice(-2)) >= 29) {
-        DAOTracker = await deploy(require('@daostack/arc/build/contracts/DAOTracker.json'))
+        DAOTracker = await deploy(require(`./contracts/${arcVersion}/DAOTracker.json`))
         const daoTracker = new web3.eth.Contract(
-          require('@daostack/arc/build/contracts/DAOTracker.json').abi,
+          require(`./contracts/${arcVersion}/DAOTracker.json`).abi,
           DAOTracker,
           opts
         )
@@ -126,14 +124,14 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
       }
     } else {
       await deploy(
-        require('@daostack/arc-hive/build/contracts/DAORegistry.json'),
+        require(`./contracts/${arcVersion}/DAORegistry.json`),
         [],
         '0x73Db6408abbea97C5DB8A2234C4027C315094936'
       )
       if (Number(arcVersion.slice(-2)) >= 29) {
-        DAOTracker = await deploy(require('@daostack/arc/build/contracts/DAOTracker.json'))
+        DAOTracker = await deploy(require(`./contracts/${arcVersion}/DAOTracker.json`))
         const daoTracker = new web3.eth.Contract(
-          require('@daostack/arc/build/contracts/DAOTracker.json').abi,
+          require(`./contracts/${arcVersion}/DAOTracker.json`).abi,
           DAOTracker,
           opts
         )
@@ -146,46 +144,46 @@ async function migrateBase ({ web3, spinner, confirm, opts, logTx, previousMigra
     }
   }
 
-  const ControllerCreator = await deploy(require('@daostack/arc/build/contracts/ControllerCreator.json'))
+  const ControllerCreator = await deploy(require(`./contracts/${arcVersion}/ControllerCreator.json`))
 
   if (Number(arcVersion.slice(-2)) >= 29) {
     await deploy(
-      require('@daostack/arc/build/contracts/DaoCreator.json'),
+      require(`./contracts/${arcVersion}/DaoCreator.json`),
       ['ControllerCreator', 'DAOTracker'],
       ControllerCreator,
       DAOTracker
     )
   } else {
     await deploy(
-      require('@daostack/arc/build/contracts/DaoCreator.json'),
+      require(`./contracts/${arcVersion}/DaoCreator.json`),
       ['ControllerCreator'],
       ControllerCreator
     )
   }
-  await deploy(require('@daostack/arc/build/contracts/UController.json'))
+  await deploy(require(`./contracts/${arcVersion}/UController.json`))
   await deploy(
-    require('@daostack/arc/build/contracts/GenesisProtocol.json'),
+    require(`./contracts/${arcVersion}/GenesisProtocol.json`),
     ['DAOToken'],
     GENToken
   )
-  await deploy(require('@daostack/arc/build/contracts/SchemeRegistrar.json'))
-  await deploy(require('@daostack/arc/build/contracts/UpgradeScheme.json'))
+  await deploy(require(`./contracts/${arcVersion}/SchemeRegistrar.json`))
+  await deploy(require(`./contracts/${arcVersion}/UpgradeScheme.json`))
   await deploy(
-    require('@daostack/arc/build/contracts/GlobalConstraintRegistrar.json')
+    require(`./contracts/${arcVersion}/GlobalConstraintRegistrar.json`)
   )
-  await deploy(require('@daostack/arc/build/contracts/ContributionReward.json'))
-  await deploy(require('@daostack/arc/build/contracts/AbsoluteVote.json'))
-  await deploy(require('@daostack/arc/build/contracts/QuorumVote.json'))
-  await deploy(require('@daostack/arc/build/contracts/TokenCapGC.json'))
-  await deploy(require('@daostack/arc/build/contracts/VoteInOrganizationScheme.json'))
-  await deploy(require('@daostack/arc/build/contracts/OrganizationRegister.json'))
+  await deploy(require(`./contracts/${arcVersion}/ContributionReward.json`))
+  await deploy(require(`./contracts/${arcVersion}/AbsoluteVote.json`))
+  await deploy(require(`./contracts/${arcVersion}/QuorumVote.json`))
+  await deploy(require(`./contracts/${arcVersion}/TokenCapGC.json`))
+  await deploy(require(`./contracts/${arcVersion}/VoteInOrganizationScheme.json`))
+  await deploy(require(`./contracts/${arcVersion}/OrganizationRegister.json`))
   if (Number(arcVersion.slice(-2)) >= 22) {
-    await deploy(require('@daostack/arc/build/contracts/Redeemer.json'))
+    await deploy(require(`./contracts/${arcVersion}/Redeemer.json`))
   }
   if (Number(arcVersion.slice(-2)) >= 24) {
-    await deploy(require('@daostack/arc/build/contracts/UGenericScheme.json'))
+    await deploy(require(`./contracts/${arcVersion}/UGenericScheme.json`))
   } else {
-    await deploy(require('@daostack/arc/build/contracts/GenericScheme.json'))
+    await deploy(require(`./contracts/${arcVersion}/GenericScheme.json`))
   }
   let migration = { 'base': previousMigration.base || {} }
   migration.base[arcVersion] = addresses
