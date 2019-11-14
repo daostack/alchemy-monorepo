@@ -35,14 +35,14 @@ const defaults = {
   prevmigration: path.normalize(path.join(__dirname, './migration.json')),
   output: path.normalize(path.join(__dirname, './migration.json')),
   params: JSON.parse(fs.readFileSync(path.join(__dirname, 'migration-params.json'))),
-  customabislocation: path.normalize(path.join(__dirname, './custom-abis'))
+  customAbisLocation: path.normalize(path.join(__dirname, './custom-abis'))
 }
 
 /**
  * A wrapper function that performs tasks common to all migration commands.
  */
 const wrapCommand = fn => async options => {
-  let { arcVersion, quiet, disableconfs, force, restart, provider, gasPrice, privateKey, mnemonic, prevmigration, output, params, customabislocation } = { ...defaults, ...options }
+  let { arcVersion, quiet, disableconfs, force, restart, provider, gasPrice, privateKey, mnemonic, prevmigration, output, params, customAbisLocation } = { ...defaults, ...options }
   const emptySpinner = new Proxy({}, { get: () => () => { } }) // spinner that does nothing
   const spinner = quiet ? emptySpinner : ora()
 
@@ -136,7 +136,7 @@ const wrapCommand = fn => async options => {
     migrationParams: { ...params, ...params[network] },
     logTx,
     previousMigration: { ...existingFile[network] },
-    customabislocation,
+    customAbisLocation,
     restart,
     setState: function setState (state) {
       fs.writeFileSync(stateFile, JSON.stringify(state, undefined, 2), 'utf-8')
@@ -257,7 +257,7 @@ function cli () {
       alias: 'c',
       type: 'string',
       describe: 'path to the folder containing the truffle build data for custom schemes',
-      default: defaults.customabislocation
+      default: defaults.customAbisLocation
     })
     .command('$0', 'Migrate base contracts and an example DAO', yargs => yargs, wrapCommand(migrate))
     .command('base', 'Migrate an example DAO', yargs => yargs, wrapCommand(migrateBase))

@@ -1,7 +1,7 @@
 const utils = require('./utils.js')
 const sanitize = require('./sanitize')
 
-async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migrationParams, logTx, previousMigration, customabislocation, restart, getState, setState, cleanState }) {
+async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migrationParams, logTx, previousMigration, customAbisLocation, restart, getState, setState, cleanState }) {
   if (restart) {
     cleanState()
   }
@@ -648,7 +648,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       if (standAlone.fromArc) {
         contractJson = require(`./contracts/${arcVersion}/${standAlone.name}.json`)
       } else {
-        contractJson = require(path.resolve(`${customabislocation}/${standAlone.name}.json`))
+        contractJson = require(path.resolve(`${customAbisLocation}/${standAlone.name}.json`))
       }
       let abi = contractJson.abi
       let bytecode = contractJson.bytecode
@@ -700,7 +700,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       if (customeScheme.fromArc) {
         contractJson = require(`./contracts/${arcVersion}/${customeScheme.name}.json`)
       } else {
-        contractJson = require(path.resolve(`${customabislocation}/${customeScheme.name}.json`))
+        contractJson = require(path.resolve(`${customAbisLocation}/${customeScheme.name}.json`))
       }
       let abi = contractJson.abi
       let bytecode = contractJson.bytecode
