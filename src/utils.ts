@@ -128,9 +128,7 @@ export function createGraphQlQuery(options: ICommonQueryOptions, where: string =
   let queryString = ``
 
   if (!where) {
-    for (const key of Object.keys(options.where)) {
-      where += `${key}: "${options.where[key]}"\n`
-    }
+    where = createGraphQlWhereQuery(options.where)
   }
   if (where) {
     queryString += `where: {
@@ -154,4 +152,29 @@ export function createGraphQlQuery(options: ICommonQueryOptions, where: string =
   } else {
     return ''
   }
+}
+
+export function createGraphQlWhereQuery(where?: {[key: string]: string|string[]|null}) {
+  let result = ''
+  if (!where) { where = {}}
+  for (const key of Object.keys(where)) {
+    if (where[key] === undefined) {
+      continue
+    }
+
+    let value = where[key]
+    if (value === null) {
+      result += `${key}: ${value}`
+    } else if (key === 'dao' || key === 'address') {
+      isAddress(value as string)
+      value = (value as string).toLowerCase()
+      result += `${key}: "${value}"\n`
+    } else if (key.endsWith('_in') || key.endsWith('_not_in')) {
+      value = JSON.stringify(value)
+      result += `${key}: ${value}\n`
+    } else {
+      result += `${key}: "${value}"\n`
+    }
+  }
+  return result
 }

@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators'
 import { DAO, IDAOQueryOptions } from './dao'
 import { GraphNodeObserver, IApolloQueryOptions } from './graphnode'
 export { IApolloQueryOptions } from './graphnode'
+import { Event, IEventQueryOptions } from './event'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { IProposalQueryOptions, Proposal } from './proposal'
@@ -167,6 +168,12 @@ export class Arc extends GraphNodeObserver {
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Proposal[]> {
     return Proposal.search(this, options, apolloQueryOptions)
+  }
+  public events(
+    options: IEventQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Event[]> {
+    return Event.search(this, options, apolloQueryOptions)
   }
 
   public ethBalance(owner: Address): Observable<BN> {

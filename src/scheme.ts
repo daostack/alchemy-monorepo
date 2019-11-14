@@ -11,7 +11,7 @@ import { ReputationFromTokenScheme } from './schemes/reputationFromToken'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
 import * as UGenericScheme from './schemes/uGenericScheme'
 import { Address, ICommonQueryOptions, IStateful } from './types'
-import { createGraphQlQuery, isAddress } from './utils'
+import { createGraphQlQuery } from './utils'
 
 export interface ISchemeStaticState {
   id: string
@@ -212,30 +212,10 @@ export class Scheme implements IStateful<ISchemeState> {
     options: ISchemeQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Scheme[]> {
-    let where = ''
-    if (!options.where) { options.where = {}}
-    for (const key of Object.keys(options.where)) {
-      if (options.where[key] === undefined) {
-        continue
-      }
-
-      if (key === 'address' || key === 'dao') {
-        const option = options.where[key] as string
-        isAddress(option)
-        options.where[key] = `"${option.toLowerCase()}"`
-      } else if (key.endsWith('_in') || key.endsWith('_not_in')) {
-        const option = options.where[key] as string[]
-        options.where[key] = JSON.stringify(option)
-      } else {
-        const option = options.where[key] as string
-        options.where[key] = `"${option}"`
-      }
-      where += `${key}: ${options.where[key] as string}\n`
-    }
     let query
     if (apolloQueryOptions.fetchAllData === true) {
       query = gql`query SchemeSearchAllData {
-        controllerSchemes ${createGraphQlQuery(options, where)}
+        controllerSchemes ${createGraphQlQuery(options)}
         {
           ...SchemeFields
         }
@@ -243,7 +223,7 @@ export class Scheme implements IStateful<ISchemeState> {
       ${Scheme.fragments.SchemeFields}`
     } else {
       query = gql`query SchemeSearch {
-        controllerSchemes ${createGraphQlQuery(options, where)}
+        controllerSchemes ${createGraphQlQuery(options)}
         {
             id
             address

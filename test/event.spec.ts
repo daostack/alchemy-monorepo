@@ -1,5 +1,7 @@
 import { first } from 'rxjs/operators'
-import { Arc, DAO, Event, IEventState, Proposal } from '../src'
+import { Arc, DAO, Event, IEventState,
+  IEventStaticState,
+  Proposal } from '../src'
 import { getTestAddresses, getTestDAO, ITestAddresses, newArc, toWei, waitUntilTrue } from './utils'
 
 jest.setTimeout(20000)
@@ -43,15 +45,13 @@ describe('Event', () => {
 
     expect(proposal).toBeDefined()
 
-    let result: Event[]
+    let result: Event[] = []
 
     await waitUntilTrue(async () => {
-      const events = await Event.search(arc, { where: {proposal: proposal.id}}, {fetchPolicy: 'no-cache'})
+      result = await Event.search(arc, { where: {proposal: proposal.id}}, {fetchPolicy: 'no-cache'})
         .pipe(first()).toPromise()
-      return events.length > 0
+      return result.length > 0
     })
-    result = await Event.search(arc, { where: {proposal: proposal.id}})
-        .pipe(first()).toPromise()
     expect(result.length).toEqual(1)
     const event = result[0]
     const eventState = await event.state().pipe(first()).toPromise()
@@ -103,5 +103,39 @@ describe('Event', () => {
     expect(eventFromId.staticState).toBeTruthy()
     const  eventFromStaticState = new Event(event.staticState as IEventState, arc)
     expect(eventFromStaticState.staticState).toBeTruthy()
+  })
+
+  it('arc.events() works', async () => {
+    const eventsWithProposal = await arc.events({where: {proposal_not: null}}).pipe(first()).toPromise()
+    expect(eventsWithProposal.length).toBeGreaterThan(1)
+    const events1 = await arc
+      .events({where: {proposal_in: [
+        (eventsWithProposal[0].staticState as IEventStaticState).proposal,
+        (eventsWithProposal[1].staticState as IEventStaticState).proposal
+      ]}})
+      .pipe(first()).toPromise()
+    expect(events1.length).toBeGreaterThanOrEqual(2)
+    expect(events1.length).toBeLessThan(eventsWithProposal.length)
+
+    const eventsWithDAO = await arc.events({where: {proposal_not: null}}).pipe(first()).toPromise()
+    expect(eventsWithDAO.length).toBeGreaterThan(1)
+    const events2 = await arc
+      .events({where: {dao_in: [
+        (eventsWithDAO[0].staticState as IEventStaticState).dao,
+        (eventsWithDAO[1].staticState as IEventStaticState).dao
+      ]}})
+      .pipe(first()).toPromise()
+    expect(events2.length).toBeGreaterThanOrEqual(2)
+
+    const eventsWithUser = await arc.events({where: {user_not: null}}).pipe(first()).toPromise()
+    expect(eventsWithUser.length).toBeGreaterThan(1)
+    const events3 = await arc
+      .events({where: {user_in: [
+        (eventsWithUser[0].staticState as IEventStaticState).user,
+        (eventsWithUser[1].staticState as IEventStaticState).user
+      ]}})
+      .pipe(first()).toPromise()
+    expect(events3.length).toBeGreaterThanOrEqual(2)
+
   })
 })

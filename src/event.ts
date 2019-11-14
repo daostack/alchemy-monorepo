@@ -3,7 +3,7 @@ import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { Address, ICommonQueryOptions, IStateful } from './types'
-import { createGraphQlQuery, isAddress } from './utils'
+import { createGraphQlQuery } from './utils'
 
 export interface IEventStaticState {
   id: string
@@ -58,21 +58,6 @@ export class Event implements IStateful<IEventState> {
     options: IEventQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Event[]> {
-    let where = ''
-    if (!options.where) { options.where = {}}
-    for (const key of Object.keys(options.where)) {
-      if (options.where[key] === undefined) {
-        continue
-      }
-
-      if (key === 'dao') {
-        const option = options.where[key] as string
-        isAddress(option)
-        options.where[key] = option.toLowerCase()
-      }
-
-      where += `${key}: "${options.where[key] as string}"\n`
-    }
 
     const itemMap = (item: any) => new Event({
       dao: item.dao.id,
@@ -87,7 +72,7 @@ export class Event implements IStateful<IEventState> {
     let query
     query = gql`query EventSearch
       {
-        events ${createGraphQlQuery(options, where)} {
+        events ${createGraphQlQuery(options)} {
           ...EventFields
         }
       }
