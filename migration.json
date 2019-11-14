@@ -288,7 +288,7 @@
     },
     "dao": {
       "0.0.1-rc.16": {
-        "name": "Ruminative Senor",
+        "name": "Bilious Carnival",
         "Avatar": "0x5017A545b09ab9a30499DE7F431DF0855bCb7275",
         "DAOToken": "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D",
         "Reputation": "0x7C728214be9A0049e6a86f2137ec61030D0AA964",
@@ -297,7 +297,7 @@
         "arcVersion": "0.0.1-rc.16"
       },
       "0.0.1-rc.17": {
-        "name": "Equanimous Exorcism",
+        "name": "Contumacious Soaper",
         "Avatar": "0x84b085c0d4B4D6fbf6490f8246Bc5cD317d2d4cD",
         "DAOToken": "0x180D179Bbf473A30183Fe858E8416351D2170Fd2",
         "Reputation": "0x770191B327a9f6cd83B997F68c1ce3c8e6a018dc",
@@ -306,7 +306,7 @@
         "arcVersion": "0.0.1-rc.17"
       },
       "0.0.1-rc.18": {
-        "name": "Rebarbative Colorist",
+        "name": "Judicious Moldmaker",
         "Avatar": "0xe00b745b5e71337507d43a8584320c4192CA7994",
         "DAOToken": "0x3B2d33aC0B76462c8Eb58548ed7db68BC826F15E",
         "Reputation": "0xD44d92D878Bb19649bE73702E514560743B3CF86",
@@ -315,7 +315,7 @@
         "arcVersion": "0.0.1-rc.18"
       },
       "0.0.1-rc.19": {
-        "name": "Pernicious Senor",
+        "name": "Tenacious Statue",
         "Avatar": "0xB247a2fcBe1223C24374a27966952491CA56c800",
         "DAOToken": "0x47EF76991DD3C561BaB1504C48C0eB55a6e61025",
         "Reputation": "0xe14E93b1a9f7227f7B3851B12FDF4c7BcA4428Db",
@@ -324,7 +324,7 @@
         "arcVersion": "0.0.1-rc.19"
       },
       "0.0.1-rc.21": {
-        "name": "Irksome Carrot",
+        "name": "Meretricious Circus",
         "Avatar": "0x8212d7A8158530F235092756A617B0dCE323Fe4B",
         "DAOToken": "0xbA465b9b7859eec9De880991bBdEB2CB4a41D9a6",
         "Reputation": "0xAf57A911e5BE42c608770d6203D1Fd38A103a82A",
@@ -333,7 +333,7 @@
         "arcVersion": "0.0.1-rc.21"
       },
       "0.0.1-rc.22": {
-        "name": "Arcadian Artisan",
+        "name": "Limpid Bunny",
         "Avatar": "0x5C77030836e21C78b1013E443ACf816974E6315b",
         "DAOToken": "0x7A0738faD6396454E9cf425D06D86c5d79a328A5",
         "Reputation": "0x84F46628D78e7de013279c33e7B262488ce4421D",
@@ -342,7 +342,7 @@
         "arcVersion": "0.0.1-rc.22"
       },
       "0.0.1-rc.23": {
-        "name": "Arcadian Chair",
+        "name": "Concomitant Ukulele",
         "Avatar": "0xdFc8050206A480F517E5D22b226b81051c0b1334",
         "DAOToken": "0x34E17AEF434165eDe54C6Fc8F5c8B1f879CACDd0",
         "Reputation": "0x80EaE59c5f92F9f65338bba4F26FFC8Ca2b6224A",
@@ -351,7 +351,7 @@
         "arcVersion": "0.0.1-rc.23"
       },
       "0.0.1-rc.24": {
-        "name": "Irksome Rainbows",
+        "name": "Baleful Panel beater",
         "Avatar": "0x8f6Ec2eca7FB7B15df480d1266Ba142aEbfd373D",
         "DAOToken": "0xf9D3854d8c5ACE915a8a4FfF16253B1CA7CEf0cD",
         "Reputation": "0x7744cE2c85DCE57d76b17D374397d84387F450eA",
@@ -371,7 +371,7 @@
         "arcVersion": "0.0.1-rc.24"
       },
       "0.0.1-rc.25": {
-        "name": "Friable Gnomes",
+        "name": "Intransigent Sea barnacles",
         "Avatar": "0x0bf9f0c16E64E4247668eF39e89885Ba43840Ade",
         "DAOToken": "0xF486984B6cE0988b66D08520146b3A044c1aB9fB",
         "Reputation": "0x242cb7cE1d431d356783f1f739c37A4EbE99CCFc",
@@ -391,7 +391,7 @@
         "arcVersion": "0.0.1-rc.25"
       },
       "0.0.1-rc.27": {
-        "name": "Fecund Nibblets",
+        "name": "Insolent Artisan",
         "Avatar": "0x434069DEB794cfb4007109e72bdd0E5aEFacD726",
         "DAOToken": "0x22bD212931f27bb245da05BC56761dd3B5389854",
         "Reputation": "0x7861A4BB7746074f6f3AA3739FC475FCB4B52aBa",
@@ -411,7 +411,7 @@
         "arcVersion": "0.0.1-rc.27"
       },
       "0.0.1-rc.28": {
-        "name": "Inveterate Carrot",
+        "name": "Inveterate Panel beater",
         "Avatar": "0xdfd8Af86E45495AD75F5a4c3E3b2D1d39553BE7A",
         "DAOToken": "0xeB970509386741587E60d49Bb8282E7cB41823c7",
         "Reputation": "0xBa2BE74eD1519acDd542674089e31804f98a6A47",
@@ -431,7 +431,7 @@
         "arcVersion": "0.0.1-rc.28"
       },
       "0.0.1-rc.29": {
-        "name": "Recalcitant Soaper",
+        "name": "Heuristic Patternmaker",
         "Avatar": "0xc25F2EaaD3e3619Cf9a4A1D32D71D3529fd66Fd3",
         "DAOToken": "0x8A0446aA91aadaF9EC89b5E664145f8bb2FF4d6B",
         "Reputation": "0x4817a0Cf1016069a0b17B77d16bdF64B5243003B",
@@ -451,7 +451,7 @@
         "arcVersion": "0.0.1-rc.29"
       },
       "0.0.1-rc.30": {
-        "name": "Contumacious Bushes",
+        "name": "Incendiary Bushes",
         "Avatar": "0x54B6f621e8c8dD2Cfcd49f2E7aD1dF19E60bf4B9",
         "DAOToken": "0xd2D6A0481c3d7c7c4250d0F3C9AAdb2a44964197",
         "Reputation": "0x25E2cB1BDF0196bC65d2C613501faecaf211685e",
@@ -471,7 +471,7 @@
         "arcVersion": "0.0.1-rc.30"
       },
       "0.0.1-rc.31": {
-        "name": "Redolent Dragons",
+        "name": "Intransigent Circus",
         "Avatar": "0xb9e3Dd112BCc6e89546c46ABb1573cf9c62C3241",
         "DAOToken": "0x22c38638aC5007e1De99fEAB20f664046cB42768",
         "Reputation": "0xd5866DBDE071F070C254570d1BBbfE732860221e",
@@ -491,7 +491,7 @@
         "arcVersion": "0.0.1-rc.31"
       },
       "0.0.1-rc.32": {
-        "name": "Mannered Plant operator",
+        "name": "Obtuse Artisan",
         "Avatar": "0x0d3B4393A6105ab549DE0c07b590245dbCf6C752",
         "DAOToken": "0xCEE49e7eBB1A252A0194B19f1Eaa23a7641fCeFC",
         "Reputation": "0xde51E943caC7450ADA3dC31A2b66D139aE57958b",
@@ -513,7 +513,7 @@
     },
     "test": {
       "0.0.1-rc.16": {
-        "name": "Mannered Opera singer",
+        "name": "Boorish Opera singer",
         "Avatar": "0xE7A2C59e134ee81D4035Ae6DB2254f79308e334f",
         "DAOToken": "0xcDbe8b52A6c60A5f101d4A0F1f049f19a9e1D35F",
         "Reputation": "0x93cdbf39fB9e13BD253CA5819247D52fbabf0F2f",
@@ -530,7 +530,7 @@
         }
       },
       "0.0.1-rc.17": {
-        "name": "Sagacious Mechanic",
+        "name": "Turbulent Bunny",
         "Avatar": "0xd28D841D3e1a90613389CcBcc9C7464F8df5B4bD",
         "DAOToken": "0xdA6217d908DF63267ED75ccd319838Ac005D5a28",
         "Reputation": "0xd6f72E1dcaaED50357082169Ba1f5D1518B27538",
@@ -547,7 +547,7 @@
         }
       },
       "0.0.1-rc.18": {
-        "name": "Judicious Limner",
+        "name": "Tenacious Soaper",
         "Avatar": "0x373353f088A5377a57be5B3eC038851d1ef010BE",
         "DAOToken": "0xdBfD63709f96b50590abd8a3fF6fDaBDee8FeF6B",
         "Reputation": "0x8E0b43905a7FB83895d6581Daee17BD7ab929d2E",
@@ -564,7 +564,7 @@
         }
       },
       "0.0.1-rc.19": {
-        "name": "Recalcitant Plant operator",
+        "name": "Tenacious Chair",
         "Avatar": "0x7c89354DFf7Ed2447a6a4139383c65e41Bd8C953",
         "DAOToken": "0xBffFa60E73415245F01542d17D94CF087870C52F",
         "Reputation": "0x63aeF7Be461FBA4402A1D80E54bDf740B0F3f1Fb",
@@ -581,7 +581,7 @@
         }
       },
       "0.0.1-rc.21": {
-        "name": "Meretricious Bushes",
+        "name": "Execrable Carnival",
         "Avatar": "0xfbbF29d178CDCD81113953f6651A10982a1FE431",
         "DAOToken": "0x92D0A9a2df0F9C85947689A8FEfC47D11C1181ec",
         "Reputation": "0xA7a2bC7F4cda9DBcDF931f0a566fdAf1F42308E3",
@@ -598,7 +598,7 @@
         }
       },
       "0.0.1-rc.22": {
-        "name": "Trenchant Model",
+        "name": "Inveterate Limner",
         "Avatar": "0xfbD88B0a5cc1b065D2d32dc72A88E178E7cA21A9",
         "DAOToken": "0x0d3cB11e648f8FEceF25A72cE86ce1554984F6C6",
         "Reputation": "0x2BB9B8111B74Faa647bf500f59cd1c6A5de61B89",
@@ -615,7 +615,7 @@
         }
       },
       "0.0.1-rc.23": {
-        "name": "Bellicose Jellybeans",
+        "name": "Gustatory Moldmaker",
         "Avatar": "0x591C5840a969C4e6dC445e7354DA3B4bD3682499",
         "DAOToken": "0x0F9Dc11c5441340A50d112793051f52716E57040",
         "Reputation": "0x3e5B2b2d1a8b94EeEa5373301BC357510e352727",
@@ -632,7 +632,7 @@
         }
       },
       "0.0.1-rc.24": {
-        "name": "Spasmodic Carrot",
+        "name": "Fastidious Ukulele",
         "Avatar": "0x1C5C95b02Cb35a282596FA3b96C0EAFE58FCb385",
         "DAOToken": "0xD857F83c51Dc91d2D1AB8fD7ab00aE95355dC5AE",
         "Reputation": "0x8c2E0Ca5eFAb412dA5a2DF1736B08A89d0Eb68Ec",
@@ -649,7 +649,7 @@
         }
       },
       "0.0.1-rc.25": {
-        "name": "Loquacious Director",
+        "name": "Rebarbative Bushes",
         "Avatar": "0x4c3527694AdF328333655ccC1a7038E8e1D67b97",
         "DAOToken": "0x9d1A94547b8082DC6e1b252659A277c360383F9E",
         "Reputation": "0xFe8dC37a96C45EbdC6ebfFFf7aac34894d7c0b26",
@@ -666,7 +666,7 @@
         }
       },
       "0.0.1-rc.27": {
-        "name": "Intransigent Carousel",
+        "name": "Loquacious Glitter",
         "Avatar": "0xd685fDdE353E778ad741165E926e534c0c008308",
         "DAOToken": "0x43F5FF96A088BBB517d656b8682586015bAb7880",
         "Reputation": "0xa95bE05d7D3712949ccd6B924Ff684B6731deEF2",
@@ -683,7 +683,7 @@
         }
       },
       "0.0.1-rc.28": {
-        "name": "Rhadamanthine Carousel",
+        "name": "Redolent Coppersmith",
         "Avatar": "0x501eAB934f76B876c116Cfffb511f5A065Ea7944",
         "DAOToken": "0x1663c49F4084938d94a487b08001FfB3d3315Bad",
         "Reputation": "0x365883D9603f8be8D28d8326c666d6FeF776a3bB",
@@ -700,7 +700,7 @@
         }
       },
       "0.0.1-rc.29": {
-        "name": "Incendiary Unicorn",
+        "name": "Propitious Trampoline",
         "Avatar": "0xD049De0eABFeE747bDB06F163dbea8B64730E258",
         "DAOToken": "0xa2Df452d00aD6aA750bCB52F5cc19AAE4aDEA1C3",
         "Reputation": "0x0E19343cE0ED5255906F9feFDd22887262B5A2fe",
@@ -717,7 +717,7 @@
         }
       },
       "0.0.1-rc.30": {
-        "name": "Comely Gnomes",
+        "name": "Noxious Maintenance",
         "Avatar": "0x752660d5F6CD843272bcD6Eb3CD76D1378a20891",
         "DAOToken": "0x64756a2204e162e8Aff1D3fAf0a919EdA8B0341f",
         "Reputation": "0x4eDF145324A9A4e49515F8CDEcECFdA82803a947",
@@ -734,7 +734,7 @@
         }
       },
       "0.0.1-rc.31": {
-        "name": "Serpentine Woodworkers",
+        "name": "Nefarious Cupcake",
         "Avatar": "0x6025DB6eF1A6bC3b2f30a21F7194B83a7d19545d",
         "DAOToken": "0x791c19214A6b01a58928A82678cb294504349c5D",
         "Reputation": "0xf222263310f73973528D283Ff50260870e82c17B",
@@ -751,7 +751,7 @@
         }
       },
       "0.0.1-rc.32": {
-        "name": "Jocular Sea barnacles",
+        "name": "Sagacious Toilet",
         "Avatar": "0x845084276f991a8BEb9BdE65e1f84e5eBF76F9fF",
         "DAOToken": "0x1473bDb022960bF71BB7608940c6214c782dbEe8",
         "Reputation": "0xb60219736705dae2ea7F6538F27da6E9a9d5316e",
