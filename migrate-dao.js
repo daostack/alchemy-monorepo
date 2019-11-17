@@ -665,6 +665,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       await logTx(tx, `${standAloneContract.options.address} => ${standAlone.name}`)
 
       if (standAlone.params !== undefined) {
+        spinner.start(`Initializing ${standAlone.name}...`)
         let contractParams = []
         for (let i in standAlone.params) {
           if (standAlone.params[i].StandAloneContract !== undefined) {
@@ -677,6 +678,26 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
 
         tx = await contractSetParams.send({ nonce: ++nonce })
         await logTx(tx, `${standAlone.name} initialized.`)
+      }
+
+      if (standAlone.runFunctions !== undefined) {
+        for (let i in standAlone.runFunctions) {
+          spinner.start(`Calling ${standAlone.name} - ${standAlone.runFunctions[i].functionName}...`)
+          let functionParams = []
+          for (let j in standAlone.runFunctions[i].params) {
+            if (standAlone.runFunctions[i].params[j].StandAloneContract !== undefined) {
+              functionParams.push(deploymentState.StandAloneContracts[standAlone.runFunctions[i].params[j].StandAloneContract].address)
+            } else if (standAlone.runFunctions[i].params[j] === 'AvatarAddress') {
+              functionParams.push(avatar.options.address)
+            } else {
+              functionParams.push(standAlone.runFunctions[i].params[j])
+            }
+          }
+          const functionCall = standAloneContract.methods[standAlone.runFunctions[i].functionName](...functionParams)
+
+          tx = await functionCall.send({ nonce: ++nonce })
+          await logTx(tx, `${standAlone.name} called function ${standAlone.runFunctions[i].functionName}.`)
+        }
       }
 
       deploymentState.StandAloneContracts.push({ name: standAlone.name, alias: standAlone.alias, address: standAloneContract.options.address })

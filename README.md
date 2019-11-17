@@ -265,6 +265,33 @@ Example migration parameters object:
     "votingMachine": "0x00000000000000000000votingmachineaddress" // The address of your voting machine (default is Genesis Protocol address)
     "voteParams": 1 // The index of the parameters in the voting machines parameters array (default is 0)
   }],
+  // Allow you to deploy and call any contract you might need during the migration
+  "StandAloneContracts":[
+     {
+      "name": "Reputation",
+      // If the contract isnot from Arc you must have the contract data (ABI + Bytecode) as a JSON file with the same name as the scheme
+      "fromArc": true,
+      // Add here any calls to the contract you want to execute
+      "runFunctions": [
+            {
+               "functionName": "transferOwnership",
+               "params": [
+                  "AvatarAddress"
+               ]
+            }
+         ]
+     },
+     {
+      "name": "RepAllocation",
+      // If your contract has an initalize / constructor method which accepts arguments please add them here.
+      "params": [
+        100000,
+        { "StandAloneContract": 0 }
+      ],
+      "fromArc": true
+     }
+  ],
+
   // Allows you to register and deploy custom schemes
   "CustomSchemes": {
      // You should have an contract build file with identical name inside `custom-abis` folder

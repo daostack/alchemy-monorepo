@@ -6,6 +6,20 @@
   "SchemeRegistrar": [{}],
   "GlobalConstraintRegistrar": [{}],
   "UpgradeScheme": [{}],
+  "StandAloneContracts":[
+    {
+       "name": "Wallet",
+       "fromArc": true,
+       "runFunctions": [
+          { 
+             "functionName": "transferOwnership",
+             "params": [
+                "AvatarAddress"
+             ]
+          }
+       ]
+    }
+ ],
   "VotingMachinesParams": [
     {
       "boostedVotePeriodLimit": 600,
