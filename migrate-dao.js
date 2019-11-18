@@ -408,47 +408,52 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     deploymentState.permissions = []
     deploymentState.votingMachinesParams = []
   }
-
-  if (deploymentState.registeredGenesisProtocolParamsCount === undefined) {
-    deploymentState.registeredGenesisProtocolParamsCount = 0
-  }
-  for (deploymentState.registeredGenesisProtocolParamsCount;
-    deploymentState.registeredGenesisProtocolParamsCount < migrationParams.VotingMachinesParams.length;
-    deploymentState.registeredGenesisProtocolParamsCount++) {
-    spinner.start('Setting GenesisProtocol parameters...')
-    setState(deploymentState, network)
-    if (migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].votingParamsHash !== undefined) {
-      deploymentState.votingMachinesParams.push(migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].votingParamsHash)
-      setState(deploymentState, network)
-      continue
+  if (migrationParams.VotingMachinesParams !== undefined && migrationParams.VotingMachinesParams.length > 0) {
+    if (deploymentState.registeredGenesisProtocolParamsCount === undefined) {
+      deploymentState.registeredGenesisProtocolParamsCount = 0
     }
-    let parameters = [
-      [
-        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].queuedVoteRequiredPercentage.toString(),
-        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].queuedVotePeriodLimit.toString(),
-        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].boostedVotePeriodLimit.toString(),
-        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].preBoostedVotePeriodLimit.toString(),
-        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].thresholdConst.toString(),
-        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].quietEndingPeriod.toString(),
-        web3.utils.toWei(migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].proposingRepReward.toString()),
-        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].votersReputationLossRatio.toString(),
-        web3.utils.toWei(migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].minimumDaoBounty.toString()),
-        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].daoBountyConst.toString(),
-        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].activationTime.toString()
-      ],
-      migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].voteOnBehalf
-    ]
-    const genesisProtocolSetParams = genesisProtocol.methods.setParameters(...parameters)
+    for (deploymentState.registeredGenesisProtocolParamsCount;
+      deploymentState.registeredGenesisProtocolParamsCount < migrationParams.VotingMachinesParams.length;
+      deploymentState.registeredGenesisProtocolParamsCount++) {
+      spinner.start('Setting GenesisProtocol parameters...')
+      setState(deploymentState, network)
+      if (migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].votingParamsHash !== undefined) {
+        deploymentState.votingMachinesParams.push(migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].votingParamsHash)
+        setState(deploymentState, network)
+        continue
+      }
+      let parameters = [
+        [
+          migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].queuedVoteRequiredPercentage.toString(),
+          migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].queuedVotePeriodLimit.toString(),
+          migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].boostedVotePeriodLimit.toString(),
+          migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].preBoostedVotePeriodLimit.toString(),
+          migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].thresholdConst.toString(),
+          migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].quietEndingPeriod.toString(),
+          web3.utils.toWei(migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].proposingRepReward.toString()),
+          migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].votersReputationLossRatio.toString(),
+          web3.utils.toWei(migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].minimumDaoBounty.toString()),
+          migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].daoBountyConst.toString(),
+          migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].activationTime.toString()
+        ],
+        migrationParams.VotingMachinesParams[deploymentState.registeredGenesisProtocolParamsCount].voteOnBehalf
+      ]
+      const genesisProtocolSetParams = genesisProtocol.methods.setParameters(...parameters)
 
-    tx = await genesisProtocolSetParams.send({ nonce: ++nonce })
-    let votingMachinesParams = await genesisProtocolSetParams.call()
-    deploymentState.votingMachinesParams.push(votingMachinesParams)
-    await logTx(tx,
-      'GenesisProtocol parameters set. | Params Hash: ' +
-      votingMachinesParams + '\nParameters:\n' +
-      parameters.toString().replace(/,/g, ',\n')
-    )
-    setState(deploymentState, network)
+      let votingMachinesParams = await genesisProtocolSetParams.call()
+      const votingMachineCheckParams = await genesisProtocol.methods.parameters(votingMachinesParams).call()
+      if (votingMachineCheckParams.minimumDaoBounty === 0) {
+        tx = await genesisProtocolSetParams.send({ nonce: ++nonce })
+        await logTx(tx,
+          'GenesisProtocol parameters set. | Params Hash: ' +
+          votingMachinesParams + '\nParameters:\n' +
+          parameters.toString().replace(/,/g, ',\n')
+        )
+      }
+
+      deploymentState.votingMachinesParams.push(votingMachinesParams)
+      setState(deploymentState, network)
+    }
   }
   deploymentState.registeredGenesisProtocolParamsCount++
   setState(deploymentState, network)
@@ -476,12 +481,16 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       ]
       const schemeRegistrarSetParams = schemeRegistrar.methods.setParameters(...parameters)
       schemeRegistrarParams = await schemeRegistrarSetParams.call()
-      tx = await schemeRegistrarSetParams.send({ nonce: ++nonce })
-      await logTx(tx,
-        'Scheme Registrar parameters set. | Params Hash: ' +
-        schemeRegistrarParams + '\nParameters:\n' +
-        parameters.toString().replace(/,/g, ',\n')
-      )
+
+      const schemeRegistrarCheckParams = await schemeRegistrar.methods.parameters(schemeRegistrarParams).call()
+      if (schemeRegistrarCheckParams.intVote === '0x0000000000000000000000000000000000000000') {
+        tx = await schemeRegistrarSetParams.send({ nonce: ++nonce })
+        await logTx(tx,
+          'Scheme Registrar parameters set. | Params Hash: ' +
+          schemeRegistrarParams + '\nParameters:\n' +
+          parameters.toString().replace(/,/g, ',\n')
+        )
+      }
 
       deploymentState.schemeNames.push('Scheme Registrar')
       deploymentState.schemes.push(SchemeRegistrar)
@@ -510,12 +519,16 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
         : migrationParams.ContributionReward[deploymentState.ContributionRewardParamsCount].votingMachine]
       const contributionRewardSetParams = contributionReward.methods.setParameters(...parameters)
       contributionRewardParams = await contributionRewardSetParams.call()
-      tx = await contributionRewardSetParams.send({ nonce: ++nonce })
-      await logTx(tx,
-        'Contribution Reward parameters set. | Params Hash: ' +
-        contributionRewardParams + '\nParameters:' +
-        parameters.toString().replace(/,/g, ',\n')
-      )
+
+      const contributionRewardCheckParams = await contributionReward.methods.parameters(contributionRewardParams).call()
+      if (contributionRewardCheckParams.intVote === '0x0000000000000000000000000000000000000000') {
+        tx = await contributionRewardSetParams.send({ nonce: ++nonce })
+        await logTx(tx,
+          'Contribution Reward parameters set. | Params Hash: ' +
+          contributionRewardParams + '\nParameters:' +
+          parameters.toString().replace(/,/g, ',\n')
+        )
+      }
 
       deploymentState.schemeNames.push('Contribution Reward')
       deploymentState.schemes.push(ContributionReward)
@@ -543,12 +556,16 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       ]
       const genericSchemeSetParams = genericScheme.methods.setParameters(...parameters)
       genericSchemeParams = await genericSchemeSetParams.call()
-      tx = await genericSchemeSetParams.send({ nonce: ++nonce })
-      await logTx(tx,
-        'Generic Scheme parameters set. | Params Hash: ' +
-        genericSchemeParams + '\nParameters:\n' +
-        parameters.toString().replace(/,/g, ',\n')
-      )
+
+      const genericSchemeCheckParams = await genericScheme.methods.parameters(genericSchemeParams).call()
+      if (genericSchemeCheckParams.intVote === '0x0000000000000000000000000000000000000000') {
+        tx = await genericSchemeSetParams.send({ nonce: ++nonce })
+        await logTx(tx,
+          'Generic Scheme parameters set. | Params Hash: ' +
+          genericSchemeParams + '\nParameters:\n' +
+          parameters.toString().replace(/,/g, ',\n')
+        )
+      }
 
       deploymentState.schemeNames.push('Generic Scheme')
       deploymentState.schemes.push(Number(arcVersion.slice(-2)) >= 24 ? UGenericScheme : GenericScheme)
@@ -579,12 +596,16 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       ]
       const globalConstraintRegistrarSetParams = globalConstraintRegistrar.methods.setParameters(...parameters)
       globalConstraintRegistrarParams = await globalConstraintRegistrarSetParams.call()
-      tx = await globalConstraintRegistrarSetParams.send({ nonce: ++nonce })
-      await logTx(tx,
-        'Global Constraints Registrar parameters set. | Params Hash: ' +
-        globalConstraintRegistrarParams + '\nParameters:\n' +
-        parameters.toString().replace(/,/g, ',\n')
-      )
+
+      const globalConstraintRegistrarCheckParams = await globalConstraintRegistrar.methods.parameters(globalConstraintRegistrarParams).call()
+      if (globalConstraintRegistrarCheckParams.intVote === '0x0000000000000000000000000000000000000000') {
+        tx = await globalConstraintRegistrarSetParams.send({ nonce: ++nonce })
+        await logTx(tx,
+          'Global Constraints Registrar parameters set. | Params Hash: ' +
+          globalConstraintRegistrarParams + '\nParameters:\n' +
+          parameters.toString().replace(/,/g, ',\n')
+        )
+      }
 
       deploymentState.schemeNames.push('Global Constraints Registrar')
       deploymentState.schemes.push(GlobalConstraintRegistrar)
@@ -615,12 +636,16 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       ]
       const upgradeSchemeSetParams = upgradeScheme.methods.setParameters(...parameters)
       upgradeSchemeParams = await upgradeSchemeSetParams.call()
-      tx = await upgradeSchemeSetParams.send({ nonce: ++nonce })
-      await logTx(tx,
-        'Upgrade Scheme parameters set. | Params Hash: ' +
-        upgradeSchemeParams + '\nParameters:\n' +
-        parameters.toString().replace(/,/g, ',\n')
-      )
+
+      const upgradeSchemeCheckParams = await upgradeScheme.methods.parameters(upgradeSchemeParams).call()
+      if (upgradeSchemeCheckParams.intVote === '0x0000000000000000000000000000000000000000') {
+        tx = await upgradeSchemeSetParams.send({ nonce: ++nonce })
+        await logTx(tx,
+          'Upgrade Scheme parameters set. | Params Hash: ' +
+          upgradeSchemeParams + '\nParameters:\n' +
+          parameters.toString().replace(/,/g, ',\n')
+        )
+      }
 
       deploymentState.schemeNames.push('Upgrade Scheme')
       deploymentState.schemes.push(UpgradeScheme)
