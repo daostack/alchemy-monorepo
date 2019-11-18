@@ -2,11 +2,11 @@ const utils = require('./utils.js')
 const sanitize = require('./sanitize')
 
 async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migrationParams, logTx, previousMigration, customAbisLocation, restart, getState, setState, cleanState }) {
+  const network = await web3.eth.net.getNetworkType()
   if (restart) {
-    cleanState()
+    cleanState(network)
   }
 
-  const network = await web3.eth.net.getNetworkType()
   let deploymentState = getState(network)
 
   // sanitize the parameters
