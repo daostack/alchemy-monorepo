@@ -126,6 +126,10 @@ const wrapCommand = fn => async options => {
 
   let stateFile = path.join(__dirname, 'deployment-state.json')
 
+  let objectExists = obj => {
+    return obj ? !(Object.entries(obj).length === 0 && obj.constructor === Object) : false
+  }
+
   // run the actucal command
   const result = await fn({
     arcVersion,
@@ -138,19 +142,33 @@ const wrapCommand = fn => async options => {
     previousMigration: { ...existingFile[network] },
     customAbisLocation,
     restart,
-    setState: function setState (state) {
-      fs.writeFileSync(stateFile, JSON.stringify(state, undefined, 2), 'utf-8')
-    },
-    getState: function getState () {
+    setState: function setState (state, network) {
+      let oldState = {}
       if (fs.existsSync(stateFile)) {
-        return JSON.parse(fs.readFileSync(stateFile))
+        oldState = JSON.parse(fs.readFileSync(stateFile))
+      }
+      fs.writeFileSync(stateFile, JSON.stringify({ ...oldState, [network]: state }, undefined, 2), 'utf-8')
+    },
+    getState: function getState (network) {
+      if (fs.existsSync(stateFile)) {
+        let state = JSON.parse(fs.readFileSync(stateFile))
+        return state[network] ? state[network] : {}
       }
       return {}
     },
-    cleanState: function cleanState () {
+    cleanState: function cleanState (network) {
       if (fs.existsSync(stateFile)) {
         try {
-          fs.unlinkSync(stateFile)
+          let state = JSON.parse(fs.readFileSync(stateFile))
+          state[network] = {}
+          if (!objectExists(state.private) &&
+          !objectExists(state.rinkeby) &&
+          !objectExists(state.kovan) &&
+          !objectExists(state.mainnet)) {
+            fs.unlinkSync(stateFile)
+          } else {
+            fs.writeFileSync(stateFile, JSON.stringify(state, undefined, 2), 'utf-8')
+          }
         } catch (err) {
           console.error(err)
         }
