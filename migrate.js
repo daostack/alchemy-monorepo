@@ -174,6 +174,9 @@ const wrapCommand = fn => async options => {
         }
       }
     },
+    getArcVersionNumber: function getArcVersionNumber (arcVersion) {
+      return Number(arcVersion.slice(-2))
+    },
     sendTx: async function sendTx (tx, msg) {
       spinner.start(msg)
       let gas = 0

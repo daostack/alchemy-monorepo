@@ -1,4 +1,4 @@
-async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, previousMigration }) {
+async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, previousMigration, getArcVersionNumber }) {
   if (!(await confirm('About to migrate base contracts. Continue?'))) {
     return
   }
@@ -98,7 +98,7 @@ async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, p
       [],
       web3.eth.accounts.wallet[0].address
     )
-    if (Number(arcVersion.slice(-2)) >= 29) {
+    if (getArcVersionNumber(arcVersion) >= 29) {
       DAOTracker = await deploy(require(`./contracts/${arcVersion}/DAOTracker.json`))
     }
   } else {
@@ -109,7 +109,7 @@ async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, p
         [],
         '0x85e7fa550b534656d04d143b9a23a11e05077da3' // DAOstack's controlled account
       )
-      if (Number(arcVersion.slice(-2)) >= 29) {
+      if (getArcVersionNumber(arcVersion) >= 29) {
         DAOTracker = await deploy(require(`./contracts/${arcVersion}/DAOTracker.json`))
         const daoTracker = new web3.eth.Contract(
           require(`./contracts/${arcVersion}/DAOTracker.json`).abi,
@@ -128,7 +128,7 @@ async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, p
         [],
         '0x73Db6408abbea97C5DB8A2234C4027C315094936'
       )
-      if (Number(arcVersion.slice(-2)) >= 29) {
+      if (getArcVersionNumber(arcVersion) >= 29) {
         DAOTracker = await deploy(require(`./contracts/${arcVersion}/DAOTracker.json`))
         const daoTracker = new web3.eth.Contract(
           require(`./contracts/${arcVersion}/DAOTracker.json`).abi,
@@ -146,7 +146,7 @@ async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, p
 
   const ControllerCreator = await deploy(require(`./contracts/${arcVersion}/ControllerCreator.json`))
 
-  if (Number(arcVersion.slice(-2)) >= 29) {
+  if (getArcVersionNumber(arcVersion) >= 29) {
     await deploy(
       require(`./contracts/${arcVersion}/DaoCreator.json`),
       ['ControllerCreator', 'DAOTracker'],
@@ -177,10 +177,10 @@ async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, p
   await deploy(require(`./contracts/${arcVersion}/TokenCapGC.json`))
   await deploy(require(`./contracts/${arcVersion}/VoteInOrganizationScheme.json`))
   await deploy(require(`./contracts/${arcVersion}/OrganizationRegister.json`))
-  if (Number(arcVersion.slice(-2)) >= 22) {
+  if (getArcVersionNumber(arcVersion) >= 22) {
     await deploy(require(`./contracts/${arcVersion}/Redeemer.json`))
   }
-  if (Number(arcVersion.slice(-2)) >= 24) {
+  if (getArcVersionNumber(arcVersion) >= 24) {
     await deploy(require(`./contracts/${arcVersion}/UGenericScheme.json`))
   } else {
     await deploy(require(`./contracts/${arcVersion}/GenericScheme.json`))
