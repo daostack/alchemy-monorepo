@@ -173,6 +173,37 @@ const wrapCommand = fn => async options => {
           console.error(err)
         }
       }
+    },
+    sendTx: async function sendTx (tx, msg) {
+      spinner.start(msg)
+      let gas = 0
+      let nonce = await web3.eth.getTransactionCount(web3.eth.defaultAccount)
+      const blockLimit = await web3.eth.getBlock('latest').gasLimit
+      try {
+        gas = (await tx.estimateGas())
+        if (gas * 1.1 < block - 100000) {
+          gas *= 1.1
+        }
+      } catch (error) {
+        gas = blockLimit - 100000
+      }
+
+      let result = tx.send({ gas, nonce })
+      let receipt = await new Promise(resolve => result.on('receipt', resolve).on('error', async error => {
+        spinner.fail('Transaction failed: ' + error)
+        if (await confirm('Would you like to retry sending the transaction?')) {
+          resolve('failed')
+        } else {
+          spinner.fail('DAO Migration has failed.')
+        }
+      }))
+
+      if (receipt === 'failed') {
+        return sendTx(tx)
+      }
+
+      result = await result
+      return { receipt, result }
     }
   })
 
