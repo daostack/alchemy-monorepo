@@ -418,7 +418,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
 
       let votingMachinesParams = await genesisProtocolSetParams.call()
       const votingMachineCheckParams = await genesisProtocol.methods.parameters(votingMachinesParams).call()
-      if (votingMachineCheckParams.minimumDaoBounty === 0) {
+      if (votingMachineCheckParams.minimumDaoBounty === '0') {
         tx = (await sendTx(genesisProtocolSetParams, 'Setting GenesisProtocol parameters...')).receipt
         await logTx(tx,
           'GenesisProtocol parameters set. | Params Hash: ' +
