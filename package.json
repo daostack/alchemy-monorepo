@@ -1,6 +1,6 @@
 {
   "name": "@daostack/client",
-  "version": "0.2.29",
+  "version": "0.2.32",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -8,7 +8,7 @@
   "files": [
     "dist",
     "src",
-    "docker-compose.yml"
+    "scripts/copyABIsFromMigration.js"
   ],
   "author": "Matan Tsuberi <tsuberim@gmail.com>, Jelle Gerbrandy <jelle@daostack.io>",
   "repository": {
@@ -25,7 +25,7 @@
     "build:docs": "typedoc --out docs --target commonjs --theme markdown --mode file --plugin typedoc-plugin-markdown src",
     "bundle": "rollup -c rollup.config.ts -w",
     "lint": "npm run tslint",
-    "prepare": "npm run build",
+    "prepare": "rimraf abis && node scripts/copyABIsFromMigration.js && npm run build",
     "prebuild": "rimraf dist",
     "quality": "npm run test:prod",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
@@ -65,6 +65,7 @@
     ]
   },
   "devDependencies": {
+    "@daostack/migration": "0.0.1-rc.33-v1",
     "@types/graphql": "^14.2.2",
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/jest": "^24.0.15",
@@ -99,7 +100,6 @@
     "u": "^0.1.0"
   },
   "dependencies": {
-    "@daostack/migration": "0.0.1-rc.32-v0",
     "apollo-cache-inmemory": "^1.6.2",
     "apollo-client": "^2.6.3",
     "apollo-client-ws": "^2.5.0",

@@ -35,7 +35,7 @@ describe('Proposal', () => {
     const states: IProposalState[] = []
     const lastState = (): IProposalState => states[states.length - 1]
 
-    const actionMockABI = require(`@daostack/migration/abis/${LATEST_ARC_VERSION}/ActionMock.json`)
+    const actionMockABI = arc.getABI(undefined, 'ActionMock', LATEST_ARC_VERSION)
     const actionMock = new arc.web3.eth.Contract(actionMockABI, testAddresses.test.ActionMock)
     const callData = await actionMock.methods.test2(dao.id).encodeABI()
 
@@ -80,7 +80,7 @@ describe('Proposal', () => {
     const states: IProposalState[] = []
     const lastState = (): IProposalState => states[states.length - 1]
 
-    const actionMockABI = require(`@daostack/migration/abis/${LATEST_ARC_VERSION}/ActionMock.json`)
+    const actionMockABI = arc.getABI(undefined, 'ActionMock', LATEST_ARC_VERSION)
     const actionMock = new arc.web3.eth.Contract(actionMockABI, testAddresses.test.ActionMock)
     const callData = await actionMock.methods.test2(dao.id).encodeABI()
 

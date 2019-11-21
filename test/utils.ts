@@ -2,7 +2,7 @@ import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { DAO } from '../src/dao'
 import Arc from '../src/index'
-import { IProposalCreateOptions, IProposalOutcome, Proposal } from '../src/proposal'
+import { IContractInfo, IProposalCreateOptions, IProposalOutcome, Proposal } from '../src'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
 import BN = require('bn.js')
@@ -16,7 +16,7 @@ export const graphqlWsProvider: string = 'http://127.0.0.1:8001/subgraphs/name/d
 export const web3Provider: string = 'ws://127.0.0.1:8545'
 export const ipfsProvider: string = '/ip4/127.0.0.1/tcp/5001'
 
-export const LATEST_ARC_VERSION = '0.0.1-rc.32'
+export const LATEST_ARC_VERSION = '0.0.1-rc.33'
 
 export { BN }
 
@@ -258,4 +258,21 @@ export async function timeTravel(seconds: number, web3: any) {
 
 export async function firstResult(observable: Observable<any>) {
   return observable.pipe(first()).toPromise()
+}
+
+export function getContractAddressesFromMigration(environment: 'private'|'rinkeby'|'mainnet'): IContractInfo[] {
+  const migration = require('@daostack/migration/migration.json')[environment]
+  const contracts: IContractInfo[] = []
+  for (const version of Object.keys( migration.base)) {
+    for (const name of Object.keys(migration.base[version])) {
+      contracts.push({
+        address: migration.base[version][name].toLowerCase(),
+        id: migration.base[version][name],
+        name,
+        version
+      })
+    }
+
+  }
+  return contracts
 }

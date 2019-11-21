@@ -1,7 +1,6 @@
 import { Observable as ZenObservable } from 'apollo-link'
 import * as WebSocket from 'isomorphic-ws'
 import { Observable, Observer } from 'rxjs'
-import { IContractInfo } from './arc'
 import { Address, ICommonQueryOptions } from './types'
 const Web3 = require('web3')
 import BN = require('bn.js')
@@ -96,23 +95,6 @@ export function realMathToNumber(t: BN): number {
 }
 
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
-
-export function getContractAddressesFromMigration(environment: 'private'|'rinkeby'|'mainnet'): IContractInfo[] {
-  const migration = require('@daostack/migration/migration.json')[environment]
-  const contracts: IContractInfo[] = []
-  for (const version of Object.keys( migration.base)) {
-    for (const name of Object.keys(migration.base[version])) {
-      contracts.push({
-        address: migration.base[version][name].toLowerCase(),
-        id: migration.base[version][name],
-        name,
-        version
-      })
-    }
-
-  }
-  return contracts
-}
 
 /**
  * creates a string to be plugsging into a graphql query

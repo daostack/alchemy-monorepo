@@ -139,7 +139,7 @@ describe('Claim rewards', () => {
     const beneficiary = arc.web3.eth.defaultAccount
     const stakeAmount = new BN(123456789)
     await arc.GENToken().transfer(dao.id, stakeAmount).send()
-    const actionMockABI = require(`@daostack/migration/abis/${LATEST_ARC_VERSION}/ActionMock.json`)
+    const actionMockABI = arc.getABI(undefined, 'ActionMock', LATEST_ARC_VERSION)
     const actionMock = new arc.web3.eth.Contract(actionMockABI, testAddresses.test.ActionMock)
     const callData = await actionMock.methods.test2(dao.id).encodeABI()
 

@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 import { Observable, Observer, Subscription } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
-import { DAOTOKEN_CONTRACT_VERSION } from './settings'
+import { ABI_DIR, DAOTOKEN_CONTRACT_VERSION } from './settings'
 import { Address, Hash, ICommonQueryOptions, IStateful, Web3Receipt } from './types'
 import { createGraphQlQuery, isAddress } from './utils'
 
@@ -126,7 +126,7 @@ export class Token implements IStateful<ITokenState> {
    * get a web3 contract instance for this token
    */
   public contract(mode?: 'readonly') {
-    const abi = require(`@daostack/migration/abis/${DAOTOKEN_CONTRACT_VERSION}/DAOToken.json`)
+    const abi = require(`${ABI_DIR}/${DAOTOKEN_CONTRACT_VERSION}/DAOToken.json`)
     return this.context.getContract(this.address, abi, mode)
   }
 

@@ -3,8 +3,7 @@ import gql from 'graphql-tag'
 import { Observable, Observer } from 'rxjs'
 import { Arc } from '../src/arc'
 import { createApolloClient } from '../src/graphnode'
-import { getContractAddressesFromMigration } from '../src/utils'
-import { graphqlHttpProvider, graphqlWsProvider, mintSomeReputation, waitUntilTrue } from './utils'
+import { getContractAddressesFromMigration, graphqlHttpProvider, graphqlWsProvider, mintSomeReputation, waitUntilTrue } from './utils'
 
 function getClient() {
   const apolloClient = createApolloClient({
