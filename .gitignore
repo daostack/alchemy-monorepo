@@ -9,8 +9,9 @@ dist
 compiled
 .awcache
 .rpt2_cache
-abis/
+src/ABIs
 schema.graphql
 subgraph.yaml
 play/
 .env
+src/abis/

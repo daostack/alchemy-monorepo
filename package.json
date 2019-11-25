@@ -1,6 +1,6 @@
 {
   "name": "@daostack/client",
-  "version": "0.2.32",
+  "version": "0.2.33",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -25,7 +25,7 @@
     "build:docs": "typedoc --out docs --target commonjs --theme markdown --mode file --plugin typedoc-plugin-markdown src",
     "bundle": "rollup -c rollup.config.ts -w",
     "lint": "npm run tslint",
-    "prepare": "rimraf abis && node scripts/copyABIsFromMigration.js && npm run build",
+    "prepare": "rimraf src/abis && node scripts/copyABIsFromMigration.js && npm run build",
     "prebuild": "rimraf dist",
     "quality": "npm run test:prod",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
