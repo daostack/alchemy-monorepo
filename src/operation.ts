@@ -58,7 +58,7 @@ export type web3receipt = object
  */
 export function sendTransaction<T>(
   transaction: any,
-  mapReceipt: (receipt: web3receipt) => T|Promise<T>,
+  mapReceipt: (receipt: web3receipt) => T | Promise<T>,
   errorHandler: (error: Error) => Promise<Error> | Error = (error) => error,
   context: Arc
 ): Operation<T> {
@@ -72,7 +72,7 @@ export function sendTransaction<T>(
       } catch (err) {
         observer.error(err)
       }
-    }  else {
+    } else {
       tx = transaction
     }
 
@@ -106,6 +106,14 @@ export function sendTransaction<T>(
     observer.next({
       state: ITransactionState.Sending
     })
+    /**
+     * Keep our own count here because ganache and infura are not consistent in how they count the
+     * confirmatipn events.  Sometimes a confirmation event can appear before the receipt event.
+     * Infura tends to start the confirmation count at 0, whereas ganache (in the test env) likes to start it at 1.
+     * A consequence of the latter is that when we hit 24 events, there may or may not have been 24 actual minings --
+     * we may have incorrectly counted the "receipt" event as a confirmation.
+     */
+    let confirmationCount = 0
     tx.send(options)
       .once('transactionHash', (hash: string) => {
         Logger.debug('Sending transaction..')
@@ -116,14 +124,16 @@ export function sendTransaction<T>(
         })
       })
       .once('receipt', async (receipt: any) => {
-        Logger.debug(`transaction mined!`)
         try {
           result = await mapReceipt(receipt)
         } catch (err) {
           observer.error(err)
         }
+        if (confirmationCount === 0) {
+          Logger.debug(`transaction mined!`)
+        }
         observer.next({
-          confirmations: 0,
+          confirmations: confirmationCount++,
           receipt,
           result,
           state: ITransactionState.Mined,
@@ -131,7 +141,6 @@ export function sendTransaction<T>(
         })
       })
       .on('confirmation', async (confNumber: number, receipt: any) => {
-        // result should have been set by previous call to 'receipt', but better be sure
         if (!result) {
           try {
             result = await mapReceipt(receipt)
@@ -139,14 +148,17 @@ export function sendTransaction<T>(
             observer.error(err)
           }
         }
+        if (confirmationCount === 0) {
+          Logger.debug(`transaction mined!`)
+        }
         observer.next({
-          confirmations: confNumber,
+          confirmations: confirmationCount++,
           receipt,
           result,
           state: ITransactionState.Mined,
           transactionHash
         })
-        if (confNumber > 23) {
+        if (confirmationCount > 23) {
           // the web3 observer will confirm up to 24 subscriptions, so we are done here
           observer.complete()
         }
@@ -154,13 +166,13 @@ export function sendTransaction<T>(
       .on('error', async (error: Error) => {
         let errToReturn: Error
         try {
-            errToReturn = await errorHandler(error)
-          } catch (err) {
-            errToReturn = err
-          }
+          errToReturn = await errorHandler(error)
+        } catch (err) {
+          errToReturn = err
+        }
         observer.error(errToReturn)
       })
-    }
+  }
   )
   return toIOperationObservable(observable)
 }
