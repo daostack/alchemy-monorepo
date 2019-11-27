@@ -184,7 +184,7 @@ const wrapCommand = fn => async options => {
       const blockLimit = await web3.eth.getBlock('latest').gasLimit
       try {
         gas = (await tx.estimateGas())
-        if (gas * 1.1 < block - 100000) {
+        if (gas * 1.1 < blockLimit - 100000) {
           gas *= 1.1
         }
       } catch (error) {
