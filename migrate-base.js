@@ -160,7 +160,9 @@ async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, p
       ControllerCreator
     )
   }
-  await deploy(require(`./contracts/${arcVersion}/UController.json`))
+  if (getArcVersionNumber(arcVersion) < 34) {
+    await deploy(require(`./contracts/${arcVersion}/UController.json`))
+  }
   await deploy(
     require(`./contracts/${arcVersion}/GenesisProtocol.json`),
     ['DAOToken'],
@@ -181,7 +183,9 @@ async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, p
     await deploy(require(`./contracts/${arcVersion}/Redeemer.json`))
   }
   if (getArcVersionNumber(arcVersion) >= 24) {
-    await deploy(require(`./contracts/${arcVersion}/UGenericScheme.json`))
+    if (getArcVersionNumber(arcVersion) < 34) {
+      await deploy(require(`./contracts/${arcVersion}/UGenericScheme.json`))
+    }
   } else {
     await deploy(require(`./contracts/${arcVersion}/GenericScheme.json`))
   }

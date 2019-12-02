@@ -51,11 +51,11 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     opts
   )
 
-  const uController = new web3.eth.Contract(
+  const uController = getArcVersionNumber(arcVersion) < 34 ? new web3.eth.Contract(
     require(`./contracts/${arcVersion}/UController.json`).abi,
     UController,
     opts
-  )
+  ) : null
 
   const schemeRegistrar = new web3.eth.Contract(
     require(`./contracts/${arcVersion}/SchemeRegistrar.json`).abi,
@@ -70,8 +70,8 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
   )
 
   const genericScheme = new web3.eth.Contract(
-    getArcVersionNumber(arcVersion) >= 24 ? require(`./contracts/${arcVersion}/UGenericScheme.json`).abi : require(`./contracts/${arcVersion}/GenericScheme.json`).abi,
-    getArcVersionNumber(arcVersion) >= 24 ? UGenericScheme : GenericScheme,
+    getArcVersionNumber(arcVersion) >= 24 && getArcVersionNumber(arcVersion) < 34 ? require(`./contracts/${arcVersion}/UGenericScheme.json`).abi : require(`./contracts/${arcVersion}/GenericScheme.json`).abi,
+    getArcVersionNumber(arcVersion) >= 24 && getArcVersionNumber(arcVersion) < 34 ? UGenericScheme : GenericScheme,
     opts
   )
 
@@ -123,7 +123,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     const foundersBatchSize = 100
     if (deploymentState.Avatar === undefined) {
       let foundersInitCount = founderAddresses.length < initFoundersBatchSize ? founderAddresses.length : initFoundersBatchSize
-      const forgeOrg = daoCreator.methods.forgeOrg(
+      const forgeOrg = getArcVersionNumber(arcVersion) < 34 ? daoCreator.methods.forgeOrg(
         orgName,
         tokenName,
         tokenSymbol,
@@ -131,6 +131,14 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
         tokenDist.slice(0, foundersInitCount),
         repDist.slice(0, foundersInitCount),
         migrationParams.useUController === true ? UController : '0x0000000000000000000000000000000000000000',
+        '0'
+      ) : daoCreator.methods.forgeOrg(
+        orgName,
+        tokenName,
+        tokenSymbol,
+        founderAddresses.slice(0, foundersInitCount),
+        tokenDist.slice(0, foundersInitCount),
+        repDist.slice(0, foundersInitCount),
         '0'
       )
 
@@ -180,7 +188,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       await avatar.methods.nativeReputation().call(),
       opts
     )
-    if (migrationParams.useUController) {
+    if (migrationParams.useUController && getArcVersionNumber(arcVersion) < 34) {
       deploymentState.Controller = UController
       controller = uController
     } else {
@@ -291,7 +299,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     deploymentState.foundersTokenMintedCounter++
     setState(deploymentState, network)
 
-    if (migrationParams.useUController) {
+    if (migrationParams.useUController && getArcVersionNumber(arcVersion) < 34) {
       deploymentState.Controller = UController
       controller = uController
     } else {
@@ -352,7 +360,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       setState(deploymentState, network)
     }
 
-    if (migrationParams.useUController && deploymentState.registeredAvatarToUController !== true) {
+    if (migrationParams.useUController && getArcVersionNumber(arcVersion) < 34 && deploymentState.registeredAvatarToUController !== true) {
       tx = (await sendTx(controller.methods.newOrganization(avatar.options.address), 'Register Avatar to UController')).receipt
       await logTx(tx, 'Finished registerring Avatar')
       deploymentState.registeredAvatarToUController = true
@@ -518,7 +526,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     setState(deploymentState, network)
   }
 
-  if (migrationParams.schemes.UGenericScheme) {
+  if (migrationParams.schemes.UGenericScheme && getArcVersionNumber(arcVersion) < 34) {
     if (deploymentState.UGenericSchemeParamsCount === undefined) {
       deploymentState.UGenericSchemeParamsCount = 0
     }

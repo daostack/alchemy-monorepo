@@ -27,7 +27,7 @@ if (require.main === module) {
   generateAbis([
     '@daostack/infra/build/contracts/ERC827.json',
     '@daostack/arc-hive/build/contracts/DAORegistry.json',
-    '@daostack/arc/build/contracts/UController.json'
+    '@daostack/arc/build/contracts/Controller.json'
   ]).catch(err => {
     console.log(err)
     process.exit(1)

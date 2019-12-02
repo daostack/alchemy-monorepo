@@ -1,8 +1,5 @@
 {
   "ContributionReward": [{}],
-  "UGenericScheme": [{
-    "targetContract": "0x0000000000000000000000000000000000000000"
-  }],
   "SchemeRegistrar": [{}],
   "GlobalConstraintRegistrar": [{}],
   "UpgradeScheme": [{}],
@@ -38,7 +35,6 @@
   ],
   "schemes": {
     "ContributionReward": true,
-    "UGenericScheme": true,
     "SchemeRegistrar": true,
     "GlobalConstraintRegistrar": true,
     "UpgradeScheme": true
@@ -69,7 +65,7 @@
     }],
   "unregisterOwner": true,
   "useUController": false,
-  "useDaoCreator": false,
+  "useDaoCreator": true,
   "noTrack": false,
   "founders": [
     {
