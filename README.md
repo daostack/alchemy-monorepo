@@ -351,6 +351,9 @@ Example migration parameters object:
   "useDaoCreator": false,
   // If not using DaoCreator, set to true to prevent automatic tracking on DAOTracker, otherwise the DAO will be tracked as part of the script
   "noTrack": false,
+  // Allows to specify which Arc version should be used to deploy the dao.
+  // This will override the version specified in the CLI flag.
+  "arcVersion": "0.0.1-rc.30",
   // List of addresses to mint initial tokens and reputation to
   "founders": [
     {

@@ -17,6 +17,10 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     return
   }
 
+  if (migrationParams.arcVersion !== undefined) {
+    arcVersion = migrationParams.arcVersion
+  }
+
   if (!base[arcVersion]) {
     const msg = `Couldn't find existing base migration ('migration.json' > 'base').`
     spinner.fail(msg)
