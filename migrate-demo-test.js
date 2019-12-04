@@ -65,7 +65,9 @@ async function migrateDemoTest ({ arcVersion, web3, spinner, confirm, opts, migr
 
   const crParamsHash = await setContributionRewardParams(gpParamsHash) // FIXME
 
-  const ActionMock = await migrateActionMock()
+  const ActionMock = Number(this.arcVersion.slice(-2)) < 34 ? await migrateActionMock() : null
+
+  const gsParamsHash = Number(this.arcVersion.slice(-2)) < 34 ? await setUGenericSchemeParams(gpParamsHash, ActionMock) : null // FIXME
 
   const srParamsHash = await setSchemeRegistrarParams(gpParamsHash) // FIXME
 
@@ -81,6 +83,14 @@ async function migrateDemoTest ({ arcVersion, web3, spinner, confirm, opts, migr
       permissions: '0x0000001F'
     }
   ]
+
+  if (Number(this.arcVersion.slice(-2)) < 34) {
+    schemes.push({
+      address: Number(this.arcVersion.slice(-2)) >= 24 ? this.base.UGenericScheme : this.base.GenericScheme,
+      params: gsParamsHash,
+      permissions: '0x00000010'
+    })
+  }
 
   await setSchemes(schemes, avatarAddress, 'metaData')
 
@@ -114,6 +124,7 @@ async function migrateDemoTest ({ arcVersion, web3, spinner, confirm, opts, migr
   }
 
   const Avatar = avatarAddress
+  const Controller = await avatar.methods.owner().call()
   const DAOToken = await avatar.methods.nativeToken().call()
   const Reputation = await avatar.methods.nativeReputation().call()
 
@@ -145,6 +156,7 @@ async function migrateDemoTest ({ arcVersion, web3, spinner, confirm, opts, migr
   let migration = { 'test': previousMigration.test || {} }
   migration.test[this.arcVersion] = {
     name: orgName,
+    Controller,
     Avatar,
     DAOToken,
     Reputation,
@@ -221,7 +233,20 @@ async function migrateDemoDao (orgName, tokenName, tokenSymbol, founders, tokenD
 
 async function submitDemoProposals (accounts, web3, avatarAddress, externalTokenAddress, actionMockAddress) {
   const [PASS, FAIL] = [1, 2]
-
+  const actionMock = await new this.web3.eth.Contract(
+    require(`./contracts/${this.arcVersion}/ActionMock.json`).abi,
+    actionMockAddress,
+    this.opts
+  )
+  let callData = await actionMock.methods.test2(avatarAddress).encodeABI()
+  let gsProposalId = '0x0000000000000000000000000000000000000000000000000000000000000000'
+  if (Number(this.arcVersion.slice(-2)) < 34) {
+    gsProposalId = await submitGSProposal({
+      avatarAddress: avatarAddress,
+      callData,
+      descHash: '0x000000000000000000000000000000000000000000000000000000000000abcd'
+    })
+  }
   // QUEUED PROPOSAL //
   let queuedProposalId = await submitProposal({
     avatarAddress: avatarAddress,
@@ -343,6 +368,7 @@ async function submitDemoProposals (accounts, web3, avatarAddress, externalToken
   })
 
   return {
+    gsProposalId,
     queuedProposalId,
     preBoostedProposalId,
     boostedProposalId,
@@ -390,6 +416,40 @@ async function setContributionRewardParams (gpParamsHash) {
   await this.logTx(tx, 'Contribution Reward Set Parameters.')
 
   return crParamsHash
+}
+
+async function setUGenericSchemeParams (gpParamsHash, actionMock) {
+  this.spinner.start('Setting Generic Scheme Parameters...')
+
+  const {
+    UGenericScheme,
+    GenericScheme,
+    GenesisProtocol
+  } = this.base
+
+  let tx
+
+  const genericScheme = new this.web3.eth.Contract(
+    Number(this.arcVersion.slice(-2)) >= 24 ? require(`./contracts/${this.arcVersion}/UGenericScheme.json`).abi : require(`./contracts/${this.arcVersion}/GenericScheme.json`).abi,
+    Number(this.arcVersion.slice(-2)) >= 24 ? UGenericScheme : GenericScheme,
+    this.opts
+  )
+
+  const gsParams = {
+    contractToCall: actionMock
+  }
+
+  const gsSetParams = genericScheme.methods.setParameters(
+    gpParamsHash,
+    GenesisProtocol,
+    gsParams.contractToCall
+  )
+
+  const gsParamsHash = await gsSetParams.call()
+  tx = await gsSetParams.send()
+  await this.logTx(tx, 'Generic Scheme Set Parameters.')
+
+  return gsParamsHash
 }
 
 async function setSchemeRegistrarParams (gpParamsHash) {
@@ -500,6 +560,40 @@ async function setSchemes (schemes, avatarAddress, metadata) {
   ).send()
 
   await this.logTx(tx, 'Dao Creator Set Schemes.')
+}
+
+async function submitGSProposal ({
+  avatarAddress,
+  callData,
+  descHash
+}) {
+  this.spinner.start('Submitting a new Proposal...')
+
+  const {
+    UGenericScheme,
+    GenericScheme
+  } = this.base
+
+  let tx
+
+  const genericScheme = new this.web3.eth.Contract(
+    Number(this.arcVersion.slice(-2)) >= 24 ? require(`./contracts/${this.arcVersion}/UGenericScheme.json`).abi : require(`./contracts/${this.arcVersion}/GenericScheme.json`).abi,
+    Number(this.arcVersion.slice(-2)) >= 24 ? UGenericScheme : GenericScheme,
+    this.opts
+  )
+
+  const prop = genericScheme.methods.proposeCall(
+    avatarAddress,
+    callData,
+    0,
+    descHash
+  )
+
+  const proposalId = await prop.call()
+  tx = await prop.send()
+  await this.logTx(tx, 'Submit new Proposal.')
+
+  return proposalId
 }
 
 async function submitProposal ({
