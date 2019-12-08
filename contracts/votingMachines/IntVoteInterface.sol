@@ -1,4 +1,4 @@
-pragma solidity ^0.5.11;
+pragma solidity 0.5.13;
 
 interface IntVoteInterface {
     //When implementing this interface please do not only override function and modifier,

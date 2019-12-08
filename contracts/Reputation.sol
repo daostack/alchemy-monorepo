@@ -1,4 +1,4 @@
-pragma solidity ^0.5.11;
+pragma solidity 0.5.13;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
@@ -11,7 +11,6 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
  * The Reputation contract maintain a map of address to reputation value.
  * It provides an onlyOwner functions to mint and burn reputation _to (or _from) a specific address.
  */
-
 contract Reputation is Ownable {
 
     uint8 public decimals = 18;             //Number of decimals of the smallest unit
@@ -35,60 +34,10 @@ contract Reputation is Ownable {
       // `balances` is the map that tracks the balance of each address, in this
       //  contract when the balance changes the block number that the change
       //  occurred is also included in the map
-    mapping (address => Checkpoint[]) balances;
+    mapping (address => Checkpoint[]) private balances;
 
       // Tracks the history of the `totalSupply` of the reputation
-    Checkpoint[] totalSupplyHistory;
-
-    /// @notice Constructor to create a Reputation
-    constructor(
-    ) public
-    {
-    }
-
-    /// @dev This function makes it easy to get the total number of reputation
-    /// @return The total number of reputation
-    function totalSupply() public view returns (uint256) {
-        return totalSupplyAt(block.number);
-    }
-
-  ////////////////
-  // Query balance and totalSupply in History
-  ////////////////
-    /**
-    * @dev return the reputation amount of a given owner
-    * @param _owner an address of the owner which we want to get his reputation
-    */
-    function balanceOf(address _owner) public view returns (uint256 balance) {
-        return balanceOfAt(_owner, block.number);
-    }
-
-      /// @dev Queries the balance of `_owner` at a specific `_blockNumber`
-      /// @param _owner The address from which the balance will be retrieved
-      /// @param _blockNumber The block number when the balance is queried
-      /// @return The balance at `_blockNumber`
-    function balanceOfAt(address _owner, uint256 _blockNumber)
-    public view returns (uint256)
-    {
-        if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock > _blockNumber)) {
-            return 0;
-          // This will return the expected balance during normal situations
-        } else {
-            return getValueAt(balances[_owner], _blockNumber);
-        }
-    }
-
-      /// @notice Total amount of reputation at a specific `_blockNumber`.
-      /// @param _blockNumber The block number when the totalSupply is queried
-      /// @return The total amount of reputation at `_blockNumber`
-    function totalSupplyAt(uint256 _blockNumber) public view returns(uint256) {
-        if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
-            return 0;
-          // This will return the expected totalSupply during normal situations
-        } else {
-            return getValueAt(totalSupplyHistory, _blockNumber);
-        }
-    }
+    Checkpoint[] private totalSupplyHistory;
 
       /// @notice Generates `_amount` reputation that are assigned to `_owner`
       /// @param _user The address that will be assigned the new reputation
@@ -122,6 +71,49 @@ contract Reputation is Ownable {
         return true;
     }
 
+    /// @dev This function makes it easy to get the total number of reputation
+    /// @return The total number of reputation
+    function totalSupply() public view returns (uint256) {
+        return totalSupplyAt(block.number);
+    }
+
+    ////////////////
+    // Query balance and totalSupply in History
+    ////////////////
+    /**
+    * @dev return the reputation amount of a given owner
+    * @param _owner an address of the owner which we want to get his reputation
+    */
+    function balanceOf(address _owner) public view returns (uint256 balance) {
+        return balanceOfAt(_owner, block.number);
+    }
+
+    /// @notice Total amount of reputation at a specific `_blockNumber`.
+    /// @param _blockNumber The block number when the totalSupply is queried
+    /// @return The total amount of reputation at `_blockNumber`
+    function totalSupplyAt(uint256 _blockNumber) public view returns(uint256) {
+        if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock > _blockNumber)) {
+            return 0;
+          // This will return the expected totalSupply during normal situations
+        } else {
+            return getValueAt(totalSupplyHistory, _blockNumber);
+        }
+    }
+
+  /// @dev Queries the balance of `_owner` at a specific `_blockNumber`
+  /// @param _owner The address from which the balance will be retrieved
+  /// @param _blockNumber The block number when the balance is queried
+  /// @return The balance at `_blockNumber`
+    function balanceOfAt(address _owner, uint256 _blockNumber)
+    public view returns (uint256)
+    {
+        if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock > _blockNumber)) {
+            return 0;
+        // This will return the expected balance during normal situations
+        } else {
+            return getValueAt(balances[_owner], _blockNumber);
+        }
+    }
   ////////////////
   // Internal helper functions to query and set a value in a snapshot array
   ////////////////
@@ -148,7 +140,7 @@ contract Reputation is Ownable {
         uint256 max = checkpoints.length-1;
         while (max > min) {
             uint256 mid = (max + min + 1) / 2;
-            if (checkpoints[mid].fromBlock<=_block) {
+            if (checkpoints[mid].fromBlock <= _block) {
                 min = mid;
             } else {
                 max = mid-1;
