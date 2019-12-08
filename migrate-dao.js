@@ -702,7 +702,14 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
         }
       }
 
-      deploymentState.StandAloneContracts.push({ name: standAlone.name, alias: standAlone.alias, address: standAloneContract.options.address })
+      deploymentState.StandAloneContracts.push(
+        {
+          name: standAlone.name,
+          alias: standAlone.alias,
+          address: standAloneContract.options.address,
+          arcVersion: (standAlone.arcVersion ? standAlone.arcVersion : arcVersion)
+        }
+      )
       setState(deploymentState, network)
     }
     deploymentState.standAloneContractsCounter++
@@ -839,27 +846,19 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     setState(deploymentState, network)
   }
 
-  console.log(
-    JSON.stringify({
-      name: orgName,
-      Avatar: avatar.options.address,
-      DAOToken: daoToken.options.address,
-      Reputation: reputation.options.address,
-      Controller: deploymentState.Controller,
-      Schemes: deploymentState.Schemes,
-      arcVersion
-    }, null, 2)
-  )
-  let migration = { 'dao': previousMigration.dao || {} }
-  migration.dao[arcVersion] = {
+  let dao = {
     name: orgName,
     Avatar: avatar.options.address,
     DAOToken: daoToken.options.address,
     Reputation: reputation.options.address,
     Controller: deploymentState.Controller,
     Schemes: deploymentState.Schemes,
+    StandAloneContracts: deploymentState.StandAloneContracts,
     arcVersion
   }
+  console.log(JSON.stringify(dao, null, 2))
+  let migration = { 'dao': previousMigration.dao || {} }
+  migration.dao[arcVersion] = dao
 
   cleanState(network)
   spinner.succeed('DAO Migration has Finished Successfully!')
