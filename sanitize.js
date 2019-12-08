@@ -18,8 +18,16 @@ Validator.prototype.customFormats.address = function (input) {
 }
 
 const optionalAddress = {
-  type: 'string',
-  format: 'address'
+  anyOf: [
+    {
+      type: 'string'
+    },
+    {
+      type: 'object',
+      minLength: 4
+    }
+  ]
+
 }
 
 const requiredAddress = {

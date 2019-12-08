@@ -288,7 +288,9 @@ Example migration parameters object:
         100000,
         { "StandAloneContract": 0 }
       ],
-      "fromArc": true
+      "fromArc": true,
+      // Optional. Allows to use a specific Arc version for the StandAloneContract contract, default: Arc version of the DAO.
+      "arcVersion": "0.0.1-rc.30"
      }
   ],
 
@@ -308,9 +310,12 @@ Example migration parameters object:
         "anotherParam"
       ],
       // If the scheme is deployed set the address here, if not remove the field and the script will deploy the scheme
+      // Can also use an address from the Standalone contracts like so: "address": { "StandAloneContract": 0 }
       "address": "0xaddress...",
       // The permissions your scheme need from the controller
-      "permissions": "0x00000001"
+      "permissions": "0x00000001",
+      // Optional. Allows to use a specific Arc version for the CustomScheme contract, default: Arc version of the DAO.
+      "arcVersion": "0.0.1-rc.30"
     }]
   },
   // Parameters list your DAO will use with the voting machines

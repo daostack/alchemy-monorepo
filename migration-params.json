@@ -15,8 +15,21 @@
              ]
           }
        ]
+    },
+    {
+      "name": "ContributionRewardExt",
+      "fromArc": true,
+      "arcVersion": "0.0.1-rc.35"
+    },
+    {
+      "name": "Competition",
+      "fromArc": true,
+      "params": [
+        { "StandAloneContract": 1 }
+      ],
+      "arcVersion": "0.0.1-rc.35"
     }
- ],
+  ],
   "VotingMachinesParams": [
     {
       "boostedVotePeriodLimit": 600,
@@ -42,6 +55,8 @@
   "CustomSchemes": [
      {
       "name": "GenericScheme",
+      "schemeName":"GenericScheme",
+      "isUniversal":false,
       "params": [
         "GenesisProtocolAddress",
         {"voteParams": 0},
@@ -52,17 +67,21 @@
       "fromArc": true
     },
     {
-      "name": "GenericScheme",
-      "isUniversal": false,
-      "params": [
-        "GenesisProtocolAddress",
-        {"voteParams": 0},
-        "0x0000000000000000000000000000000000000001"
+      "name":"ContributionRewardExt",
+      "schemeName":"ContributionRewardExt",
+      "address": { "StandAloneContract": 1 },
+      "isUniversal":false,
+      "params":[
+         "GenesisProtocolAddress",
+         { "voteParams":0 },
+         { "StandAloneContract": 2 }
       ],
-      "permissions": "0x00000010",
-      "alias" : "GenericSchemeAlias2",
-      "fromArc": true
-    }],
+      "permissions":"0x00000000",
+      "alias":"ContributionRewardExt",
+      "fromArc":true,
+      "arcVersion": "0.0.1-rc.35"
+   }
+  ],
   "unregisterOwner": true,
   "useUController": false,
   "useDaoCreator": true,
