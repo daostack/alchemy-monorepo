@@ -349,7 +349,9 @@ export class Scheme implements IStateful<ISchemeState> {
         voteParams: mapGenesisProtocolParams(item.genericSchemeParams.voteParams),
         votingMachine: item.genericSchemeParams.votingMachine
       }
-
+      const schemeParams = (
+        uGenericSchemeParams || contributionRewardParams || schemeRegistrarParams || genericSchemeParams
+      )
       return {
         address: item.address,
         canDelegateCall: item.canDelegateCall,
@@ -365,7 +367,7 @@ export class Scheme implements IStateful<ISchemeState> {
         numberOfPreBoostedProposals: Number(item.numberOfPreBoostedProposals),
         numberOfQueuedProposals: Number(item.numberOfQueuedProposals),
         paramsHash: item.paramsHash,
-        schemeParams: uGenericSchemeParams || contributionRewardParams || schemeRegistrarParams || genericSchemeParams,
+        schemeParams,
         schemeRegistrarParams,
         uGenericSchemeParams,
         version: item.version

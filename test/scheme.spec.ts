@@ -50,9 +50,11 @@ describe('Scheme', () => {
       schemeStates.push(state)
     }))
     expect((schemeStates.map((r) => r.name)).sort()).toEqual([
-      'UGenericScheme',
       'ContributionReward',
-      'SchemeRegistrar'
+      'ControllerCreator',
+      'SchemeRegistrar',
+      'UGenericScheme'
+
     ].sort())
     result = await Scheme.search(arc, {where: {dao: dao.id, name: 'ContributionReward'}})
         .pipe(first()).toPromise()
@@ -106,15 +108,12 @@ describe('Scheme', () => {
   })
 
   it('Scheme.state() is working for UGenericScheme schemes', async () => {
-    const dao = await getTestDAO()
     const result = await Scheme
-      .search(arc, {where: {dao: dao.id, name: 'UGenericScheme'}})
+      .search(arc, {where: {name: 'UGenericScheme'}})
       .pipe(first()).toPromise()
-
     const scheme = result[0]
     const state = await scheme.state().pipe(first()).toPromise()
     expect(state).toMatchObject({
-      address: testAddresses.base.UGenericScheme.toLowerCase(),
       id: scheme.id,
       name: 'UGenericScheme'
     })
@@ -135,7 +134,7 @@ describe('Scheme', () => {
     })
 
     // the subgraph is a bit weird here, popoulating uGenericSchemeParams instead of the expected schemeParams
-    expect(state.uGenericSchemeParams).toEqual(state.schemeParams)
+    expect(state.genericSchemeParams).toEqual(state.schemeParams)
   })
 
   it('state() should be equal to proposal.state().scheme', async () => {

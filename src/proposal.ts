@@ -14,6 +14,7 @@ import { ISchemeState } from './scheme'
 import * as ContributionReward from './schemes/contributionReward'
 import * as GenericScheme from './schemes/genericScheme'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
+// import * as Competition from './schemes/competition'
 import { LATEST_ARC_VERSION, REDEEMER_CONTRACT_VERSION } from './settings'
 import { IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
@@ -68,6 +69,7 @@ export interface IProposalState extends IProposalStaticState {
   accountsWithUnclaimedRewards: Address[],
   boostedAt: Date
   contributionReward: ContributionReward.IContributionReward|null
+  // competition: Competition.ICompetitionProposal|null
   confidenceThreshold: number
   closingAt: Date
   createdAt: Date

@@ -194,7 +194,7 @@ describe('Proposal', () => {
 
     expect(pState).toMatchObject({
         boostedAt: 0,
-        description: null,
+        description: '',
         descriptionHash: '0x000000000000000000000000000000000000000000000000000000000000efgh',
         // downStakeNeededToQueue: new BN(0),
         executedAt: 0,
@@ -218,7 +218,7 @@ describe('Proposal', () => {
         resolvedAt: 0,
         // stage: IProposalStage.Queued,
         title: '',
-        url: null,
+        url: '',
         winningOutcome: IProposalOutcome.Fail
     })
     expect(pState.contributionReward).toMatchObject({

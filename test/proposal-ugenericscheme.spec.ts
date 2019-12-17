@@ -1,3 +1,4 @@
+import { first } from 'rxjs/operators'
 import { DAO } from '../src//dao'
 import { Arc } from '../src/arc'
 import {
@@ -29,19 +30,25 @@ describe('Proposal', () => {
     })).rejects.toThrow(/missing argument "callData"/i)
   })
 
-  it('proposal flow works for LATEST_ARC_VERSION', async () => {
+  it('proposal flow works for rc.32', async () => {
+    const version = '0.0.1-rc.32'
     testAddresses = getTestAddresses(arc)
-    dao = await getTestDAO()
+    // dao = await getTestDAO()
+    const ugenericSchemes = await arc.schemes({where: {name: "UGenericScheme", version}}).pipe(first()).toPromise()
+    const ugenericScheme = ugenericSchemes[0]
+    const ugenericSchemeState = await ugenericScheme.state().pipe(first()).toPromise()
+    dao  = new DAO(ugenericSchemeState.dao, arc)
     const states: IProposalState[] = []
     const lastState = (): IProposalState => states[states.length - 1]
 
-    const actionMockABI = arc.getABI(undefined, 'ActionMock', LATEST_ARC_VERSION)
+    const actionMockABI = arc.getABI(undefined, 'ActionMock', version)
     const actionMock = new arc.web3.eth.Contract(actionMockABI, testAddresses.test.ActionMock)
     const callData = await actionMock.methods.test2(dao.id).encodeABI()
 
     const proposal = await createAProposal(dao, {
       callData,
-      scheme: testAddresses.base.UGenericScheme,
+      // scheme: testAddresses.base.UGenericScheme,
+      scheme: ugenericSchemeState.address,
       schemeToRegister: actionMock.options.address,
       value: 0
     })

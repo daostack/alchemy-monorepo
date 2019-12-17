@@ -1,6 +1,8 @@
+import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { IProposalOutcome, IProposalStage, IProposalState, Proposal } from '../src/proposal'
+
 import BN = require('bn.js')
 import { createAProposal, firstResult, getTestAddresses, getTestDAO, ITestAddresses, LATEST_ARC_VERSION, newArc,
   toWei, voteToPassProposal, waitUntilTrue } from './utils'
@@ -136,6 +138,15 @@ describe('Claim rewards', () => {
   })
 
   it('works with non-CR proposal', async () => {
+
+    const version = '0.0.1-rc.32'
+    testAddresses = getTestAddresses(arc)
+    // dao = await getTestDAO()
+    const ugenericSchemes = await arc.schemes({where: {name: "UGenericScheme", version}}).pipe(first()).toPromise()
+    const ugenericScheme = ugenericSchemes[0]
+    const ugenericSchemeState = await ugenericScheme.state().pipe(first()).toPromise()
+    dao  = new DAO(ugenericSchemeState.dao, arc)
+
     const beneficiary = arc.web3.eth.defaultAccount
     const stakeAmount = new BN(123456789)
     await arc.GENToken().transfer(dao.id, stakeAmount).send()
@@ -145,7 +156,7 @@ describe('Claim rewards', () => {
 
     const proposal = await createAProposal(dao, {
       callData,
-      scheme: testAddresses.base.UGenericScheme,
+      scheme: ugenericSchemeState.address,
       schemeToRegister: actionMock.options.address,
       value: 0
     })
