@@ -51,7 +51,6 @@ describe('Scheme', () => {
     }))
     expect((schemeStates.map((r) => r.name)).sort()).toEqual([
       'ContributionReward',
-      'ControllerCreator',
       'SchemeRegistrar',
       'UGenericScheme'
 
