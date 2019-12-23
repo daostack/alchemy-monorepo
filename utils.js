@@ -1,3 +1,5 @@
+const path = require('path')
+
 function randomEl (list) {
   var i = Math.floor(Math.random() * list.length)
   return list[i]
@@ -13,4 +15,14 @@ const capitalize = (s) => {
 
 exports.generateRnadomName = function () {
   return capitalize(randomEl(adjectives)) + ' ' + capitalize(randomEl(nouns))
+}
+
+exports.importAbi = function (abiPath) {
+  let abi = require(`${abiPath}`)
+  if (abi.rootVersion) {
+    const abiName = abiPath.substring(abiPath.lastIndexOf('/') + 1)
+    const abiFolder = path.dirname(abiPath)
+    abi = require(`${abiFolder}/../${abi.rootVersion}/${abiName}`)
+  }
+  return abi
 }

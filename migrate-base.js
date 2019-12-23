@@ -1,6 +1,13 @@
-async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, previousMigration, getArcVersionNumber }) {
+const utils = require('./utils')
+
+async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, previousMigration, getArcVersionNumber, optimizedAbis }) {
   if (!(await confirm('About to migrate base contracts. Continue?'))) {
     return
+  }
+
+  let contractsDir = 'contracts'
+  if (optimizedAbis) {
+    contractsDir = 'contracts-optimized'
   }
 
   const addresses = {}
@@ -60,7 +67,7 @@ async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, p
 
   if (network === 'private') {
     GENToken = await deploy(
-      require(`./contracts/${arcVersion}/DAOToken.json`),
+      utils.importAbi(`./${contractsDir}/${arcVersion}/DAOToken.json`),
       [],
       'DAOstack',
       'GEN',
@@ -68,7 +75,7 @@ async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, p
     )
 
     const GENTokenContract = await new web3.eth.Contract(
-      require(`./contracts/${arcVersion}/DAOToken.json`).abi,
+      utils.importAbi(`./${contractsDir}/${arcVersion}/DAOToken.json`).abi,
       GENToken,
       opts
     )
@@ -94,25 +101,25 @@ async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, p
     }
 
     await deploy(
-      require(`./contracts/${arcVersion}/DAORegistry.json`),
+      utils.importAbi(`./${contractsDir}/${arcVersion}/DAORegistry.json`),
       [],
       web3.eth.accounts.wallet[0].address
     )
     if (getArcVersionNumber(arcVersion) >= 29) {
-      DAOTracker = await deploy(require(`./contracts/${arcVersion}/DAOTracker.json`))
+      DAOTracker = await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/DAOTracker.json`))
     }
   } else {
     addresses['GEN'] = GENToken
     if (network === 'main') {
       await deploy(
-        require(`./contracts/${arcVersion}/DAORegistry.json`),
+        utils.importAbi(`./${contractsDir}/${arcVersion}/DAORegistry.json`),
         [],
         '0x85e7fa550b534656d04d143b9a23a11e05077da3' // DAOstack's controlled account
       )
       if (getArcVersionNumber(arcVersion) >= 29) {
-        DAOTracker = await deploy(require(`./contracts/${arcVersion}/DAOTracker.json`))
+        DAOTracker = await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/DAOTracker.json`))
         const daoTracker = new web3.eth.Contract(
-          require(`./contracts/${arcVersion}/DAOTracker.json`).abi,
+          utils.importAbi(`./${contractsDir}/${arcVersion}/DAOTracker.json`).abi,
           DAOTracker,
           opts
         )
@@ -124,14 +131,14 @@ async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, p
       }
     } else {
       await deploy(
-        require(`./contracts/${arcVersion}/DAORegistry.json`),
+        utils.importAbi(`./${contractsDir}/${arcVersion}/DAORegistry.json`),
         [],
         '0x73Db6408abbea97C5DB8A2234C4027C315094936'
       )
       if (getArcVersionNumber(arcVersion) >= 29) {
-        DAOTracker = await deploy(require(`./contracts/${arcVersion}/DAOTracker.json`))
+        DAOTracker = await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/DAOTracker.json`))
         const daoTracker = new web3.eth.Contract(
-          require(`./contracts/${arcVersion}/DAOTracker.json`).abi,
+          utils.importAbi(`./${contractsDir}/${arcVersion}/DAOTracker.json`).abi,
           DAOTracker,
           opts
         )
@@ -144,50 +151,50 @@ async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, p
     }
   }
 
-  const ControllerCreator = await deploy(require(`./contracts/${arcVersion}/ControllerCreator.json`))
+  const ControllerCreator = await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/ControllerCreator.json`))
 
   if (getArcVersionNumber(arcVersion) >= 29) {
     await deploy(
-      require(`./contracts/${arcVersion}/DaoCreator.json`),
+      utils.importAbi(`./${contractsDir}/${arcVersion}/DaoCreator.json`),
       ['ControllerCreator', 'DAOTracker'],
       ControllerCreator,
       DAOTracker
     )
   } else {
     await deploy(
-      require(`./contracts/${arcVersion}/DaoCreator.json`),
+      utils.importAbi(`./${contractsDir}/${arcVersion}/DaoCreator.json`),
       ['ControllerCreator'],
       ControllerCreator
     )
   }
   if (getArcVersionNumber(arcVersion) < 34) {
-    await deploy(require(`./contracts/${arcVersion}/UController.json`))
+    await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/UController.json`))
   }
   await deploy(
-    require(`./contracts/${arcVersion}/GenesisProtocol.json`),
+    utils.importAbi(`./${contractsDir}/${arcVersion}/GenesisProtocol.json`),
     ['DAOToken'],
     GENToken
   )
-  await deploy(require(`./contracts/${arcVersion}/SchemeRegistrar.json`))
-  await deploy(require(`./contracts/${arcVersion}/UpgradeScheme.json`))
+  await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/SchemeRegistrar.json`))
+  await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/UpgradeScheme.json`))
   await deploy(
-    require(`./contracts/${arcVersion}/GlobalConstraintRegistrar.json`)
+    utils.importAbi(`./${contractsDir}/${arcVersion}/GlobalConstraintRegistrar.json`)
   )
-  await deploy(require(`./contracts/${arcVersion}/ContributionReward.json`))
-  await deploy(require(`./contracts/${arcVersion}/AbsoluteVote.json`))
-  await deploy(require(`./contracts/${arcVersion}/QuorumVote.json`))
-  await deploy(require(`./contracts/${arcVersion}/TokenCapGC.json`))
-  await deploy(require(`./contracts/${arcVersion}/VoteInOrganizationScheme.json`))
-  await deploy(require(`./contracts/${arcVersion}/OrganizationRegister.json`))
+  await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/ContributionReward.json`))
+  await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/AbsoluteVote.json`))
+  await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/QuorumVote.json`))
+  await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/TokenCapGC.json`))
+  await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/VoteInOrganizationScheme.json`))
+  await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/OrganizationRegister.json`))
   if (getArcVersionNumber(arcVersion) >= 22) {
-    await deploy(require(`./contracts/${arcVersion}/Redeemer.json`))
+    await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/Redeemer.json`))
   }
   if (getArcVersionNumber(arcVersion) >= 24) {
     if (getArcVersionNumber(arcVersion) < 34) {
-      await deploy(require(`./contracts/${arcVersion}/UGenericScheme.json`))
+      await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/UGenericScheme.json`))
     }
   } else {
-    await deploy(require(`./contracts/${arcVersion}/GenericScheme.json`))
+    await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/GenericScheme.json`))
   }
   let migration = { 'base': previousMigration.base || {} }
   migration.base[arcVersion] = addresses

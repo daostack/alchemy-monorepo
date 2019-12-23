@@ -1,10 +1,15 @@
 const utils = require('./utils.js')
 const sanitize = require('./sanitize')
 
-async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migrationParams, logTx, previousMigration, customAbisLocation, restart, getState, setState, cleanState, sendTx, getArcVersionNumber }) {
+async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migrationParams, logTx, previousMigration, customAbisLocation, restart, getState, setState, cleanState, sendTx, getArcVersionNumber, optimizedAbis }) {
   const network = await web3.eth.net.getNetworkType()
   if (restart) {
     cleanState(network)
+  }
+
+  let contractsDir = 'contracts'
+  if (optimizedAbis) {
+    contractsDir = 'contracts-optimized'
   }
 
   let deploymentState = getState(network)
@@ -46,49 +51,49 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
   } = base[arcVersion]
 
   const daoCreator = new web3.eth.Contract(
-    require(`./contracts/${arcVersion}/DaoCreator.json`).abi,
+    utils.importAbi(`./${contractsDir}/${arcVersion}/DaoCreator.json`).abi,
     DaoCreator,
     opts
   )
 
   const uController = getArcVersionNumber(arcVersion) < 34 ? new web3.eth.Contract(
-    require(`./contracts/${arcVersion}/UController.json`).abi,
+    utils.importAbi(`./${contractsDir}/${arcVersion}/UController.json`).abi,
     UController,
     opts
   ) : null
 
   const schemeRegistrar = new web3.eth.Contract(
-    require(`./contracts/${arcVersion}/SchemeRegistrar.json`).abi,
+    utils.importAbi(`./${contractsDir}/${arcVersion}/SchemeRegistrar.json`).abi,
     SchemeRegistrar,
     opts
   )
 
   const contributionReward = new web3.eth.Contract(
-    require(`./contracts/${arcVersion}/ContributionReward.json`).abi,
+    utils.importAbi(`./${contractsDir}/${arcVersion}/ContributionReward.json`).abi,
     ContributionReward,
     opts
   )
 
   const genericScheme = new web3.eth.Contract(
-    getArcVersionNumber(arcVersion) >= 24 && getArcVersionNumber(arcVersion) < 34 ? require(`./contracts/${arcVersion}/UGenericScheme.json`).abi : require(`./contracts/${arcVersion}/GenericScheme.json`).abi,
+    getArcVersionNumber(arcVersion) >= 24 && getArcVersionNumber(arcVersion) < 34 ? utils.importAbi(`./${contractsDir}/${arcVersion}/UGenericScheme.json`).abi : utils.importAbi(`./${contractsDir}/${arcVersion}/GenericScheme.json`).abi,
     getArcVersionNumber(arcVersion) >= 24 && getArcVersionNumber(arcVersion) < 34 ? UGenericScheme : GenericScheme,
     opts
   )
 
   const globalConstraintRegistrar = new web3.eth.Contract(
-    require(`./contracts/${arcVersion}/GlobalConstraintRegistrar.json`).abi,
+    utils.importAbi(`./${contractsDir}/${arcVersion}/GlobalConstraintRegistrar.json`).abi,
     GlobalConstraintRegistrar,
     opts
   )
 
   const upgradeScheme = new web3.eth.Contract(
-    require(`./contracts/${arcVersion}/UpgradeScheme.json`).abi,
+    utils.importAbi(`./${contractsDir}/${arcVersion}/UpgradeScheme.json`).abi,
     UpgradeScheme,
     opts
   )
 
   const genesisProtocol = new web3.eth.Contract(
-    require(`./contracts/${arcVersion}/GenesisProtocol.json`).abi,
+    utils.importAbi(`./${contractsDir}/${arcVersion}/GenesisProtocol.json`).abi,
     GenesisProtocol,
     opts
   )
@@ -172,19 +177,19 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     }
 
     avatar = new web3.eth.Contract(
-      require(`./contracts/${arcVersion}/Avatar.json`).abi,
+      utils.importAbi(`./${contractsDir}/${arcVersion}/Avatar.json`).abi,
       deploymentState.Avatar,
       opts
     )
 
     daoToken = new web3.eth.Contract(
-      require(`./contracts/${arcVersion}/DAOToken.json`).abi,
+      utils.importAbi(`./${contractsDir}/${arcVersion}/DAOToken.json`).abi,
       await avatar.methods.nativeToken().call(),
       opts
     )
 
     reputation = new web3.eth.Contract(
-      require(`./contracts/${arcVersion}/Reputation.json`).abi,
+      utils.importAbi(`./${contractsDir}/${arcVersion}/Reputation.json`).abi,
       await avatar.methods.nativeReputation().call(),
       opts
     )
@@ -194,7 +199,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     } else {
       spinner.start('Deploying Controller')
       controller = new web3.eth.Contract(
-        require(`./contracts/${arcVersion}/Controller.json`).abi,
+        utils.importAbi(`./${contractsDir}/${arcVersion}/Controller.json`).abi,
         await avatar.methods.owner().call(),
         opts
       )
@@ -203,11 +208,11 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
   } else {
     if (deploymentState.DAOToken === undefined) {
       let { receipt, result } = await sendTx(new web3.eth.Contract(
-        require(`./contracts/${arcVersion}/DAOToken.json`).abi,
+        utils.importAbi(`./${contractsDir}/${arcVersion}/DAOToken.json`).abi,
         undefined,
         opts
       ).deploy({
-        data: require(`./contracts/${arcVersion}/DAOToken.json`).bytecode,
+        data: utils.importAbi(`./${contractsDir}/${arcVersion}/DAOToken.json`).bytecode,
         arguments: [tokenName, tokenSymbol, 0]
       }), 'Deploying DAO Token')
       daoToken = result
@@ -217,18 +222,18 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       setState(deploymentState, network)
     }
     daoToken = new web3.eth.Contract(
-      require(`./contracts/${arcVersion}/DAOToken.json`).abi,
+      utils.importAbi(`./${contractsDir}/${arcVersion}/DAOToken.json`).abi,
       deploymentState.DAOToken,
       opts
     )
 
     if (deploymentState.Reputation === undefined) {
       let { receipt, result } = await sendTx(new web3.eth.Contract(
-        require(`./contracts/${arcVersion}/Reputation.json`).abi,
+        utils.importAbi(`./${contractsDir}/${arcVersion}/Reputation.json`).abi,
         undefined,
         opts
       ).deploy({
-        data: require(`./contracts/${arcVersion}/Reputation.json`).bytecode
+        data: utils.importAbi(`./${contractsDir}/${arcVersion}/Reputation.json`).bytecode
       }), 'Deploying Reputation')
       reputation = result
       await logTx(receipt, `${reputation.options.address} => Reputation`)
@@ -237,18 +242,18 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       setState(deploymentState, network)
     }
     reputation = new web3.eth.Contract(
-      require(`./contracts/${arcVersion}/Reputation.json`).abi,
+      utils.importAbi(`./${contractsDir}/${arcVersion}/Reputation.json`).abi,
       deploymentState.Reputation,
       opts
     )
 
     if (deploymentState.Avatar === undefined) {
       let { receipt, result } = await sendTx(new web3.eth.Contract(
-        require(`./contracts/${arcVersion}/Avatar.json`).abi,
+        utils.importAbi(`./${contractsDir}/${arcVersion}/Avatar.json`).abi,
         undefined,
         opts
       ).deploy({
-        data: require(`./contracts/${arcVersion}/Avatar.json`).bytecode,
+        data: utils.importAbi(`./${contractsDir}/${arcVersion}/Avatar.json`).bytecode,
         arguments: [orgName, daoToken.options.address, reputation.options.address]
       }), 'Deploying Avatar.')
       avatar = result
@@ -258,7 +263,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       setState(deploymentState, network)
     }
     avatar = new web3.eth.Contract(
-      require(`./contracts/${arcVersion}/Avatar.json`).abi,
+      utils.importAbi(`./${contractsDir}/${arcVersion}/Avatar.json`).abi,
       deploymentState.Avatar,
       opts
     )
@@ -305,11 +310,11 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     } else {
       if (deploymentState.Controller === undefined) {
         let { receipt, result } = await sendTx(new web3.eth.Contract(
-          require(`./contracts/${arcVersion}/Controller.json`).abi,
+          utils.importAbi(`./${contractsDir}/${arcVersion}/Controller.json`).abi,
           undefined,
           opts
         ).deploy({
-          data: require(`./contracts/${arcVersion}/Controller.json`).bytecode,
+          data: utils.importAbi(`./${contractsDir}/${arcVersion}/Controller.json`).bytecode,
           arguments: [avatar.options.address]
         }), 'Deploying Controller')
         controller = result
@@ -319,7 +324,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
         setState(deploymentState, network)
       }
       controller = new web3.eth.Contract(
-        require(`./contracts/${arcVersion}/Controller.json`).abi,
+        utils.importAbi(`./${contractsDir}/${arcVersion}/Controller.json`).abi,
         deploymentState.Controller,
         opts
       )
@@ -327,7 +332,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
 
     if (migrationParams.noTrack !== true && getArcVersionNumber(arcVersion) >= 29 && deploymentState.trackedDAO !== true) {
       const daoTracker = new web3.eth.Contract(
-        require(`./contracts/${arcVersion}/DAOTracker.json`).abi,
+        utils.importAbi(`./${contractsDir}/${arcVersion}/DAOTracker.json`).abi,
         DAOTracker,
         opts
       )
@@ -370,7 +375,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
 
   if (network === 'private') {
     const daoRegistry = new web3.eth.Contract(
-      require(`./contracts/${arcVersion}/DAORegistry.json`).abi,
+      utils.importAbi(`./${contractsDir}/${arcVersion}/DAORegistry.json`).abi,
       DAORegistry,
       opts
     )
@@ -654,7 +659,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       const path = require('path')
       let contractJson
       if (standAlone.fromArc) {
-        contractJson = require(`./contracts/${standAlone.arcVersion ? standAlone.arcVersion : arcVersion}/${standAlone.name}.json`)
+        contractJson = utils.importAbi(`./${contractsDir}/${standAlone.arcVersion ? standAlone.arcVersion : arcVersion}/${standAlone.name}.json`)
       } else {
         contractJson = require(path.resolve(`${customAbisLocation}/${standAlone.name}.json`))
       }
@@ -728,7 +733,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       const path = require('path')
       let contractJson
       if (customeScheme.fromArc) {
-        contractJson = require(`./contracts/${customeScheme.arcVersion ? customeScheme.arcVersion : arcVersion}/${customeScheme.name}.json`)
+        contractJson = utils.importAbi(`./${contractsDir}/${customeScheme.arcVersion ? customeScheme.arcVersion : arcVersion}/${customeScheme.name}.json`)
       } else {
         contractJson = require(path.resolve(`${customAbisLocation}/${customeScheme.name}.json`))
       }

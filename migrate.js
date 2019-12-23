@@ -29,6 +29,7 @@ const defaults = {
   disableconfs: false,
   force: false,
   restart: false,
+  optimizedabis: false,
   provider: 'http://localhost:8545',
   // this is the private key used by ganache when running with `--deterministic`
   privateKey: '0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d',
@@ -42,7 +43,7 @@ const defaults = {
  * A wrapper function that performs tasks common to all migration commands.
  */
 const wrapCommand = fn => async options => {
-  let { arcVersion, quiet, disableconfs, force, restart, provider, gasPrice, privateKey, mnemonic, prevmigration, output, params, customAbisLocation } = { ...defaults, ...options }
+  let { arcVersion, quiet, disableconfs, force, restart, optimizedabis, provider, gasPrice, privateKey, mnemonic, prevmigration, output, params, customAbisLocation } = { ...defaults, ...options }
   const emptySpinner = new Proxy({}, { get: () => () => { } }) // spinner that does nothing
   const spinner = quiet ? emptySpinner : ora()
 
@@ -142,6 +143,7 @@ const wrapCommand = fn => async options => {
     previousMigration: { ...existingFile[network] },
     customAbisLocation,
     restart,
+    optimizedAbis: optimizedabis,
     setState: function setState (state, network) {
       let oldState = {}
       if (fs.existsSync(stateFile)) {
@@ -274,6 +276,12 @@ function cli () {
       describe: 'delete previous deployment state and starts with clean state',
       type: 'boolean',
       default: defaults.restart
+    })
+    .option('optimized-abis', {
+      alias: 'z',
+      describe: 'load abis from the optimized contracts directory',
+      type: 'boolean',
+      default: defaults.optimizedabis
     })
     .option('prev-migration', {
       alias: 'r',

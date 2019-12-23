@@ -11,6 +11,8 @@
   },
   "scripts": {
     "generate-abis": "node ./generate-abis.js",
+    "optimize-abis": "node ./optimize-abis.js init && node ./optimize-abis.js no-duplicates",
+    "optimize-abis:no-bytecode": "node ./optimize-abis.js",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
     "cleandb": "rimraf db",
