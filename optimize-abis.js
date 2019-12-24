@@ -132,6 +132,7 @@ if (require.main === module) {
   cli()
 } else {
   module.exports = {
+    initDirectory,
     noDuplicates,
     noBytecode,
     noWhitespace
