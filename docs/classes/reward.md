@@ -40,7 +40,7 @@
 
 \+ **new Reward**(`idOrOpts`: string | [IRewardStaticState](../interfaces/irewardstaticstate.md), `context`: [Arc](arc.md)): *[Reward](reward.md)*
 
-*Defined in [reward.ts:155](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L155)*
+*Defined in [reward.ts:155](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L155)*
 
 **Parameters:**
 
@@ -57,7 +57,7 @@ Name | Type |
 
 • **context**: *[Arc](arc.md)*
 
-*Defined in [reward.ts:157](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L157)*
+*Defined in [reward.ts:157](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L157)*
 
 ___
 
@@ -65,7 +65,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [reward.ts:154](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L154)*
+*Defined in [reward.ts:154](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L154)*
 
 ___
 
@@ -73,7 +73,7 @@ ___
 
 • **idOrOpts**: *string | [IRewardStaticState](../interfaces/irewardstaticstate.md)*
 
-*Defined in [reward.ts:157](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L157)*
+*Defined in [reward.ts:157](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L157)*
 
 ___
 
@@ -81,7 +81,7 @@ ___
 
 • **staticState**: *[IRewardStaticState](../interfaces/irewardstaticstate.md) | undefined*
 
-*Defined in [reward.ts:155](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L155)*
+*Defined in [reward.ts:155](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L155)*
 
 ## Methods
 
@@ -89,7 +89,7 @@ ___
 
 ▸ **fetchStaticState**(): *Promise‹[IRewardStaticState](../interfaces/irewardstaticstate.md)›*
 
-*Defined in [reward.ts:215](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L215)*
+*Defined in [reward.ts:215](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L215)*
 
 **Returns:** *Promise‹[IRewardStaticState](../interfaces/irewardstaticstate.md)›*
 
@@ -99,7 +99,7 @@ ___
 
 ▸ **setStaticState**(`opts`: [IRewardStaticState](../interfaces/irewardstaticstate.md)): *void*
 
-*Defined in [reward.ts:211](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L211)*
+*Defined in [reward.ts:211](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L211)*
 
 **Parameters:**
 
@@ -115,7 +115,7 @@ ___
 
 ▸ **state**(`apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[IRewardState](../interfaces/irewardstate.md)›*
 
-*Defined in [reward.ts:167](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L167)*
+*Defined in [reward.ts:167](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L167)*
 
 **Parameters:**
 
@@ -131,7 +131,7 @@ ___
 
 ▸ **search**(`context`: [Arc](arc.md), `options`: [IRewardQueryOptions](../interfaces/irewardqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Reward](reward.md)[]›*
 
-*Defined in [reward.ts:71](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L71)*
+*Defined in [reward.ts:71](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L71)*
 
 Reward.search(context, options) searches for reward entities
 
@@ -153,7 +153,7 @@ an observable of Reward objects
 
 ### ▪ **fragments**: *object*
 
-*Defined in [reward.ts:42](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L42)*
+*Defined in [reward.ts:42](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L42)*
 
 ###  RewardFields
 
@@ -178,4 +178,4 @@ an observable of Reward objects
       daoBountyForStakerRedeemedAt
     }`
 
-*Defined in [reward.ts:43](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L43)*
+*Defined in [reward.ts:43](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L43)*

@@ -21,7 +21,7 @@
 
 • **id**: *string*
 
-*Defined in [tag.ts:10](https://github.com/daostack/client/blob/aa9723f/src/tag.ts#L10)*
+*Defined in [tag.ts:10](https://github.com/daostack/client/blob/7361fcc/src/tag.ts#L10)*
 
 ___
 
@@ -29,4 +29,4 @@ ___
 
 • **numberOfProposals**: *number*
 
-*Defined in [tag.ts:11](https://github.com/daostack/client/blob/aa9723f/src/tag.ts#L11)*
+*Defined in [tag.ts:11](https://github.com/daostack/client/blob/7361fcc/src/tag.ts#L11)*

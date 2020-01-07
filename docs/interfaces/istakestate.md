@@ -27,7 +27,7 @@
 
 *Inherited from [IStakeStaticState](istakestaticstate.md).[amount](istakestaticstate.md#amount)*
 
-*Defined in [stake.ts:15](https://github.com/daostack/client/blob/aa9723f/src/stake.ts#L15)*
+*Defined in [stake.ts:15](https://github.com/daostack/client/blob/7361fcc/src/stake.ts#L15)*
 
 ___
 
@@ -37,7 +37,7 @@ ___
 
 *Inherited from [IStakeStaticState](istakestaticstate.md).[createdAt](istakestaticstate.md#createdat)*
 
-*Defined in [stake.ts:13](https://github.com/daostack/client/blob/aa9723f/src/stake.ts#L13)*
+*Defined in [stake.ts:13](https://github.com/daostack/client/blob/7361fcc/src/stake.ts#L13)*
 
 ___
 
@@ -47,7 +47,7 @@ ___
 
 *Overrides [IStakeStaticState](istakestaticstate.md).[id](istakestaticstate.md#optional-id)*
 
-*Defined in [stake.ts:20](https://github.com/daostack/client/blob/aa9723f/src/stake.ts#L20)*
+*Defined in [stake.ts:20](https://github.com/daostack/client/blob/7361fcc/src/stake.ts#L20)*
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 *Inherited from [IStakeStaticState](istakestaticstate.md).[outcome](istakestaticstate.md#outcome)*
 
-*Defined in [stake.ts:14](https://github.com/daostack/client/blob/aa9723f/src/stake.ts#L14)*
+*Defined in [stake.ts:14](https://github.com/daostack/client/blob/7361fcc/src/stake.ts#L14)*
 
 ___
 
@@ -67,7 +67,7 @@ ___
 
 *Inherited from [IStakeStaticState](istakestaticstate.md).[proposal](istakestaticstate.md#proposal)*
 
-*Defined in [stake.ts:16](https://github.com/daostack/client/blob/aa9723f/src/stake.ts#L16)*
+*Defined in [stake.ts:16](https://github.com/daostack/client/blob/7361fcc/src/stake.ts#L16)*
 
 ___
 
@@ -77,4 +77,4 @@ ___
 
 *Inherited from [IStakeStaticState](istakestaticstate.md).[staker](istakestaticstate.md#staker)*
 
-*Defined in [stake.ts:12](https://github.com/daostack/client/blob/aa9723f/src/stake.ts#L12)*
+*Defined in [stake.ts:12](https://github.com/daostack/client/blob/7361fcc/src/stake.ts#L12)*

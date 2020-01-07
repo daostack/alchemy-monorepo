@@ -51,7 +51,7 @@ A Scheme represents a scheme instance that is registered at a DAO
 
 \+ **new SchemeBase**(`idOrOpts`: [Address](../globals.md#address) | [ISchemeStaticState](../interfaces/ischemestaticstate.md), `context`: [Arc](arc.md)): *[SchemeBase](schemebase.md)*
 
-*Defined in [schemes/base.ts:239](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L239)*
+*Defined in [schemes/base.ts:239](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L239)*
 
 **Parameters:**
 
@@ -68,7 +68,7 @@ Name | Type |
 
 • **ReputationFromToken**: *[ReputationFromTokenScheme](reputationfromtokenscheme.md) | null* =  null
 
-*Defined in [schemes/base.ts:239](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L239)*
+*Defined in [schemes/base.ts:239](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L239)*
 
 ___
 
@@ -76,7 +76,7 @@ ___
 
 • **context**: *[Arc](arc.md)*
 
-*Defined in [schemes/base.ts:241](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L241)*
+*Defined in [schemes/base.ts:241](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L241)*
 
 ___
 
@@ -84,7 +84,7 @@ ___
 
 • **id**: *[Address](../globals.md#address)*
 
-*Defined in [schemes/base.ts:237](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L237)*
+*Defined in [schemes/base.ts:237](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L237)*
 
 ___
 
@@ -92,7 +92,7 @@ ___
 
 • **staticState**: *[ISchemeStaticState](../interfaces/ischemestaticstate.md) | null* =  null
 
-*Defined in [schemes/base.ts:238](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L238)*
+*Defined in [schemes/base.ts:238](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L238)*
 
 ## Methods
 
@@ -100,7 +100,7 @@ ___
 
 ▸ **createProposal**(`options`: [IProposalCreateOptions](../globals.md#iproposalcreateoptions)): *[Operation](../globals.md#operation)‹[Proposal](proposal.md)›*
 
-*Defined in [schemes/base.ts:300](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L300)*
+*Defined in [schemes/base.ts:300](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L300)*
 
 **Parameters:**
 
@@ -116,7 +116,7 @@ ___
 
 ▸ **createProposalErrorHandler**(`options?`: any): *function*
 
-*Defined in [schemes/base.ts:296](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L296)*
+*Defined in [schemes/base.ts:296](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L296)*
 
 **Parameters:**
 
@@ -140,7 +140,7 @@ ___
 
 ▸ **createProposalTransaction**(`options`: any): *function*
 
-*Defined in [schemes/base.ts:288](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L288)*
+*Defined in [schemes/base.ts:288](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L288)*
 
 create a new proposal in this scheme
 TODO: move this to the schemes - we should call proposal.scheme.createProposal
@@ -163,7 +163,7 @@ ___
 
 ▸ **createProposalTransactionMap**(): *function*
 
-*Defined in [schemes/base.ts:292](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L292)*
+*Defined in [schemes/base.ts:292](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L292)*
 
 **Returns:** *function*
 
@@ -181,7 +181,7 @@ ___
 
 ▸ **fetchStaticState**(): *Promise‹[ISchemeStaticState](../interfaces/ischemestaticstate.md)›*
 
-*Defined in [schemes/base.ts:256](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L256)*
+*Defined in [schemes/base.ts:256](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L256)*
 
 fetch the static state from the subgraph
 
@@ -195,7 +195,7 @@ ___
 
 ▸ **proposals**(`options`: [IProposalQueryOptions](../interfaces/iproposalqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Proposal](proposal.md)[]›*
 
-*Defined in [schemes/base.ts:467](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L467)*
+*Defined in [schemes/base.ts:467](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L467)*
 
 **Parameters:**
 
@@ -212,7 +212,7 @@ ___
 
 ▸ **setStaticState**(`opts`: [ISchemeStaticState](../interfaces/ischemestaticstate.md)): *void*
 
-*Defined in [schemes/base.ts:279](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L279)*
+*Defined in [schemes/base.ts:279](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L279)*
 
 **Parameters:**
 
@@ -228,7 +228,7 @@ ___
 
 ▸ **state**(`apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[ISchemeState](../interfaces/ischemestate.md)›*
 
-*Defined in [schemes/base.ts:317](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L317)*
+*Defined in [schemes/base.ts:317](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L317)*
 
 **Parameters:**
 
@@ -244,7 +244,7 @@ ___
 
 ▸ **x**(): *void*
 
-*Defined in [schemes/base.ts:319](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L319)*
+*Defined in [schemes/base.ts:319](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L319)*
 
 **Returns:** *void*
 
@@ -254,7 +254,7 @@ ___
 
 ### ▪ **fragments**: *object*
 
-*Defined in [schemes/base.ts:106](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L106)*
+*Defined in [schemes/base.ts:106](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L106)*
 
 ###  SchemeFields
 
@@ -387,4 +387,4 @@ ___
       version
     }`
 
-*Defined in [schemes/base.ts:107](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L107)*
+*Defined in [schemes/base.ts:107](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L107)*

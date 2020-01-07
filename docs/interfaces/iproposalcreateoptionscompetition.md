@@ -40,7 +40,7 @@
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[dao](iproposalbasecreateoptions.md#dao)*
 
-*Defined in [proposal.ts:884](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L884)*
+*Defined in [proposal.ts:860](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L860)*
 
 ___
 
@@ -50,7 +50,7 @@ ___
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[description](iproposalbasecreateoptions.md#optional-description)*
 
-*Defined in [proposal.ts:885](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L885)*
+*Defined in [proposal.ts:861](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L861)*
 
 ___
 
@@ -60,7 +60,7 @@ ___
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[descriptionHash](iproposalbasecreateoptions.md#optional-descriptionhash)*
 
-*Defined in [proposal.ts:886](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L886)*
+*Defined in [proposal.ts:862](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L862)*
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 • **endTime**: *Date*
 
-*Defined in [schemes/competition.ts:38](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L38)*
+*Defined in [schemes/competition.ts:38](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L38)*
 
 ___
 
@@ -76,7 +76,7 @@ ___
 
 • **ethReward**? : *BN*
 
-*Defined in [schemes/competition.ts:40](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L40)*
+*Defined in [schemes/competition.ts:40](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L40)*
 
 ___
 
@@ -84,7 +84,7 @@ ___
 
 • **externalTokenAddress**? : *[Address](../globals.md#address)*
 
-*Defined in [schemes/competition.ts:42](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L42)*
+*Defined in [schemes/competition.ts:42](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L42)*
 
 ___
 
@@ -92,7 +92,7 @@ ___
 
 • **externalTokenReward**? : *BN*
 
-*Defined in [schemes/competition.ts:41](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L41)*
+*Defined in [schemes/competition.ts:41](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L41)*
 
 ___
 
@@ -100,7 +100,7 @@ ___
 
 • **nativeTokenReward**? : *BN*
 
-*Defined in [schemes/competition.ts:45](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L45)*
+*Defined in [schemes/competition.ts:45](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L45)*
 
 ___
 
@@ -108,7 +108,7 @@ ___
 
 • **numberOfVotesPerVoter**: *number*
 
-*Defined in [schemes/competition.ts:46](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L46)*
+*Defined in [schemes/competition.ts:46](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L46)*
 
 ___
 
@@ -118,7 +118,7 @@ ___
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[proposalType](iproposalbasecreateoptions.md#optional-proposaltype)*
 
-*Defined in [proposal.ts:892](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L892)*
+*Defined in [proposal.ts:868](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L868)*
 
 ___
 
@@ -126,7 +126,7 @@ ___
 
 • **reputationReward**? : *BN*
 
-*Defined in [schemes/competition.ts:39](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L39)*
+*Defined in [schemes/competition.ts:39](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L39)*
 
 ___
 
@@ -134,7 +134,7 @@ ___
 
 • **rewardSplit**: *number[]*
 
-*Defined in [schemes/competition.ts:44](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L44)*
+*Defined in [schemes/competition.ts:44](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L44)*
 
 ___
 
@@ -144,15 +144,15 @@ ___
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[scheme](iproposalbasecreateoptions.md#optional-scheme)*
 
-*Defined in [proposal.ts:889](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L889)*
+*Defined in [proposal.ts:865](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L865)*
 
 ___
 
 ###  startTime
 
-• **startTime**: *Date*
+• **startTime**: *Date | null*
 
-*Defined in [schemes/competition.ts:47](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L47)*
+*Defined in [schemes/competition.ts:47](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L47)*
 
 ___
 
@@ -160,7 +160,7 @@ ___
 
 • **suggestionsEndTime**: *Date*
 
-*Defined in [schemes/competition.ts:48](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L48)*
+*Defined in [schemes/competition.ts:48](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L48)*
 
 ___
 
@@ -170,7 +170,7 @@ ___
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[tags](iproposalbasecreateoptions.md#optional-tags)*
 
-*Defined in [proposal.ts:888](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L888)*
+*Defined in [proposal.ts:864](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L864)*
 
 ___
 
@@ -180,7 +180,7 @@ ___
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[title](iproposalbasecreateoptions.md#optional-title)*
 
-*Defined in [proposal.ts:887](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L887)*
+*Defined in [proposal.ts:863](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L863)*
 
 ___
 
@@ -190,7 +190,7 @@ ___
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[url](iproposalbasecreateoptions.md#optional-url)*
 
-*Defined in [proposal.ts:890](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L890)*
+*Defined in [proposal.ts:866](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L866)*
 
 ___
 
@@ -198,4 +198,4 @@ ___
 
 • **votingStartTime**: *Date*
 
-*Defined in [schemes/competition.ts:49](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L49)*
+*Defined in [schemes/competition.ts:49](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L49)*

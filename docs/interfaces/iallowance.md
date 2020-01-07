@@ -21,7 +21,7 @@
 
 • **amount**: *BN*
 
-*Defined in [token.ts:41](https://github.com/daostack/client/blob/aa9723f/src/token.ts#L41)*
+*Defined in [token.ts:41](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L41)*
 
 ___
 
@@ -29,7 +29,7 @@ ___
 
 • **owner**: *[Address](../globals.md#address)*
 
-*Defined in [token.ts:39](https://github.com/daostack/client/blob/aa9723f/src/token.ts#L39)*
+*Defined in [token.ts:39](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L39)*
 
 ___
 
@@ -37,7 +37,7 @@ ___
 
 • **spender**: *[Address](../globals.md#address)*
 
-*Defined in [token.ts:40](https://github.com/daostack/client/blob/aa9723f/src/token.ts#L40)*
+*Defined in [token.ts:40](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L40)*
 
 ___
 
@@ -45,4 +45,4 @@ ___
 
 • **token**: *[Address](../globals.md#address)*
 
-*Defined in [token.ts:38](https://github.com/daostack/client/blob/aa9723f/src/token.ts#L38)*
+*Defined in [token.ts:38](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L38)*

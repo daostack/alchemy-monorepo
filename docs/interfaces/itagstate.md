@@ -24,7 +24,7 @@
 
 *Overrides [ITagStaticState](itagstaticstate.md).[id](itagstaticstate.md#id)*
 
-*Defined in [tag.ts:15](https://github.com/daostack/client/blob/aa9723f/src/tag.ts#L15)*
+*Defined in [tag.ts:15](https://github.com/daostack/client/blob/7361fcc/src/tag.ts#L15)*
 
 ___
 
@@ -34,7 +34,7 @@ ___
 
 *Inherited from [ITagStaticState](itagstaticstate.md).[numberOfProposals](itagstaticstate.md#numberofproposals)*
 
-*Defined in [tag.ts:11](https://github.com/daostack/client/blob/aa9723f/src/tag.ts#L11)*
+*Defined in [tag.ts:11](https://github.com/daostack/client/blob/7361fcc/src/tag.ts#L11)*
 
 ___
 
@@ -42,4 +42,4 @@ ___
 
 • **proposals**: *[Proposal](../classes/proposal.md)[]*
 
-*Defined in [tag.ts:16](https://github.com/daostack/client/blob/aa9723f/src/tag.ts#L16)*
+*Defined in [tag.ts:16](https://github.com/daostack/client/blob/7361fcc/src/tag.ts#L16)*

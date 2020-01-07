@@ -29,7 +29,7 @@
 
 • **dao**: *[Address](../globals.md#address)*
 
-*Defined in [proposal.ts:884](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L884)*
+*Defined in [proposal.ts:860](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L860)*
 
 ___
 
@@ -37,7 +37,7 @@ ___
 
 • **description**? : *undefined | string*
 
-*Defined in [proposal.ts:885](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L885)*
+*Defined in [proposal.ts:861](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L861)*
 
 ___
 
@@ -45,7 +45,7 @@ ___
 
 • **descriptionHash**? : *undefined | string*
 
-*Defined in [proposal.ts:886](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L886)*
+*Defined in [proposal.ts:862](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L862)*
 
 ___
 
@@ -53,7 +53,7 @@ ___
 
 • **proposalType**? : *undefined | string*
 
-*Defined in [proposal.ts:892](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L892)*
+*Defined in [proposal.ts:868](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L868)*
 
 ___
 
@@ -61,7 +61,7 @@ ___
 
 • **scheme**? : *[Address](../globals.md#address)*
 
-*Defined in [proposal.ts:889](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L889)*
+*Defined in [proposal.ts:865](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L865)*
 
 ___
 
@@ -69,7 +69,7 @@ ___
 
 • **tags**? : *string[]*
 
-*Defined in [proposal.ts:888](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L888)*
+*Defined in [proposal.ts:864](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L864)*
 
 ___
 
@@ -77,7 +77,7 @@ ___
 
 • **title**? : *undefined | string*
 
-*Defined in [proposal.ts:887](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L887)*
+*Defined in [proposal.ts:863](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L863)*
 
 ___
 
@@ -85,4 +85,4 @@ ___
 
 • **url**? : *undefined | string*
 
-*Defined in [proposal.ts:890](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L890)*
+*Defined in [proposal.ts:866](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L866)*

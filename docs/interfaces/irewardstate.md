@@ -34,7 +34,7 @@
 
 *Inherited from [IRewardStaticState](irewardstaticstate.md).[beneficiary](irewardstaticstate.md#beneficiary)*
 
-*Defined in [reward.ts:11](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L11)*
+*Defined in [reward.ts:11](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L11)*
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 *Inherited from [IRewardStaticState](irewardstaticstate.md).[createdAt](irewardstaticstate.md#createdat)*
 
-*Defined in [reward.ts:12](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L12)*
+*Defined in [reward.ts:12](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L12)*
 
 ___
 
@@ -54,7 +54,7 @@ ___
 
 *Inherited from [IRewardStaticState](irewardstaticstate.md).[daoBountyForStaker](irewardstaticstate.md#daobountyforstaker)*
 
-*Defined in [reward.ts:16](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L16)*
+*Defined in [reward.ts:16](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L16)*
 
 ___
 
@@ -62,7 +62,7 @@ ___
 
 • **daoBountyForStakerRedeemedAt**: *number*
 
-*Defined in [reward.ts:25](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L25)*
+*Defined in [reward.ts:25](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L25)*
 
 ___
 
@@ -72,7 +72,7 @@ ___
 
 *Inherited from [IRewardStaticState](irewardstaticstate.md).[id](irewardstaticstate.md#id)*
 
-*Defined in [reward.ts:10](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L10)*
+*Defined in [reward.ts:10](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L10)*
 
 ___
 
@@ -82,7 +82,7 @@ ___
 
 *Inherited from [IRewardStaticState](irewardstaticstate.md).[proposalId](irewardstaticstate.md#proposalid)*
 
-*Defined in [reward.ts:13](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L13)*
+*Defined in [reward.ts:13](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L13)*
 
 ___
 
@@ -92,7 +92,7 @@ ___
 
 *Inherited from [IRewardStaticState](irewardstaticstate.md).[reputationForProposer](irewardstaticstate.md#reputationforproposer)*
 
-*Defined in [reward.ts:17](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L17)*
+*Defined in [reward.ts:17](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L17)*
 
 ___
 
@@ -100,7 +100,7 @@ ___
 
 • **reputationForProposerRedeemedAt**: *number*
 
-*Defined in [reward.ts:24](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L24)*
+*Defined in [reward.ts:24](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L24)*
 
 ___
 
@@ -110,7 +110,7 @@ ___
 
 *Inherited from [IRewardStaticState](irewardstaticstate.md).[reputationForVoter](irewardstaticstate.md#reputationforvoter)*
 
-*Defined in [reward.ts:14](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L14)*
+*Defined in [reward.ts:14](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L14)*
 
 ___
 
@@ -118,7 +118,7 @@ ___
 
 • **reputationForVoterRedeemedAt**: *number*
 
-*Defined in [reward.ts:22](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L22)*
+*Defined in [reward.ts:22](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L22)*
 
 ___
 
@@ -128,7 +128,7 @@ ___
 
 *Inherited from [IRewardStaticState](irewardstaticstate.md).[tokenAddress](irewardstaticstate.md#tokenaddress)*
 
-*Defined in [reward.ts:18](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L18)*
+*Defined in [reward.ts:18](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L18)*
 
 ___
 
@@ -138,7 +138,7 @@ ___
 
 *Inherited from [IRewardStaticState](irewardstaticstate.md).[tokensForStaker](irewardstaticstate.md#tokensforstaker)*
 
-*Defined in [reward.ts:15](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L15)*
+*Defined in [reward.ts:15](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L15)*
 
 ___
 
@@ -146,4 +146,4 @@ ___
 
 • **tokensForStakerRedeemedAt**: *number*
 
-*Defined in [reward.ts:23](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L23)*
+*Defined in [reward.ts:23](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L23)*

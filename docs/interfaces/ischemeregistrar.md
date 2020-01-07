@@ -25,7 +25,7 @@
 
 • **decision**: *number*
 
-*Defined in [schemes/schemeRegistrar.ts:11](https://github.com/daostack/client/blob/aa9723f/src/schemes/schemeRegistrar.ts#L11)*
+*Defined in [schemes/schemeRegistrar.ts:11](https://github.com/daostack/client/blob/7361fcc/src/schemes/schemeRegistrar.ts#L11)*
 
 ___
 
@@ -33,7 +33,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [schemes/schemeRegistrar.ts:6](https://github.com/daostack/client/blob/aa9723f/src/schemes/schemeRegistrar.ts#L6)*
+*Defined in [schemes/schemeRegistrar.ts:6](https://github.com/daostack/client/blob/7361fcc/src/schemes/schemeRegistrar.ts#L6)*
 
 ___
 
@@ -41,7 +41,7 @@ ___
 
 • **schemeRegistered**: *boolean*
 
-*Defined in [schemes/schemeRegistrar.ts:12](https://github.com/daostack/client/blob/aa9723f/src/schemes/schemeRegistrar.ts#L12)*
+*Defined in [schemes/schemeRegistrar.ts:12](https://github.com/daostack/client/blob/7361fcc/src/schemes/schemeRegistrar.ts#L12)*
 
 ___
 
@@ -49,7 +49,7 @@ ___
 
 • **schemeRemoved**: *boolean*
 
-*Defined in [schemes/schemeRegistrar.ts:13](https://github.com/daostack/client/blob/aa9723f/src/schemes/schemeRegistrar.ts#L13)*
+*Defined in [schemes/schemeRegistrar.ts:13](https://github.com/daostack/client/blob/7361fcc/src/schemes/schemeRegistrar.ts#L13)*
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 • **schemeToRegister**: *[Address](../globals.md#address)*
 
-*Defined in [schemes/schemeRegistrar.ts:7](https://github.com/daostack/client/blob/aa9723f/src/schemes/schemeRegistrar.ts#L7)*
+*Defined in [schemes/schemeRegistrar.ts:7](https://github.com/daostack/client/blob/7361fcc/src/schemes/schemeRegistrar.ts#L7)*
 
 ___
 
@@ -65,7 +65,7 @@ ___
 
 • **schemeToRegisterParamsHash**: *string*
 
-*Defined in [schemes/schemeRegistrar.ts:8](https://github.com/daostack/client/blob/aa9723f/src/schemes/schemeRegistrar.ts#L8)*
+*Defined in [schemes/schemeRegistrar.ts:8](https://github.com/daostack/client/blob/7361fcc/src/schemes/schemeRegistrar.ts#L8)*
 
 ___
 
@@ -73,7 +73,7 @@ ___
 
 • **schemeToRegisterPermission**: *string*
 
-*Defined in [schemes/schemeRegistrar.ts:9](https://github.com/daostack/client/blob/aa9723f/src/schemes/schemeRegistrar.ts#L9)*
+*Defined in [schemes/schemeRegistrar.ts:9](https://github.com/daostack/client/blob/7361fcc/src/schemes/schemeRegistrar.ts#L9)*
 
 ___
 
@@ -81,4 +81,4 @@ ___
 
 • **schemeToRemove**: *string*
 
-*Defined in [schemes/schemeRegistrar.ts:10](https://github.com/daostack/client/blob/aa9723f/src/schemes/schemeRegistrar.ts#L10)*
+*Defined in [schemes/schemeRegistrar.ts:10](https://github.com/daostack/client/blob/7361fcc/src/schemes/schemeRegistrar.ts#L10)*

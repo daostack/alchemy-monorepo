@@ -29,7 +29,7 @@
 
 • **createdAt**: *Date*
 
-*Defined in [schemes/competition.ts:64](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L64)*
+*Defined in [schemes/competition.ts:64](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L64)*
 
 ___
 
@@ -37,7 +37,7 @@ ___
 
 • **description**? : *undefined | string*
 
-*Defined in [schemes/competition.ts:58](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L58)*
+*Defined in [schemes/competition.ts:58](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L58)*
 
 ___
 
@@ -45,7 +45,7 @@ ___
 
 • **descriptionHash**: *string*
 
-*Defined in [schemes/competition.ts:56](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L56)*
+*Defined in [schemes/competition.ts:56](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L56)*
 
 ___
 
@@ -53,7 +53,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [schemes/competition.ts:53](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L53)*
+*Defined in [schemes/competition.ts:53](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L53)*
 
 ___
 
@@ -61,15 +61,15 @@ ___
 
 • **proposal**: *string*
 
-*Defined in [schemes/competition.ts:55](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L55)*
+*Defined in [schemes/competition.ts:55](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L55)*
 
 ___
 
 ###  redeemedAt
 
-• **redeemedAt**: *Date*
+• **redeemedAt**: *Date | null*
 
-*Defined in [schemes/competition.ts:65](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L65)*
+*Defined in [schemes/competition.ts:65](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L65)*
 
 ___
 
@@ -77,7 +77,7 @@ ___
 
 • **rewardPercentage**: *number*
 
-*Defined in [schemes/competition.ts:66](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L66)*
+*Defined in [schemes/competition.ts:66](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L66)*
 
 ___
 
@@ -85,7 +85,7 @@ ___
 
 • **suggester**: *[Address](../globals.md#address)*
 
-*Defined in [schemes/competition.ts:61](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L61)*
+*Defined in [schemes/competition.ts:61](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L61)*
 
 ___
 
@@ -93,7 +93,7 @@ ___
 
 • **suggestionId**: *number*
 
-*Defined in [schemes/competition.ts:54](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L54)*
+*Defined in [schemes/competition.ts:54](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L54)*
 
 ___
 
@@ -101,7 +101,7 @@ ___
 
 • **title**? : *undefined | string*
 
-*Defined in [schemes/competition.ts:57](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L57)*
+*Defined in [schemes/competition.ts:57](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L57)*
 
 ___
 
@@ -109,7 +109,7 @@ ___
 
 • **totalVotes**: *BN*
 
-*Defined in [schemes/competition.ts:63](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L63)*
+*Defined in [schemes/competition.ts:63](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L63)*
 
 ___
 
@@ -117,4 +117,4 @@ ___
 
 • **url**? : *undefined | string*
 
-*Defined in [schemes/competition.ts:59](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L59)*
+*Defined in [schemes/competition.ts:59](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L59)*

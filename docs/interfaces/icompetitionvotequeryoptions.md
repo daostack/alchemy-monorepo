@@ -18,4 +18,4 @@
 
 • **where**? : *undefined | object*
 
-*Defined in [schemes/competition.ts:639](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L639)*
+*Defined in [schemes/competition.ts:659](https://github.com/daostack/client/blob/7361fcc/src/schemes/competition.ts#L659)*

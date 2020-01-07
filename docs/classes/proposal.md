@@ -50,7 +50,7 @@
 
 \+ **new Proposal**(`idOrOpts`: string | [IProposalStaticState](../interfaces/iproposalstaticstate.md), `context`: [Arc](arc.md)): *[Proposal](proposal.md)*
 
-*Defined in [proposal.ts:338](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L338)*
+*Defined in [proposal.ts:327](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L327)*
 
 **Parameters:**
 
@@ -67,7 +67,7 @@ Name | Type |
 
 • **context**: *[Arc](arc.md)*
 
-*Defined in [proposal.ts:336](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L336)*
+*Defined in [proposal.ts:325](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L325)*
 
 ___
 
@@ -75,7 +75,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [proposal.ts:337](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L337)*
+*Defined in [proposal.ts:326](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L326)*
 
 ___
 
@@ -83,7 +83,7 @@ ___
 
 • **staticState**: *[IProposalStaticState](../interfaces/iproposalstaticstate.md) | undefined*
 
-*Defined in [proposal.ts:338](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L338)*
+*Defined in [proposal.ts:327](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L327)*
 
 ## Methods
 
@@ -91,7 +91,7 @@ ___
 
 ▸ **claimRewards**(`beneficiary?`: [Address](../globals.md#address)): *[Operation](../globals.md#operation)‹boolean›*
 
-*Defined in [proposal.ts:778](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L778)*
+*Defined in [proposal.ts:754](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L754)*
 
 [claimRewards description] Execute the proposal and distribute the rewards
 to the beneficiary.
@@ -113,7 +113,7 @@ ___
 
 ▸ **execute**(): *[Operation](../globals.md#operation)‹any›*
 
-*Defined in [proposal.ts:822](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L822)*
+*Defined in [proposal.ts:798](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L798)*
 
 calll the 'execute()' function on the votingMachine.
 the main purpose of this function is to set the stage of the proposals
@@ -129,7 +129,7 @@ ___
 
 ▸ **fetchStaticState**(): *Promise‹[IProposalStaticState](../interfaces/iproposalstaticstate.md)›*
 
-*Defined in [proposal.ts:356](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L356)*
+*Defined in [proposal.ts:345](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L345)*
 
 **Returns:** *Promise‹[IProposalStaticState](../interfaces/iproposalstaticstate.md)›*
 
@@ -139,7 +139,7 @@ ___
 
 ▸ **redeemerContract**(): *any*
 
-*Defined in [proposal.ts:605](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L605)*
+*Defined in [proposal.ts:581](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L581)*
 
 [redeemerContract description]
 
@@ -153,7 +153,7 @@ ___
 
 ▸ **rewards**(`options`: [IRewardQueryOptions](../interfaces/irewardqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Reward](reward.md)[]›*
 
-*Defined in [proposal.ts:761](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L761)*
+*Defined in [proposal.ts:737](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L737)*
 
 **Parameters:**
 
@@ -170,7 +170,7 @@ ___
 
 ▸ **scheme**(): *Promise‹any›*
 
-*Defined in [proposal.ts:588](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L588)*
+*Defined in [proposal.ts:564](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L564)*
 
 **Returns:** *Promise‹any›*
 
@@ -182,7 +182,7 @@ ___
 
 ▸ **setStaticState**(`opts`: [IProposalStaticState](../interfaces/iproposalstaticstate.md)): *void*
 
-*Defined in [proposal.ts:352](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L352)*
+*Defined in [proposal.ts:341](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L341)*
 
 **Parameters:**
 
@@ -198,7 +198,7 @@ ___
 
 ▸ **stake**(`outcome`: [IProposalOutcome](../enums/iproposaloutcome.md), `amount`: BN): *[Operation](../globals.md#operation)‹[Stake](stake.md)›*
 
-*Defined in [proposal.ts:695](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L695)*
+*Defined in [proposal.ts:671](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L671)*
 
 Stake on this proposal
 
@@ -219,7 +219,7 @@ ___
 
 ▸ **stakes**(`options`: [IStakeQueryOptions](../interfaces/istakequeryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Stake](stake.md)[]›*
 
-*Defined in [proposal.ts:683](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L683)*
+*Defined in [proposal.ts:659](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L659)*
 
 **Parameters:**
 
@@ -236,7 +236,7 @@ ___
 
 ▸ **stakingToken**(): *[Token](token.md)‹›*
 
-*Defined in [proposal.ts:679](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L679)*
+*Defined in [proposal.ts:655](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L655)*
 
 **Returns:** *[Token](token.md)‹›*
 
@@ -246,7 +246,7 @@ ___
 
 ▸ **state**(`apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[IProposalState](../interfaces/iproposalstate.md)›*
 
-*Defined in [proposal.ts:378](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L378)*
+*Defined in [proposal.ts:367](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L367)*
 
 `state` is an observable of the proposal state
 
@@ -264,7 +264,7 @@ ___
 
 ▸ **vote**(`outcome`: [IProposalOutcome](../enums/iproposaloutcome.md), `amount`: number): *[Operation](../globals.md#operation)‹[Vote](vote.md) | null›*
 
-*Defined in [proposal.ts:627](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L627)*
+*Defined in [proposal.ts:603](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L603)*
 
 Vote for this proposal
 
@@ -285,7 +285,7 @@ ___
 
 ▸ **votes**(`options`: [IVoteQueryOptions](../interfaces/ivotequeryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Vote](vote.md)[]›*
 
-*Defined in [proposal.ts:614](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L614)*
+*Defined in [proposal.ts:590](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L590)*
 
 **Parameters:**
 
@@ -302,7 +302,7 @@ ___
 
 ▸ **votingMachine**(): *Promise‹any›*
 
-*Defined in [proposal.ts:597](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L597)*
+*Defined in [proposal.ts:573](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L573)*
 
 [votingMachine description]
 
@@ -316,7 +316,7 @@ ___
 
 ▸ **search**(`context`: [Arc](arc.md), `options`: [IProposalQueryOptions](../interfaces/iproposalqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Proposal](proposal.md)[]›*
 
-*Defined in [proposal.ts:248](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L248)*
+*Defined in [proposal.ts:236](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L236)*
 
 Search for proposals
 
@@ -341,7 +341,7 @@ For example:
 
 ### ▪ **fragments**: *object*
 
-*Defined in [proposal.ts:111](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L111)*
+*Defined in [proposal.ts:111](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L111)*
 
 ###  ProposalFields
 
@@ -419,19 +419,7 @@ For example:
         id
       }
       scheme {
-        id
-        paramsHash
-        name
-        address
-        canDelegateCall
-        canManageGlobalConstraints
-        canRegisterSchemes
-        canUpgradeController
-        name
-        numberOfQueuedProposals
-        numberOfPreBoostedProposals
-        numberOfBoostedProposals
-        version
+        ...SchemeFields
       }
       gpQueue {
         id
@@ -470,4 +458,4 @@ For example:
       winningOutcome
     }`
 
-*Defined in [proposal.ts:112](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L112)*
+*Defined in [proposal.ts:112](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L112)*

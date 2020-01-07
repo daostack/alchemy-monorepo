@@ -38,6 +38,7 @@ A Scheme represents a scheme instance that is registered at a DAO
 * [setStaticState](scheme.md#setstaticstate)
 * [state](scheme.md#state)
 * [x](scheme.md#x)
+* [itemMap](scheme.md#static-itemmap)
 * [search](scheme.md#static-search)
 
 ### Object literals
@@ -52,7 +53,7 @@ A Scheme represents a scheme instance that is registered at a DAO
 
 *Overrides [SchemeBase](schemebase.md).[constructor](schemebase.md#constructor)*
 
-*Defined in [scheme.ts:181](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L181)*
+*Defined in [scheme.ts:259](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L259)*
 
 **Parameters:**
 
@@ -71,7 +72,7 @@ Name | Type |
 
 *Overrides [SchemeBase](schemebase.md).[ReputationFromToken](schemebase.md#reputationfromtoken)*
 
-*Defined in [scheme.ts:181](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L181)*
+*Defined in [scheme.ts:259](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L259)*
 
 ___
 
@@ -81,7 +82,7 @@ ___
 
 *Overrides [SchemeBase](schemebase.md).[context](schemebase.md#context)*
 
-*Defined in [scheme.ts:183](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L183)*
+*Defined in [scheme.ts:261](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L261)*
 
 ___
 
@@ -91,7 +92,7 @@ ___
 
 *Overrides [SchemeBase](schemebase.md).[id](schemebase.md#id)*
 
-*Defined in [scheme.ts:179](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L179)*
+*Defined in [scheme.ts:257](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L257)*
 
 ___
 
@@ -101,7 +102,7 @@ ___
 
 *Overrides [SchemeBase](schemebase.md).[staticState](schemebase.md#staticstate)*
 
-*Defined in [scheme.ts:180](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L180)*
+*Defined in [scheme.ts:258](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L258)*
 
 ## Methods
 
@@ -111,7 +112,7 @@ ___
 
 *Overrides [SchemeBase](schemebase.md).[createProposal](schemebase.md#createproposal)*
 
-*Defined in [scheme.ts:285](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L285)*
+*Defined in [scheme.ts:295](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L295)*
 
 create a new proposal in this Scheme
 
@@ -133,7 +134,7 @@ ___
 
 *Inherited from [SchemeBase](schemebase.md).[createProposalErrorHandler](schemebase.md#createproposalerrorhandler)*
 
-*Defined in [schemes/base.ts:296](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L296)*
+*Defined in [schemes/base.ts:296](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L296)*
 
 **Parameters:**
 
@@ -159,7 +160,7 @@ ___
 
 *Inherited from [SchemeBase](schemebase.md).[createProposalTransaction](schemebase.md#createproposaltransaction)*
 
-*Defined in [schemes/base.ts:288](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L288)*
+*Defined in [schemes/base.ts:288](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L288)*
 
 create a new proposal in this scheme
 TODO: move this to the schemes - we should call proposal.scheme.createProposal
@@ -184,7 +185,7 @@ ___
 
 *Inherited from [SchemeBase](schemebase.md).[createProposalTransactionMap](schemebase.md#createproposaltransactionmap)*
 
-*Defined in [schemes/base.ts:292](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L292)*
+*Defined in [schemes/base.ts:292](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L292)*
 
 **Returns:** *function*
 
@@ -204,7 +205,7 @@ ___
 
 *Inherited from [SchemeBase](schemebase.md).[fetchStaticState](schemebase.md#fetchstaticstate)*
 
-*Defined in [schemes/base.ts:256](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L256)*
+*Defined in [schemes/base.ts:256](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L256)*
 
 fetch the static state from the subgraph
 
@@ -220,7 +221,7 @@ ___
 
 *Overrides [SchemeBase](schemebase.md).[proposals](schemebase.md#proposals)*
 
-*Defined in [scheme.ts:353](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L353)*
+*Defined in [scheme.ts:363](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L363)*
 
 **Parameters:**
 
@@ -239,7 +240,7 @@ ___
 
 *Overrides [SchemeBase](schemebase.md).[setStaticState](schemebase.md#setstaticstate)*
 
-*Defined in [scheme.ts:195](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L195)*
+*Defined in [scheme.ts:273](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L273)*
 
 **Parameters:**
 
@@ -257,7 +258,7 @@ ___
 
 *Overrides [SchemeBase](schemebase.md).[state](schemebase.md#abstract-state)*
 
-*Defined in [scheme.ts:199](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L199)*
+*Defined in [scheme.ts:277](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L277)*
 
 **Parameters:**
 
@@ -275,9 +276,32 @@ ___
 
 *Inherited from [SchemeBase](schemebase.md).[x](schemebase.md#x)*
 
-*Defined in [schemes/base.ts:319](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L319)*
+*Defined in [schemes/base.ts:319](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L319)*
 
 **Returns:** *void*
+
+___
+
+### `Static` itemMap
+
+▸ **itemMap**(`item`: any, `arc`: [Arc](arc.md)): *ISchemeState | null*
+
+*Defined in [scheme.ts:188](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L188)*
+
+map an apollo query result to ISchemeState
+
+**`static`** 
+
+**`memberof`** Scheme
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`item` | any |
+`arc` | [Arc](arc.md) |
+
+**Returns:** *ISchemeState | null*
 
 ___
 
@@ -285,7 +309,7 @@ ___
 
 ▸ **search**(`context`: [Arc](arc.md), `options`: ISchemeQueryOptions, `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹Array‹[Scheme](scheme.md) | [CompetitionScheme](competitionscheme.md)››*
 
-*Defined in [scheme.ts:116](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L116)*
+*Defined in [scheme.ts:116](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L116)*
 
 Scheme.search(context, options) searches for scheme entities
 
@@ -309,7 +333,7 @@ an observable of Scheme objects
 
 *Inherited from [SchemeBase](schemebase.md).[fragments](schemebase.md#static-fragments)*
 
-*Defined in [schemes/base.ts:106](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L106)*
+*Defined in [schemes/base.ts:106](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L106)*
 
 ###  SchemeFields
 
@@ -442,4 +466,4 @@ an observable of Scheme objects
       version
     }`
 
-*Defined in [schemes/base.ts:107](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L107)*
+*Defined in [schemes/base.ts:107](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L107)*

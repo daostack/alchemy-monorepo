@@ -19,7 +19,7 @@
 
 • **BoostedBarCrossed**:
 
-*Defined in [proposal.ts:58](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L58)*
+*Defined in [proposal.ts:58](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L58)*
 
 ___
 
@@ -27,7 +27,7 @@ ___
 
 • **BoostedTimeOut**:
 
-*Defined in [proposal.ts:57](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L57)*
+*Defined in [proposal.ts:57](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L57)*
 
 ___
 
@@ -35,7 +35,7 @@ ___
 
 • **None**:
 
-*Defined in [proposal.ts:53](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L53)*
+*Defined in [proposal.ts:53](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L53)*
 
 ___
 
@@ -43,7 +43,7 @@ ___
 
 • **PreBoostedBarCrossed**:
 
-*Defined in [proposal.ts:56](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L56)*
+*Defined in [proposal.ts:56](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L56)*
 
 ___
 
@@ -51,7 +51,7 @@ ___
 
 • **QueueBarCrossed**:
 
-*Defined in [proposal.ts:54](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L54)*
+*Defined in [proposal.ts:54](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L54)*
 
 ___
 
@@ -59,4 +59,4 @@ ___
 
 • **QueueTimeOut**:
 
-*Defined in [proposal.ts:55](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L55)*
+*Defined in [proposal.ts:55](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L55)*
