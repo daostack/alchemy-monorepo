@@ -2,7 +2,6 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/daostack/migration.svg)](https://hub.docker.com/r/daostack/migration/)
 [![Build Status](https://travis-ci.com/daostack/migration.svg?token=aXt9zApRNkfx8zDMypWx&branch=master)](https://travis-ci.com/daostack/migration)
 
-
 # DAOstack Migration
 
 A repo for handling the migration of DAOstack contracts and DAOs. This repo is packaged both as an
@@ -48,7 +47,7 @@ const options = {
   provider: 'http://localhost:8545',
   // gas price in GWei. If not specified, will use an automatically suggested price.
   gasPrice: 3.4,
-  // surpress console output
+  // suppress console output
   quiet: true,
   // disable confirmation messages
   disable-confs: true,
@@ -68,7 +67,7 @@ const options = {
 			// migration params as defined in the "Migration parameters" section below
 		},
 		private: {
-			// overide defaults on private network
+			// override defaults on private network
 		},
 		kovan: {
 			// override defaults on kovan
@@ -96,7 +95,7 @@ DAOstackMigration.cli()
 
 1. `npm install --global @daostack/migration`
 
-_Note: if you encounter an issue which contains this error message `EACCES: permission denied, mkdir` please follow [this guide]( https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally) and try again_
+_Note: if you encounter an issue which contains this error message `EACCES: permission denied, mkdir` please follow [this guide](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally) and try again_
 
 Usage:
 
@@ -127,7 +126,9 @@ Options:
 ```
 
 ### How to deploying a new DAO:
+
 #### From CLI:
+
 1. Make sure you have Node.js and NPM installed and updated to a version later than 10.15.3 and 6.0.0 respectively. You can find instructions for installation [here](https://nodejs.org/en/download/), and then verify your version by opening your CMD/ Terminal and type: `node -v` and then `npm -v`.
 
 2. In your terminal, use this command to install the DAOstack migration CLI: `npm install --global @daostack/migration`.
@@ -136,13 +137,13 @@ Options:
 
 4. Customize `your-new-dao-params.json` by setting up the DAO name, token, founders, schemes etc. To learn more about the customization options for the parameters please see the [Migration parameters](#migration-parameters) section below.
 
-5. Obtain a URL of an Ethereum node connected to your desired network. You can also use [Infure](https://infura.io) for that.
+5. Obtain a URL of an Ethereum node connected to your desired network. You can also use [Infura](https://infura.io) for that.
 
 6. Get some ether in your Ethereum account to pay for the mining fee of deploying the DAO. Make sure you have the private key for the account.
 
 7. In the terminal window, use this command to deploy your DAO:
-`daostack-migrate dao --params <YOUR_PARAMS_FILE_LOCATION> --gasPrice <YOUR_DESIRED_VALUE> --provider <YOUR_ETHERUM_NODE> --private-key <YOUR_PRIVATE_KEY>`.
-_Note: You can also use a mnemonic seed instead of a private key by replacing the `--private-key` option with `--mnemonic <YOUR_MNEMONIC>`._
+   `daostack-migrate dao --params <YOUR_PARAMS_FILE_LOCATION> --gasPrice <YOUR_DESIRED_VALUE> --provider <YOUR_ETHERUM_NODE> --private-key <YOUR_PRIVATE_KEY>`.
+   _Note: You can also use a mnemonic seed instead of a private key by replacing the `--private-key` option with `--mnemonic <YOUR_MNEMONIC>`._
 
 8. This will deploy the DAO for you and output the addresses into a `migration.json` file.
 
@@ -169,32 +170,31 @@ const options = {
   // private key of the account used in migration (overrides the 'mnemonic' option)
   privateKey: '0x123...',
   // mnemonic used to generate the private key of the account used in migration
-	mnemonic: 'one two three ...',
-	// migration parameters
-	params: {
-		default: {
-			// migration params as defined in the "Migration parameters" section below
-		},
-		private: {
-			// overide defaults on private network
-		},
-		kovan: {
-			// overide defaults on kovan
-		},
-	},
+  mnemonic: 'one two three ...',
+  // migration parameters
+  params: {
+    default: {
+      // migration params as defined in the "Migration parameters" section below
+    },
+    private: {
+      // override defaults on private network
+    },
+    kovan: {
+      // override defaults on kovan
+    }
+  }
 };
 
-
 const migrationDAOResult = await DAOstackMigration.migrateDAO(options);
-migrationDAOResult.dao.Avatar // DAO avatar address
+migrationDAOResult.dao.Avatar; // DAO avatar address
 // migrate an demo test scenario (requires an existing `output` file with a base migration)
 const migrationDemoResult = await DAOstackMigration.migrateDemoTest(options);
-migrationDemoResult.test.Avatar // Test DAO avatar address
+migrationDemoResult.test.Avatar; // Test DAO avatar address
 // migrate base, example DAO and demo test contracts
 const migrationResult = await DAOstackMigration.migrate(options); // migrate
 
 // run the cli
-DAOstackMigration.cli()
+DAOstackMigration.cli();
 ```
 
 ### As a docker image
@@ -210,37 +210,37 @@ Example migration result object:
 
 ```json
 {
-	"base": {
-		"DAOToken": "0x123...",
-		"ControllerCreator": "0x123...",
-		"DaoCreator": "0x123...",
-		"UController": "0x123...",
-		"GenesisProtocol": "0x123...",
-		"SchemeRegistrar": "0x123...",
-		"UpgradeScheme": "0x123...",
-		"GlobalConstraintRegistrar": "0x123...",
-		"ContributionReward": "0x123...",
-		"AbsoluteVote": "0x123...",
-		"QuorumVote": "0x123...",
-		"TokenCapGC": "0x123...",
-		"VestingScheme": "0x123...",
-		"VoteInOrganizationScheme": "0x123...",
-		"OrganizationRegister": "0x123...",
-		"Redeemer": "0x123..."
-	},
-	"dao": {
-		"name": "DAO Jones",
-		"Avatar": "0x123...",
-		"NativeToken": "0x123...",
-		"NativeReputation": "0x123..."
-	},
-	"test": {
-      		"name": "0x123...",
-      		"Avatar": "0x123...",
-      		"NativeToken": "0x123...",
-      		"NativeReputation": "0x123...",
-      		"proposalId": "0xabc..."
-    	}
+  "base": {
+    "DAOToken": "0x123...",
+    "ControllerCreator": "0x123...",
+    "DaoCreator": "0x123...",
+    "UController": "0x123...",
+    "GenesisProtocol": "0x123...",
+    "SchemeRegistrar": "0x123...",
+    "UpgradeScheme": "0x123...",
+    "GlobalConstraintRegistrar": "0x123...",
+    "ContributionReward": "0x123...",
+    "AbsoluteVote": "0x123...",
+    "QuorumVote": "0x123...",
+    "TokenCapGC": "0x123...",
+    "VestingScheme": "0x123...",
+    "VoteInOrganizationScheme": "0x123...",
+    "OrganizationRegister": "0x123...",
+    "Redeemer": "0x123..."
+  },
+  "dao": {
+    "name": "DAO Jones",
+    "Avatar": "0x123...",
+    "NativeToken": "0x123...",
+    "NativeReputation": "0x123..."
+  },
+  "test": {
+    "name": "0x123...",
+    "Avatar": "0x123...",
+    "NativeToken": "0x123...",
+    "NativeReputation": "0x123...",
+    "proposalId": "0xabc..."
+  }
 }
 ```
 
@@ -283,7 +283,7 @@ Example migration parameters object:
      },
      {
       "name": "RepAllocation",
-      // If your contract has an initalize / constructor method which accepts arguments please add them here.
+      // If your contract has an initialize / constructor method which accepts arguments please add them here.
       "params": [
         100000,
         { "StandAloneContract": 0 }
@@ -297,26 +297,48 @@ Example migration parameters object:
   // Allows you to register and deploy custom schemes
   "CustomSchemes": {
      // You should have an contract build file with identical name inside `custom-abis` folder
-    "MyCustomScheme": [{
-      // If true will call setParameters() else will call initialized() with the avatar address as a first parameter
-      "isUniversal": true,  
-      // Parameters to use in the setParameters() / initialized() method
-      "params": [
-        // An object like this { "voteParams": X } is transformed as the voting params hash like "voteParams": 0 in the supported schemes
-        { "voteParams": 0 },
-        // This will be converted to the actual Genesis Protocol address
-        "GenesisProtocolAddress",
-        // You can also add literal parameters like so
-        "anotherParam"
-      ],
-      // If the scheme is deployed set the address here, if not remove the field and the script will deploy the scheme
-      // Can also use an address from the Standalone contracts like so: "address": { "StandAloneContract": 0 }
-      "address": "0xaddress...",
-      // The permissions your scheme need from the controller
-      "permissions": "0x00000001",
-      // Optional. Allows to use a specific Arc version for the CustomScheme contract, default: Arc version of the DAO.
-      "arcVersion": "0.0.1-rc.30"
-    }]
+    "MyCustomScheme": [
+      {
+        // If true will call setParameters() else will call initialized() with the avatar address as a first parameter
+        "isUniversal": true,
+        // Parameters to use in the setParameters() / initialized() method
+        "params": [
+          // An object like this { "voteParams": X } is transformed as the voting params hash like "voteParams": 0 in the supported schemes
+          { "voteParams": 0 },
+          // This will be converted to the actual Genesis Protocol address
+          "GenesisProtocolAddress",
+          // You can also add literal parameters like so
+          "anotherParam"
+        ],
+        // If the scheme is deployed set the address here, if not remove the field and the script will deploy the scheme
+        // Can also use an address from the Standalone contracts like so: "address": { "StandAloneContract": 0 }
+        "address": "0xaddress...",
+        // The permissions your scheme need from the controller
+        "permissions": "0x00000001",
+        // Optional. Allows to use a specific Arc version for the CustomScheme contract, default: Arc version of the DAO.
+        "arcVersion": "0.0.1-rc.30"
+      },
+      {
+        "name": "ContinuousLocking4Reputation",
+        "schemeName": "ContinuousLocking4Reputation",
+        "isUniversal": false,
+        "params": [
+          "CONTINUES_LOCKING_REP_ALLOCATION", // How much Reputation should the scheme allocate.
+          "START_TIME", // Start time for the locking as UNIX Timestamp (in seconds).
+          "BATCH_TIME", // Time per batch (in seconds)
+          "REDEEM_TIME", // Start time for redeeming as UNIX Timestamp (in seconds).
+          "BATCHES_COUNT", // Number of batches
+          "REP_REWARD_CONST_A", // repRewardConstA
+          "REP_REWARD_CONST_B", // repRewardConstB
+          "BATCHES_INDEX_CAP", // batchesIndexCap
+          "TOKEN_ADDRESS", // Address of the token to lock.
+          "AGREEMENT_HASH" // IPFS hash of user agreement. Can be arbitrary (for example: "0x1000000000000000000000000000000000000000000000000000000000000000") if not used.
+        ],
+        "permissions": "0x00000010",
+        "alias": "InfiniteReputation4Token",
+        "fromArc": true
+      }
+    ]
   },
   // Parameters list your DAO will use with the voting machines
   // You can add here either Genesis Protocol parameters which will set the parameters in the GP voting machine or add a pre-set parameters hash to any voting machine
@@ -427,16 +449,17 @@ In order to release a version:
    1. Make sure you have the required `.env` variables set (`kovan_provider`, `kovan_private_key`, `rinkeby_provider`,
       `rinkeby_private_key`, `mainnet_provider`, `mainnet_private_key`). It should look something like this:
 
-        ```bash
-        kovan_provider="https://kovan.infura.io/v3/<YOUR_INFURA_KEY>"
-        kovan_private_key="0x<YOUR_PRIVATE_KEY>"
-        rinkeby_provider="https://rinkeby.infura.io/v3/<YOUR_INFURA_KEY>"
-        rinkeby_private_key="0x<YOUR_PRIVATE_KEY>"
-        mainnet_provider="https://mainnet.infura.io/v3/<YOUR_INFURA_KEY>"
-        mainnet_private_key="0x<YOUR_PRIVATE_KEY>"
-        ```
+      ```bash
+      kovan_provider="https://kovan.infura.io/v3/<YOUR_INFURA_KEY>"
+      kovan_private_key="0x<YOUR_PRIVATE_KEY>"
+      rinkeby_provider="https://rinkeby.infura.io/v3/<YOUR_INFURA_KEY>"
+      rinkeby_private_key="0x<YOUR_PRIVATE_KEY>"
+      mainnet_provider="https://mainnet.infura.io/v3/<YOUR_INFURA_KEY>"
+      mainnet_private_key="0x<YOUR_PRIVATE_KEY>"
+      ```
 
-        _Note: Make sure you have enough ETH in the account corresponding to the private key you will use to pay the deployment gas costs._
+      _Note: Make sure you have enough ETH in the account corresponding to the private key you will use to pay the deployment gas costs._
+
    2. Make sure you are not on the `master` branch. If needed, create a new branch for the release process.
    3. `npm run prepare-release` - This will perform all the necessary steps to update version and prepare for a new release. The changes made here will be committed to the git branch.
    4. Create a PR and merge the new branch with the changes into `master`.
