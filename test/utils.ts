@@ -1,11 +1,12 @@
+import BN = require('bn.js')
 import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
+import { IContractInfo, IProposalCreateOptions, Proposal } from '../src'
+import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import Arc from '../src/index'
-import { IContractInfo, IProposalCreateOptions, IProposalOutcome, Proposal } from '../src'
+import { IProposalOutcome} from '../src/proposal'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
-import BN = require('bn.js')
 
 const Web3 = require('web3')
 const path = require('path')
@@ -231,29 +232,94 @@ export async function voteToPassProposal(proposal: Proposal) {
   return
 }
 
-export async function timeTravel(seconds: number, web3: any) {
-  const jsonrpc = '2.0'
-  const id = 1
-  web3 = new Web3('http://localhost:8545')
-  web3.providers.HttpProvider.prototype.sendAsync = web3.providers.HttpProvider.prototype.send
-  return new Promise((resolve, reject) => {
-    web3.currentProvider.sendAsync({
-      id,
-      jsonrpc,
-      method: 'evm_increaseTime',
-      params: [seconds]
-    }, (err1: Error) => {
-      if (err1) { return reject(err1) }
+// export async function timeTravel(seconds: number, web3: any) {
+//   const jsonrpc = '2.0'
+//   // web3 = new Web3('http://localhost:8545')
+//   // web3.providers.HttpProvider.prototype.sendAsync = web3.providers.HttpProvider.prototype.send
+//   return new Promise((resolve, reject) => {
+//     web3.currentProvider.send({
+//       id: new Date().getTime(),
+//       jsonrpc,
+//       method: 'evm_increaseTime',
+//       // method: 'evm_mine',
+//       params: [seconds]
+//     }, (err1: Error) => {
+//       if (err1) { return reject(err1) }
+//       // resolve(res)
 
-      web3.currentProvider.sendAsync({
-        id: id + 1,
-        jsonrpc,
-        method: 'evm_mine'
-      }, (err2: Error, res: any) => {
-        return err2 ? reject(err2) : resolve(res)
-      })
+//       web3.currentProvider.send({
+//         id: new Date().getTime(),
+//         jsonrpc,
+//         method: 'evm_mine'
+//       }, (err2: Error, res: any) => {
+//         return err2 ? reject(err2) : resolve(res)
+//       })
+//     })
+//   })
+// }
+
+const web3 = new Web3('http://127.0.0.1:8545')
+
+export const advanceTime = (time: number) => {
+  return new Promise((resolve, reject) => {
+    web3.currentProvider.send({
+      jsonrpc: '2.0',
+      method: 'evm_increaseTime',
+      params: [time],
+      id: new Date().getTime()
+    }, (err: Error, result: any) => {
+      if (err) { return reject(err) }
+      return resolve(result)
     })
   })
+}
+
+export const advanceBlock = () => {
+  return new Promise((resolve, reject) => {
+    web3.currentProvider.send({
+      jsonrpc: '2.0',
+      method: 'evm_mine',
+      id: new Date().getTime()
+    }, (err: Error, result: any) => {
+      if (err) { return reject(err) }
+      const newBlockHash = web3.eth.getBlock('latest').hash
+
+      return resolve(newBlockHash)
+    })
+  })
+}
+
+export const takeSnapshot = () => {
+  return new Promise((resolve, reject) => {
+    web3.currentProvider.send({
+      jsonrpc: '2.0',
+      method: 'evm_snapshot',
+      id: new Date().getTime()
+    }, (err: Error, snapshotId: string) => {
+      if (err) { return reject(err) }
+      return resolve(snapshotId)
+    })
+  })
+}
+
+export const revertToSnapShot = (id: string) => {
+  return new Promise((resolve, reject) => {
+    web3.currentProvider.send({
+      id: new Date().getTime(),
+      jsonrpc: '2.0',
+      method: 'evm_revert',
+      params: [id]
+    }, (err: Error, result: any) => {
+      if (err) { return reject(err) }
+      return resolve(result)
+    })
+  })
+}
+
+export const advanceTimeAndBlock = async (time: number) => {
+  await advanceTime(time)
+  await advanceBlock()
+  return Promise.resolve(web3.eth.getBlock('latest'))
 }
 
 export async function firstResult(observable: Observable<any>) {

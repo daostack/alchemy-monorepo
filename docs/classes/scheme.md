@@ -6,7 +6,9 @@ A Scheme represents a scheme instance that is registered at a DAO
 
 ## Hierarchy
 
-* **Scheme**
+* [SchemeBase](schemebase.md)
+
+  ↳ **Scheme**
 
 ## Implements
 
@@ -28,25 +30,35 @@ A Scheme represents a scheme instance that is registered at a DAO
 ### Methods
 
 * [createProposal](scheme.md#createproposal)
+* [createProposalErrorHandler](scheme.md#createproposalerrorhandler)
+* [createProposalTransaction](scheme.md#createproposaltransaction)
+* [createProposalTransactionMap](scheme.md#createproposaltransactionmap)
 * [fetchStaticState](scheme.md#fetchstaticstate)
 * [proposals](scheme.md#proposals)
 * [setStaticState](scheme.md#setstaticstate)
 * [state](scheme.md#state)
+* [x](scheme.md#x)
 * [search](scheme.md#static-search)
+
+### Object literals
+
+* [fragments](scheme.md#static-fragments)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new Scheme**(`idOrOpts`: [Address](../globals.md#address) | [ISchemeStaticState](../interfaces/ischemestaticstate.md), `context`: [Arc](arc.md)): *[Scheme](scheme.md)*
+\+ **new Scheme**(`idOrOpts`: [Address](../globals.md#address) | ISchemeStaticState, `context`: [Arc](arc.md)): *[Scheme](scheme.md)*
 
-*Defined in [scheme.ts:156](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L156)*
+*Overrides [SchemeBase](schemebase.md).[constructor](schemebase.md#constructor)*
+
+*Defined in [scheme.ts:181](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L181)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`idOrOpts` | [Address](../globals.md#address) &#124; [ISchemeStaticState](../interfaces/ischemestaticstate.md) |
+`idOrOpts` | [Address](../globals.md#address) &#124; ISchemeStaticState |
 `context` | [Arc](arc.md) |
 
 **Returns:** *[Scheme](scheme.md)*
@@ -57,7 +69,9 @@ Name | Type |
 
 • **ReputationFromToken**: *[ReputationFromTokenScheme](reputationfromtokenscheme.md) | null* =  null
 
-*Defined in [scheme.ts:156](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L156)*
+*Overrides [SchemeBase](schemebase.md).[ReputationFromToken](schemebase.md#reputationfromtoken)*
+
+*Defined in [scheme.ts:181](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L181)*
 
 ___
 
@@ -65,7 +79,9 @@ ___
 
 • **context**: *[Arc](arc.md)*
 
-*Defined in [scheme.ts:158](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L158)*
+*Overrides [SchemeBase](schemebase.md).[context](schemebase.md#context)*
+
+*Defined in [scheme.ts:183](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L183)*
 
 ___
 
@@ -73,15 +89,19 @@ ___
 
 • **id**: *[Address](../globals.md#address)*
 
-*Defined in [scheme.ts:154](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L154)*
+*Overrides [SchemeBase](schemebase.md).[id](schemebase.md#id)*
+
+*Defined in [scheme.ts:179](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L179)*
 
 ___
 
 ###  staticState
 
-• **staticState**: *[ISchemeStaticState](../interfaces/ischemestaticstate.md) | null* =  null
+• **staticState**: *ISchemeStaticState | null* =  null
 
-*Defined in [scheme.ts:155](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L155)*
+*Overrides [SchemeBase](schemebase.md).[staticState](schemebase.md#staticstate)*
+
+*Defined in [scheme.ts:180](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L180)*
 
 ## Methods
 
@@ -89,10 +109,11 @@ ___
 
 ▸ **createProposal**(`options`: [IProposalCreateOptions](../globals.md#iproposalcreateoptions)): *[Operation](../globals.md#operation)‹[Proposal](proposal.md)›*
 
-*Defined in [scheme.ts:371](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L371)*
+*Overrides [SchemeBase](schemebase.md).[createProposal](schemebase.md#createproposal)*
 
-create a new proposal in this DAO
-TODO: move this to the schemes - we should call proposal.scheme.createProposal
+*Defined in [scheme.ts:285](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L285)*
+
+create a new proposal in this Scheme
 
 **Parameters:**
 
@@ -106,11 +127,84 @@ a Proposal instance
 
 ___
 
+###  createProposalErrorHandler
+
+▸ **createProposalErrorHandler**(`options?`: any): *function*
+
+*Inherited from [SchemeBase](schemebase.md).[createProposalErrorHandler](schemebase.md#createproposalerrorhandler)*
+
+*Defined in [schemes/base.ts:296](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L296)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`options?` | any |
+
+**Returns:** *function*
+
+▸ (`err`: Error): *Error | Promise‹Error›*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`err` | Error |
+
+___
+
+###  createProposalTransaction
+
+▸ **createProposalTransaction**(`options`: any): *function*
+
+*Inherited from [SchemeBase](schemebase.md).[createProposalTransaction](schemebase.md#createproposaltransaction)*
+
+*Defined in [schemes/base.ts:288](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L288)*
+
+create a new proposal in this scheme
+TODO: move this to the schemes - we should call proposal.scheme.createProposal
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`options` | any |
+
+**Returns:** *function*
+
+a Proposal instance
+
+▸ (): *Promise‹any›*
+
+___
+
+###  createProposalTransactionMap
+
+▸ **createProposalTransactionMap**(): *function*
+
+*Inherited from [SchemeBase](schemebase.md).[createProposalTransactionMap](schemebase.md#createproposaltransactionmap)*
+
+*Defined in [schemes/base.ts:292](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L292)*
+
+**Returns:** *function*
+
+▸ (`receipt`: any): *any*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`receipt` | any |
+
+___
+
 ###  fetchStaticState
 
 ▸ **fetchStaticState**(): *Promise‹[ISchemeStaticState](../interfaces/ischemestaticstate.md)›*
 
-*Defined in [scheme.ts:177](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L177)*
+*Inherited from [SchemeBase](schemebase.md).[fetchStaticState](schemebase.md#fetchstaticstate)*
+
+*Defined in [schemes/base.ts:256](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L256)*
 
 fetch the static state from the subgraph
 
@@ -124,7 +218,9 @@ ___
 
 ▸ **proposals**(`options`: [IProposalQueryOptions](../interfaces/iproposalqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Proposal](proposal.md)[]›*
 
-*Defined in [scheme.ts:422](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L422)*
+*Overrides [SchemeBase](schemebase.md).[proposals](schemebase.md#proposals)*
+
+*Defined in [scheme.ts:353](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L353)*
 
 **Parameters:**
 
@@ -139,15 +235,17 @@ ___
 
 ###  setStaticState
 
-▸ **setStaticState**(`opts`: [ISchemeStaticState](../interfaces/ischemestaticstate.md)): *void*
+▸ **setStaticState**(`opts`: ISchemeStaticState): *void*
 
-*Defined in [scheme.ts:169](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L169)*
+*Overrides [SchemeBase](schemebase.md).[setStaticState](schemebase.md#setstaticstate)*
+
+*Defined in [scheme.ts:195](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L195)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`opts` | [ISchemeStaticState](../interfaces/ischemestaticstate.md) |
+`opts` | ISchemeStaticState |
 
 **Returns:** *void*
 
@@ -155,9 +253,11 @@ ___
 
 ###  state
 
-▸ **state**(`apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[ISchemeState](../interfaces/ischemestate.md)›*
+▸ **state**(`apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹ISchemeState›*
 
-*Defined in [scheme.ts:200](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L200)*
+*Overrides [SchemeBase](schemebase.md).[state](schemebase.md#abstract-state)*
+
+*Defined in [scheme.ts:199](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L199)*
 
 **Parameters:**
 
@@ -165,15 +265,27 @@ Name | Type | Default |
 ------ | ------ | ------ |
 `apolloQueryOptions` | [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md) |  {} |
 
-**Returns:** *Observable‹[ISchemeState](../interfaces/ischemestate.md)›*
+**Returns:** *Observable‹ISchemeState›*
+
+___
+
+###  x
+
+▸ **x**(): *void*
+
+*Inherited from [SchemeBase](schemebase.md).[x](schemebase.md#x)*
+
+*Defined in [schemes/base.ts:319](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L319)*
+
+**Returns:** *void*
 
 ___
 
 ### `Static` search
 
-▸ **search**(`context`: [Arc](arc.md), `options`: [ISchemeQueryOptions](../interfaces/ischemequeryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Scheme](scheme.md)[]›*
+▸ **search**(`context`: [Arc](arc.md), `options`: ISchemeQueryOptions, `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹Array‹[Scheme](scheme.md) | [CompetitionScheme](competitionscheme.md)››*
 
-*Defined in [scheme.ts:96](https://github.com/daostack/client/blob/0eadcce/src/scheme.ts#L96)*
+*Defined in [scheme.ts:116](https://github.com/daostack/client/blob/aa9723f/src/scheme.ts#L116)*
 
 Scheme.search(context, options) searches for scheme entities
 
@@ -182,9 +294,152 @@ Scheme.search(context, options) searches for scheme entities
 Name | Type | Default | Description |
 ------ | ------ | ------ | ------ |
 `context` | [Arc](arc.md) | - | an Arc instance that provides connection information |
-`options` | [ISchemeQueryOptions](../interfaces/ischemequeryoptions.md) |  {} | the query options, cf. ISchemeQueryOptions |
+`options` | ISchemeQueryOptions |  {} | the query options, cf. ISchemeQueryOptions |
 `apolloQueryOptions` | [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md) |  {} | - |
 
-**Returns:** *Observable‹[Scheme](scheme.md)[]›*
+**Returns:** *Observable‹Array‹[Scheme](scheme.md) | [CompetitionScheme](competitionscheme.md)››*
 
 an observable of Scheme objects
+
+## Object literals
+
+### `Static` fragments
+
+### ▪ **fragments**: *object*
+
+*Inherited from [SchemeBase](schemebase.md).[fragments](schemebase.md#static-fragments)*
+
+*Defined in [schemes/base.ts:106](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L106)*
+
+###  SchemeFields
+
+• **SchemeFields**: *any* =  gql`
+    fragment SchemeFields on ControllerScheme {
+      id
+      address
+      name
+      dao { id }
+      canDelegateCall
+      canRegisterSchemes
+      canUpgradeController
+      canManageGlobalConstraints
+      paramsHash
+      contributionRewardParams {
+        id
+        votingMachine
+        voteParams {
+          id
+          queuedVoteRequiredPercentage
+          queuedVotePeriodLimit
+          boostedVotePeriodLimit
+          preBoostedVotePeriodLimit
+          thresholdConst
+          limitExponentValue
+          quietEndingPeriod
+          proposingRepReward
+          votersReputationLossRatio
+          minimumDaoBounty
+          daoBountyConst
+          activationTime
+          voteOnBehalf
+        }
+      }
+      contributionRewardExtParams {
+        id
+        votingMachine
+        voteParams {
+          id
+          queuedVoteRequiredPercentage
+          queuedVotePeriodLimit
+          boostedVotePeriodLimit
+          preBoostedVotePeriodLimit
+          thresholdConst
+          limitExponentValue
+          quietEndingPeriod
+          proposingRepReward
+          votersReputationLossRatio
+          minimumDaoBounty
+          daoBountyConst
+          activationTime
+          voteOnBehalf
+        }
+        rewarder
+      }
+      genericSchemeParams {
+        votingMachine
+        contractToCall
+        voteParams {
+          queuedVoteRequiredPercentage
+          queuedVotePeriodLimit
+          boostedVotePeriodLimit
+          preBoostedVotePeriodLimit
+          thresholdConst
+          limitExponentValue
+          quietEndingPeriod
+          proposingRepReward
+          votersReputationLossRatio
+          minimumDaoBounty
+          daoBountyConst
+          activationTime
+          voteOnBehalf
+        }
+      }
+      schemeRegistrarParams {
+        votingMachine
+        voteRemoveParams {
+          queuedVoteRequiredPercentage
+          queuedVotePeriodLimit
+          boostedVotePeriodLimit
+          preBoostedVotePeriodLimit
+          thresholdConst
+          limitExponentValue
+          quietEndingPeriod
+          proposingRepReward
+          votersReputationLossRatio
+          minimumDaoBounty
+          daoBountyConst
+          activationTime
+          voteOnBehalf
+        }
+        voteRegisterParams {
+          queuedVoteRequiredPercentage
+          queuedVotePeriodLimit
+          boostedVotePeriodLimit
+          preBoostedVotePeriodLimit
+          thresholdConst
+          limitExponentValue
+          quietEndingPeriod
+          proposingRepReward
+          votersReputationLossRatio
+          minimumDaoBounty
+          daoBountyConst
+          activationTime
+          voteOnBehalf
+        }
+      }
+      numberOfQueuedProposals
+      numberOfPreBoostedProposals
+      numberOfBoostedProposals
+      uGenericSchemeParams {
+        votingMachine
+        contractToCall
+        voteParams {
+          queuedVoteRequiredPercentage
+          queuedVotePeriodLimit
+          boostedVotePeriodLimit
+          preBoostedVotePeriodLimit
+          thresholdConst
+          limitExponentValue
+          quietEndingPeriod
+          proposingRepReward
+          votersReputationLossRatio
+          minimumDaoBounty
+          daoBountyConst
+          activationTime
+          voteOnBehalf
+        }
+      }
+      version
+    }`
+
+*Defined in [schemes/base.ts:107](https://github.com/daostack/client/blob/aa9723f/src/schemes/base.ts#L107)*

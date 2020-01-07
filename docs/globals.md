@@ -15,7 +15,12 @@
 ### Classes
 
 * [Arc](classes/arc.md)
+* [Competition](classes/competition.md)
+* [CompetitionScheme](classes/competitionscheme.md)
+* [CompetitionSuggestion](classes/competitionsuggestion.md)
+* [CompetitionVote](classes/competitionvote.md)
 * [DAO](classes/dao.md)
+* [Event](classes/event.md)
 * [GraphNodeObserver](classes/graphnodeobserver.md)
 * [Member](classes/member.md)
 * [Proposal](classes/proposal.md)
@@ -24,7 +29,9 @@
 * [ReputationFromTokenScheme](classes/reputationfromtokenscheme.md)
 * [Reward](classes/reward.md)
 * [Scheme](classes/scheme.md)
+* [SchemeBase](classes/schemebase.md)
 * [Stake](classes/stake.md)
+* [Tag](classes/tag.md)
 * [Token](classes/token.md)
 * [Vote](classes/vote.md)
 
@@ -34,14 +41,26 @@
 * [IApolloQueryOptions](interfaces/iapolloqueryoptions.md)
 * [IApproval](interfaces/iapproval.md)
 * [ICommonQueryOptions](interfaces/icommonqueryoptions.md)
+* [ICompetitionProposal](interfaces/icompetitionproposal.md)
+* [ICompetitionSuggestion](interfaces/icompetitionsuggestion.md)
+* [ICompetitionSuggestionQueryOptions](interfaces/icompetitionsuggestionqueryoptions.md)
+* [ICompetitionVote](interfaces/icompetitionvote.md)
+* [ICompetitionVoteQueryOptions](interfaces/icompetitionvotequeryoptions.md)
 * [IContractAddresses](interfaces/icontractaddresses.md)
 * [IContractInfo](interfaces/icontractinfo.md)
 * [IContributionReward](interfaces/icontributionreward.md)
+* [IContributionRewardExt](interfaces/icontributionrewardext.md)
+* [IContributionRewardExtParams](interfaces/icontributionrewardextparams.md)
+* [IContributionRewardParams](interfaces/icontributionrewardparams.md)
 * [IDAOQueryOptions](interfaces/idaoqueryoptions.md)
 * [IDAOState](interfaces/idaostate.md)
 * [IDAOStaticState](interfaces/idaostaticstate.md)
+* [IEventQueryOptions](interfaces/ieventqueryoptions.md)
+* [IEventState](interfaces/ieventstate.md)
+* [IEventStaticState](interfaces/ieventstaticstate.md)
 * [IGenericScheme](interfaces/igenericscheme.md)
 * [IGenericSchemeInfo](interfaces/igenericschemeinfo.md)
+* [IGenericSchemeParams](interfaces/igenericschemeparams.md)
 * [IGenesisProtocolParams](interfaces/igenesisprotocolparams.md)
 * [IMemberQueryOptions](interfaces/imemberqueryoptions.md)
 * [IMemberState](interfaces/imemberstate.md)
@@ -50,6 +69,8 @@
 * [IOperationObservable](interfaces/ioperationobservable.md)
 * [IProposalBaseCreateOptions](interfaces/iproposalbasecreateoptions.md)
 * [IProposalCreateOptionsCR](interfaces/iproposalcreateoptionscr.md)
+* [IProposalCreateOptionsCompetition](interfaces/iproposalcreateoptionscompetition.md)
+* [IProposalCreateOptionsContributionRewardExt](interfaces/iproposalcreateoptionscontributionrewardext.md)
 * [IProposalCreateOptionsGS](interfaces/iproposalcreateoptionsgs.md)
 * [IProposalCreateOptionsSR](interfaces/iproposalcreateoptionssr.md)
 * [IProposalQueryOptions](interfaces/iproposalqueryoptions.md)
@@ -62,7 +83,9 @@
 * [IReputationState](interfaces/ireputationstate.md)
 * [IRewardQueryOptions](interfaces/irewardqueryoptions.md)
 * [IRewardState](interfaces/irewardstate.md)
+* [IRewardStaticState](interfaces/irewardstaticstate.md)
 * [ISchemeQueryOptions](interfaces/ischemequeryoptions.md)
+* [ISchemeRegisterParams](interfaces/ischemeregisterparams.md)
 * [ISchemeRegistrar](interfaces/ischemeregistrar.md)
 * [ISchemeState](interfaces/ischemestate.md)
 * [ISchemeStaticState](interfaces/ischemestaticstate.md)
@@ -70,6 +93,9 @@
 * [IStakeState](interfaces/istakestate.md)
 * [IStakeStaticState](interfaces/istakestaticstate.md)
 * [IStateful](interfaces/istateful.md)
+* [ITagQueryOptions](interfaces/itagqueryoptions.md)
+* [ITagState](interfaces/itagstate.md)
+* [ITagStaticState](interfaces/itagstaticstate.md)
 * [ITokenQueryOptions](interfaces/itokenqueryoptions.md)
 * [ITokenState](interfaces/itokenstate.md)
 * [ITransactionUpdate](interfaces/itransactionupdate.md)
@@ -95,7 +121,7 @@
 
 ### Variables
 
-* [BN](globals.md#const-bn)
+* [ABI_DIR](globals.md#const-abi_dir)
 * [DAOTOKEN_CONTRACT_VERSION](globals.md#const-daotoken_contract_version)
 * [IPFSClient](globals.md#const-ipfsclient)
 * [LATEST_ARC_VERSION](globals.md#const-latest_arc_version)
@@ -110,15 +136,22 @@
 * [concat](globals.md#concat)
 * [createApolloClient](globals.md#createapolloclient)
 * [createGraphQlQuery](globals.md#creategraphqlquery)
+* [createGraphQlWhereQuery](globals.md#creategraphqlwherequery)
+* [createProposal](globals.md#createproposal)
 * [createTransaction](globals.md#createtransaction)
 * [createTransactionMap](globals.md#createtransactionmap)
+* [dateToSecondsSinceEpoch](globals.md#datetosecondssinceepoch)
 * [eventId](globals.md#eventid)
 * [fromWei](globals.md#fromwei)
-* [getContractAddressesFromMigration](globals.md#getcontractaddressesfrommigration)
+* [getBlockTime](globals.md#getblocktime)
+* [getCompetitionContract](globals.md#getcompetitioncontract)
+* [hasCompetitionContract](globals.md#hascompetitioncontract)
 * [hexStringToUint8Array](globals.md#hexstringtouint8array)
 * [isAddress](globals.md#isaddress)
+* [isCompetitionScheme](globals.md#iscompetitionscheme)
 * [mapGenesisProtocolParams](globals.md#mapgenesisprotocolparams)
 * [realMathToNumber](globals.md#realmathtonumber)
+* [secondSinceEpochToDate](globals.md#secondsinceepochtodate)
 * [sendTransaction](globals.md#sendtransaction)
 * [toIOperationObservable](globals.md#toioperationobservable)
 * [toWei](globals.md#towei)
@@ -134,7 +167,7 @@
 
 Ƭ **Address**: *string*
 
-*Defined in [types.ts:3](https://github.com/daostack/client/blob/0eadcce/src/types.ts#L3)*
+*Defined in [types.ts:4](https://github.com/daostack/client/blob/aa9723f/src/types.ts#L4)*
 
 ___
 
@@ -142,7 +175,7 @@ ___
 
 Ƭ **Date**: *number*
 
-*Defined in [types.ts:4](https://github.com/daostack/client/blob/0eadcce/src/types.ts#L4)*
+*Defined in [types.ts:5](https://github.com/daostack/client/blob/aa9723f/src/types.ts#L5)*
 
 ___
 
@@ -150,7 +183,7 @@ ___
 
 Ƭ **EthereumEvent**: *any*
 
-*Defined in [utils.ts:60](https://github.com/daostack/client/blob/0eadcce/src/utils.ts#L60)*
+*Defined in [utils.ts:59](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L59)*
 
 ___
 
@@ -158,7 +191,7 @@ ___
 
 Ƭ **Hash**: *string*
 
-*Defined in [types.ts:5](https://github.com/daostack/client/blob/0eadcce/src/types.ts#L5)*
+*Defined in [types.ts:6](https://github.com/daostack/client/blob/aa9723f/src/types.ts#L6)*
 
 ___
 
@@ -166,15 +199,15 @@ ___
 
 Ƭ **IPFSProvider**: *string | object*
 
-*Defined in [types.ts:21](https://github.com/daostack/client/blob/0eadcce/src/types.ts#L21)*
+*Defined in [types.ts:22](https://github.com/daostack/client/blob/aa9723f/src/types.ts#L22)*
 
 ___
 
 ###  IProposalCreateOptions
 
-Ƭ **IProposalCreateOptions**: *[IProposalBaseCreateOptions](interfaces/iproposalbasecreateoptions.md) & [IProposalCreateOptionsGS](interfaces/iproposalcreateoptionsgs.md) | [IProposalBaseCreateOptions](interfaces/iproposalbasecreateoptions.md) & [IProposalCreateOptionsSR](interfaces/iproposalcreateoptionssr.md) | [IProposalBaseCreateOptions](interfaces/iproposalbasecreateoptions.md) & [IProposalCreateOptionsCR](interfaces/iproposalcreateoptionscr.md)*
+Ƭ **IProposalCreateOptions**: *[IProposalBaseCreateOptions](interfaces/iproposalbasecreateoptions.md) & [IProposalCreateOptionsGS](interfaces/iproposalcreateoptionsgs.md) | [IProposalBaseCreateOptions](interfaces/iproposalbasecreateoptions.md) & [IProposalCreateOptionsSR](interfaces/iproposalcreateoptionssr.md) | [IProposalBaseCreateOptions](interfaces/iproposalbasecreateoptions.md) & [IProposalCreateOptionsCR](interfaces/iproposalcreateoptionscr.md) | [IProposalCreateOptionsContributionRewardExt](interfaces/iproposalcreateoptionscontributionrewardext.md) | [IProposalCreateOptionsCompetition](interfaces/iproposalcreateoptionscompetition.md)*
 
-*Defined in [proposal.ts:848](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L848)*
+*Defined in [proposal.ts:895](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L895)*
 
 ___
 
@@ -182,7 +215,7 @@ ___
 
 Ƭ **IProposalType**: *[ContributionReward](globals.md#contributionreward) | [GenericScheme](globals.md#genericscheme) | [SchemeRegistrarAdd](globals.md#schemeregistraradd) | [SchemeRegistrarEdit](globals.md#schemeregistraredit) | [SchemeRegistrarRemove](globals.md#schemeregistrarremove)*
 
-*Defined in [proposal.ts:29](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L29)*
+*Defined in [proposal.ts:31](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L31)*
 
 ___
 
@@ -190,7 +223,7 @@ ___
 
 Ƭ **Operation**: *[IOperationObservable](interfaces/ioperationobservable.md)‹[ITransactionUpdate](interfaces/itransactionupdate.md)‹T››*
 
-*Defined in [operation.ts:39](https://github.com/daostack/client/blob/0eadcce/src/operation.ts#L39)*
+*Defined in [operation.ts:38](https://github.com/daostack/client/blob/aa9723f/src/operation.ts#L38)*
 
 ___
 
@@ -198,7 +231,7 @@ ___
 
 Ƭ **Web3Provider**: *string | object*
 
-*Defined in [types.ts:7](https://github.com/daostack/client/blob/0eadcce/src/types.ts#L7)*
+*Defined in [types.ts:8](https://github.com/daostack/client/blob/aa9723f/src/types.ts#L8)*
 
 ___
 
@@ -206,7 +239,7 @@ ___
 
 Ƭ **Web3Receipt**: *any*
 
-*Defined in [types.ts:6](https://github.com/daostack/client/blob/0eadcce/src/types.ts#L6)*
+*Defined in [types.ts:7](https://github.com/daostack/client/blob/aa9723f/src/types.ts#L7)*
 
 ___
 
@@ -214,15 +247,15 @@ ___
 
 Ƭ **web3receipt**: *object*
 
-*Defined in [operation.ts:41](https://github.com/daostack/client/blob/0eadcce/src/operation.ts#L41)*
+*Defined in [operation.ts:40](https://github.com/daostack/client/blob/aa9723f/src/operation.ts#L40)*
 
 ## Variables
 
-### `Const` BN
+### `Const` ABI_DIR
 
-• **BN**: *any* =  require('bn.js')
+• **ABI_DIR**: *"./abis"* = "./abis"
 
-*Defined in [utils.ts:7](https://github.com/daostack/client/blob/0eadcce/src/utils.ts#L7)*
+*Defined in [settings.ts:8](https://github.com/daostack/client/blob/aa9723f/src/settings.ts#L8)*
 
 ___
 
@@ -230,7 +263,7 @@ ___
 
 • **DAOTOKEN_CONTRACT_VERSION**: *"0.0.1-rc.19"* = "0.0.1-rc.19"
 
-*Defined in [settings.ts:5](https://github.com/daostack/client/blob/0eadcce/src/settings.ts#L5)*
+*Defined in [settings.ts:5](https://github.com/daostack/client/blob/aa9723f/src/settings.ts#L5)*
 
 ___
 
@@ -238,7 +271,7 @@ ___
 
 • **IPFSClient**: *any* =  require('ipfs-http-client')
 
-*Defined in [arc.ts:15](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L15)*
+*Defined in [arc.ts:18](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L18)*
 
 ___
 
@@ -246,7 +279,7 @@ ___
 
 • **LATEST_ARC_VERSION**: *"0.0.1-rc.19"* = "0.0.1-rc.19"
 
-*Defined in [settings.ts:6](https://github.com/daostack/client/blob/0eadcce/src/settings.ts#L6)*
+*Defined in [settings.ts:6](https://github.com/daostack/client/blob/aa9723f/src/settings.ts#L6)*
 
 ___
 
@@ -254,15 +287,15 @@ ___
 
 • **NULL_ADDRESS**: *"0x0000000000000000000000000000000000000000"* = "0x0000000000000000000000000000000000000000"
 
-*Defined in [utils.ts:158](https://github.com/daostack/client/blob/0eadcce/src/utils.ts#L158)*
+*Defined in [utils.ts:97](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L97)*
 
 ___
 
 ### `Const` REDEEMER_CONTRACT_VERSION
 
-• **REDEEMER_CONTRACT_VERSION**: *"0.0.1-rc.22"* = "0.0.1-rc.22"
+• **REDEEMER_CONTRACT_VERSION**: *"0.0.1-rc.36"* = "0.0.1-rc.36"
 
-*Defined in [settings.ts:2](https://github.com/daostack/client/blob/0eadcce/src/settings.ts#L2)*
+*Defined in [settings.ts:2](https://github.com/daostack/client/blob/aa9723f/src/settings.ts#L2)*
 
 ___
 
@@ -270,7 +303,7 @@ ___
 
 • **REPUTATION_CONTRACT_VERSION**: *"0.0.1-rc.19"* = "0.0.1-rc.19"
 
-*Defined in [settings.ts:4](https://github.com/daostack/client/blob/0eadcce/src/settings.ts#L4)*
+*Defined in [settings.ts:4](https://github.com/daostack/client/blob/aa9723f/src/settings.ts#L4)*
 
 ___
 
@@ -278,9 +311,11 @@ ___
 
 • **Web3**: *any* =  require('web3')
 
-*Defined in [utils.ts:6](https://github.com/daostack/client/blob/0eadcce/src/utils.ts#L6)*
+*Defined in [utils.ts:5](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L5)*
 
-*Defined in [arc.ts:16](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L16)*
+*Defined in [schemes/competition.ts:20](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L20)*
+
+*Defined in [arc.ts:19](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L19)*
 
 ## Functions
 
@@ -288,7 +323,7 @@ ___
 
 ▸ **checkWebsocket**(`options`: object): *void*
 
-*Defined in [utils.ts:17](https://github.com/daostack/client/blob/0eadcce/src/utils.ts#L17)*
+*Defined in [utils.ts:16](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L16)*
 
 **Parameters:**
 
@@ -306,7 +341,7 @@ ___
 
 ▸ **concat**(`a`: Uint8Array, `b`: Uint8Array): *Uint8Array*
 
-*Defined in [utils.ts:48](https://github.com/daostack/client/blob/0eadcce/src/utils.ts#L48)*
+*Defined in [utils.ts:47](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L47)*
 
 **Parameters:**
 
@@ -323,7 +358,7 @@ ___
 
 ▸ **createApolloClient**(`options`: object): *ApolloClient‹NormalizedCacheObject›*
 
-*Defined in [graphnode.ts:26](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L26)*
+*Defined in [graphnode.ts:26](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L26)*
 
 **Parameters:**
 
@@ -343,7 +378,7 @@ ___
 
 ▸ **createGraphQlQuery**(`options`: [ICommonQueryOptions](interfaces/icommonqueryoptions.md), `where`: string): *string*
 
-*Defined in [utils.ts:187](https://github.com/daostack/client/blob/0eadcce/src/utils.ts#L187)*
+*Defined in [utils.ts:109](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L109)*
 
 creates a string to be plugsging into a graphql query
 
@@ -363,11 +398,44 @@ Name | Type | Default |
 
 ___
 
+###  createGraphQlWhereQuery
+
+▸ **createGraphQlWhereQuery**(`where?`: undefined | object): *string*
+
+*Defined in [utils.ts:139](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L139)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`where?` | undefined &#124; object |
+
+**Returns:** *string*
+
+___
+
+###  createProposal
+
+▸ **createProposal**(`options`: any, `context`: [Arc](classes/arc.md)): *(Anonymous function)*
+
+*Defined in [schemes/contributionReward.ts:37](https://github.com/daostack/client/blob/aa9723f/src/schemes/contributionReward.ts#L37)*
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`options` | any | - |
+`context` | [Arc](classes/arc.md) |   |
+
+**Returns:** *(Anonymous function)*
+
+___
+
 ###  createTransaction
 
 ▸ **createTransaction**(`options`: any, `context`: [Arc](classes/arc.md)): *(Anonymous function)*
 
-*Defined in [schemes/contributionReward.ts:37](https://github.com/daostack/client/blob/0eadcce/src/schemes/contributionReward.ts#L37)*
+*Defined in [schemes/genericScheme.ts:28](https://github.com/daostack/client/blob/aa9723f/src/schemes/genericScheme.ts#L28)*
 
 **Parameters:**
 
@@ -384,7 +452,7 @@ ___
 
 ▸ **createTransactionMap**(`options`: any, `context`: [Arc](classes/arc.md)): *map*
 
-*Defined in [schemes/contributionReward.ts:61](https://github.com/daostack/client/blob/0eadcce/src/schemes/contributionReward.ts#L61)*
+*Defined in [schemes/contributionReward.ts:61](https://github.com/daostack/client/blob/aa9723f/src/schemes/contributionReward.ts#L61)*
 
 map the transaction receipt of the createTransaction call to a nice result
 map the transaction receipt of the createTransaction call to a nice result
@@ -401,11 +469,27 @@ Name | Type | Description |
 
 ___
 
+###  dateToSecondsSinceEpoch
+
+▸ **dateToSecondsSinceEpoch**(`date`: Date): *number*
+
+*Defined in [utils.ts:164](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L164)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`date` | Date |
+
+**Returns:** *number*
+
+___
+
 ###  eventId
 
 ▸ **eventId**(`event`: [EthereumEvent](globals.md#ethereumevent)): *string*
 
-*Defined in [utils.ts:62](https://github.com/daostack/client/blob/0eadcce/src/utils.ts#L62)*
+*Defined in [utils.ts:61](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L61)*
 
 **Parameters:**
 
@@ -419,41 +503,82 @@ ___
 
 ###  fromWei
 
-▸ **fromWei**(`amount`: any): *string*
+▸ **fromWei**(`amount`: BN): *string*
 
-*Defined in [utils.ts:9](https://github.com/daostack/client/blob/0eadcce/src/utils.ts#L9)*
+*Defined in [utils.ts:8](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L8)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`amount` | any |
+`amount` | BN |
 
 **Returns:** *string*
 
 ___
 
-###  getContractAddressesFromMigration
+###  getBlockTime
 
-▸ **getContractAddressesFromMigration**(`environment`: "private" | "rinkeby" | "mainnet"): *[IContractInfo](interfaces/icontractinfo.md)[]*
+▸ **getBlockTime**(`web3`: any): *Promise‹any›*
 
-*Defined in [utils.ts:160](https://github.com/daostack/client/blob/0eadcce/src/utils.ts#L160)*
+*Defined in [utils.ts:184](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L184)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`environment` | "private" &#124; "rinkeby" &#124; "mainnet" |
+`web3` | any |
 
-**Returns:** *[IContractInfo](interfaces/icontractinfo.md)[]*
+**Returns:** *Promise‹any›*
+
+___
+
+###  getCompetitionContract
+
+▸ **getCompetitionContract**(`schemeState`: [ISchemeState](interfaces/ischemestate.md), `arc`: [Arc](classes/arc.md)): *any*
+
+*Defined in [schemes/competition.ts:718](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L718)*
+
+If this scheme is a ContributionREwardExt scheme and if
+its rewarder is Competition contract, return that contract
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`schemeState` | [ISchemeState](interfaces/ischemestate.md) |
+`arc` | [Arc](classes/arc.md) |
+
+**Returns:** *any*
+
+A Web3 contract instance
+
+___
+
+###  hasCompetitionContract
+
+▸ **hasCompetitionContract**(`schemeState`: [ISchemeState](interfaces/ischemestate.md), `arc`: [Arc](classes/arc.md)): *boolean*
+
+*Defined in [schemes/competition.ts:746](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L746)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`schemeState` | [ISchemeState](interfaces/ischemestate.md) |
+`arc` | [Arc](classes/arc.md) |
+
+**Returns:** *boolean*
+
+true if this is a ContributionRewardExt scheme and the rewarder of this scheme is a competition contract
 
 ___
 
 ###  hexStringToUint8Array
 
-▸ **hexStringToUint8Array**(`hexString`: string): *Uint8Array*
+▸ **hexStringToUint8Array**(`hexString`: string): *Uint8Array‹›*
 
-*Defined in [utils.ts:39](https://github.com/daostack/client/blob/0eadcce/src/utils.ts#L39)*
+*Defined in [utils.ts:38](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L38)*
 
 **Parameters:**
 
@@ -461,7 +586,7 @@ Name | Type |
 ------ | ------ |
 `hexString` | string |
 
-**Returns:** *Uint8Array*
+**Returns:** *Uint8Array‹›*
 
 ___
 
@@ -469,7 +594,7 @@ ___
 
 ▸ **isAddress**(`address`: [Address](globals.md#address)): *void*
 
-*Defined in [utils.ts:67](https://github.com/daostack/client/blob/0eadcce/src/utils.ts#L67)*
+*Defined in [utils.ts:66](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L66)*
 
 **Parameters:**
 
@@ -481,11 +606,28 @@ Name | Type |
 
 ___
 
+###  isCompetitionScheme
+
+▸ **isCompetitionScheme**(`arc`: [Arc](classes/arc.md), `item`: any): *boolean*
+
+*Defined in [schemes/competition.ts:734](https://github.com/daostack/client/blob/aa9723f/src/schemes/competition.ts#L734)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`arc` | [Arc](classes/arc.md) |
+`item` | any |
+
+**Returns:** *boolean*
+
+___
+
 ###  mapGenesisProtocolParams
 
 ▸ **mapGenesisProtocolParams**(`params`: [IGenesisProtocolParams](interfaces/igenesisprotocolparams.md)): *object*
 
-*Defined in [genesisProtocol.ts:18](https://github.com/daostack/client/blob/0eadcce/src/genesisProtocol.ts#L18)*
+*Defined in [genesisProtocol.ts:19](https://github.com/daostack/client/blob/aa9723f/src/genesisProtocol.ts#L19)*
 
 **Parameters:**
 
@@ -503,11 +645,11 @@ Name | Type |
 
 * **limitExponentValue**: *number* =  Number(params.limitExponentValue)
 
-* **minimumDaoBounty**: *any* =  new BN(params.minimumDaoBounty)
+* **minimumDaoBounty**: *BN‹›* =  new BN(params.minimumDaoBounty)
 
 * **preBoostedVotePeriodLimit**: *number* =  Number(params.preBoostedVotePeriodLimit)
 
-* **proposingRepReward**: *any* =  new BN(params.proposingRepReward)
+* **proposingRepReward**: *BN‹›* =  new BN(params.proposingRepReward)
 
 * **queuedVotePeriodLimit**: *number* =  Number(params.queuedVotePeriodLimit)
 
@@ -523,9 +665,9 @@ ___
 
 ###  realMathToNumber
 
-▸ **realMathToNumber**(`t`: any): *number*
+▸ **realMathToNumber**(`t`: BN): *number*
 
-*Defined in [utils.ts:152](https://github.com/daostack/client/blob/0eadcce/src/utils.ts#L152)*
+*Defined in [utils.ts:91](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L91)*
 
 convert the number representation of RealMath.sol representations to real real numbers
 
@@ -533,7 +675,7 @@ convert the number representation of RealMath.sol representations to real real n
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`t` | any | a BN instance of a real number in the RealMath representation |
+`t` | BN | a BN instance of a real number in the RealMath representation |
 
 **Returns:** *number*
 
@@ -541,11 +683,27 @@ a BN
 
 ___
 
+###  secondSinceEpochToDate
+
+▸ **secondSinceEpochToDate**(`seconds`: number): *Date*
+
+*Defined in [utils.ts:172](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L172)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`seconds` | number |
+
+**Returns:** *Date*
+
+___
+
 ###  sendTransaction
 
 ▸ **sendTransaction**<**T**>(`transaction`: any, `mapReceipt`: function, `errorHandler`: function, `context`: [Arc](classes/arc.md)): *[Operation](globals.md#operation)‹T›*
 
-*Defined in [operation.ts:60](https://github.com/daostack/client/blob/0eadcce/src/operation.ts#L60)*
+*Defined in [operation.ts:59](https://github.com/daostack/client/blob/aa9723f/src/operation.ts#L59)*
 
 send a transaction to the ethereumblockchain, and return a observable of ITransactionUpdatessend
 for example:
@@ -605,7 +763,7 @@ ___
 
 ▸ **toIOperationObservable**<**T**>(`observable`: Observable‹T›): *[IOperationObservable](interfaces/ioperationobservable.md)‹T›*
 
-*Defined in [operation.ts:168](https://github.com/daostack/client/blob/0eadcce/src/operation.ts#L168)*
+*Defined in [operation.ts:180](https://github.com/daostack/client/blob/aa9723f/src/operation.ts#L180)*
 
 **Type parameters:**
 
@@ -623,9 +781,9 @@ ___
 
 ###  toWei
 
-▸ **toWei**(`amount`: string | number): *any*
+▸ **toWei**(`amount`: string | number): *BN*
 
-*Defined in [utils.ts:13](https://github.com/daostack/client/blob/0eadcce/src/utils.ts#L13)*
+*Defined in [utils.ts:12](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L12)*
 
 **Parameters:**
 
@@ -633,7 +791,7 @@ Name | Type |
 ------ | ------ |
 `amount` | string &#124; number |
 
-**Returns:** *any*
+**Returns:** *BN*
 
 ___
 
@@ -641,7 +799,7 @@ ___
 
 ▸ **zenToRxjsObservable**(`zenObservable`: ZenObservable‹any›): *any*
 
-*Defined in [utils.ts:81](https://github.com/daostack/client/blob/0eadcce/src/utils.ts#L81)*
+*Defined in [utils.ts:80](https://github.com/daostack/client/blob/aa9723f/src/utils.ts#L80)*
 
 convert a ZenObservable to an rxjs.Observable
 
@@ -661,44 +819,48 @@ an Observable instance
 
 ### ▪ **IProposalType**: *object*
 
-*Defined in [schemes/contributionReward.ts:33](https://github.com/daostack/client/blob/0eadcce/src/schemes/contributionReward.ts#L33)*
+*Defined in [schemes/contributionReward.ts:33](https://github.com/daostack/client/blob/aa9723f/src/schemes/contributionReward.ts#L33)*
 
-*Defined in [schemes/genericScheme.ts:23](https://github.com/daostack/client/blob/0eadcce/src/schemes/genericScheme.ts#L23)*
+*Defined in [schemes/contributionRewardExt.ts:32](https://github.com/daostack/client/blob/aa9723f/src/schemes/contributionRewardExt.ts#L32)*
 
-*Defined in [schemes/schemeRegistrar.ts:22](https://github.com/daostack/client/blob/0eadcce/src/schemes/schemeRegistrar.ts#L22)*
+*Defined in [schemes/genericScheme.ts:24](https://github.com/daostack/client/blob/aa9723f/src/schemes/genericScheme.ts#L24)*
 
-*Defined in [schemes/uGenericScheme.ts:23](https://github.com/daostack/client/blob/0eadcce/src/schemes/uGenericScheme.ts#L23)*
+*Defined in [schemes/schemeRegistrar.ts:22](https://github.com/daostack/client/blob/aa9723f/src/schemes/schemeRegistrar.ts#L22)*
 
-*Defined in [proposal.ts:23](https://github.com/daostack/client/blob/0eadcce/src/proposal.ts#L23)*
+*Defined in [schemes/uGenericScheme.ts:23](https://github.com/daostack/client/blob/aa9723f/src/schemes/uGenericScheme.ts#L23)*
+
+*Defined in [proposal.ts:25](https://github.com/daostack/client/blob/aa9723f/src/proposal.ts#L25)*
 
 ###  ContributionReward
 
-• **ContributionReward**: = "ContributionReward"
+• **ContributionReward**: = "ContributionRewardExt"
 
-*Defined in [schemes/contributionReward.ts:34](https://github.com/daostack/client/blob/0eadcce/src/schemes/contributionReward.ts#L34)*
+*Defined in [schemes/contributionReward.ts:34](https://github.com/daostack/client/blob/aa9723f/src/schemes/contributionReward.ts#L34)*
+
+*Defined in [schemes/contributionRewardExt.ts:33](https://github.com/daostack/client/blob/aa9723f/src/schemes/contributionRewardExt.ts#L33)*
 
 ###  GenericScheme
 
 • **GenericScheme**: = "UGenericScheme"
 
-*Defined in [schemes/genericScheme.ts:24](https://github.com/daostack/client/blob/0eadcce/src/schemes/genericScheme.ts#L24)*
+*Defined in [schemes/genericScheme.ts:25](https://github.com/daostack/client/blob/aa9723f/src/schemes/genericScheme.ts#L25)*
 
-*Defined in [schemes/uGenericScheme.ts:24](https://github.com/daostack/client/blob/0eadcce/src/schemes/uGenericScheme.ts#L24)*
+*Defined in [schemes/uGenericScheme.ts:24](https://github.com/daostack/client/blob/aa9723f/src/schemes/uGenericScheme.ts#L24)*
 
 ###  SchemeRegistrarAdd
 
 • **SchemeRegistrarAdd**: = "SchemeRegistrarAdd"
 
-*Defined in [schemes/schemeRegistrar.ts:23](https://github.com/daostack/client/blob/0eadcce/src/schemes/schemeRegistrar.ts#L23)*
+*Defined in [schemes/schemeRegistrar.ts:23](https://github.com/daostack/client/blob/aa9723f/src/schemes/schemeRegistrar.ts#L23)*
 
 ###  SchemeRegistrarEdit
 
 • **SchemeRegistrarEdit**: = "SchemeRegistrarEdit"
 
-*Defined in [schemes/schemeRegistrar.ts:24](https://github.com/daostack/client/blob/0eadcce/src/schemes/schemeRegistrar.ts#L24)*
+*Defined in [schemes/schemeRegistrar.ts:24](https://github.com/daostack/client/blob/aa9723f/src/schemes/schemeRegistrar.ts#L24)*
 
 ###  SchemeRegistrarRemove
 
 • **SchemeRegistrarRemove**: = "SchemeRegistrarRemove"
 
-*Defined in [schemes/schemeRegistrar.ts:25](https://github.com/daostack/client/blob/0eadcce/src/schemes/schemeRegistrar.ts#L25)*
+*Defined in [schemes/schemeRegistrar.ts:25](https://github.com/daostack/client/blob/aa9723f/src/schemes/schemeRegistrar.ts#L25)*

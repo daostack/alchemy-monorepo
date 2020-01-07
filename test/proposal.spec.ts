@@ -9,6 +9,7 @@ import { IExecutionState,
   IProposalType,
   Proposal } from '../src/proposal'
 import { IContributionReward } from '../src/schemes/contributionReward'
+
 import BN = require('bn.js')
 import { createAProposal,
   fromWei,
@@ -154,7 +155,6 @@ describe('Proposal', () => {
     expect(shouldBeJustThisExecutedProposal.map((p: Proposal) => p.id)).toEqual([proposal.id])
   })
 
-  // skipping this test, bc we chaned the implementation and it is unclear why this feature (?) was needed
   it('state should be available before the data is indexed', async () => {
     const options   = {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
@@ -226,7 +226,15 @@ describe('Proposal', () => {
         periodLength: 0,
         periods: 1
     })
-
+    expect(pState.scheme).toMatchObject({
+        canDelegateCall: false,
+        canManageGlobalConstraints: false,
+        canRegisterSchemes: false,
+        dao: dao.id,
+        name: 'ContributionReward'
+    })
+    expect(pState.scheme.contributionRewardParams).toBeTruthy()
+    expect(pState.scheme.contributionRewardExtParams).toBeFalsy()
     expect(pState.queue.threshold).toBeGreaterThan(0)
     // check if the upstakeNeededToPreBoost value is correct
     //  (S+/S-) > AlphaConstant^NumberOfBoostedProposal.

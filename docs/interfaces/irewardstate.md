@@ -4,7 +4,9 @@
 
 ## Hierarchy
 
-* **IRewardState**
+* [IRewardStaticState](irewardstaticstate.md)
+
+  ↳ **IRewardState**
 
 ## Index
 
@@ -30,7 +32,9 @@
 
 • **beneficiary**: *[Address](../globals.md#address)*
 
-*Defined in [reward.ts:10](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L10)*
+*Inherited from [IRewardStaticState](irewardstaticstate.md).[beneficiary](irewardstaticstate.md#beneficiary)*
+
+*Defined in [reward.ts:11](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L11)*
 
 ___
 
@@ -38,15 +42,19 @@ ___
 
 • **createdAt**: *Date*
 
-*Defined in [reward.ts:11](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L11)*
+*Inherited from [IRewardStaticState](irewardstaticstate.md).[createdAt](irewardstaticstate.md#createdat)*
+
+*Defined in [reward.ts:12](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L12)*
 
 ___
 
 ###  daoBountyForStaker
 
-• **daoBountyForStaker**: *any*
+• **daoBountyForStaker**: *BN*
 
-*Defined in [reward.ts:15](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L15)*
+*Inherited from [IRewardStaticState](irewardstaticstate.md).[daoBountyForStaker](irewardstaticstate.md#daobountyforstaker)*
+
+*Defined in [reward.ts:16](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L16)*
 
 ___
 
@@ -54,7 +62,7 @@ ___
 
 • **daoBountyForStakerRedeemedAt**: *number*
 
-*Defined in [reward.ts:21](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L21)*
+*Defined in [reward.ts:25](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L25)*
 
 ___
 
@@ -62,7 +70,9 @@ ___
 
 • **id**: *string*
 
-*Defined in [reward.ts:9](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L9)*
+*Inherited from [IRewardStaticState](irewardstaticstate.md).[id](irewardstaticstate.md#id)*
+
+*Defined in [reward.ts:10](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L10)*
 
 ___
 
@@ -70,15 +80,19 @@ ___
 
 • **proposalId**: *string*
 
-*Defined in [reward.ts:12](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L12)*
+*Inherited from [IRewardStaticState](irewardstaticstate.md).[proposalId](irewardstaticstate.md#proposalid)*
+
+*Defined in [reward.ts:13](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L13)*
 
 ___
 
 ###  reputationForProposer
 
-• **reputationForProposer**: *any*
+• **reputationForProposer**: *BN*
 
-*Defined in [reward.ts:16](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L16)*
+*Inherited from [IRewardStaticState](irewardstaticstate.md).[reputationForProposer](irewardstaticstate.md#reputationforproposer)*
+
+*Defined in [reward.ts:17](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L17)*
 
 ___
 
@@ -86,15 +100,17 @@ ___
 
 • **reputationForProposerRedeemedAt**: *number*
 
-*Defined in [reward.ts:20](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L20)*
+*Defined in [reward.ts:24](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L24)*
 
 ___
 
 ###  reputationForVoter
 
-• **reputationForVoter**: *any*
+• **reputationForVoter**: *BN*
 
-*Defined in [reward.ts:13](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L13)*
+*Inherited from [IRewardStaticState](irewardstaticstate.md).[reputationForVoter](irewardstaticstate.md#reputationforvoter)*
+
+*Defined in [reward.ts:14](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L14)*
 
 ___
 
@@ -102,7 +118,7 @@ ___
 
 • **reputationForVoterRedeemedAt**: *number*
 
-*Defined in [reward.ts:18](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L18)*
+*Defined in [reward.ts:22](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L22)*
 
 ___
 
@@ -110,15 +126,19 @@ ___
 
 • **tokenAddress**: *[Address](../globals.md#address)*
 
-*Defined in [reward.ts:17](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L17)*
+*Inherited from [IRewardStaticState](irewardstaticstate.md).[tokenAddress](irewardstaticstate.md#tokenaddress)*
+
+*Defined in [reward.ts:18](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L18)*
 
 ___
 
 ###  tokensForStaker
 
-• **tokensForStaker**: *any*
+• **tokensForStaker**: *BN*
 
-*Defined in [reward.ts:14](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L14)*
+*Inherited from [IRewardStaticState](irewardstaticstate.md).[tokensForStaker](irewardstaticstate.md#tokensforstaker)*
+
+*Defined in [reward.ts:15](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L15)*
 
 ___
 
@@ -126,4 +146,4 @@ ___
 
 • **tokensForStakerRedeemedAt**: *number*
 
-*Defined in [reward.ts:19](https://github.com/daostack/client/blob/0eadcce/src/reward.ts#L19)*
+*Defined in [reward.ts:23](https://github.com/daostack/client/blob/aa9723f/src/reward.ts#L23)*

@@ -9,17 +9,17 @@ import { IObservable } from './graphnode'
 import { Operation, toIOperationObservable } from './operation'
 import { IQueueState } from './queue'
 import { IRewardQueryOptions, Reward } from './reward'
-import { Scheme } from './scheme'
-import { ISchemeState } from './scheme'
+import { ISchemeState, Scheme } from './scheme'
+import { ICompetitionProposal, IProposalCreateOptionsCompetition } from './schemes/competition'
 import * as ContributionReward from './schemes/contributionReward'
+import * as ContributionRewardExt from './schemes/contributionRewardExt'
 import * as GenericScheme from './schemes/genericScheme'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
-// import * as Competition from './schemes/competition'
 import { LATEST_ARC_VERSION, REDEEMER_CONTRACT_VERSION } from './settings'
 import { IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import { isAddress } from './utils'
-import { createGraphQlQuery, NULL_ADDRESS, realMathToNumber } from './utils'
+import { createGraphQlQuery, isAddress, NULL_ADDRESS, realMathToNumber,
+  secondSinceEpochToDate } from './utils'
 import { IVoteQueryOptions, Vote } from './vote'
 
 export const IProposalType = {
@@ -69,7 +69,7 @@ export interface IProposalState extends IProposalStaticState {
   accountsWithUnclaimedRewards: Address[],
   boostedAt: Date
   contributionReward: ContributionReward.IContributionReward|null
-  // competition: Competition.ICompetitionProposal|null
+  competition: ICompetitionProposal|null
   confidenceThreshold: number
   closingAt: Date
   createdAt: Date
@@ -115,6 +115,20 @@ export class Proposal implements IStateful<IProposalState> {
       boostedAt
       closingAt
       confidenceThreshold
+      competition {
+        id
+        endTime
+        contract
+        suggestionsEndTime
+        createdAt
+        numberOfVotesPerVoters
+        numberOfWinners
+        rewardSplit
+        snapshotBlock
+        startTime
+        votingStartTime
+
+      }
       contributionReward {
         id
         beneficiary
@@ -169,19 +183,7 @@ export class Proposal implements IStateful<IProposalState> {
         id
       }
       scheme {
-        id
-        paramsHash
-        name
-        address
-        canDelegateCall
-        canManageGlobalConstraints
-        canRegisterSchemes
-        canUpgradeController
-        name
-        numberOfQueuedProposals
-        numberOfPreBoostedProposals
-        numberOfBoostedProposals
-        version
+        ...SchemeFields
       }
       gpQueue {
         id
@@ -219,41 +221,6 @@ export class Proposal implements IStateful<IProposalState> {
       votingMachine
       winningOutcome
     }`
-  }
-
-  /**
-   * Proposal.create() creates a new proposal
-   * @param  options cf. IProposalCreateOptions
-   * @param  context [description]
-   * @return  an observable that streams the various states
-   */
-  public static create(options: IProposalCreateOptions, context: Arc): Operation<Proposal> {
-
-    if (!options.dao) {
-      throw Error(`Proposal.create(options): options must include an address for "dao"`)
-    }
-    if (!options.scheme) {
-      throw Error(`Proposal.create(options): options must include an address for "scheme"`)
-    }
-
-    const schemesQuery = Scheme.search(
-      context,
-      { where: {
-        address: options.scheme,
-        dao: options.dao
-      }}
-    )
-    const observable = schemesQuery.pipe(
-      first(),
-      concatMap((schemes) => {
-        if (schemes && schemes.length > 0) {
-          return schemes[0].createProposal(options)
-        } else {
-          throw Error(`No scheme with address ${options.scheme} is registered with dao ${options.dao}`)
-        }
-      }
-    ))
-    return toIOperationObservable(observable)
   }
 
   /**
@@ -324,6 +291,7 @@ export class Proposal implements IStateful<IProposalState> {
           }
         }
         ${Proposal.fragments.ProposalFields}
+        ${Scheme.fragments.SchemeFields}
       `
       return context.getObservableList(
         query,
@@ -410,19 +378,26 @@ export class Proposal implements IStateful<IProposalState> {
         }
       }
       ${Proposal.fragments.ProposalFields}
+      ${Scheme.fragments.SchemeFields}
+
     `
 
     const itemMap = (item: any): IProposalState|null => {
       if (item === null || item === undefined) {
         // no proposal was found - we return null
+        // throw Error(`No proposal with id ${this.id} could be found`)
         return null
       }
 
       let contributionReward: ContributionReward.IContributionReward|null = null
+      let competition: ICompetitionProposal|null = null
       let type: IProposalType
       let genericScheme: GenericScheme.IGenericScheme|null = null
       let schemeRegistrar: SchemeRegistrar.ISchemeRegistrar|null = null
-      if (item.contributionReward) {
+      if (!!item.competition && !item.contributionReward) {
+        throw Error(`Unexpected proposal state: competition is set, but contributionReward is not`)
+      }
+      if (!!item.contributionReward) {
         type = IProposalType.ContributionReward
         contributionReward = {
           alreadyRedeemedEthPeriods: Number(item.contributionReward.alreadyRedeemedEthPeriods),
@@ -437,6 +412,22 @@ export class Proposal implements IStateful<IProposalState> {
           periodLength: Number(item.contributionReward.periodLength),
           periods: Number(item.contributionReward.periods),
           reputationReward: new BN(item.contributionReward.reputationReward)
+        }
+        if (!!item.competition) {
+          competition = {
+            contract: item.competition.contract,
+            createdAt: secondSinceEpochToDate(item.competition.createdAt),
+            endTime: secondSinceEpochToDate(item.competition.endTime),
+            id: item.competition.id,
+            numberOfVotesPerVoter: Number(item.competition.numberOfVotesPerVoters),
+            numberOfWinners: Number(item.competition.numberOfWinners),
+            rewardSplit: item.competition.rewardSplit.map((perc: string) => Number(perc)),
+            snapshotBlock: item.competition.snapshotBlock,
+            startTime: secondSinceEpochToDate(item.competition.startTime),
+            suggestionsEndTime: secondSinceEpochToDate(item.competition.suggestionsEndTime),
+            votingStartTime: secondSinceEpochToDate(item.competition.votingStartTime)
+          }
+
         }
       } else if (item.genericScheme) {
         type = IProposalType.GenericScheme
@@ -504,28 +495,13 @@ export class Proposal implements IStateful<IProposalState> {
           .sub(stakesAgainst)
       }
       const scheme = item.scheme
-      const schemeName = scheme.name || this.context.getContractInfo(scheme.address).name
       const gpQueue = item.gpQueue
 
-      const schemeState: ISchemeState = {
-        address: scheme.address,
-        canDelegateCall: scheme.canDelegateCall,
-        canManageGlobalConstraints: scheme.canManageGlobalConstraints,
-        canRegisterSchemes: scheme.canRegisterSchemes,
-        canUpgradeController: scheme.canUpgradeController,
-        dao: item.dao.id,
-        id: scheme.id,
-        name: schemeName,
-        numberOfBoostedProposals: Number(scheme.numberOfBoostedProposals),
-        numberOfPreBoostedProposals: Number(scheme.numberOfPreBoostedProposals),
-        numberOfQueuedProposals: Number(scheme.numberOfQueuedProposals),
-        paramsHash: scheme.paramsHash,
-        version: scheme.version
-      }
+      const schemeState = Scheme.itemMap(scheme, this.context) as ISchemeState
       const queueState: IQueueState = {
         dao: item.dao.id,
         id: gpQueue.id,
-        name: schemeName,
+        name: schemeState.name,
         scheme: schemeState,
         threshold,
         votingMachine: gpQueue.votingMachine
@@ -535,6 +511,7 @@ export class Proposal implements IStateful<IProposalState> {
         accountsWithUnclaimedRewards: item.accountsWithUnclaimedRewards,
         boostedAt: Number(item.boostedAt),
         closingAt: Number(item.closingAt),
+        competition,
         confidenceThreshold: Number(item.confidenceThreshold),
         contributionReward,
         createdAt: Number(item.createdAt),
@@ -581,10 +558,14 @@ export class Proposal implements IStateful<IProposalState> {
     return result
   }
 
+  /**
+   * @return the scheme Contract
+   */
   public async scheme() {
     const schemeAddress = (await this.state().pipe(filter((o) => !!o), first()).toPromise()).scheme.address
     return this.context.getContract(schemeAddress)
   }
+
   /**
    * [votingMachine description]
    * @return a web3 Contract instance
@@ -785,13 +766,23 @@ export class Proposal implements IStateful<IProposalState> {
           // we use a dummy contributionreward, as a workaround for https://github.com/daostack/arc/issues/655
           schemeAddress = this.context.getContractInfoByName('ContributionReward', LATEST_ARC_VERSION).address
         }
-        const transaction = this.redeemerContract().methods.redeem(
-          schemeAddress, // contributionreward address
-          state.votingMachine, // genesisProtocol address
-          this.id,
-          state.dao.id,
-          beneficiary
-        )
+        let transaction
+        if (state.scheme.name === 'ContributionRewardExt') {
+          transaction = this.redeemerContract().methods.redeemFromCRExt(
+            schemeAddress, // contributionreward address
+            state.votingMachine, // genesisProtocol address
+            this.id,
+            beneficiary
+          )
+        } else {
+          transaction = this.redeemerContract().methods.redeem(
+            schemeAddress, // contributionreward address
+            state.votingMachine, // genesisProtocol address
+            this.id,
+            state.dao.id,
+            beneficiary
+          )
+        }
         return this.context.sendTransaction(transaction, () => true)
       })
     )
@@ -833,6 +824,7 @@ export class Proposal implements IStateful<IProposalState> {
     )
     return toIOperationObservable(observable)
   }
+
 }
 
 enum ProposalQuerySortOptions {
@@ -864,18 +856,22 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
   }
 }
 
-interface IProposalBaseCreateOptions {
+export interface IProposalBaseCreateOptions {
   dao: Address
   description?: string
   descriptionHash?: string
   title?: string
   tags?: string[]
-  scheme: Address
+  scheme?: Address
   url?: string
+  // proposalType?: 'competition' // if the scheme allows for different proposals...
+  proposalType?: string
 }
 
 export type IProposalCreateOptions = (
   (IProposalBaseCreateOptions & GenericScheme.IProposalCreateOptionsGS ) |
   (IProposalBaseCreateOptions & SchemeRegistrar.IProposalCreateOptionsSR) |
-  (IProposalBaseCreateOptions & ContributionReward.IProposalCreateOptionsCR)
+  (IProposalBaseCreateOptions & ContributionReward.IProposalCreateOptionsCR) |
+  (ContributionRewardExt.IProposalCreateOptionsContributionRewardExt) |
+  (IProposalCreateOptionsCompetition)
 )

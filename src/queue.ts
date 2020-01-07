@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { Arc, IApolloQueryOptions } from './arc'
 import { DAO } from './dao'
-import { ISchemeState } from './scheme'
+import { ISchemeState, Scheme } from './scheme'
 import { Address, ICommonQueryOptions, IStateful } from './types'
 import { createGraphQlQuery, isAddress, realMathToNumber } from './utils'
 
@@ -107,24 +107,13 @@ export class Queue implements IStateful<IQueueState> {
             id
           }
           scheme {
-            id
-            address
-            name
-            dao { id }
-            canDelegateCall
-            canRegisterSchemes
-            canUpgradeController
-            canManageGlobalConstraints
-            paramsHash
-            numberOfBoostedProposals
-            numberOfPreBoostedProposals
-            numberOfQueuedProposals
-            version
+            ...SchemeFields
           }
           votingMachine
           threshold
         }
       }
+      ${Scheme.fragments.SchemeFields}
     `
 
     const itemMap = (item: any): IQueueState => {
@@ -132,26 +121,12 @@ export class Queue implements IStateful<IQueueState> {
         throw Error(`No gpQueue with id ${this.id} was found`)
       }
       const threshold = realMathToNumber(new BN(item.threshold))
-      const schemeName = item.scheme.name || this.context.getContractInfo(item.scheme.address).name
+      const scheme = Scheme.itemMap(item.scheme, this.context) as ISchemeState
       return {
         dao: item.dao.id,
         id: item.id,
-        name: schemeName,
-        scheme: {
-          address: item.scheme.address,
-          canDelegateCall: item.scheme.canDelegateCall,
-          canManageGlobalConstraints: item.scheme.canManageGlobalConstraints,
-          canRegisterSchemes: item.scheme.canRegisterSchemes,
-          canUpgradeController: item.scheme.canUpgradeController,
-          dao: item.dao.id,
-          id: item.scheme.id,
-          name: schemeName,
-          numberOfBoostedProposals: Number(item.scheme.numberOfBoostedProposals),
-          numberOfPreBoostedProposals: Number(item.scheme.numberOfPreBoostedProposals),
-          numberOfQueuedProposals: Number(item.scheme.numberOfQueuedProposals),
-          paramsHash: item.scheme.paramsHash,
-          version: item.scheme.version
-        },
+        name: scheme.name,
+        scheme,
         threshold,
         votingMachine: item.votingMachine
       }

@@ -47,6 +47,7 @@ Any useage of the library typically will start with instantiating a new Arc inst
 * [dao](arc.md#dao)
 * [daos](arc.md#daos)
 * [ethBalance](arc.md#ethbalance)
+* [events](arc.md#events)
 * [fetchContractInfos](arc.md#fetchcontractinfos)
 * [getABI](arc.md#getabi)
 * [getAccount](arc.md#getaccount)
@@ -66,6 +67,7 @@ Any useage of the library typically will start with instantiating a new Arc inst
 * [sendTransaction](arc.md#sendtransaction)
 * [setAccount](arc.md#setaccount)
 * [setContractInfos](arc.md#setcontractinfos)
+* [tags](arc.md#tags)
 
 ## Constructors
 
@@ -75,7 +77,7 @@ Any useage of the library typically will start with instantiating a new Arc inst
 
 *Overrides [GraphNodeObserver](graphnodeobserver.md).[constructor](graphnodeobserver.md#constructor)*
 
-*Defined in [arc.ts:48](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L48)*
+*Defined in [arc.ts:51](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L51)*
 
 **Parameters:**
 
@@ -102,7 +104,7 @@ Name | Type | Description |
 
 *Inherited from [GraphNodeObserver](graphnodeobserver.md).[Logger](graphnodeobserver.md#logger)*
 
-*Defined in [graphnode.ts:101](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L101)*
+*Defined in [graphnode.ts:117](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L117)*
 
 ___
 
@@ -112,7 +114,7 @@ ___
 
 *Inherited from [GraphNodeObserver](graphnodeobserver.md).[apolloClient](graphnodeobserver.md#optional-apolloclient)*
 
-*Defined in [graphnode.ts:102](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L102)*
+*Defined in [graphnode.ts:118](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L118)*
 
 ___
 
@@ -120,7 +122,7 @@ ___
 
 • **blockHeaderSubscription**: *Subscription | undefined* =  undefined
 
-*Defined in [arc.ts:41](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L41)*
+*Defined in [arc.ts:44](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L44)*
 
 ___
 
@@ -128,7 +130,7 @@ ___
 
 • **contractInfos**: *[IContractInfo](../interfaces/icontractinfo.md)[]*
 
-*Defined in [arc.ts:36](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L36)*
+*Defined in [arc.ts:39](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L39)*
 
 a mapping of contrct names to contract addresses
 
@@ -138,7 +140,7 @@ ___
 
 • **contracts**: *object*
 
-*Defined in [arc.ts:37](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L37)*
+*Defined in [arc.ts:40](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L40)*
 
 #### Type declaration:
 
@@ -150,7 +152,7 @@ ___
 
 • **contractsR**: *object*
 
-*Defined in [arc.ts:38](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L38)*
+*Defined in [arc.ts:41](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L41)*
 
 #### Type declaration:
 
@@ -164,7 +166,7 @@ ___
 
 *Inherited from [GraphNodeObserver](graphnodeobserver.md).[graphqlHttpProvider](graphnodeobserver.md#optional-graphqlhttpprovider)*
 
-*Defined in [graphnode.ts:99](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L99)*
+*Defined in [graphnode.ts:115](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L115)*
 
 ___
 
@@ -174,7 +176,7 @@ ___
 
 *Inherited from [GraphNodeObserver](graphnodeobserver.md).[graphqlSubscribeToQueries](graphnodeobserver.md#optional-graphqlsubscribetoqueries)*
 
-*Defined in [graphnode.ts:103](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L103)*
+*Defined in [graphnode.ts:119](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L119)*
 
 ___
 
@@ -184,7 +186,7 @@ ___
 
 *Inherited from [GraphNodeObserver](graphnodeobserver.md).[graphqlWsProvider](graphnodeobserver.md#optional-graphqlwsprovider)*
 
-*Defined in [graphnode.ts:100](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L100)*
+*Defined in [graphnode.ts:116](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L116)*
 
 ___
 
@@ -192,7 +194,7 @@ ___
 
 • **ipfs**: *any*
 
-*Defined in [arc.ts:30](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L30)*
+*Defined in [arc.ts:33](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L33)*
 
 ___
 
@@ -200,7 +202,7 @@ ___
 
 • **ipfsProvider**: *[IPFSProvider](../globals.md#ipfsprovider)*
 
-*Defined in [arc.ts:26](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L26)*
+*Defined in [arc.ts:29](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L29)*
 
 ___
 
@@ -208,17 +210,17 @@ ___
 
 • **observedAccounts**: *object*
 
-*Defined in [arc.ts:42](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L42)*
+*Defined in [arc.ts:45](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L45)*
 
 #### Type declaration:
 
 * \[ **address**: *string*\]: object
 
-* **lastBalance**? : *undefined | number*
+* **lastBalance**? : *undefined | string*
 
-* **observable**? : *Observable‹any›*
+* **observable**? : *Observable‹BN›*
 
-* **observer**? : *Observer‹any›*
+* **observer**? : *Observer‹BN›*
 
 * **subscriptionsCount**: *number*
 
@@ -228,7 +230,7 @@ ___
 
 • **pendingOperations**: *Observable‹Array‹[Operation](../globals.md#operation)‹any›››* =  of()
 
-*Defined in [arc.ts:28](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L28)*
+*Defined in [arc.ts:31](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L31)*
 
 ___
 
@@ -236,7 +238,7 @@ ___
 
 • **web3**: *any*
 
-*Defined in [arc.ts:31](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L31)*
+*Defined in [arc.ts:34](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L34)*
 
 ___
 
@@ -244,7 +246,7 @@ ___
 
 • **web3Provider**: *[Web3Provider](../globals.md#web3provider)* = ""
 
-*Defined in [arc.ts:24](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L24)*
+*Defined in [arc.ts:27](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L27)*
 
 ___
 
@@ -252,7 +254,7 @@ ___
 
 • **web3ProviderRead**: *[Web3Provider](../globals.md#web3provider)* = ""
 
-*Defined in [arc.ts:25](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L25)*
+*Defined in [arc.ts:28](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L28)*
 
 ___
 
@@ -260,19 +262,19 @@ ___
 
 • **web3Read**: *any*
 
-*Defined in [arc.ts:32](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L32)*
+*Defined in [arc.ts:35](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L35)*
 
 ## Methods
 
 ###  GENToken
 
-▸ **GENToken**(): *[Token](token.md)*
+▸ **GENToken**(): *[Token](token.md)‹›*
 
-*Defined in [arc.ts:325](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L325)*
+*Defined in [arc.ts:341](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L341)*
 
 get the GEN Token
 
-**Returns:** *[Token](token.md)*
+**Returns:** *[Token](token.md)‹›*
 
 a Token instance
 
@@ -280,9 +282,9 @@ ___
 
 ###  allowance
 
-▸ **allowance**(`owner`: [Address](../globals.md#address), `spender`: [Address](../globals.md#address)): *Observable‹any›*
+▸ **allowance**(`owner`: [Address](../globals.md#address), `spender`: [Address](../globals.md#address)): *Observable‹BN›*
 
-*Defined in [arc.ts:386](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L386)*
+*Defined in [arc.ts:402](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L402)*
 
 How much GEN spender may spend on behalve of the owner
 
@@ -293,22 +295,22 @@ Name | Type | Description |
 `owner` | [Address](../globals.md#address) | Address of the owner of the tokens |
 `spender` | [Address](../globals.md#address) | Address of the spender |
 
-**Returns:** *Observable‹any›*
+**Returns:** *Observable‹BN›*
 
 ___
 
 ###  approveForStaking
 
-▸ **approveForStaking**(`spender`: [Address](../globals.md#address), `amount`: any): *[IOperationObservable](../interfaces/ioperationobservable.md)‹[ITransactionUpdate](../interfaces/itransactionupdate.md)‹any››*
+▸ **approveForStaking**(`spender`: [Address](../globals.md#address), `amount`: BN): *[IOperationObservable](../interfaces/ioperationobservable.md)‹[ITransactionUpdate](../interfaces/itransactionupdate.md)‹any››*
 
-*Defined in [arc.ts:376](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L376)*
+*Defined in [arc.ts:392](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L392)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `spender` | [Address](../globals.md#address) |
-`amount` | any |
+`amount` | BN |
 
 **Returns:** *[IOperationObservable](../interfaces/ioperationobservable.md)‹[ITransactionUpdate](../interfaces/itransactionupdate.md)‹any››*
 
@@ -318,7 +320,7 @@ ___
 
 ▸ **dao**(`address`: [Address](../globals.md#address)): *[DAO](dao.md)*
 
-*Defined in [arc.ts:131](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L131)*
+*Defined in [arc.ts:134](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L134)*
 
 get a DAO instance from an address
 
@@ -338,7 +340,7 @@ ___
 
 ▸ **daos**(`options`: [IDAOQueryOptions](../interfaces/idaoqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[DAO](dao.md)[]›*
 
-*Defined in [arc.ts:141](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L141)*
+*Defined in [arc.ts:144](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L144)*
 
 return an observable of the list of DAOs
 
@@ -355,9 +357,9 @@ ___
 
 ###  ethBalance
 
-▸ **ethBalance**(`owner`: [Address](../globals.md#address)): *Observable‹any›*
+▸ **ethBalance**(`owner`: [Address](../globals.md#address)): *Observable‹BN›*
 
-*Defined in [arc.ts:167](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L167)*
+*Defined in [arc.ts:180](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L180)*
 
 **Parameters:**
 
@@ -365,7 +367,24 @@ Name | Type |
 ------ | ------ |
 `owner` | [Address](../globals.md#address) |
 
-**Returns:** *Observable‹any›*
+**Returns:** *Observable‹BN›*
+
+___
+
+###  events
+
+▸ **events**(`options`: [IEventQueryOptions](../interfaces/ieventqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Event](event.md)[]›*
+
+*Defined in [arc.ts:173](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L173)*
+
+**Parameters:**
+
+Name | Type | Default |
+------ | ------ | ------ |
+`options` | [IEventQueryOptions](../interfaces/ieventqueryoptions.md) |  {} |
+`apolloQueryOptions` | [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md) |  {} |
+
+**Returns:** *Observable‹[Event](event.md)[]›*
 
 ___
 
@@ -373,7 +392,7 @@ ___
 
 ▸ **fetchContractInfos**(`apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Promise‹[IContractInfo](../interfaces/icontractinfo.md)[]›*
 
-*Defined in [arc.ts:110](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L110)*
+*Defined in [arc.ts:113](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L113)*
 
 fetch contractInfos from the subgraph
 
@@ -391,15 +410,15 @@ ___
 
 ###  getABI
 
-▸ **getABI**(`address`: [Address](../globals.md#address), `abiName?`: undefined | string, `version?`: undefined | string): *any*
+▸ **getABI**(`address?`: [Address](../globals.md#address), `abiName?`: undefined | string, `version?`: undefined | string): *any*
 
-*Defined in [arc.ts:268](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L268)*
+*Defined in [arc.ts:284](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L284)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`address` | [Address](../globals.md#address) |
+`address?` | [Address](../globals.md#address) |
 `abiName?` | undefined &#124; string |
 `version?` | undefined &#124; string |
 
@@ -411,7 +430,7 @@ ___
 
 ▸ **getAccount**(): *Observable‹[Address](../globals.md#address)›*
 
-*Defined in [arc.ts:338](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L338)*
+*Defined in [arc.ts:354](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L354)*
 
 **Returns:** *Observable‹[Address](../globals.md#address)›*
 
@@ -421,7 +440,7 @@ ___
 
 ▸ **getContract**(`address`: [Address](../globals.md#address), `abi?`: any, `mode?`: undefined | "readonly"): *any*
 
-*Defined in [arc.ts:297](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L297)*
+*Defined in [arc.ts:313](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L313)*
 
 return a web3 Contract instance.
 
@@ -443,7 +462,7 @@ ___
 
 ▸ **getContractInfo**(`address`: [Address](../globals.md#address)): *[IContractInfo](../interfaces/icontractinfo.md)*
 
-*Defined in [arc.ts:243](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L243)*
+*Defined in [arc.ts:259](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L259)*
 
 return information about the contract
 
@@ -463,7 +482,7 @@ ___
 
 ▸ **getContractInfoByName**(`name`: string, `version`: string): *[IContractInfo](../interfaces/icontractinfo.md)*
 
-*Defined in [arc.ts:256](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L256)*
+*Defined in [arc.ts:272](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L272)*
 
 **Parameters:**
 
@@ -482,7 +501,7 @@ ___
 
 *Inherited from [GraphNodeObserver](graphnodeobserver.md).[getObservable](graphnodeobserver.md#getobservable)*
 
-*Defined in [graphnode.ts:129](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L129)*
+*Defined in [graphnode.ts:145](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L145)*
 
 Given a gql query, will return an observable of query results
 
@@ -505,7 +524,7 @@ ___
 
 *Inherited from [GraphNodeObserver](graphnodeobserver.md).[getObservableList](graphnodeobserver.md#getobservablelist)*
 
-*Defined in [graphnode.ts:231](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L231)*
+*Defined in [graphnode.ts:246](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L246)*
 
 Returns an observable that:
 - sends a query over http and returns the current list of results
@@ -555,7 +574,7 @@ ___
 
 *Inherited from [GraphNodeObserver](graphnodeobserver.md).[getObservableListWithFilter](graphnodeobserver.md#getobservablelistwithfilter)*
 
-*Defined in [graphnode.ts:270](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L270)*
+*Defined in [graphnode.ts:285](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L285)*
 
 Returns an observable that:
 - sends a query over http and returns the current list of results
@@ -610,7 +629,7 @@ ___
 
 *Inherited from [GraphNodeObserver](graphnodeobserver.md).[getObservableObject](graphnodeobserver.md#getobservableobject)*
 
-*Defined in [graphnode.ts:287](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L287)*
+*Defined in [graphnode.ts:302](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L302)*
 
 **Parameters:**
 
@@ -636,7 +655,7 @@ ___
 
 ▸ **proposal**(`id`: string): *[Proposal](proposal.md)*
 
-*Defined in [arc.ts:156](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L156)*
+*Defined in [arc.ts:163](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L163)*
 
 **Parameters:**
 
@@ -652,7 +671,7 @@ ___
 
 ▸ **proposals**(`options`: [IProposalQueryOptions](../interfaces/iproposalqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Proposal](proposal.md)[]›*
 
-*Defined in [arc.ts:160](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L160)*
+*Defined in [arc.ts:167](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L167)*
 
 **Parameters:**
 
@@ -669,7 +688,7 @@ ___
 
 ▸ **saveIPFSData**(`options`: object): *Promise‹string›*
 
-*Defined in [arc.ts:410](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L410)*
+*Defined in [arc.ts:426](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L426)*
 
 save data of a proposal to IPFS, return  the IPFS hash
 
@@ -681,9 +700,10 @@ an Object to save. This object must have title, url and desction defined
 
 Name | Type |
 ------ | ------ |
-`description` | string |
-`title` | string |
-`url` | string |
+`description?` | undefined &#124; string |
+`tags?` | string[] |
+`title?` | undefined &#124; string |
+`url?` | undefined &#124; string |
 
 **Returns:** *Promise‹string›*
 
@@ -695,7 +715,7 @@ ___
 
 ▸ **scheme**(`id`: string): *[Scheme](scheme.md)*
 
-*Defined in [arc.ts:145](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L145)*
+*Defined in [arc.ts:152](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L152)*
 
 **Parameters:**
 
@@ -709,15 +729,15 @@ ___
 
 ###  schemes
 
-▸ **schemes**(`options`: [ISchemeQueryOptions](../interfaces/ischemequeryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Scheme](scheme.md)[]›*
+▸ **schemes**(`options`: ISchemeQueryOptions, `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Scheme](scheme.md)[]›*
 
-*Defined in [arc.ts:149](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L149)*
+*Defined in [arc.ts:156](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L156)*
 
 **Parameters:**
 
 Name | Type | Default |
 ------ | ------ | ------ |
-`options` | [ISchemeQueryOptions](../interfaces/ischemequeryoptions.md) |  {} |
+`options` | ISchemeQueryOptions |  {} |
 `apolloQueryOptions` | [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md) |  {} |
 
 **Returns:** *Observable‹[Scheme](scheme.md)[]›*
@@ -730,7 +750,7 @@ ___
 
 *Inherited from [GraphNodeObserver](graphnodeobserver.md).[sendQuery](graphnodeobserver.md#sendquery)*
 
-*Defined in [graphnode.ts:307](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L307)*
+*Defined in [graphnode.ts:322](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L322)*
 
 **Parameters:**
 
@@ -747,7 +767,7 @@ ___
 
 ▸ **sendTransaction**<**T**>(`transaction`: any, `mapToObject`: function, `errorHandler`: function): *[Operation](../globals.md#operation)‹T›*
 
-*Defined in [arc.ts:397](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L397)*
+*Defined in [arc.ts:413](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L413)*
 
 send an Ethereum transaction
 
@@ -789,7 +809,7 @@ ___
 
 ▸ **setAccount**(`address`: [Address](../globals.md#address)): *void*
 
-*Defined in [arc.ts:372](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L372)*
+*Defined in [arc.ts:388](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L388)*
 
 **Parameters:**
 
@@ -805,7 +825,7 @@ ___
 
 ▸ **setContractInfos**(`contractInfos`: [IContractInfo](../interfaces/icontractinfo.md)[]): *Promise‹void›*
 
-*Defined in [arc.ts:99](https://github.com/daostack/client/blob/0eadcce/src/arc.ts#L99)*
+*Defined in [arc.ts:102](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L102)*
 
 set the contract addresses
 
@@ -816,3 +836,20 @@ Name | Type | Description |
 `contractInfos` | [IContractInfo](../interfaces/icontractinfo.md)[] | a list of IContractInfo objects |
 
 **Returns:** *Promise‹void›*
+
+___
+
+###  tags
+
+▸ **tags**(`options`: [ITagQueryOptions](../interfaces/itagqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Tag](tag.md)[]›*
+
+*Defined in [arc.ts:148](https://github.com/daostack/client/blob/aa9723f/src/arc.ts#L148)*
+
+**Parameters:**
+
+Name | Type | Default |
+------ | ------ | ------ |
+`options` | [ITagQueryOptions](../interfaces/itagqueryoptions.md) |  {} |
+`apolloQueryOptions` | [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md) |  {} |
+
+**Returns:** *Observable‹[Tag](tag.md)[]›*

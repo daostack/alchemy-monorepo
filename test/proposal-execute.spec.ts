@@ -1,10 +1,10 @@
+import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
 import { IProposalOutcome, IProposalStage, IProposalState, Proposal } from '../src/proposal'
-import BN = require('bn.js')
-import { createAProposal, fromWei, getTestAddresses, getTestDAO, ITestAddresses,
-  newArc, timeTravel, toWei,
+import { advanceTime, createAProposal, fromWei, getTestAddresses, getTestDAO,
+  ITestAddresses, newArc, toWei,
   voteToPassProposal, waitUntilTrue } from './utils'
 
 jest.setTimeout(40000)
@@ -87,7 +87,7 @@ describe('Proposal execute()', () => {
     expect(proposalState.stage).toEqual(IProposalStage.PreBoosted)
 
     // TODO: find out why the state is not updated to Boosted akreadt at this point
-    await timeTravel(60000 * 60, arc.web3) // 30 minutes
+    await advanceTime(60000 * 60) // 30 minutes
     proposal.context.web3.eth.accounts.defaultAccount = accounts[2]
     await proposal.vote(IProposalOutcome.Pass).send()
     proposal.context.web3.eth.accounts.defaultAccount = accounts[0]

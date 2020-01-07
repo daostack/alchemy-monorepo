@@ -24,11 +24,11 @@
 
 ###  amount
 
-• **amount**: *any*
+• **amount**: *BN*
 
 *Inherited from [IVoteStaticState](ivotestaticstate.md).[amount](ivotestaticstate.md#amount)*
 
-*Defined in [vote.ts:14](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L14)*
+*Defined in [vote.ts:15](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L15)*
 
 ___
 
@@ -38,7 +38,7 @@ ___
 
 *Inherited from [IVoteStaticState](ivotestaticstate.md).[createdAt](ivotestaticstate.md#createdat)*
 
-*Defined in [vote.ts:12](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L12)*
+*Defined in [vote.ts:13](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L13)*
 
 ___
 
@@ -48,7 +48,7 @@ ___
 
 *Inherited from [IVoteStaticState](ivotestaticstate.md).[dao](ivotestaticstate.md#optional-dao)*
 
-*Defined in [vote.ts:16](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L16)*
+*Defined in [vote.ts:17](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L17)*
 
 ___
 
@@ -58,7 +58,7 @@ ___
 
 *Overrides [IVoteStaticState](ivotestaticstate.md).[id](ivotestaticstate.md#optional-id)*
 
-*Defined in [vote.ts:20](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L20)*
+*Defined in [vote.ts:21](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L21)*
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 *Inherited from [IVoteStaticState](ivotestaticstate.md).[outcome](ivotestaticstate.md#outcome)*
 
-*Defined in [vote.ts:13](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L13)*
+*Defined in [vote.ts:14](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L14)*
 
 ___
 
@@ -78,7 +78,7 @@ ___
 
 *Inherited from [IVoteStaticState](ivotestaticstate.md).[proposal](ivotestaticstate.md#proposal)*
 
-*Defined in [vote.ts:15](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L15)*
+*Defined in [vote.ts:16](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L16)*
 
 ___
 
@@ -88,4 +88,4 @@ ___
 
 *Inherited from [IVoteStaticState](ivotestaticstate.md).[voter](ivotestaticstate.md#voter)*
 
-*Defined in [vote.ts:11](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L11)*
+*Defined in [vote.ts:12](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L12)*

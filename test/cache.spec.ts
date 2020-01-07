@@ -99,6 +99,7 @@ describe('apolloClient caching checks', () => {
       ${Proposal.fragments.ProposalFields}
       ${Vote.fragments.VoteFields}
       ${Stake.fragments.StakeFields}
+      ${Scheme.fragments.SchemeFields}
     `
     let subscribed = false
     const results: any[] = []

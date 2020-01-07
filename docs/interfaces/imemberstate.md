@@ -26,7 +26,7 @@
 
 *Inherited from [IMemberStaticState](imemberstaticstate.md).[address](imemberstaticstate.md#address)*
 
-*Defined in [member.ts:20](https://github.com/daostack/client/blob/0eadcce/src/member.ts#L20)*
+*Defined in [member.ts:20](https://github.com/daostack/client/blob/aa9723f/src/member.ts#L20)*
 
 ___
 
@@ -36,7 +36,7 @@ ___
 
 *Overrides [IMemberStaticState](imemberstaticstate.md).[contract](imemberstaticstate.md#optional-contract)*
 
-*Defined in [member.ts:25](https://github.com/daostack/client/blob/0eadcce/src/member.ts#L25)*
+*Defined in [member.ts:25](https://github.com/daostack/client/blob/aa9723f/src/member.ts#L25)*
 
 ___
 
@@ -46,7 +46,7 @@ ___
 
 *Inherited from [IMemberStaticState](imemberstaticstate.md).[dao](imemberstaticstate.md#optional-dao)*
 
-*Defined in [member.ts:22](https://github.com/daostack/client/blob/0eadcce/src/member.ts#L22)*
+*Defined in [member.ts:22](https://github.com/daostack/client/blob/aa9723f/src/member.ts#L22)*
 
 ___
 
@@ -56,12 +56,12 @@ ___
 
 *Overrides [IMemberStaticState](imemberstaticstate.md).[id](imemberstaticstate.md#optional-id)*
 
-*Defined in [member.ts:26](https://github.com/daostack/client/blob/0eadcce/src/member.ts#L26)*
+*Defined in [member.ts:26](https://github.com/daostack/client/blob/aa9723f/src/member.ts#L26)*
 
 ___
 
 ###  reputation
 
-• **reputation**: *any*
+• **reputation**: *BN*
 
-*Defined in [member.ts:27](https://github.com/daostack/client/blob/0eadcce/src/member.ts#L27)*
+*Defined in [member.ts:27](https://github.com/daostack/client/blob/aa9723f/src/member.ts#L27)*

@@ -1,10 +1,11 @@
 import BN = require('bn.js')
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
-import { first, map } from 'rxjs/operators'
+import { concatMap, first, map } from 'rxjs/operators'
 import { Arc } from './arc'
 import { IApolloQueryOptions } from './graphnode'
 import { IMemberQueryOptions, Member } from './member'
+import { toIOperationObservable } from './operation'
 import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './proposal'
 import { Reputation } from './reputation'
 import { IRewardQueryOptions, Reward } from './reward'
@@ -268,7 +269,28 @@ export class DAO implements IStateful<IDAOState> {
    */
   public createProposal(options: IProposalCreateOptions) {
     options.dao = this.id
-    return Proposal.create(options, this.context)
+
+    if (!options.scheme) {
+      throw Error(`dao.createProposal(options): options must include an address for "scheme"`)
+    }
+
+    const schemesQuery = this.schemes(
+      { where: {
+        address: options.scheme,
+        dao: options.dao
+      }}
+    )
+    const observable = schemesQuery.pipe(
+      first(),
+      concatMap((schemes) => {
+        if (schemes && schemes.length > 0) {
+          return schemes[0].createProposal(options)
+        } else {
+          throw Error(`No scheme with address ${options.scheme} is registered with dao ${options.dao}`)
+        }
+      }
+    ))
+    return toIOperationObservable(observable)
   }
 
   public proposals(

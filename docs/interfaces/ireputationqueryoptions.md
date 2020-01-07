@@ -30,7 +30,7 @@
 
 • **dao**? : *[Address](../globals.md#address)*
 
-*Defined in [reputation.ts:18](https://github.com/daostack/client/blob/0eadcce/src/reputation.ts#L18)*
+*Defined in [reputation.ts:19](https://github.com/daostack/client/blob/aa9723f/src/reputation.ts#L19)*
 
 ___
 
@@ -40,7 +40,7 @@ ___
 
 *Inherited from [ICommonQueryOptions](icommonqueryoptions.md).[first](icommonqueryoptions.md#optional-first)*
 
-*Defined in [types.ts:15](https://github.com/daostack/client/blob/0eadcce/src/types.ts#L15)*
+*Defined in [types.ts:16](https://github.com/daostack/client/blob/aa9723f/src/types.ts#L16)*
 
 ___
 
@@ -48,7 +48,7 @@ ___
 
 • **id**? : *undefined | string*
 
-*Defined in [reputation.ts:17](https://github.com/daostack/client/blob/0eadcce/src/reputation.ts#L17)*
+*Defined in [reputation.ts:18](https://github.com/daostack/client/blob/aa9723f/src/reputation.ts#L18)*
 
 ___
 
@@ -58,7 +58,7 @@ ___
 
 *Inherited from [ICommonQueryOptions](icommonqueryoptions.md).[orderBy](icommonqueryoptions.md#optional-orderby)*
 
-*Defined in [types.ts:16](https://github.com/daostack/client/blob/0eadcce/src/types.ts#L16)*
+*Defined in [types.ts:17](https://github.com/daostack/client/blob/aa9723f/src/types.ts#L17)*
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 *Inherited from [ICommonQueryOptions](icommonqueryoptions.md).[orderDirection](icommonqueryoptions.md#optional-orderdirection)*
 
-*Defined in [types.ts:17](https://github.com/daostack/client/blob/0eadcce/src/types.ts#L17)*
+*Defined in [types.ts:18](https://github.com/daostack/client/blob/aa9723f/src/types.ts#L18)*
 
 ___
 
@@ -78,7 +78,7 @@ ___
 
 *Inherited from [ICommonQueryOptions](icommonqueryoptions.md).[skip](icommonqueryoptions.md#optional-skip)*
 
-*Defined in [types.ts:14](https://github.com/daostack/client/blob/0eadcce/src/types.ts#L14)*
+*Defined in [types.ts:15](https://github.com/daostack/client/blob/aa9723f/src/types.ts#L15)*
 
 ___
 
@@ -88,4 +88,4 @@ ___
 
 *Inherited from [ICommonQueryOptions](icommonqueryoptions.md).[where](icommonqueryoptions.md#optional-where)*
 
-*Defined in [types.ts:18](https://github.com/daostack/client/blob/0eadcce/src/types.ts#L18)*
+*Defined in [types.ts:19](https://github.com/daostack/client/blob/aa9723f/src/types.ts#L19)*

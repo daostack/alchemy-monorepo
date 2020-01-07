@@ -22,7 +22,7 @@
 
 • **callData**: *string*
 
-*Defined in [schemes/uGenericScheme.ts:14](https://github.com/daostack/client/blob/0eadcce/src/schemes/uGenericScheme.ts#L14)*
+*Defined in [schemes/uGenericScheme.ts:14](https://github.com/daostack/client/blob/aa9723f/src/schemes/uGenericScheme.ts#L14)*
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 • **contractToCall**: *[Address](../globals.md#address)*
 
-*Defined in [schemes/uGenericScheme.ts:13](https://github.com/daostack/client/blob/0eadcce/src/schemes/uGenericScheme.ts#L13)*
+*Defined in [schemes/uGenericScheme.ts:13](https://github.com/daostack/client/blob/aa9723f/src/schemes/uGenericScheme.ts#L13)*
 
 ___
 
@@ -38,7 +38,7 @@ ___
 
 • **executed**: *boolean*
 
-*Defined in [schemes/uGenericScheme.ts:15](https://github.com/daostack/client/blob/0eadcce/src/schemes/uGenericScheme.ts#L15)*
+*Defined in [schemes/uGenericScheme.ts:15](https://github.com/daostack/client/blob/aa9723f/src/schemes/uGenericScheme.ts#L15)*
 
 ___
 
@@ -46,7 +46,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [schemes/uGenericScheme.ts:12](https://github.com/daostack/client/blob/0eadcce/src/schemes/uGenericScheme.ts#L12)*
+*Defined in [schemes/uGenericScheme.ts:12](https://github.com/daostack/client/blob/aa9723f/src/schemes/uGenericScheme.ts#L12)*
 
 ___
 
@@ -54,4 +54,4 @@ ___
 
 • **returnValue**: *string*
 
-*Defined in [schemes/uGenericScheme.ts:16](https://github.com/daostack/client/blob/0eadcce/src/schemes/uGenericScheme.ts#L16)*
+*Defined in [schemes/uGenericScheme.ts:16](https://github.com/daostack/client/blob/aa9723f/src/schemes/uGenericScheme.ts#L16)*

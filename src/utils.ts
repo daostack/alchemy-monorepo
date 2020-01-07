@@ -160,3 +160,42 @@ export function createGraphQlWhereQuery(where?: {[key: string]: string|string[]|
   }
   return result
 }
+
+export function dateToSecondsSinceEpoch(date: Date) {
+  if (!(date instanceof Date)) {
+    throw Error(`Input should be a Date instance, got ${date} instead`)
+  }
+
+  return Math.floor(date.getTime() / 1000)
+}
+
+export function secondSinceEpochToDate(seconds: number): Date {
+  try {
+    seconds = Number(seconds)
+  } catch (e) {
+    throw e
+    // throw Error(`argument "seconds" must be a number, got ${seconds} instead`)
+  }
+  const d = new Date()
+  d.setTime(seconds * 1000)
+  return d
+}
+
+/**
+ * get the latest block time, or the current time, whichver is later
+ *
+ * @export
+ * @param {*} web3
+ * @returns
+ */
+export async function getBlockTime(web3: any) {
+  const block = await web3.eth.getBlock('latest')
+  const blockTime = new Date(block.timestamp * 1000)
+  const now = new Date()
+  now.setMilliseconds(0)
+  if (now < blockTime) {
+    return blockTime
+  } else {
+    return now
+  }
+}

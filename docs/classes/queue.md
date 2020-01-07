@@ -33,7 +33,7 @@
 
 \+ **new Queue**(`id`: string, `dao`: [DAO](dao.md), `context`: [Arc](arc.md)): *[Queue](queue.md)*
 
-*Defined in [queue.ts:89](https://github.com/daostack/client/blob/0eadcce/src/queue.ts#L89)*
+*Defined in [queue.ts:90](https://github.com/daostack/client/blob/aa9723f/src/queue.ts#L90)*
 
 **Parameters:**
 
@@ -51,7 +51,7 @@ Name | Type |
 
 • **context**: *[Arc](arc.md)*
 
-*Defined in [queue.ts:94](https://github.com/daostack/client/blob/0eadcce/src/queue.ts#L94)*
+*Defined in [queue.ts:95](https://github.com/daostack/client/blob/aa9723f/src/queue.ts#L95)*
 
 ___
 
@@ -59,7 +59,7 @@ ___
 
 • **dao**: *[DAO](dao.md)*
 
-*Defined in [queue.ts:93](https://github.com/daostack/client/blob/0eadcce/src/queue.ts#L93)*
+*Defined in [queue.ts:94](https://github.com/daostack/client/blob/aa9723f/src/queue.ts#L94)*
 
 ___
 
@@ -67,7 +67,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [queue.ts:92](https://github.com/daostack/client/blob/0eadcce/src/queue.ts#L92)*
+*Defined in [queue.ts:93](https://github.com/daostack/client/blob/aa9723f/src/queue.ts#L93)*
 
 ## Methods
 
@@ -75,7 +75,7 @@ ___
 
 ▸ **state**(`apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[IQueueState](../interfaces/iqueuestate.md)›*
 
-*Defined in [queue.ts:99](https://github.com/daostack/client/blob/0eadcce/src/queue.ts#L99)*
+*Defined in [queue.ts:100](https://github.com/daostack/client/blob/aa9723f/src/queue.ts#L100)*
 
 **Parameters:**
 
@@ -91,7 +91,7 @@ ___
 
 ▸ **search**(`context`: [Arc](arc.md), `options`: [IQueueQueryOptions](../interfaces/iqueuequeryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Queue](queue.md)[]›*
 
-*Defined in [queue.ts:38](https://github.com/daostack/client/blob/0eadcce/src/queue.ts#L38)*
+*Defined in [queue.ts:39](https://github.com/daostack/client/blob/aa9723f/src/queue.ts#L39)*
 
 Queue.search(context, options) searches for queue entities
 

@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs'
+import { IApolloQueryOptions } from './graphnode'
 
 export type Address = string
 export type Date = number
@@ -7,7 +8,7 @@ export type Web3Receipt = any
 export type Web3Provider = string | object
 
 export interface IStateful<T> {
-  state: () => Observable<T>
+  state: (apolloQueryOptions: IApolloQueryOptions) => Observable<T>
 }
 
 export interface ICommonQueryOptions {

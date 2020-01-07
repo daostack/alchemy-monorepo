@@ -24,9 +24,9 @@
 
 ###  amount
 
-• **amount**: *any*
+• **amount**: *BN*
 
-*Defined in [vote.ts:14](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L14)*
+*Defined in [vote.ts:15](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L15)*
 
 ___
 
@@ -34,7 +34,7 @@ ___
 
 • **createdAt**: *[Date](../globals.md#date) | undefined*
 
-*Defined in [vote.ts:12](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L12)*
+*Defined in [vote.ts:13](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L13)*
 
 ___
 
@@ -42,7 +42,7 @@ ___
 
 • **dao**? : *[Address](../globals.md#address)*
 
-*Defined in [vote.ts:16](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L16)*
+*Defined in [vote.ts:17](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L17)*
 
 ___
 
@@ -50,7 +50,7 @@ ___
 
 • **id**? : *undefined | string*
 
-*Defined in [vote.ts:10](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L10)*
+*Defined in [vote.ts:11](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L11)*
 
 ___
 
@@ -58,7 +58,7 @@ ___
 
 • **outcome**: *[IProposalOutcome](../enums/iproposaloutcome.md)*
 
-*Defined in [vote.ts:13](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L13)*
+*Defined in [vote.ts:14](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L14)*
 
 ___
 
@@ -66,7 +66,7 @@ ___
 
 • **proposal**: *string*
 
-*Defined in [vote.ts:15](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L15)*
+*Defined in [vote.ts:16](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L16)*
 
 ___
 
@@ -74,4 +74,4 @@ ___
 
 • **voter**: *[Address](../globals.md#address)*
 
-*Defined in [vote.ts:11](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L11)*
+*Defined in [vote.ts:12](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L12)*

@@ -12,14 +12,18 @@
 
 ## Implemented by
 
+* [CompetitionScheme](../classes/competitionscheme.md)
 * [DAO](../classes/dao.md)
+* [Event](../classes/event.md)
 * [Member](../classes/member.md)
 * [Proposal](../classes/proposal.md)
 * [Queue](../classes/queue.md)
 * [Reputation](../classes/reputation.md)
 * [Reward](../classes/reward.md)
 * [Scheme](../classes/scheme.md)
+* [SchemeBase](../classes/schemebase.md)
 * [Stake](../classes/stake.md)
+* [Tag](../classes/tag.md)
 * [Token](../classes/token.md)
 * [Vote](../classes/vote.md)
 
@@ -35,8 +39,14 @@
 
 • **state**: *function*
 
-*Defined in [types.ts:10](https://github.com/daostack/client/blob/0eadcce/src/types.ts#L10)*
+*Defined in [types.ts:11](https://github.com/daostack/client/blob/aa9723f/src/types.ts#L11)*
 
 #### Type declaration:
 
-▸ (): *Observable‹T›*
+▸ (`apolloQueryOptions`: [IApolloQueryOptions](iapolloqueryoptions.md)): *Observable‹T›*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`apolloQueryOptions` | [IApolloQueryOptions](iapolloqueryoptions.md) |

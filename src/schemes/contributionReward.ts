@@ -34,7 +34,7 @@ export enum IProposalType {
   ContributionReward = 'ContributionReward' // propose a contributionReward
 }
 
-export function createTransaction(options: any, context: Arc) {
+export function createProposal(options: any, context: Arc) {
   const contributionReward = context.getContract(options.scheme)
 
   return async () => {

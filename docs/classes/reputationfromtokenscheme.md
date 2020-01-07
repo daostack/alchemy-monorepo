@@ -18,7 +18,7 @@
 
 ### Methods
 
-* [getContract](reputationfromtokenscheme.md#private-getcontract)
+* [getContract](reputationfromtokenscheme.md#getcontract)
 * [redeem](reputationfromtokenscheme.md#redeem)
 * [redemptionAmount](reputationfromtokenscheme.md#redemptionamount)
 
@@ -28,7 +28,7 @@
 
 \+ **new ReputationFromTokenScheme**(`scheme`: [Scheme](scheme.md)): *[ReputationFromTokenScheme](reputationfromtokenscheme.md)*
 
-*Defined in [schemes/reputationFromToken.ts:13](https://github.com/daostack/client/blob/0eadcce/src/schemes/reputationFromToken.ts#L13)*
+*Defined in [schemes/reputationFromToken.ts:13](https://github.com/daostack/client/blob/aa9723f/src/schemes/reputationFromToken.ts#L13)*
 
 **Parameters:**
 
@@ -44,15 +44,15 @@ Name | Type |
 
 • **scheme**: *[Scheme](scheme.md)*
 
-*Defined in [schemes/reputationFromToken.ts:15](https://github.com/daostack/client/blob/0eadcce/src/schemes/reputationFromToken.ts#L15)*
+*Defined in [schemes/reputationFromToken.ts:15](https://github.com/daostack/client/blob/aa9723f/src/schemes/reputationFromToken.ts#L15)*
 
 ## Methods
 
-### `Private` getContract
+###  getContract
 
 ▸ **getContract**(): *Promise‹any›*
 
-*Defined in [schemes/reputationFromToken.ts:47](https://github.com/daostack/client/blob/0eadcce/src/schemes/reputationFromToken.ts#L47)*
+*Defined in [schemes/reputationFromToken.ts:47](https://github.com/daostack/client/blob/aa9723f/src/schemes/reputationFromToken.ts#L47)*
 
 **Returns:** *Promise‹any›*
 
@@ -62,7 +62,7 @@ ___
 
 ▸ **redeem**(`beneficiary`: [Address](../globals.md#address)): *[Operation](../globals.md#operation)‹any›*
 
-*Defined in [schemes/reputationFromToken.ts:19](https://github.com/daostack/client/blob/0eadcce/src/schemes/reputationFromToken.ts#L19)*
+*Defined in [schemes/reputationFromToken.ts:19](https://github.com/daostack/client/blob/aa9723f/src/schemes/reputationFromToken.ts#L19)*
 
 **Parameters:**
 
@@ -78,7 +78,7 @@ ___
 
 ▸ **redemptionAmount**(`beneficiary`: [Address](../globals.md#address)): *Promise‹number›*
 
-*Defined in [schemes/reputationFromToken.ts:41](https://github.com/daostack/client/blob/0eadcce/src/schemes/reputationFromToken.ts#L41)*
+*Defined in [schemes/reputationFromToken.ts:41](https://github.com/daostack/client/blob/aa9723f/src/schemes/reputationFromToken.ts#L41)*
 
 **Parameters:**
 

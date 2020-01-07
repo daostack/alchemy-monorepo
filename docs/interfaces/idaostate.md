@@ -36,7 +36,7 @@
 
 *Inherited from [IDAOStaticState](idaostaticstate.md).[address](idaostaticstate.md#address)*
 
-*Defined in [dao.ts:19](https://github.com/daostack/client/blob/0eadcce/src/dao.ts#L19)*
+*Defined in [dao.ts:21](https://github.com/daostack/client/blob/aa9723f/src/dao.ts#L21)*
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 • **dao**: *[DAO](../classes/dao.md)*
 
-*Defined in [dao.ts:32](https://github.com/daostack/client/blob/0eadcce/src/dao.ts#L32)*
+*Defined in [dao.ts:34](https://github.com/daostack/client/blob/aa9723f/src/dao.ts#L34)*
 
 ___
 
@@ -54,7 +54,7 @@ ___
 
 *Inherited from [IDAOStaticState](idaostaticstate.md).[id](idaostaticstate.md#id)*
 
-*Defined in [dao.ts:18](https://github.com/daostack/client/blob/0eadcce/src/dao.ts#L18)*
+*Defined in [dao.ts:20](https://github.com/daostack/client/blob/aa9723f/src/dao.ts#L20)*
 
 ___
 
@@ -62,7 +62,7 @@ ___
 
 • **memberCount**: *number*
 
-*Defined in [dao.ts:29](https://github.com/daostack/client/blob/0eadcce/src/dao.ts#L29)*
+*Defined in [dao.ts:31](https://github.com/daostack/client/blob/aa9723f/src/dao.ts#L31)*
 
 ___
 
@@ -72,7 +72,7 @@ ___
 
 *Inherited from [IDAOStaticState](idaostaticstate.md).[name](idaostaticstate.md#name)*
 
-*Defined in [dao.ts:20](https://github.com/daostack/client/blob/0eadcce/src/dao.ts#L20)*
+*Defined in [dao.ts:22](https://github.com/daostack/client/blob/aa9723f/src/dao.ts#L22)*
 
 ___
 
@@ -80,7 +80,7 @@ ___
 
 • **numberOfBoostedProposals**: *number*
 
-*Defined in [dao.ts:35](https://github.com/daostack/client/blob/0eadcce/src/dao.ts#L35)*
+*Defined in [dao.ts:37](https://github.com/daostack/client/blob/aa9723f/src/dao.ts#L37)*
 
 ___
 
@@ -88,7 +88,7 @@ ___
 
 • **numberOfPreBoostedProposals**: *number*
 
-*Defined in [dao.ts:34](https://github.com/daostack/client/blob/0eadcce/src/dao.ts#L34)*
+*Defined in [dao.ts:36](https://github.com/daostack/client/blob/aa9723f/src/dao.ts#L36)*
 
 ___
 
@@ -96,7 +96,7 @@ ___
 
 • **numberOfQueuedProposals**: *number*
 
-*Defined in [dao.ts:33](https://github.com/daostack/client/blob/0eadcce/src/dao.ts#L33)*
+*Defined in [dao.ts:35](https://github.com/daostack/client/blob/aa9723f/src/dao.ts#L35)*
 
 ___
 
@@ -106,7 +106,7 @@ ___
 
 *Inherited from [IDAOStaticState](idaostaticstate.md).[register](idaostaticstate.md#register)*
 
-*Defined in [dao.ts:21](https://github.com/daostack/client/blob/0eadcce/src/dao.ts#L21)*
+*Defined in [dao.ts:23](https://github.com/daostack/client/blob/aa9723f/src/dao.ts#L23)*
 
 ___
 
@@ -116,15 +116,15 @@ ___
 
 *Inherited from [IDAOStaticState](idaostaticstate.md).[reputation](idaostaticstate.md#reputation)*
 
-*Defined in [dao.ts:22](https://github.com/daostack/client/blob/0eadcce/src/dao.ts#L22)*
+*Defined in [dao.ts:24](https://github.com/daostack/client/blob/aa9723f/src/dao.ts#L24)*
 
 ___
 
 ###  reputationTotalSupply
 
-• **reputationTotalSupply**: *any*
+• **reputationTotalSupply**: *BN*
 
-*Defined in [dao.ts:30](https://github.com/daostack/client/blob/0eadcce/src/dao.ts#L30)*
+*Defined in [dao.ts:32](https://github.com/daostack/client/blob/aa9723f/src/dao.ts#L32)*
 
 ___
 
@@ -134,7 +134,7 @@ ___
 
 *Inherited from [IDAOStaticState](idaostaticstate.md).[token](idaostaticstate.md#token)*
 
-*Defined in [dao.ts:23](https://github.com/daostack/client/blob/0eadcce/src/dao.ts#L23)*
+*Defined in [dao.ts:25](https://github.com/daostack/client/blob/aa9723f/src/dao.ts#L25)*
 
 ___
 
@@ -144,7 +144,7 @@ ___
 
 *Inherited from [IDAOStaticState](idaostaticstate.md).[tokenName](idaostaticstate.md#tokenname)*
 
-*Defined in [dao.ts:24](https://github.com/daostack/client/blob/0eadcce/src/dao.ts#L24)*
+*Defined in [dao.ts:26](https://github.com/daostack/client/blob/aa9723f/src/dao.ts#L26)*
 
 ___
 
@@ -154,12 +154,12 @@ ___
 
 *Inherited from [IDAOStaticState](idaostaticstate.md).[tokenSymbol](idaostaticstate.md#tokensymbol)*
 
-*Defined in [dao.ts:25](https://github.com/daostack/client/blob/0eadcce/src/dao.ts#L25)*
+*Defined in [dao.ts:27](https://github.com/daostack/client/blob/aa9723f/src/dao.ts#L27)*
 
 ___
 
 ###  tokenTotalSupply
 
-• **tokenTotalSupply**: *any*
+• **tokenTotalSupply**: *BN*
 
-*Defined in [dao.ts:31](https://github.com/daostack/client/blob/0eadcce/src/dao.ts#L31)*
+*Defined in [dao.ts:33](https://github.com/daostack/client/blob/aa9723f/src/dao.ts#L33)*

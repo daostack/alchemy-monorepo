@@ -40,7 +40,7 @@ handles connections with the Graph
 
 \+ **new GraphNodeObserver**(`options`: object): *[GraphNodeObserver](graphnodeobserver.md)*
 
-*Defined in [graphnode.ts:103](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L103)*
+*Defined in [graphnode.ts:119](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L119)*
 
 **Parameters:**
 
@@ -60,7 +60,7 @@ Name | Type |
 
 • **Logger**: *GlobalLogger* =  Logger
 
-*Defined in [graphnode.ts:101](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L101)*
+*Defined in [graphnode.ts:117](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L117)*
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 • **apolloClient**? : *ApolloClient‹object›*
 
-*Defined in [graphnode.ts:102](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L102)*
+*Defined in [graphnode.ts:118](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L118)*
 
 ___
 
@@ -76,7 +76,7 @@ ___
 
 • **graphqlHttpProvider**? : *undefined | string*
 
-*Defined in [graphnode.ts:99](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L99)*
+*Defined in [graphnode.ts:115](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L115)*
 
 ___
 
@@ -84,7 +84,7 @@ ___
 
 • **graphqlSubscribeToQueries**? : *undefined | false | true*
 
-*Defined in [graphnode.ts:103](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L103)*
+*Defined in [graphnode.ts:119](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L119)*
 
 ___
 
@@ -92,7 +92,7 @@ ___
 
 • **graphqlWsProvider**? : *undefined | string*
 
-*Defined in [graphnode.ts:100](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L100)*
+*Defined in [graphnode.ts:116](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L116)*
 
 ## Methods
 
@@ -100,7 +100,7 @@ ___
 
 ▸ **getObservable**(`query`: any, `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *any*
 
-*Defined in [graphnode.ts:129](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L129)*
+*Defined in [graphnode.ts:145](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L145)*
 
 Given a gql query, will return an observable of query results
 
@@ -121,7 +121,7 @@ ___
 
 ▸ **getObservableList**(`query`: any, `itemMap`: function, `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *any*
 
-*Defined in [graphnode.ts:231](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L231)*
+*Defined in [graphnode.ts:246](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L246)*
 
 Returns an observable that:
 - sends a query over http and returns the current list of results
@@ -169,7 +169,7 @@ ___
 
 ▸ **getObservableListWithFilter**(`query`: any, `itemMap`: function, `filterFunc`: function, `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *any*
 
-*Defined in [graphnode.ts:270](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L270)*
+*Defined in [graphnode.ts:285](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L285)*
 
 Returns an observable that:
 - sends a query over http and returns the current list of results
@@ -222,7 +222,7 @@ ___
 
 ▸ **getObservableObject**(`query`: any, `itemMap`: function, `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *any*
 
-*Defined in [graphnode.ts:287](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L287)*
+*Defined in [graphnode.ts:302](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L302)*
 
 **Parameters:**
 
@@ -248,7 +248,7 @@ ___
 
 ▸ **sendQuery**(`query`: any, `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Promise‹object›*
 
-*Defined in [graphnode.ts:307](https://github.com/daostack/client/blob/0eadcce/src/graphnode.ts#L307)*
+*Defined in [graphnode.ts:322](https://github.com/daostack/client/blob/aa9723f/src/graphnode.ts#L322)*
 
 **Parameters:**
 

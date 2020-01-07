@@ -29,13 +29,17 @@
 * [state](vote.md#state)
 * [search](vote.md#static-search)
 
+### Object literals
+
+* [fragments](vote.md#static-fragments)
+
 ## Constructors
 
 ###  constructor
 
 \+ **new Vote**(`idOrOpts`: string | [IVoteStaticState](../interfaces/ivotestaticstate.md), `context`: [Arc](arc.md)): *[Vote](vote.md)*
 
-*Defined in [vote.ts:113](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L113)*
+*Defined in [vote.ts:155](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L155)*
 
 **Parameters:**
 
@@ -52,7 +56,7 @@ Name | Type |
 
 • **context**: *[Arc](arc.md)*
 
-*Defined in [vote.ts:115](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L115)*
+*Defined in [vote.ts:157](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L157)*
 
 ___
 
@@ -60,7 +64,7 @@ ___
 
 • **id**: *string | undefined*
 
-*Defined in [vote.ts:112](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L112)*
+*Defined in [vote.ts:154](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L154)*
 
 ___
 
@@ -68,7 +72,7 @@ ___
 
 • **staticState**: *[IVoteStaticState](../interfaces/ivotestaticstate.md) | undefined*
 
-*Defined in [vote.ts:113](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L113)*
+*Defined in [vote.ts:155](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L155)*
 
 ## Methods
 
@@ -76,7 +80,7 @@ ___
 
 ▸ **fetchStaticState**(): *Promise‹[IVoteStaticState](../interfaces/ivotestaticstate.md)›*
 
-*Defined in [vote.ts:163](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L163)*
+*Defined in [vote.ts:197](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L197)*
 
 **Returns:** *Promise‹[IVoteStaticState](../interfaces/ivotestaticstate.md)›*
 
@@ -86,7 +90,7 @@ ___
 
 ▸ **setStaticState**(`opts`: [IVoteStaticState](../interfaces/ivotestaticstate.md)): *void*
 
-*Defined in [vote.ts:159](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L159)*
+*Defined in [vote.ts:193](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L193)*
 
 **Parameters:**
 
@@ -102,7 +106,7 @@ ___
 
 ▸ **state**(`apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[IVoteState](../interfaces/ivotestate.md)›*
 
-*Defined in [vote.ts:125](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L125)*
+*Defined in [vote.ts:167](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L167)*
 
 **Parameters:**
 
@@ -118,7 +122,7 @@ ___
 
 ▸ **search**(`context`: [Arc](arc.md), `options`: [IVoteQueryOptions](../interfaces/ivotequeryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Vote](vote.md)[]›*
 
-*Defined in [vote.ts:42](https://github.com/daostack/client/blob/0eadcce/src/vote.ts#L42)*
+*Defined in [vote.ts:58](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L58)*
 
 Vote.search(context, options) searches for vote entities
 
@@ -133,3 +137,29 @@ Name | Type | Default | Description |
 **Returns:** *Observable‹[Vote](vote.md)[]›*
 
 an observable of Vote objects
+
+## Object literals
+
+### `Static` fragments
+
+### ▪ **fragments**: *object*
+
+*Defined in [vote.ts:36](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L36)*
+
+###  VoteFields
+
+• **VoteFields**: *any* =  gql`fragment VoteFields on ProposalVote {
+      id
+      createdAt
+      dao {
+        id
+      }
+      voter
+      proposal {
+        id
+      }
+      outcome
+      reputation
+    }`
+
+*Defined in [vote.ts:37](https://github.com/daostack/client/blob/aa9723f/src/vote.ts#L37)*
