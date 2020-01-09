@@ -166,6 +166,7 @@ export class Proposal implements IStateful<IProposalState> {
         returnValue
       }
       genesisProtocolParams {
+        id
         activationTime
         boostedVotePeriodLimit
         daoBountyConst

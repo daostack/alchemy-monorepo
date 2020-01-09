@@ -1,6 +1,6 @@
 import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
-// import { first } from 'rxjs/operators'
+import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
 import { IGenesisProtocolParams, mapGenesisProtocolParams } from './genesisProtocol'
 import { Operation, toIOperationObservable } from './operation'
@@ -272,6 +272,34 @@ export class Scheme extends SchemeBase  {
 
   public setStaticState(opts: ISchemeStaticState) {
     this.staticState = opts
+    if (this.staticState.name ===  'ReputationFromToken') {
+      this.ReputationFromToken = new ReputationFromTokenScheme(this)
+    }
+  }
+
+  /**
+   * fetch the static state from the subgraph
+   * @return the statatic state
+   */
+  public async fetchStaticState(): Promise<ISchemeStaticState> {
+    if (!!this.staticState) {
+      return this.staticState
+    } else {
+      const state = await this.state({ subscribe: false}).pipe(first()).toPromise()
+      if (state === null) {
+        throw Error(`No scheme with id ${this.id} was found in the subgraph`)
+      }
+      const opts = {
+        address: state.address,
+        dao: state.dao,
+        id: this.id,
+        name: state.name,
+        paramsHash: state.paramsHash,
+        version: state.version
+      }
+      this.setStaticState(opts)
+      return state
+    }
   }
 
   public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<ISchemeState> {
