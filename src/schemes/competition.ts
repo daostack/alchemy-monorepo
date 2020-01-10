@@ -268,6 +268,13 @@ export class CompetitionScheme extends SchemeBase {
     }
   }
 
+  /**
+   * create a proposal for starting a Competition
+   *
+   * @param {IProposalCreateOptionsCompetition} options
+   * @returns {Operation<Proposal>}
+   * @memberof CompetitionScheme
+   */
   public createProposal(options: IProposalCreateOptionsCompetition): Operation<Proposal>  {
     return SchemeBase.prototype.createProposal.call(this, options)
   }

@@ -666,7 +666,7 @@ export class Proposal implements IStateful<IProposalState> {
   /**
    * Stake on this proposal
    * @param  outcome the outcome that is staked on, of type IProposalOutcome
-   * @param  amount  the amount, in GEn, to stake
+   * @param  amount  the amount, in GEN, to stake
    * @return  An observable that can be sent, or subscribed to
    */
   public stake(outcome: IProposalOutcome, amount: BN ): Operation<Stake> {

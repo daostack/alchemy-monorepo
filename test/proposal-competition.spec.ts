@@ -244,10 +244,7 @@ describe('Competition Proposal', () => {
       url: 'https://somewhere.some.place'
     }
 
-    // submit a suggestion by address1
-    arc.setAccount(address1)
     const receipt1 = await competition.createSuggestion(suggestion1Options).send()
-    arc.setAccount(address0)
     suggestion1 = receipt1.result
     expect(suggestion1).toBeDefined()
     expect(suggestion1).toBeInstanceOf(CompetitionSuggestion)
@@ -271,7 +268,7 @@ describe('Competition Proposal', () => {
       id: suggestion1.id,
       redeemedAt: null,
       rewardPercentage: 0,
-      suggester: address1,
+      suggester: address0,
       title: 'title',
       totalVotes: new BN(0)
     })
@@ -320,16 +317,12 @@ describe('Competition Proposal', () => {
     )
     await advanceTimeAndBlock(2000)
 
-    // get the current balance of addres1 (who submitted suggestion1) before redeeming the suggestion
+    // send the funds to address1
     const balanceBefore = new BN(await arc.web3.eth.getBalance(address1))
-    await suggestion1.redeem().send()
+    await suggestion1.redeem(address1).send()
     const balanceAfter = new BN(await arc.web3.eth.getBalance(address1))
     const balanceDelta = balanceAfter.sub(balanceBefore)
-    expect(balanceDelta.toString()).not.toEqual(new BN(0))
-    // TODO: write some tests for winners and their balances
-    // console.log(balanceDelta.toString())
-    // console.log(ethReward.toString())
-    // expect(balanceDelta).toEqual(ethReward.muln(97).divn(100))
+    expect(balanceDelta.toString()).not.toEqual('0')
   })
 
   async function createCompetition() {
@@ -389,10 +382,7 @@ describe('Competition Proposal', () => {
     const suggestion3Options = { ...suggestion1Options, title: 'suggestion nr 3'}
     const suggestion4Options = { ...suggestion1Options, title: 'suggestion nr 4'}
 
-    // submit a suggestion by address1
-    arc.setAccount(address1)
     const receipt1 = await competition.createSuggestion(suggestion1Options).send()
-    arc.setAccount(address0)
     suggestion1 = receipt1.result
     const receipt2 = await competition.createSuggestion(suggestion2Options).send()
     suggestion2 = receipt2.result
@@ -405,15 +395,16 @@ describe('Competition Proposal', () => {
     competition.suggestions()
       .subscribe((ls: CompetitionSuggestion[]) => {
         suggestionIds = ls.map((x: CompetitionSuggestion) => x.id)
-      })
+      }
+    )
 
     await waitUntilTrue(() => suggestionIds.indexOf(suggestion2.id) > -1)
     await waitUntilTrue(() => suggestionIds.indexOf(suggestion3.id) > -1)
     await waitUntilTrue(() => suggestionIds.indexOf(suggestion4.id) > -1)
 
-    // const schemeState = await scheme.state().pipe(first()).toPromise()
-    // const competitionContract = getCompetitionContract(schemeState, arc)
+    return competition
   }
+
   it(`No votes is no winners`, async () => {
     // before any votes are cast, all suggesitons are winnners
     await createCompetition()
@@ -423,7 +414,8 @@ describe('Competition Proposal', () => {
     await advanceTimeAndBlock(2000)
     expect(suggestion1.redeem().send()).rejects.toThrow('not in winners list')
   })
-  it('position is calculated correctly', async () => {
+
+  it('position is calculated correctly and redemptions work', async () => {
     await createCompetition()
     await suggestion1.vote().send()
     expect(await suggestion1.getPosition()).toEqual(0)
@@ -436,23 +428,27 @@ describe('Competition Proposal', () => {
 
     await advanceTimeAndBlock(2000)
 
+    const crextContractAddress = contributionRewardExtState.address
+    const crExtBalanceBefore = await arc.web3.eth.getBalance(crextContractAddress)
     const beneficiary = '0xd97BacCC5001efE003d4D8a110261AdF96166F35'.toLowerCase()
 
     let balanceBefore = new BN(await arc.web3.eth.getBalance(beneficiary))
-    // const tx = await suggestion1.redeem(beneficiary).send()
-    // console.log(tx.receipt.events)
     await suggestion1.redeem(beneficiary).send()
     let balanceAfter = new BN(await arc.web3.eth.getBalance(beneficiary))
     let balanceDelta = balanceAfter.sub(balanceBefore)
-    // TODO: why does this fail??
-    // expect(balanceDelta.toString()).toEqual('5000000000')
+    expect(balanceDelta.toString()).toEqual('5000000000')
+    const crExtBalanceAfter = await arc.web3.eth.getBalance(crextContractAddress)
+    const crExtBalanceDelta = new BN(crExtBalanceBefore).sub(new BN(crExtBalanceAfter))
+    expect(crExtBalanceDelta.toString()).toEqual('5000000000')
+
+    // the reward _is_ redeemed
+    await expect(suggestion1.redeem(beneficiary).send()).rejects.toThrow('suggestion was already redeemed')
 
     balanceBefore = new BN(await arc.web3.eth.getBalance(beneficiary))
     await suggestion2.redeem(beneficiary).send()
     balanceAfter = new BN(await arc.web3.eth.getBalance(beneficiary))
     balanceDelta = balanceAfter.sub(balanceBefore)
     expect(balanceDelta.toString()).toEqual('5000000000')
-    console.log(balanceDelta.toString())
 
     expect(await suggestion1.isWinner()).toEqual(true)
     expect(await suggestion2.isWinner()).toEqual(true)
@@ -483,7 +479,6 @@ describe('Competition Proposal', () => {
     let balanceAfter = new BN(await arc.web3.eth.getBalance(beneficiary))
     let balanceDelta = balanceAfter.sub(balanceBefore)
     expect(balanceDelta.toString()).toEqual((new BN(8000000000)).toString())
-    console.log(balanceDelta.toString())
 
     balanceBefore = new BN(await arc.web3.eth.getBalance(beneficiary))
     await suggestion1.redeem(beneficiary).send()
