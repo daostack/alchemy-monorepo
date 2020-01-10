@@ -96,7 +96,7 @@ export async function getOptions(web3: any) {
   }
 }
 
-export async function newArc(options: { [key: string]: string} = {}): Promise<Arc> {
+export async function newArc(options: { [key: string]: any} = {}): Promise<Arc> {
   const defaultOptions = {
     graphqlHttpProvider,
     graphqlWsProvider,

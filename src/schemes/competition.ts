@@ -272,12 +272,17 @@ export class CompetitionScheme extends SchemeBase {
     return SchemeBase.prototype.createProposal.call(this, options)
   }
 
- public voteSuggestion(options: {
+  public async getCompetitionContract() {
+    const schemeState = await this.state().pipe(first()).toPromise()
+    const contract = getCompetitionContract(schemeState, this.context)
+    return contract
+  }
+
+  public voteSuggestion(options: {
     suggestionId: number // this is the suggestion COUNTER
   }): Operation<CompetitionVote> {
     const createTransaction = async () => {
-      const schemeState = await this.state().pipe(first()).toPromise()
-      const contract = getCompetitionContract(schemeState, this.context)
+      const contract = await this.getCompetitionContract()
       const transaction = contract.methods.vote(options.suggestionId)
       return transaction
     }
@@ -642,6 +647,27 @@ export class CompetitionSuggestion {
     if (!options.where) { options.where = {}}
     options.where = { ...options.where, suggestion: this.id}
     return CompetitionVote.search(this.context, options, apolloQueryOptions)
+  }
+
+  public async getPosition() {
+    const suggestionState = await this.state().pipe(first()).toPromise()
+    const proposal = new Proposal(suggestionState.proposal, this.context)
+    const proposalState = await proposal.state().pipe(first()).toPromise()
+    const scheme = new CompetitionScheme(proposalState.scheme.id, this.context)
+    const competitionContract = await scheme.getCompetitionContract()
+    const transaction = competitionContract.methods.getOrderedIndexOfSuggestion(suggestionState.suggestionId)
+    const result = await transaction.call()
+    const index = Number(result)
+    return index
+  }
+  public async isWinner() {
+    const position = await this.getPosition()
+    const suggestionState = await this.state().pipe(first()).toPromise()
+    const proposal = await new Proposal(suggestionState.proposal, this.context)
+    const proposalState = await proposal.state().pipe(first()).toPromise()
+    const competitionState = proposalState.competition as ICompetitionProposal
+    const numberOfWinners = competitionState.numberOfWinners
+    return position < numberOfWinners
   }
 
   public redeem(beneficiary: Address = NULL_ADDRESS): Operation<boolean> {
