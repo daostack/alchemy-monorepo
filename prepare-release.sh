@@ -47,6 +47,11 @@ if [ ! -z "$mainnet_private_key" ]; then
 echo "Migrating mainnet..."
 npm run migrate -- --gasPrice 30 --provider $mainnet_provider --private-key $mainnet_private_key "$@"
 fi
+if [ ! -z "$xdai_private_key" ]; then
+# migrate xdai
+echo "Migrating xdai..."
+npm run migrate -- --gasPrice 5 --provider $xdai_provider --private-key $xdai_private_key "$@"
+fi
 # set version
 echo "Setting version..."
 node set-version.js

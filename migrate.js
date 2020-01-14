@@ -64,10 +64,8 @@ const wrapCommand = fn => async options => {
       return confirmation
     }
   }
-
   const web3 = new Web3(provider)
   gasPrice = gasPrice || web3.utils.fromWei(await web3.eth.getGasPrice(), 'gwei')
-
   // set web3 default account
   try {
     const account = web3.eth.accounts.privateKeyToAccount(
@@ -91,6 +89,11 @@ const wrapCommand = fn => async options => {
   }
 
   let network = await web3.eth.net.getNetworkType()
+  if (network === 'private') {
+    if (await web3.eth.net.getId() === 100) {
+      network = 'xdai'
+    }
+  }
   if (network === 'main') {
     network = 'mainnet'
   }
