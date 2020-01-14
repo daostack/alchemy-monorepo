@@ -60,10 +60,12 @@ export interface ICompetitionSuggestion {
   // fulltext: [string]
   suggester: Address
   // votes: [CompetitionVote!] @derivedFrom(field: "suggestion")
+  tags: string[]
   totalVotes: BN
   createdAt: Date
   redeemedAt: Date|null
   rewardPercentage: number
+  positionInWinnerList: number|null // 0 is the first, null means it is not winning
 }
 
 export interface ICompetitionVote {
@@ -74,10 +76,6 @@ export interface ICompetitionVote {
   createdAt?: Date
   reputation: BN
 }
-
-// export enum IProposalType {
-//   ContributionReward = 'ContributionRewardExt' // propose a contributionReward
-// }
 
 export class CompetitionScheme extends SchemeBase {
   public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<ISchemeState> {
@@ -285,6 +283,15 @@ export class CompetitionScheme extends SchemeBase {
     return contract
   }
 
+  /**
+   * Vote for the suggestion that is, in the current scheme, identified by  suggestionId
+   *
+   * @param {{
+   *     suggestionId: number // this is the suggestion COUNTER
+   *   }} options
+   * @returns {Operation<CompetitionVote>}
+   * @memberof CompetitionScheme
+   */
   public voteSuggestion(options: {
     suggestionId: number // this is the suggestion COUNTER
   }): Operation<CompetitionVote> {
@@ -416,8 +423,8 @@ export class Competition { // extends Proposal {
   public createSuggestion(options: {
     title: string,
     description: string,
-    // tags: string[],
-    url: string
+    tags?: string[],
+    url?: string
   }): Operation<any> {
     let schemeState: ISchemeState
     const createTransaction = async () => {
@@ -500,6 +507,8 @@ export interface ICompetitionSuggestionQueryOptions extends ICommonQueryOptions 
     proposal?: string, // id of the proposal
     suggestionId?: string // the "suggestionId" is a counter that is unique to the scheme
       // - and is not to be confused with suggestion.id
+    positionInWinnerList?: number|null
+    positionInWinnerList_not?: number|null
   }
 }
 export class CompetitionSuggestion {
@@ -515,6 +524,9 @@ export class CompetitionSuggestion {
       title
       description
       url
+      tags {
+        id
+      }
       # fulltext: [string]
       suggester
       # votes: [CompetitionVote!] @derivedFrom(field: "suggestion")
@@ -522,6 +534,7 @@ export class CompetitionSuggestion {
       createdAt
       redeemedAt
       rewardPercentage
+      positionInWinnerList
     }`
   }
 
@@ -538,21 +551,12 @@ export class CompetitionSuggestion {
     options: ICompetitionSuggestionQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<CompetitionSuggestion[]> {
-    let where = ''
-    if (!options.where) { options.where = {}}
-
-    for (const key of Object.keys(options.where)) {
-      if (options.where[key] === undefined) {
-        continue
-      }
-      where += `${key}: "${options.where[key] as string}"\n`
-    }
 
     const itemMap = (item: any) => this.mapItemToObject(item, context)
 
     const query = gql`query CompetitionSuggestionSearch
       {
-        competitionSuggestions ${createGraphQlQuery(options, where)} {
+        competitionSuggestions ${createGraphQlQuery(options)} {
           ...CompetitionSuggestionFields
         }
       }
@@ -575,16 +579,22 @@ export class CompetitionSuggestion {
     if (item.redeemedAt !== null) {
       redeemedAt = secondSinceEpochToDate(item.redeemedAt)
     }
+    let positionInWinnerList  = null
+    if (item.positionInWinnerList !== null) {
+      positionInWinnerList = Number(item.positionInWinnerList)
+    }
     return {
       createdAt: secondSinceEpochToDate(item.createdAt),
       description: item.description,
       descriptionHash: item.descriptionHash,
       id: item.id,
+      positionInWinnerList,
       proposal: item.proposal.id,
       redeemedAt,
       rewardPercentage: Number(item.rewardPercentage),
       suggester: item.suggester,
       suggestionId: item.suggestionId,
+      tags: item.tags.map((tag: any) => tag.id),
       title: item.title,
       totalVotes: new BN(item.totalVotes),
       url: item.url
@@ -657,24 +667,15 @@ export class CompetitionSuggestion {
   }
 
   public async getPosition() {
+    console.warn(`This method is deprecated - please use the positionInWinnerList from the proposal state`)
     const suggestionState = await this.state().pipe(first()).toPromise()
-    const proposal = new Proposal(suggestionState.proposal, this.context)
-    const proposalState = await proposal.state().pipe(first()).toPromise()
-    const scheme = new CompetitionScheme(proposalState.scheme.id, this.context)
-    const competitionContract = await scheme.getCompetitionContract()
-    const transaction = competitionContract.methods.getOrderedIndexOfSuggestion(suggestionState.suggestionId)
-    const result = await transaction.call()
-    const index = Number(result)
-    return index
+    return suggestionState.positionInWinnerList
   }
+
   public async isWinner() {
+    console.warn(`This method is deprecated - please use the positionInWinnerList !== from the proposal state`)
     const position = await this.getPosition()
-    const suggestionState = await this.state().pipe(first()).toPromise()
-    const proposal = await new Proposal(suggestionState.proposal, this.context)
-    const proposalState = await proposal.state().pipe(first()).toPromise()
-    const competitionState = proposalState.competition as ICompetitionProposal
-    const numberOfWinners = competitionState.numberOfWinners
-    return position < numberOfWinners
+    return position !== null
   }
 
   public redeem(beneficiary: Address = NULL_ADDRESS): Operation<boolean> {
@@ -688,12 +689,13 @@ export class CompetitionSuggestion {
      return toIOperationObservable(observable)
   }
 }
-export interface ICompetitionVoteQueryOptions {
+export interface ICompetitionVoteQueryOptions extends ICommonQueryOptions {
   where?: {
+    id?: string
     suggestion?: string
     voter?: Address
-    competition?: string
-    competition_not?: string|null
+    proposal?: string
+    proposal_not?: string|null
   }
 }
 
@@ -705,14 +707,9 @@ export class CompetitionVote {
       createdAt
       reputation
       voter
+      proposal { id }
+      suggestion { id }
     }`
-  }
-  public static calculateId(opts: { scheme: Address, suggestionId: number}): string {
-    const seed = concat(
-      hexStringToUint8Array(opts.scheme.toLowerCase()),
-      hexStringToUint8Array(Number(opts.suggestionId).toString(16))
-    )
-    return Web3.utils.keccak256(seed)
   }
 
   public static search(
