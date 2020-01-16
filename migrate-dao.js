@@ -655,6 +655,27 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     setState(deploymentState, network)
   }
 
+  let runFunctions = async function (object, contract) {
+    if (object.runFunctions !== undefined) {
+      for (let i in object.runFunctions) {
+        let functionParams = []
+        for (let j in object.runFunctions[i].params) {
+          if (object.runFunctions[i].params[j].StandAloneContract !== undefined) {
+            functionParams.push(deploymentState.StandAloneContracts[object.runFunctions[i].params[j].StandAloneContract].address)
+          } else if (object.runFunctions[i].params[j] === 'AvatarAddress') {
+            functionParams.push(avatar.options.address)
+          } else {
+            functionParams.push(object.runFunctions[i].params[j])
+          }
+        }
+        const functionCall = contract.methods[object.runFunctions[i].functionName](...functionParams)
+
+        tx = (await sendTx(functionCall, `Calling ${object.name} - ${object.runFunctions[i].functionName}...`)).receipt
+        await logTx(tx, `${object.name} called function ${object.runFunctions[i].functionName}.`)
+      }
+    }
+  }
+
   if (migrationParams.StandAloneContracts) {
     let len = migrationParams.StandAloneContracts.length
     if (deploymentState.standAloneContractsCounter === undefined) {
@@ -698,24 +719,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
         await logTx(tx, `${standAlone.name} initialized.`)
       }
 
-      if (standAlone.runFunctions !== undefined) {
-        for (let i in standAlone.runFunctions) {
-          let functionParams = []
-          for (let j in standAlone.runFunctions[i].params) {
-            if (standAlone.runFunctions[i].params[j].StandAloneContract !== undefined) {
-              functionParams.push(deploymentState.StandAloneContracts[standAlone.runFunctions[i].params[j].StandAloneContract].address)
-            } else if (standAlone.runFunctions[i].params[j] === 'AvatarAddress') {
-              functionParams.push(avatar.options.address)
-            } else {
-              functionParams.push(standAlone.runFunctions[i].params[j])
-            }
-          }
-          const functionCall = standAloneContract.methods[standAlone.runFunctions[i].functionName](...functionParams)
-
-          tx = (await sendTx(functionCall, `Calling ${standAlone.name} - ${standAlone.runFunctions[i].functionName}...`)).receipt
-          await logTx(tx, `${standAlone.name} called function ${standAlone.runFunctions[i].functionName}.`)
-        }
-      }
+      await runFunctions(standAlone, standAloneContract)
 
       deploymentState.StandAloneContracts.push(
         {
@@ -810,6 +814,8 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       } else {
         continue
       }
+
+      await runFunctions(customeScheme, schemeContract)
 
       deploymentState.schemeNames.push(customeScheme.name)
       deploymentState.schemes.push(schemeContract.options.address)
