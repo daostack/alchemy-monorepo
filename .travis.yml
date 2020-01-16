@@ -27,10 +27,8 @@ script:
   - docker-compose logs graph-node
   - echo -en 'travis_fold:end:script.3\\r'
 
-
-  # sleep a long time to wait fo rthe graph-node to finish indexing
-  #  until https://github.com/daostack/subgraph/issues/241 is resolved
-  - sleep 60
+# sleep a bit to make sure the subgraph is ready
+  - sleep 5
   - echo -en 'travis_fold:end:script.2\\r'
   - npm run lint
   - npm run test

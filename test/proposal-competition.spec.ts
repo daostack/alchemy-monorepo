@@ -7,8 +7,8 @@ import {
   CompetitionSuggestion,
   CompetitionVote,
   DAO,
-  ICompetitionProposal,
-  ICompetitionSuggestion,
+  ICompetitionProposalState,
+  ICompetitionSuggestionState,
   IProposalStage,
   IProposalState,
   ISchemeState,
@@ -47,6 +47,16 @@ describe('Competition Proposal', () => {
     const result = new Date()
     result.setTime(date.getTime() + (seconds * 1000))
     return result
+  }
+
+  async function getPosition(suggestion: CompetitionSuggestion) {
+    const state = await suggestion.state().pipe(first()).toPromise()
+    return state.positionInWinnerList
+  }
+
+  async function isWinner(suggestion: CompetitionSuggestion) {
+    const state = await suggestion.state().pipe(first()).toPromise()
+    return state.isWinner
   }
 
   beforeEach(async () => {
@@ -134,7 +144,7 @@ describe('Competition Proposal', () => {
     expect(lastState()).toMatchObject({
       stage: IProposalStage.Queued
     })
-    expect((lastState().competition as ICompetitionProposal).startTime).toBeDefined()
+    expect((lastState().competition as ICompetitionProposalState).startTime).toBeDefined()
   })
 
   it('Create a competition proposal, compete, win the competition..', async () => {
@@ -327,7 +337,7 @@ describe('Competition Proposal', () => {
     expect(balanceDelta.toString()).not.toEqual('0')
   })
 
-  async function createCompetition() {
+  async function createCompetition(options: { rewardSplit?: number[]}  = {}) {
     const scheme = new  CompetitionScheme(contributionRewardExt.id, arc)
     const ethReward =  new BN(10000000000)
     // make sure that the DAO has enough Ether to pay forthe reward
@@ -342,7 +352,7 @@ describe('Competition Proposal', () => {
     const nativeTokenReward = new BN(0)
     const now = await getBlockTime(arc.web3)
     const startTime = addSeconds(now, 2)
-    const rewardSplit = [80, 20]
+    const rewardSplit = options.rewardSplit || [80, 20]
     const proposalOptions  = {
       dao: dao.id,
       endTime: addSeconds(startTime, 200),
@@ -410,8 +420,8 @@ describe('Competition Proposal', () => {
   it(`No votes is no winners`, async () => {
     // before any votes are cast, all suggesitons are winnners
     await createCompetition()
-    expect(await suggestion1.getPosition()).toEqual(null)
-    expect(await suggestion4.getPosition()).toEqual(null)
+    expect(await getPosition(suggestion1)).toEqual(null)
+    expect(await getPosition(suggestion4)).toEqual(null)
     // let's try to redeem
     await advanceTimeAndBlock(2000)
     expect(suggestion1.redeem().send()).rejects.toThrow('not in winners list')
@@ -424,26 +434,26 @@ describe('Competition Proposal', () => {
     // vote and wait until it is indexed
     await suggestion1.vote().send()
     voteIsIndexed = false
-    suggestion1.state().subscribe((s: ICompetitionSuggestion) => {
+    suggestion1.state().subscribe((s: ICompetitionSuggestionState) => {
       voteIsIndexed = (s.positionInWinnerList !== null)
     })
     await waitUntilTrue(() => voteIsIndexed)
 
-    expect(await suggestion1.getPosition()).toEqual(0)
-    expect(await suggestion4.getPosition()).toEqual(null)
+    expect(await getPosition(suggestion1)).toEqual(0)
+    expect(await getPosition(suggestion4)).toEqual(null)
 
     // vote and wait until it is indexed
     voteIsIndexed = false
     await suggestion2.vote().send()
-    suggestion2.state().subscribe((s: ICompetitionSuggestion) => {
+    suggestion2.state().subscribe((s: ICompetitionSuggestionState) => {
       voteIsIndexed = (s.positionInWinnerList !== null)
     })
     await waitUntilTrue(() => voteIsIndexed)
 
-    expect(await suggestion1.getPosition()).toEqual(0)
-    expect(await suggestion2.getPosition()).toEqual(0)
-    expect(await suggestion3.getPosition()).toEqual(null)
-    expect(await suggestion4.getPosition()).toEqual(null)
+    expect(await getPosition(suggestion1)).toEqual(0)
+    expect(await getPosition(suggestion2)).toEqual(0)
+    expect(await getPosition(suggestion3)).toEqual(null)
+    expect(await getPosition(suggestion4)).toEqual(null)
 
     await advanceTimeAndBlock(2000)
 
@@ -469,10 +479,10 @@ describe('Competition Proposal', () => {
     balanceDelta = balanceAfter.sub(balanceBefore)
     expect(balanceDelta.toString()).toEqual('5000000000')
 
-    expect(await suggestion1.isWinner()).toEqual(true)
-    expect(await suggestion2.isWinner()).toEqual(true)
-    expect(await suggestion3.isWinner()).toEqual(false)
-    expect(await suggestion4.isWinner()).toEqual(false)
+    expect(await isWinner(suggestion1)).toEqual(true)
+    expect(await isWinner(suggestion2)).toEqual(true)
+    expect(await isWinner(suggestion3)).toEqual(false)
+    expect(await isWinner(suggestion4)).toEqual(false)
   })
 
   it('position is calculated correctly (2)', async () => {
@@ -487,15 +497,15 @@ describe('Competition Proposal', () => {
 
      // wait until last vote is indexed
     let voteIsIndexed = false
-    suggestion2.state().subscribe((s: ICompetitionSuggestion) => {
+    suggestion2.state().subscribe((s: ICompetitionSuggestionState) => {
       voteIsIndexed = (s.positionInWinnerList !== null)
     })
     await waitUntilTrue(() => voteIsIndexed)
 
-    expect(await suggestion1.getPosition()).toEqual(1)
-    expect(await suggestion2.getPosition()).toEqual(1)
-    expect(await suggestion3.getPosition()).toEqual(0)
-    expect(await suggestion4.getPosition()).toEqual(null)
+    expect(await getPosition(suggestion1)).toEqual(1)
+    expect(await getPosition(suggestion2)).toEqual(1)
+    expect(await getPosition(suggestion3)).toEqual(0)
+    expect(await getPosition(suggestion4)).toEqual(null)
 
     await advanceTimeAndBlock(2000)
 
@@ -514,10 +524,10 @@ describe('Competition Proposal', () => {
 
     expect(suggestion4.redeem(beneficiary).send()).rejects.toThrow('not in winners list')
 
-    expect(await suggestion1.isWinner()).toEqual(true)
-    expect(await suggestion2.isWinner()).toEqual(true)
-    expect(await suggestion3.isWinner()).toEqual(true)
-    expect(await suggestion4.isWinner()).toEqual(false)
+    expect(await isWinner(suggestion1)).toEqual(true)
+    expect(await isWinner(suggestion2)).toEqual(true)
+    expect(await isWinner(suggestion3)).toEqual(true)
+    expect(await isWinner(suggestion4)).toEqual(false)
 
     // if we get the list of winners, it should contain exactly these 3 suggestions
     const winnerList = await competition.suggestions({where: {positionInWinnerList_not: null}})
@@ -525,6 +535,36 @@ describe('Competition Proposal', () => {
     expect(winnerList.map((s: CompetitionSuggestion) => s.id).sort()).toEqual(
       [suggestion1.id, suggestion2.id, suggestion3.id].sort()
     )
+
+  })
+
+  it('winner is identified correctly also if there are less actual than possible winners', async () => {
+    await createCompetition({ rewardSplit: [40, 40, 20]})
+    await suggestion1.vote().send()
+     // wait until the vote is indexed
+    let voteIsIndexed = false
+    suggestion1.state().subscribe((s: ICompetitionSuggestionState) => {
+      voteIsIndexed = (s.positionInWinnerList !== null)
+    })
+    await waitUntilTrue(() => voteIsIndexed)
+
+    const suggestion1State = await suggestion1.state().pipe(first()).toPromise()
+    expect(suggestion1State.positionInWinnerList).toEqual(0)
+    expect(suggestion1State.totalVotes).not.toEqual(new BN(0))
+    expect(suggestion1State.isWinner).toEqual(true)
+
+    const suggestion2State = await suggestion2.state().pipe(first()).toPromise()
+    expect(suggestion2State.positionInWinnerList).toEqual(null)
+    expect(suggestion2State.totalVotes).toEqual(new BN(0))
+
+    const suggestion3State = await suggestion3.state().pipe(first()).toPromise()
+    expect(suggestion3State.positionInWinnerList).toEqual(null)
+    expect(suggestion3State.totalVotes).toEqual(new BN(0))
+    expect(suggestion3State.isWinner).toEqual(false)
+
+    const suggestion4State = await suggestion4.state().pipe(first()).toPromise()
+    expect(suggestion4State.positionInWinnerList).toEqual(null)
+    expect(suggestion4State.totalVotes).toEqual(new BN(0))
 
   })
 

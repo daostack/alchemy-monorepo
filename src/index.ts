@@ -13,9 +13,14 @@ export { Reward, IRewardState, IRewardStaticState, IRewardQueryOptions } from '.
 export { Scheme, ISchemeState, ISchemeStaticState, ISchemeQueryOptions } from './scheme'
 export { ReputationFromTokenScheme } from './schemes/reputationFromToken'
 export { IContributionReward} from './schemes/contributionReward'
-export { hasCompetitionContract, IProposalCreateOptionsCompetition, Competition, CompetitionScheme,
+export { hasCompetitionContract, isCompetitionScheme,
+    IProposalCreateOptionsCompetition,
+    ICompetitionSuggestionQueryOptions,
+    ICompetitionVoteQueryOptions,
+    Competition,
+    CompetitionScheme,
     CompetitionSuggestion, CompetitionVote,
-    ICompetitionProposal, ICompetitionVote, ICompetitionSuggestion } from './schemes/competition'
+    ICompetitionProposalState, ICompetitionVoteState, ICompetitionSuggestionState } from './schemes/competition'
 export  { IContributionRewardExt, IProposalCreateOptionsContributionRewardExt } from './schemes/contributionRewardExt'
 export { IGenericScheme } from './schemes/genericScheme'
 export { IUGenericScheme } from './schemes/uGenericScheme'

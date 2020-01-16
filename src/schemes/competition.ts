@@ -19,7 +19,7 @@ import {  ISchemeState, SchemeBase } from './base'
 
 const Web3 = require('web3')
 
-export interface ICompetitionProposal {
+export interface ICompetitionProposalState {
   id: string
   contract: Address
   endTime: Date
@@ -49,7 +49,7 @@ export interface IProposalCreateOptionsCompetition extends IProposalBaseCreateOp
   votingStartTime: Date,
 }
 
-export interface ICompetitionSuggestion {
+export interface ICompetitionSuggestionState {
   id: string
   suggestionId: number
   proposal: string
@@ -66,9 +66,10 @@ export interface ICompetitionSuggestion {
   redeemedAt: Date|null
   rewardPercentage: number
   positionInWinnerList: number|null // 0 is the first, null means it is not winning
+  isWinner: boolean
 }
 
-export interface ICompetitionVote {
+export interface ICompetitionVoteState {
   id?: string
   // proposal: CompetitionProposal!
   // suggestion: CompetitionSuggestion!
@@ -552,7 +553,9 @@ export class CompetitionSuggestion {
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<CompetitionSuggestion[]> {
 
-    const itemMap = (item: any) => this.mapItemToObject(item, context)
+    const itemMap = (item: any) => {
+      return new CompetitionSuggestion(this.mapItemToObject(item, context) as ICompetitionSuggestionState, context)
+    }
 
     const query = gql`query CompetitionSuggestionSearch
       {
@@ -570,7 +573,7 @@ export class CompetitionSuggestion {
     ) as Observable<CompetitionSuggestion[]>
   }
 
-  private static mapItemToObject(item: any, context: Arc): ICompetitionSuggestion|null {
+  private static mapItemToObject(item: any, context: Arc): ICompetitionSuggestionState|null {
     if (item === null) {
       return null
     }
@@ -583,11 +586,12 @@ export class CompetitionSuggestion {
     if (item.positionInWinnerList !== null) {
       positionInWinnerList = Number(item.positionInWinnerList)
     }
-    return {
+    return  {
       createdAt: secondSinceEpochToDate(item.createdAt),
       description: item.description,
       descriptionHash: item.descriptionHash,
       id: item.id,
+      isWinner: positionInWinnerList !== null,
       positionInWinnerList,
       proposal: item.proposal.id,
       redeemedAt,
@@ -604,9 +608,12 @@ export class CompetitionSuggestion {
 
   public id: string
   public suggestionId?: number
-  public staticState?: ICompetitionSuggestion
+  public staticState?: ICompetitionSuggestionState
 
-  constructor(idOrOpts: string|{ suggestionId: number, scheme: string}|ICompetitionSuggestion, public context: Arc) {
+  constructor(
+    idOrOpts: string|{ suggestionId: number, scheme: string}|ICompetitionSuggestionState,
+    public context: Arc
+  ) {
      if (typeof idOrOpts === 'string') {
       this.id = idOrOpts
     } else {
@@ -617,22 +624,22 @@ export class CompetitionSuggestion {
         this.id = CompetitionSuggestion.calculateId(idOrOpts as { suggestionId: number, scheme: string})
         this.suggestionId = idOrOpts.suggestionId
       } else {
-        const opts = idOrOpts as ICompetitionSuggestion
+        const opts = idOrOpts as ICompetitionSuggestionState
         this.id = opts.id
         this.setStaticState(opts)
       }
     }
   }
 
-  public setStaticState(opts: ICompetitionSuggestion) {
+  public setStaticState(opts: ICompetitionSuggestionState) {
     this.staticState = opts
   }
 
-  public async fetchStaticState(): Promise<ICompetitionSuggestion> {
+  public async fetchStaticState(): Promise<ICompetitionSuggestionState> {
     return this.state({ fetchPolicy: 'cache-first'}).pipe(first()).toPromise()
   }
 
-  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<ICompetitionSuggestion> {
+  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<ICompetitionSuggestionState> {
     const query = gql`query SchemeState
       {
         competitionSuggestion (id: "${this.id}") {
@@ -674,8 +681,8 @@ export class CompetitionSuggestion {
 
   public async isWinner() {
     console.warn(`This method is deprecated - please use the positionInWinnerList !== from the proposal state`)
-    const position = await this.getPosition()
-    return position !== null
+    const suggestionState = await this.state().pipe(first()).toPromise()
+    return suggestionState.isWinner
   }
 
   public redeem(beneficiary: Address = NULL_ADDRESS): Operation<boolean> {
@@ -742,19 +749,19 @@ export class CompetitionVote {
     ) as Observable<CompetitionVote[]>
   }
   public id?: string
-  public staticState?: ICompetitionVote
+  public staticState?: ICompetitionVoteState
 
-  constructor(idOrOpts: string|ICompetitionVote, public context: Arc) {
+  constructor(idOrOpts: string|ICompetitionVoteState, public context: Arc) {
     if (typeof idOrOpts === 'string') {
       this.id = idOrOpts
     } else {
-      const opts = idOrOpts as ICompetitionVote
+      const opts = idOrOpts as ICompetitionVoteState
       // this.id = opts.id
       this.setStaticState(opts)
     }
   }
 
-  public setStaticState(opts: ICompetitionVote) {
+  public setStaticState(opts: ICompetitionVoteState) {
     this.staticState = opts
   }
 }
