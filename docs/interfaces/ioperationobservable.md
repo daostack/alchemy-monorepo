@@ -94,7 +94,7 @@ ___
 
 • **send**: *function*
 
-*Defined in [operation.ts:35](https://github.com/daostack/client/blob/7361fcc/src/operation.ts#L35)*
+*Defined in [operation.ts:35](https://github.com/daostack/client/blob/1bc237e/src/operation.ts#L35)*
 
 #### Type declaration:
 

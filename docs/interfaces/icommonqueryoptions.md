@@ -16,6 +16,8 @@
 
   ↳ [ICompetitionSuggestionQueryOptions](icompetitionsuggestionqueryoptions.md)
 
+  ↳ [ICompetitionVoteQueryOptions](icompetitionvotequeryoptions.md)
+
   ↳ [IQueueQueryOptions](iqueuequeryoptions.md)
 
   ↳ [IRewardQueryOptions](irewardqueryoptions.md)
@@ -54,7 +56,7 @@
 
 • **first**? : *undefined | number*
 
-*Defined in [types.ts:16](https://github.com/daostack/client/blob/7361fcc/src/types.ts#L16)*
+*Defined in [types.ts:16](https://github.com/daostack/client/blob/1bc237e/src/types.ts#L16)*
 
 ___
 
@@ -62,7 +64,7 @@ ___
 
 • **orderBy**? : *undefined | string*
 
-*Defined in [types.ts:17](https://github.com/daostack/client/blob/7361fcc/src/types.ts#L17)*
+*Defined in [types.ts:17](https://github.com/daostack/client/blob/1bc237e/src/types.ts#L17)*
 
 ___
 
@@ -70,7 +72,7 @@ ___
 
 • **orderDirection**? : *"asc" | "desc"*
 
-*Defined in [types.ts:18](https://github.com/daostack/client/blob/7361fcc/src/types.ts#L18)*
+*Defined in [types.ts:18](https://github.com/daostack/client/blob/1bc237e/src/types.ts#L18)*
 
 ___
 
@@ -78,7 +80,7 @@ ___
 
 • **skip**? : *undefined | number*
 
-*Defined in [types.ts:15](https://github.com/daostack/client/blob/7361fcc/src/types.ts#L15)*
+*Defined in [types.ts:15](https://github.com/daostack/client/blob/1bc237e/src/types.ts#L15)*
 
 ___
 
@@ -86,4 +88,4 @@ ___
 
 • **where**? : *any*
 
-*Defined in [types.ts:19](https://github.com/daostack/client/blob/7361fcc/src/types.ts#L19)*
+*Defined in [types.ts:19](https://github.com/daostack/client/blob/1bc237e/src/types.ts#L19)*

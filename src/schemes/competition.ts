@@ -336,6 +336,9 @@ export class CompetitionScheme extends SchemeBase {
       if (reputationOfUser.isZero()) {
         throw Error(`Cannot vote because the user ${sender} does not have any reputation in the DAO at ${dao.id}`)
       }
+      // get any solidity-defined errors
+      const tx = await createTransaction()
+      await tx.call()
       return err
     }
     const observable = this.context.sendTransaction(createTransaction, mapReceipt, errorHandler)
@@ -463,6 +466,8 @@ export class Competition { // extends Proposal {
       if (!proposal) {
         throw Error(`A proposal with id ${this.id} does not exist`)
       }
+      const tx = await createTransaction()
+      await tx.call()
       return err
     }
     const observable = this.context.sendTransaction(createTransaction, mapReceipt, errorHandler)

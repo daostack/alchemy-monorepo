@@ -20,9 +20,9 @@
 
 • **rewarder**: *[Address](../globals.md#address)*
 
-*Defined in [schemes/base.ts:63](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L63)*
+*Defined in [schemes/base.ts:63](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L63)*
 
-*Defined in [scheme.ts:66](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L66)*
+*Defined in [scheme.ts:66](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L66)*
 
 ___
 
@@ -30,9 +30,9 @@ ___
 
 • **voteParams**: *[IGenesisProtocolParams](igenesisprotocolparams.md)*
 
-*Defined in [schemes/base.ts:62](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L62)*
+*Defined in [schemes/base.ts:62](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L62)*
 
-*Defined in [scheme.ts:65](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L65)*
+*Defined in [scheme.ts:65](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L65)*
 
 ___
 
@@ -40,6 +40,6 @@ ___
 
 • **votingMachine**: *[Address](../globals.md#address)*
 
-*Defined in [schemes/base.ts:61](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L61)*
+*Defined in [schemes/base.ts:61](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L61)*
 
-*Defined in [scheme.ts:64](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L64)*
+*Defined in [scheme.ts:64](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L64)*

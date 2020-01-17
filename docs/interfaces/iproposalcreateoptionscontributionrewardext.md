@@ -34,7 +34,7 @@
 
 • **beneficiary**: *[Address](../globals.md#address)*
 
-*Defined in [schemes/contributionRewardExt.ts:23](https://github.com/daostack/client/blob/7361fcc/src/schemes/contributionRewardExt.ts#L23)*
+*Defined in [schemes/contributionRewardExt.ts:23](https://github.com/daostack/client/blob/1bc237e/src/schemes/contributionRewardExt.ts#L23)*
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[dao](iproposalbasecreateoptions.md#dao)*
 
-*Defined in [proposal.ts:860](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L860)*
+*Defined in [proposal.ts:871](https://github.com/daostack/client/blob/1bc237e/src/proposal.ts#L871)*
 
 ___
 
@@ -54,7 +54,7 @@ ___
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[description](iproposalbasecreateoptions.md#optional-description)*
 
-*Defined in [proposal.ts:861](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L861)*
+*Defined in [proposal.ts:872](https://github.com/daostack/client/blob/1bc237e/src/proposal.ts#L872)*
 
 ___
 
@@ -64,7 +64,7 @@ ___
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[descriptionHash](iproposalbasecreateoptions.md#optional-descriptionhash)*
 
-*Defined in [proposal.ts:862](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L862)*
+*Defined in [proposal.ts:873](https://github.com/daostack/client/blob/1bc237e/src/proposal.ts#L873)*
 
 ___
 
@@ -72,7 +72,7 @@ ___
 
 • **ethReward**? : *BN*
 
-*Defined in [schemes/contributionRewardExt.ts:26](https://github.com/daostack/client/blob/7361fcc/src/schemes/contributionRewardExt.ts#L26)*
+*Defined in [schemes/contributionRewardExt.ts:26](https://github.com/daostack/client/blob/1bc237e/src/schemes/contributionRewardExt.ts#L26)*
 
 ___
 
@@ -80,7 +80,7 @@ ___
 
 • **externalTokenAddress**? : *[Address](../globals.md#address)*
 
-*Defined in [schemes/contributionRewardExt.ts:28](https://github.com/daostack/client/blob/7361fcc/src/schemes/contributionRewardExt.ts#L28)*
+*Defined in [schemes/contributionRewardExt.ts:28](https://github.com/daostack/client/blob/1bc237e/src/schemes/contributionRewardExt.ts#L28)*
 
 ___
 
@@ -88,7 +88,7 @@ ___
 
 • **externalTokenReward**? : *BN*
 
-*Defined in [schemes/contributionRewardExt.ts:27](https://github.com/daostack/client/blob/7361fcc/src/schemes/contributionRewardExt.ts#L27)*
+*Defined in [schemes/contributionRewardExt.ts:27](https://github.com/daostack/client/blob/1bc237e/src/schemes/contributionRewardExt.ts#L27)*
 
 ___
 
@@ -96,7 +96,7 @@ ___
 
 • **nativeTokenReward**? : *BN*
 
-*Defined in [schemes/contributionRewardExt.ts:24](https://github.com/daostack/client/blob/7361fcc/src/schemes/contributionRewardExt.ts#L24)*
+*Defined in [schemes/contributionRewardExt.ts:24](https://github.com/daostack/client/blob/1bc237e/src/schemes/contributionRewardExt.ts#L24)*
 
 ___
 
@@ -106,7 +106,7 @@ ___
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[proposalType](iproposalbasecreateoptions.md#optional-proposaltype)*
 
-*Defined in [proposal.ts:868](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L868)*
+*Defined in [proposal.ts:879](https://github.com/daostack/client/blob/1bc237e/src/proposal.ts#L879)*
 
 ___
 
@@ -114,7 +114,7 @@ ___
 
 • **proposer**: *[Address](../globals.md#address)*
 
-*Defined in [schemes/contributionRewardExt.ts:29](https://github.com/daostack/client/blob/7361fcc/src/schemes/contributionRewardExt.ts#L29)*
+*Defined in [schemes/contributionRewardExt.ts:29](https://github.com/daostack/client/blob/1bc237e/src/schemes/contributionRewardExt.ts#L29)*
 
 ___
 
@@ -122,7 +122,7 @@ ___
 
 • **reputationReward**? : *BN*
 
-*Defined in [schemes/contributionRewardExt.ts:25](https://github.com/daostack/client/blob/7361fcc/src/schemes/contributionRewardExt.ts#L25)*
+*Defined in [schemes/contributionRewardExt.ts:25](https://github.com/daostack/client/blob/1bc237e/src/schemes/contributionRewardExt.ts#L25)*
 
 ___
 
@@ -132,7 +132,7 @@ ___
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[scheme](iproposalbasecreateoptions.md#optional-scheme)*
 
-*Defined in [proposal.ts:865](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L865)*
+*Defined in [proposal.ts:876](https://github.com/daostack/client/blob/1bc237e/src/proposal.ts#L876)*
 
 ___
 
@@ -142,7 +142,7 @@ ___
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[tags](iproposalbasecreateoptions.md#optional-tags)*
 
-*Defined in [proposal.ts:864](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L864)*
+*Defined in [proposal.ts:875](https://github.com/daostack/client/blob/1bc237e/src/proposal.ts#L875)*
 
 ___
 
@@ -152,7 +152,7 @@ ___
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[title](iproposalbasecreateoptions.md#optional-title)*
 
-*Defined in [proposal.ts:863](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L863)*
+*Defined in [proposal.ts:874](https://github.com/daostack/client/blob/1bc237e/src/proposal.ts#L874)*
 
 ___
 
@@ -162,4 +162,4 @@ ___
 
 *Inherited from [IProposalBaseCreateOptions](iproposalbasecreateoptions.md).[url](iproposalbasecreateoptions.md#optional-url)*
 
-*Defined in [proposal.ts:866](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L866)*
+*Defined in [proposal.ts:877](https://github.com/daostack/client/blob/1bc237e/src/proposal.ts#L877)*

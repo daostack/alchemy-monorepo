@@ -23,7 +23,7 @@
 
 • **address**: *[Address](../globals.md#address)*
 
-*Defined in [member.ts:20](https://github.com/daostack/client/blob/7361fcc/src/member.ts#L20)*
+*Defined in [member.ts:20](https://github.com/daostack/client/blob/1bc237e/src/member.ts#L20)*
 
 ___
 
@@ -31,7 +31,7 @@ ___
 
 • **contract**? : *[Address](../globals.md#address)*
 
-*Defined in [member.ts:21](https://github.com/daostack/client/blob/7361fcc/src/member.ts#L21)*
+*Defined in [member.ts:21](https://github.com/daostack/client/blob/1bc237e/src/member.ts#L21)*
 
 ___
 
@@ -39,7 +39,7 @@ ___
 
 • **dao**? : *[Address](../globals.md#address)*
 
-*Defined in [member.ts:22](https://github.com/daostack/client/blob/7361fcc/src/member.ts#L22)*
+*Defined in [member.ts:22](https://github.com/daostack/client/blob/1bc237e/src/member.ts#L22)*
 
 ___
 
@@ -47,4 +47,4 @@ ___
 
 • **id**? : *undefined | string*
 
-*Defined in [member.ts:19](https://github.com/daostack/client/blob/7361fcc/src/member.ts#L19)*
+*Defined in [member.ts:19](https://github.com/daostack/client/blob/1bc237e/src/member.ts#L19)*

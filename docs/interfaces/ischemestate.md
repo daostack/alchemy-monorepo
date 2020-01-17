@@ -44,7 +44,7 @@
 
 *Overrides void*
 
-*Defined in [schemes/base.ts:21](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L21)*
+*Defined in [schemes/base.ts:21](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L21)*
 
 ___
 
@@ -52,9 +52,9 @@ ___
 
 • **canDelegateCall**: *boolean*
 
-*Defined in [schemes/base.ts:29](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L29)*
+*Defined in [schemes/base.ts:29](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L29)*
 
-*Defined in [scheme.ts:32](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L32)*
+*Defined in [scheme.ts:32](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L32)*
 
 ___
 
@@ -62,9 +62,9 @@ ___
 
 • **canManageGlobalConstraints**: *boolean*
 
-*Defined in [schemes/base.ts:32](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L32)*
+*Defined in [schemes/base.ts:32](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L32)*
 
-*Defined in [scheme.ts:35](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L35)*
+*Defined in [scheme.ts:35](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L35)*
 
 ___
 
@@ -72,9 +72,9 @@ ___
 
 • **canRegisterSchemes**: *boolean*
 
-*Defined in [schemes/base.ts:30](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L30)*
+*Defined in [schemes/base.ts:30](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L30)*
 
-*Defined in [scheme.ts:33](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L33)*
+*Defined in [scheme.ts:33](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L33)*
 
 ___
 
@@ -82,9 +82,9 @@ ___
 
 • **canUpgradeController**: *boolean*
 
-*Defined in [schemes/base.ts:31](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L31)*
+*Defined in [schemes/base.ts:31](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L31)*
 
-*Defined in [scheme.ts:34](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L34)*
+*Defined in [scheme.ts:34](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L34)*
 
 ___
 
@@ -92,9 +92,9 @@ ___
 
 • **contributionRewardExtParams**? : *[IContributionRewardExtParams](icontributionrewardextparams.md)*
 
-*Defined in [schemes/base.ts:36](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L36)*
+*Defined in [schemes/base.ts:36](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L36)*
 
-*Defined in [scheme.ts:39](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L39)*
+*Defined in [scheme.ts:39](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L39)*
 
 ___
 
@@ -102,9 +102,9 @@ ___
 
 • **contributionRewardParams**? : *[IContributionRewardParams](icontributionrewardparams.md)*
 
-*Defined in [schemes/base.ts:35](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L35)*
+*Defined in [schemes/base.ts:35](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L35)*
 
-*Defined in [scheme.ts:38](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L38)*
+*Defined in [scheme.ts:38](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L38)*
 
 ___
 
@@ -114,9 +114,9 @@ ___
 
 *Overrides [ISchemeStaticState](ischemestaticstate.md).[dao](ischemestaticstate.md#dao)*
 
-*Defined in [schemes/base.ts:33](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L33)*
+*Defined in [schemes/base.ts:33](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L33)*
 
-*Defined in [scheme.ts:36](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L36)*
+*Defined in [scheme.ts:36](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L36)*
 
 ___
 
@@ -124,9 +124,9 @@ ___
 
 • **genericSchemeParams**? : *[IGenericSchemeParams](igenericschemeparams.md)*
 
-*Defined in [schemes/base.ts:37](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L37)*
+*Defined in [schemes/base.ts:37](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L37)*
 
-*Defined in [scheme.ts:40](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L40)*
+*Defined in [scheme.ts:40](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L40)*
 
 ___
 
@@ -138,7 +138,7 @@ ___
 
 *Overrides void*
 
-*Defined in [schemes/base.ts:20](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L20)*
+*Defined in [schemes/base.ts:20](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L20)*
 
 ___
 
@@ -150,7 +150,7 @@ ___
 
 *Overrides void*
 
-*Defined in [schemes/base.ts:23](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L23)*
+*Defined in [schemes/base.ts:23](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L23)*
 
 ___
 
@@ -158,9 +158,9 @@ ___
 
 • **numberOfBoostedProposals**: *number*
 
-*Defined in [schemes/base.ts:45](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L45)*
+*Defined in [schemes/base.ts:45](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L45)*
 
-*Defined in [scheme.ts:48](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L48)*
+*Defined in [scheme.ts:48](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L48)*
 
 ___
 
@@ -168,9 +168,9 @@ ___
 
 • **numberOfPreBoostedProposals**: *number*
 
-*Defined in [schemes/base.ts:44](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L44)*
+*Defined in [schemes/base.ts:44](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L44)*
 
-*Defined in [scheme.ts:47](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L47)*
+*Defined in [scheme.ts:47](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L47)*
 
 ___
 
@@ -178,9 +178,9 @@ ___
 
 • **numberOfQueuedProposals**: *number*
 
-*Defined in [schemes/base.ts:43](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L43)*
+*Defined in [schemes/base.ts:43](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L43)*
 
-*Defined in [scheme.ts:46](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L46)*
+*Defined in [scheme.ts:46](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L46)*
 
 ___
 
@@ -190,9 +190,9 @@ ___
 
 *Overrides [ISchemeStaticState](ischemestaticstate.md).[paramsHash](ischemestaticstate.md#paramshash)*
 
-*Defined in [schemes/base.ts:34](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L34)*
+*Defined in [schemes/base.ts:34](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L34)*
 
-*Defined in [scheme.ts:37](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L37)*
+*Defined in [scheme.ts:37](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L37)*
 
 ___
 
@@ -200,9 +200,9 @@ ___
 
 • **schemeParams**? : *IGenericSchemeParams | IContributionRewardParams | IContributionRewardExtParams | ISchemeRegisterParams*
 
-*Defined in [schemes/base.ts:47](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L47)*
+*Defined in [schemes/base.ts:47](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L47)*
 
-*Defined in [scheme.ts:50](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L50)*
+*Defined in [scheme.ts:50](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L50)*
 
 ___
 
@@ -210,9 +210,9 @@ ___
 
 • **schemeRegistrarParams**? : *object | null*
 
-*Defined in [schemes/base.ts:38](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L38)*
+*Defined in [schemes/base.ts:38](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L38)*
 
-*Defined in [scheme.ts:41](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L41)*
+*Defined in [scheme.ts:41](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L41)*
 
 ___
 
@@ -220,9 +220,9 @@ ___
 
 • **uGenericSchemeParams**? : *[IGenericSchemeParams](igenericschemeparams.md)*
 
-*Defined in [schemes/base.ts:46](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L46)*
+*Defined in [schemes/base.ts:46](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L46)*
 
-*Defined in [scheme.ts:49](https://github.com/daostack/client/blob/7361fcc/src/scheme.ts#L49)*
+*Defined in [scheme.ts:49](https://github.com/daostack/client/blob/1bc237e/src/scheme.ts#L49)*
 
 ___
 
@@ -234,4 +234,4 @@ ___
 
 *Overrides void*
 
-*Defined in [schemes/base.ts:25](https://github.com/daostack/client/blob/7361fcc/src/schemes/base.ts#L25)*
+*Defined in [schemes/base.ts:25](https://github.com/daostack/client/blob/1bc237e/src/schemes/base.ts#L25)*

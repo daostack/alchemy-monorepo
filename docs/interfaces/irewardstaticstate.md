@@ -28,7 +28,7 @@
 
 • **beneficiary**: *[Address](../globals.md#address)*
 
-*Defined in [reward.ts:11](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L11)*
+*Defined in [reward.ts:11](https://github.com/daostack/client/blob/1bc237e/src/reward.ts#L11)*
 
 ___
 
@@ -36,7 +36,7 @@ ___
 
 • **createdAt**: *Date*
 
-*Defined in [reward.ts:12](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L12)*
+*Defined in [reward.ts:12](https://github.com/daostack/client/blob/1bc237e/src/reward.ts#L12)*
 
 ___
 
@@ -44,7 +44,7 @@ ___
 
 • **daoBountyForStaker**: *BN*
 
-*Defined in [reward.ts:16](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L16)*
+*Defined in [reward.ts:16](https://github.com/daostack/client/blob/1bc237e/src/reward.ts#L16)*
 
 ___
 
@@ -52,7 +52,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [reward.ts:10](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L10)*
+*Defined in [reward.ts:10](https://github.com/daostack/client/blob/1bc237e/src/reward.ts#L10)*
 
 ___
 
@@ -60,7 +60,7 @@ ___
 
 • **proposalId**: *string*
 
-*Defined in [reward.ts:13](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L13)*
+*Defined in [reward.ts:13](https://github.com/daostack/client/blob/1bc237e/src/reward.ts#L13)*
 
 ___
 
@@ -68,7 +68,7 @@ ___
 
 • **reputationForProposer**: *BN*
 
-*Defined in [reward.ts:17](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L17)*
+*Defined in [reward.ts:17](https://github.com/daostack/client/blob/1bc237e/src/reward.ts#L17)*
 
 ___
 
@@ -76,7 +76,7 @@ ___
 
 • **reputationForVoter**: *BN*
 
-*Defined in [reward.ts:14](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L14)*
+*Defined in [reward.ts:14](https://github.com/daostack/client/blob/1bc237e/src/reward.ts#L14)*
 
 ___
 
@@ -84,7 +84,7 @@ ___
 
 • **tokenAddress**: *[Address](../globals.md#address)*
 
-*Defined in [reward.ts:18](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L18)*
+*Defined in [reward.ts:18](https://github.com/daostack/client/blob/1bc237e/src/reward.ts#L18)*
 
 ___
 
@@ -92,4 +92,4 @@ ___
 
 • **tokensForStaker**: *BN*
 
-*Defined in [reward.ts:15](https://github.com/daostack/client/blob/7361fcc/src/reward.ts#L15)*
+*Defined in [reward.ts:15](https://github.com/daostack/client/blob/1bc237e/src/reward.ts#L15)*

@@ -413,9 +413,10 @@ export class Arc extends GraphNodeObserver {
   public sendTransaction<T>(
     transaction: any,
     mapToObject: (receipt: web3receipt) => T,
-    errorHandler: (error: Error) => Promise<Error> | Error = (error) => error
+    errorHandler?: (error: Error) => Promise<Error> | Error
   ): Operation<T> {
-    return sendTransaction(transaction, mapToObject, errorHandler, this)
+
+    return sendTransaction(this, transaction, mapToObject, errorHandler)
   }
 
   /**

@@ -40,28 +40,42 @@ export type Operation<T> = IOperationObservable<ITransactionUpdate<T>>
 export type web3receipt = object
 
 /**
- * send a transaction to the ethereumblockchain, and return a observable of ITransactionUpdatessend
+ *
+ *  * send a transaction to the ethereumblockchain, and return a observable of ITransactionUpdatessend
  * for example:
- *  sendTransaction(.....).subscribe((txUpdate) => {
+ *  ```sendTransaction(.....).subscribe((txUpdate) => {
  *    if (txUpdate.state === 'sent' ) { notify("your transaction has been sent, waitin'for it to be mnied") }
  *    if (txUpdate.state === 'mined'} {
  *      notify("your transaction has been mined! It was confirmed ${txUpdate.confirmations} times"}
  *      // and we also ahve the txUpdate.receipt and the txUpdate.result to do stuff with
  *    }
- *  })
+ *  })```
  *
- * @parameter transaction A web3 transaction, or an (async) function that returns a transaction
- * @parameter map A function that takes the receipt of the transaction and returns an object
- * @parameter errorHandler A function that takes an error, and either returns or throws a more informative Error
- * @parameter context An instance of Arc
- * @return An observable with ITransactionUpdate instnces
+ * @export
+ * @template T
+ * @param {Arc} context An instance of Arc
+ * @param {*} transaction A Web3 transaction object to send
+ * @param {((receipt: web3receipt) => T | Promise<T>)} mapReceipt A function that takes the receipt of
+ *  the transaction and returns an object
+ * @param {((error: Error) => Promise<Error> | Error)} [errorHandler]
+ *  A function that takes an error, and either returns or throws a more informative Error
+ *  if errorHander is not provided, a default error handler will throw any errors thrown by calling `transaction.call()`
+ * @returns {Operation<T>}
  */
 export function sendTransaction<T>(
+  context: Arc,
   transaction: any,
   mapReceipt: (receipt: web3receipt) => T | Promise<T>,
-  errorHandler: (error: Error) => Promise<Error> | Error = (error) => error,
-  context: Arc
+  errorHandler?: (error: Error) => Promise<Error> | Error
 ): Operation<T> {
+
+  if (!errorHandler) {
+    errorHandler = async (err: Error) => {
+      await transaction.call()
+      return err
+    }
+  }
+
   const observable = Observable.create(async (observer: Observer<ITransactionUpdate<T>>) => {
     let transactionHash: string
     let result: any
@@ -82,13 +96,12 @@ export function sendTransaction<T>(
     try {
       gasEstimate = await tx.estimateGas({ from })
     } catch (error) {
-      let errToReturn: Error
       try {
-        errToReturn = await errorHandler(error)
+        error = await (errorHandler as (error: Error) => Promise<Error> | Error)(error)
       } catch (err) {
-        errToReturn = err
+        error = err
       }
-      observer.error(errToReturn)
+      observer.error(error)
       return
     }
     let gas: number
@@ -126,8 +139,13 @@ export function sendTransaction<T>(
       .once('receipt', async (receipt: any) => {
         try {
           result = await mapReceipt(receipt)
-        } catch (err) {
-          observer.error(err)
+        } catch (error) {
+          try {
+            error = await (errorHandler as (error: Error) => Promise<Error> | Error)(error)
+          } catch (err) {
+            error = err
+          }
+          observer.error(error)
         }
         if (confirmationCount === 0) {
           Logger.debug(`transaction mined!`)
@@ -144,8 +162,13 @@ export function sendTransaction<T>(
         if (!result) {
           try {
             result = await mapReceipt(receipt)
-          } catch (err) {
-            observer.error(err)
+          } catch (error) {
+            try {
+              error = await (errorHandler as (error: Error) => Promise<Error> | Error)(error)
+            } catch (err) {
+              error = err
+            }
+            observer.error(error)
           }
         }
         if (confirmationCount === 0) {
@@ -164,13 +187,12 @@ export function sendTransaction<T>(
         }
       })
       .on('error', async (error: Error) => {
-        let errToReturn: Error
         try {
-          errToReturn = await errorHandler(error)
+          error = await (errorHandler as (error: Error) => Promise<Error> | Error)(error)
         } catch (err) {
-          errToReturn = err
+          error = err
         }
-        observer.error(errToReturn)
+        observer.error(error)
       })
   }
   )

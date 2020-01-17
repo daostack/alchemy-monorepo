@@ -1,9 +1,9 @@
+import BN = require('bn.js')
 import { first } from 'rxjs/operators'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { IProposalOutcome, Proposal } from '../src/proposal'
+import { IProposalOutcome, IProposalStage, Proposal } from '../src/proposal'
 import { Stake } from '../src/stake'
-import BN = require('bn.js')
 import { createAProposal,
   // getTestAddresses,
   getTestDAO,
@@ -21,16 +21,12 @@ describe('Stake on a ContributionReward', () => {
   let accounts: any
   // let addresses: ITestAddresses
   let dao: DAO
-  // let executedProposal: Proposal
 
   beforeAll(async () => {
     arc = await newArc()
     web3 = arc.web3
     accounts = web3.eth.accounts.wallet
-    // addresses = getTestAddresses(arc)
     dao = await getTestDAO()
-    // const { executedProposalId} = addresses.test
-    // executedProposal = await dao.proposal(executedProposalId)
   })
 
   it('works and gets indexed', async () => {
@@ -90,8 +86,23 @@ describe('Stake on a ContributionReward', () => {
     )
 
     proposal.context.web3.eth.defaultAccount = accounts[2].address
-    await expect(proposal.stake(IProposalOutcome.Pass, toWei('10000000')).send()).rejects.toThrow(
+    await expect(proposal.stake(IProposalOutcome.Pass, new BN(10000000)).send()).rejects.toThrow(
       /No proposal/i
+    )
+  })
+
+  it.skip('throws a meaningful error if the proposal is boosted', async () => {
+    // Skipping this test, because the "stake" function actually also changes the proposal state sometimes
+    const boostedProposals = await arc.proposals({where: {stage: IProposalStage.Boosted}}).pipe(first()).toPromise()
+    if (boostedProposals.length === 0) {
+      throw Error(`No boosted proposals were found, so this test fails... (perhap restart docker containers?)`)
+    }
+    const boostedProposal = boostedProposals[0]
+    const state = await boostedProposal.state().pipe(first()).toPromise()
+    console.log(state)
+    expect(state.stage).toEqual(IProposalStage.Boosted)
+    await expect(boostedProposal.stake(IProposalOutcome.Pass, new BN(10000000)).send()).rejects.toThrow(
+      /boosted/i
     )
   })
 

@@ -18,6 +18,7 @@
 
 ### Methods
 
+* [getAgreementHash](reputationfromtokenscheme.md#getagreementhash)
 * [getContract](reputationfromtokenscheme.md#getcontract)
 * [redeem](reputationfromtokenscheme.md#redeem)
 * [redemptionAmount](reputationfromtokenscheme.md#redemptionamount)
@@ -28,7 +29,7 @@
 
 \+ **new ReputationFromTokenScheme**(`scheme`: [Scheme](scheme.md)): *[ReputationFromTokenScheme](reputationfromtokenscheme.md)*
 
-*Defined in [schemes/reputationFromToken.ts:13](https://github.com/daostack/client/blob/7361fcc/src/schemes/reputationFromToken.ts#L13)*
+*Defined in [schemes/reputationFromToken.ts:13](https://github.com/daostack/client/blob/1bc237e/src/schemes/reputationFromToken.ts#L13)*
 
 **Parameters:**
 
@@ -44,15 +45,25 @@ Name | Type |
 
 • **scheme**: *[Scheme](scheme.md)*
 
-*Defined in [schemes/reputationFromToken.ts:15](https://github.com/daostack/client/blob/7361fcc/src/schemes/reputationFromToken.ts#L15)*
+*Defined in [schemes/reputationFromToken.ts:15](https://github.com/daostack/client/blob/1bc237e/src/schemes/reputationFromToken.ts#L15)*
 
 ## Methods
+
+###  getAgreementHash
+
+▸ **getAgreementHash**(): *Promise‹string›*
+
+*Defined in [schemes/reputationFromToken.ts:19](https://github.com/daostack/client/blob/1bc237e/src/schemes/reputationFromToken.ts#L19)*
+
+**Returns:** *Promise‹string›*
+
+___
 
 ###  getContract
 
 ▸ **getContract**(): *Promise‹any›*
 
-*Defined in [schemes/reputationFromToken.ts:47](https://github.com/daostack/client/blob/7361fcc/src/schemes/reputationFromToken.ts#L47)*
+*Defined in [schemes/reputationFromToken.ts:73](https://github.com/daostack/client/blob/1bc237e/src/schemes/reputationFromToken.ts#L73)*
 
 **Returns:** *Promise‹any›*
 
@@ -60,15 +71,16 @@ ___
 
 ###  redeem
 
-▸ **redeem**(`beneficiary`: [Address](../globals.md#address)): *[Operation](../globals.md#operation)‹any›*
+▸ **redeem**(`beneficiary`: [Address](../globals.md#address), `agreementHash?`: undefined | string): *[Operation](../globals.md#operation)‹any›*
 
-*Defined in [schemes/reputationFromToken.ts:19](https://github.com/daostack/client/blob/7361fcc/src/schemes/reputationFromToken.ts#L19)*
+*Defined in [schemes/reputationFromToken.ts:25](https://github.com/daostack/client/blob/1bc237e/src/schemes/reputationFromToken.ts#L25)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `beneficiary` | [Address](../globals.md#address) |
+`agreementHash?` | undefined &#124; string |
 
 **Returns:** *[Operation](../globals.md#operation)‹any›*
 
@@ -78,7 +90,7 @@ ___
 
 ▸ **redemptionAmount**(`beneficiary`: [Address](../globals.md#address)): *Promise‹number›*
 
-*Defined in [schemes/reputationFromToken.ts:41](https://github.com/daostack/client/blob/7361fcc/src/schemes/reputationFromToken.ts#L41)*
+*Defined in [schemes/reputationFromToken.ts:67](https://github.com/daostack/client/blob/1bc237e/src/schemes/reputationFromToken.ts#L67)*
 
 **Parameters:**
 

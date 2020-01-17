@@ -15,7 +15,7 @@
 
 • **preBoostedAt**: = "preBoostedAt"
 
-*Defined in [proposal.ts:832](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L832)*
+*Defined in [proposal.ts:843](https://github.com/daostack/client/blob/1bc237e/src/proposal.ts#L843)*
 
 ___
 
@@ -23,4 +23,4 @@ ___
 
 • **resolvesAt**: = "resolvesAt"
 
-*Defined in [proposal.ts:831](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L831)*
+*Defined in [proposal.ts:842](https://github.com/daostack/client/blob/1bc237e/src/proposal.ts#L842)*

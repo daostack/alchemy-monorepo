@@ -39,7 +39,7 @@
 
 \+ **new Token**(`id`: [Address](../globals.md#address), `context`: [Arc](arc.md)): *[Token](token.md)*
 
-*Defined in [token.ts:87](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L87)*
+*Defined in [token.ts:87](https://github.com/daostack/client/blob/1bc237e/src/token.ts#L87)*
 
 **Parameters:**
 
@@ -56,7 +56,7 @@ Name | Type |
 
 • **address**: *string*
 
-*Defined in [token.ts:87](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L87)*
+*Defined in [token.ts:87](https://github.com/daostack/client/blob/1bc237e/src/token.ts#L87)*
 
 ___
 
@@ -64,7 +64,7 @@ ___
 
 • **context**: *[Arc](arc.md)*
 
-*Defined in [token.ts:89](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L89)*
+*Defined in [token.ts:89](https://github.com/daostack/client/blob/1bc237e/src/token.ts#L89)*
 
 ___
 
@@ -72,7 +72,7 @@ ___
 
 • **id**: *[Address](../globals.md#address)*
 
-*Defined in [token.ts:89](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L89)*
+*Defined in [token.ts:89](https://github.com/daostack/client/blob/1bc237e/src/token.ts#L89)*
 
 ## Methods
 
@@ -80,7 +80,7 @@ ___
 
 ▸ **allowance**(`owner`: [Address](../globals.md#address), `spender`: [Address](../globals.md#address)): *Observable‹BN›*
 
-*Defined in [token.ts:185](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L185)*
+*Defined in [token.ts:185](https://github.com/daostack/client/blob/1bc237e/src/token.ts#L185)*
 
 **Parameters:**
 
@@ -97,7 +97,7 @@ ___
 
 ▸ **approveForStaking**(`spender`: [Address](../globals.md#address), `amount`: BN): *[IOperationObservable](../interfaces/ioperationobservable.md)‹[ITransactionUpdate](../interfaces/itransactionupdate.md)‹any››*
 
-*Defined in [token.ts:226](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L226)*
+*Defined in [token.ts:226](https://github.com/daostack/client/blob/1bc237e/src/token.ts#L226)*
 
 **Parameters:**
 
@@ -114,7 +114,7 @@ ___
 
 ▸ **balanceOf**(`owner`: string): *Observable‹BN›*
 
-*Defined in [token.ts:133](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L133)*
+*Defined in [token.ts:133](https://github.com/daostack/client/blob/1bc237e/src/token.ts#L133)*
 
 **Parameters:**
 
@@ -130,7 +130,7 @@ ___
 
 ▸ **contract**(`mode?`: undefined | "readonly"): *any*
 
-*Defined in [token.ts:128](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L128)*
+*Defined in [token.ts:128](https://github.com/daostack/client/blob/1bc237e/src/token.ts#L128)*
 
 **Parameters:**
 
@@ -146,7 +146,7 @@ ___
 
 ▸ **mint**(`beneficiary`: [Address](../globals.md#address), `amount`: BN): *[IOperationObservable](../interfaces/ioperationobservable.md)‹[ITransactionUpdate](../interfaces/itransactionupdate.md)‹any››*
 
-*Defined in [token.ts:212](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L212)*
+*Defined in [token.ts:212](https://github.com/daostack/client/blob/1bc237e/src/token.ts#L212)*
 
 **Parameters:**
 
@@ -163,7 +163,7 @@ ___
 
 ▸ **state**(`apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[ITokenState](../interfaces/itokenstate.md)›*
 
-*Defined in [token.ts:97](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L97)*
+*Defined in [token.ts:97](https://github.com/daostack/client/blob/1bc237e/src/token.ts#L97)*
 
 **Parameters:**
 
@@ -179,7 +179,7 @@ ___
 
 ▸ **transfer**(`beneficiary`: [Address](../globals.md#address), `amount`: BN): *[IOperationObservable](../interfaces/ioperationobservable.md)‹[ITransactionUpdate](../interfaces/itransactionupdate.md)‹any››*
 
-*Defined in [token.ts:219](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L219)*
+*Defined in [token.ts:219](https://github.com/daostack/client/blob/1bc237e/src/token.ts#L219)*
 
 **Parameters:**
 
@@ -196,7 +196,7 @@ ___
 
 ▸ **search**(`context`: [Arc](arc.md), `options`: [ITokenQueryOptions](../interfaces/itokenqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Token](token.md)[]›*
 
-*Defined in [token.ts:52](https://github.com/daostack/client/blob/7361fcc/src/token.ts#L52)*
+*Defined in [token.ts:52](https://github.com/daostack/client/blob/1bc237e/src/token.ts#L52)*
 
 Token.search(context, options) searches for token entities
 

@@ -28,7 +28,7 @@
 
 *Inherited from [IEventStaticState](ieventstaticstate.md).[dao](ieventstaticstate.md#dao)*
 
-*Defined in [event.ts:10](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L10)*
+*Defined in [event.ts:10](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L10)*
 
 ___
 
@@ -38,7 +38,7 @@ ___
 
 *Inherited from [IEventStaticState](ieventstaticstate.md).[data](ieventstaticstate.md#data)*
 
-*Defined in [event.ts:14](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L14)*
+*Defined in [event.ts:14](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L14)*
 
 #### Type declaration:
 
@@ -52,7 +52,7 @@ ___
 
 *Overrides [IEventStaticState](ieventstaticstate.md).[id](ieventstaticstate.md#id)*
 
-*Defined in [event.ts:19](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L19)*
+*Defined in [event.ts:19](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L19)*
 
 ___
 
@@ -62,7 +62,7 @@ ___
 
 *Inherited from [IEventStaticState](ieventstaticstate.md).[proposal](ieventstaticstate.md#proposal)*
 
-*Defined in [event.ts:11](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L11)*
+*Defined in [event.ts:11](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L11)*
 
 ___
 
@@ -72,7 +72,7 @@ ___
 
 *Inherited from [IEventStaticState](ieventstaticstate.md).[timestamp](ieventstaticstate.md#timestamp)*
 
-*Defined in [event.ts:15](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L15)*
+*Defined in [event.ts:15](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L15)*
 
 ___
 
@@ -82,7 +82,7 @@ ___
 
 *Inherited from [IEventStaticState](ieventstaticstate.md).[type](ieventstaticstate.md#type)*
 
-*Defined in [event.ts:13](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L13)*
+*Defined in [event.ts:13](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L13)*
 
 ___
 
@@ -92,4 +92,4 @@ ___
 
 *Inherited from [IEventStaticState](ieventstaticstate.md).[user](ieventstaticstate.md#user)*
 
-*Defined in [event.ts:12](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L12)*
+*Defined in [event.ts:12](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L12)*

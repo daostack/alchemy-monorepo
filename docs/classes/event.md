@@ -40,7 +40,7 @@
 
 \+ **new Event**(`idOrOpts`: string | [IEventStaticState](../interfaces/ieventstaticstate.md), `context`: [Arc](arc.md)): *[Event](event.md)*
 
-*Defined in [event.ts:90](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L90)*
+*Defined in [event.ts:90](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L90)*
 
 **Parameters:**
 
@@ -57,7 +57,7 @@ Name | Type |
 
 • **context**: *[Arc](arc.md)*
 
-*Defined in [event.ts:92](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L92)*
+*Defined in [event.ts:92](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L92)*
 
 ___
 
@@ -65,7 +65,7 @@ ___
 
 • **id**: *string*
 
-*Defined in [event.ts:89](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L89)*
+*Defined in [event.ts:89](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L89)*
 
 ___
 
@@ -73,7 +73,7 @@ ___
 
 • **idOrOpts**: *string | [IEventStaticState](../interfaces/ieventstaticstate.md)*
 
-*Defined in [event.ts:92](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L92)*
+*Defined in [event.ts:92](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L92)*
 
 ___
 
@@ -81,7 +81,7 @@ ___
 
 • **staticState**: *[IEventStaticState](../interfaces/ieventstaticstate.md) | undefined*
 
-*Defined in [event.ts:90](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L90)*
+*Defined in [event.ts:90](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L90)*
 
 ## Methods
 
@@ -89,7 +89,7 @@ ___
 
 ▸ **fetchStaticState**(): *Promise‹[IEventStaticState](../interfaces/ieventstaticstate.md)›*
 
-*Defined in [event.ts:135](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L135)*
+*Defined in [event.ts:135](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L135)*
 
 **Returns:** *Promise‹[IEventStaticState](../interfaces/ieventstaticstate.md)›*
 
@@ -99,7 +99,7 @@ ___
 
 ▸ **setStaticState**(`opts`: [IEventStaticState](../interfaces/ieventstaticstate.md)): *void*
 
-*Defined in [event.ts:131](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L131)*
+*Defined in [event.ts:131](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L131)*
 
 **Parameters:**
 
@@ -115,7 +115,7 @@ ___
 
 ▸ **state**(`apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[IEventState](../interfaces/ieventstate.md)›*
 
-*Defined in [event.ts:102](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L102)*
+*Defined in [event.ts:102](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L102)*
 
 **Parameters:**
 
@@ -131,7 +131,7 @@ ___
 
 ▸ **search**(`context`: [Arc](arc.md), `options`: [IEventQueryOptions](../interfaces/ieventqueryoptions.md), `apolloQueryOptions`: [IApolloQueryOptions](../interfaces/iapolloqueryoptions.md)): *Observable‹[Event](event.md)[]›*
 
-*Defined in [event.ts:56](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L56)*
+*Defined in [event.ts:56](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L56)*
 
 Event.search(context, options) searches for reward entities
 
@@ -153,7 +153,7 @@ an observable of Event objects
 
 ### ▪ **fragments**: *object*
 
-*Defined in [event.ts:34](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L34)*
+*Defined in [event.ts:34](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L34)*
 
 ###  EventFields
 
@@ -171,4 +171,4 @@ an observable of Event objects
       timestamp
     }`
 
-*Defined in [event.ts:35](https://github.com/daostack/client/blob/7361fcc/src/event.ts#L35)*
+*Defined in [event.ts:35](https://github.com/daostack/client/blob/1bc237e/src/event.ts#L35)*

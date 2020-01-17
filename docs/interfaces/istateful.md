@@ -39,7 +39,7 @@
 
 • **state**: *function*
 
-*Defined in [types.ts:11](https://github.com/daostack/client/blob/7361fcc/src/types.ts#L11)*
+*Defined in [types.ts:11](https://github.com/daostack/client/blob/1bc237e/src/types.ts#L11)*
 
 #### Type declaration:
 

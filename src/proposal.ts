@@ -622,31 +622,31 @@ export class Proposal implements IStateful<IProposalState> {
 
     const observable = from(this.votingMachine()).pipe(
       concatMap((votingMachine) => {
-        const errorHandler = async (error: Error) => {
-          if (error.message.match(/revert/)) {
-            const proposal = this
-            const proposalDataFromVotingMachine = await votingMachine.methods.proposals(proposal.id).call()
-            if (proposalDataFromVotingMachine.proposer === NULL_ADDRESS ) {
-              return Error(`Error in vote(): unknown proposal with id ${proposal.id}`)
-            }
-
-            if (proposalDataFromVotingMachine.state === '2') {
-              const msg = `Error in vote(): proposal ${proposal.id} already executed`
-              return Error(msg)
-            }
-          }
-          // if we have found no known error, we return the original error
-          return error
-        }
-
-        const voteMethod = votingMachine.methods.vote(
+       const voteMethod = votingMachine.methods.vote(
           this.id,  // proposalId
           outcome, // a value between 0 to and the proposal number of choices.
           amount.toString(), // amount of reputation to vote with . if _amount == 0 it will use all voter reputation.
           NULL_ADDRESS
         )
 
-        return this.context.sendTransaction(voteMethod, mapReceipt, errorHandler)
+       const errorHandler = async (error: Error) => {
+          const proposal = this
+          const proposalDataFromVotingMachine = await votingMachine.methods.proposals(proposal.id).call()
+          if (proposalDataFromVotingMachine.proposer === NULL_ADDRESS ) {
+            return Error(`Error in vote(): unknown proposal with id ${proposal.id}`)
+          }
+
+          if (proposalDataFromVotingMachine.state === '2') {
+            const msg = `Error in vote(): proposal ${proposal.id} already executed`
+            return Error(msg)
+          }
+          // call the method, so we collect any errors from the EVM
+          await voteMethod.call()
+          // if everything seems fine, just return the oroginal error
+          return error
+        }
+
+       return this.context.sendTransaction(voteMethod, mapReceipt, errorHandler)
       })
     )
 
@@ -669,59 +669,67 @@ export class Proposal implements IStateful<IProposalState> {
    * @param  amount  the amount, in GEN, to stake
    * @return  An observable that can be sent, or subscribed to
    */
-  public stake(outcome: IProposalOutcome, amount: BN ): Operation<Stake> {
-    const map = (receipt: any) => { // map extracts Stake instance from receipt
-        const event = receipt.events.Stake
-        if (!event) {
-          // for some reason, a transaction was mined but no error was raised before
-          throw new Error(`Error staking: no "Stake" event was found - ${Object.keys(receipt.events)}`)
-        }
-
-        return new Stake({
-          amount: event.returnValues._reputation, // amount
-          // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
-          createdAt: undefined,
-          outcome,
-          proposal: this.id, // proposalID
-          staker: event.returnValues._staker
-        }, this.context)
-    }
-
-    const errorHandler =  async (error: Error) => {
-      if (error.message.match(/revert/)) {
-        const proposal = this
-        const stakingToken = this.stakingToken()
-        const prop = await (await this.votingMachine()).methods.proposals(proposal.id).call()
-        if (prop.proposer === NULL_ADDRESS ) {
-          return new Error(`Unknown proposal with id ${proposal.id}`)
-        }
-
-        // staker has sufficient balance
-        const defaultAccount = await this.context.getAccount().pipe(first()).toPromise()
-        const balance = new BN(await stakingToken.contract().methods.balanceOf(defaultAccount).call())
-        const amountBN = new BN(amount)
-        if (balance.lt(amountBN)) {
-          const msg = `Staker ${defaultAccount} has insufficient balance to stake ${amount.toString()}
-            (balance is ${balance.toString()})`
-          return new Error(msg)
-        }
-
-        // staker has approved the token spend
-        const votingMachine = await this.votingMachine()
-        const allowance = new BN(await stakingToken.contract().methods.allowance(
-          defaultAccount, votingMachine.options.address
-        ).call())
-        if (allowance.lt(amountBN)) {
-          return new Error(`Staker has insufficient allowance to stake ${amount.toString()}
-            (allowance is ${allowance.toString()})`)
-        }
-      }
-      // if we have found no known error, we return the original error
-      return error
-    }
-
+  public stake(outcome: IProposalOutcome, amount: BN): Operation<Stake> {
     const observable = from(this.votingMachine()).pipe(
       concatMap((votingMachine) => {
+
+        const map = (receipt: any) => { // map extracts Stake instance from receipt
+
+            const event = receipt.events.Stake
+            if (!event) {
+              // for some reason, a transaction was mined but no error was raised before
+              throw new Error(`Error staking: no "Stake" event was found - ${Object.keys(receipt.events)}`)
+            }
+            return new Stake({
+              amount: event.returnValues._reputation, // amount
+              // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
+              createdAt: undefined,
+              outcome,
+              proposal: this.id, // proposalID
+              staker: event.returnValues._staker
+            }, this.context)
+        }
+
+        const errorHandler =  async (error: Error) => {
+          const proposal = this
+          const proposalState = await (await this.votingMachine()).methods.proposals(proposal.id).call()
+          const stakingToken = this.stakingToken()
+          if (proposalState.proposer === NULL_ADDRESS ) {
+            return new Error(`Unknown proposal with id ${proposal.id}`)
+          }
+          // staker has sufficient balance
+          const defaultAccount = await this.context.getAccount().pipe(first()).toPromise()
+          const balance = new BN(await stakingToken.contract().methods.balanceOf(defaultAccount).call())
+          const amountBN = new BN(amount)
+          if (balance.lt(amountBN)) {
+            const msg = `Staker ${defaultAccount} has insufficient balance to stake ${amount.toString()}
+              (balance is ${balance.toString()})`
+            return new Error(msg)
+          }
+
+          // staker has approved the token spend
+          const allowance = new BN(await stakingToken.contract().methods.allowance(
+            defaultAccount, votingMachine.options.address
+          ).call())
+          if (allowance.lt(amountBN)) {
+            return new Error(
+              `Staker has insufficient allowance to stake ${amount.toString()}
+                (allowance for ${votingMachine.options.address} is ${allowance.toString()})`
+            )
+          }
+
+          // call the stake function and bubble up any solidity errors
+          await stakeMethod.call()
+          if (!!error.message.match(/event was found/)) {
+            if (proposalState.state === IProposalStage.Boosted) {
+              return new Error(`Staking failed because the proposal is boosted`)
+            }
+          }
+          // if we have found no known error, we return the original error
+
+          return error
+        }
+
         const stakeMethod = votingMachine.methods.stake(
           this.id,  // proposalId
           outcome, // a value between 0 to and the proposal number of choices.
@@ -752,7 +760,7 @@ export class Proposal implements IStateful<IProposalState> {
    *    if undefined will only redeem the ContributionReward rewards
    * @return  an Operation
    */
-  public claimRewards(beneficiary ?: Address): Operation<boolean> {
+  public claimRewards(beneficiary?: Address): Operation<boolean> {
 
     if (!beneficiary) {
       beneficiary = NULL_ADDRESS
@@ -818,6 +826,7 @@ export class Proposal implements IStateful<IProposalState> {
             const msg = `Error in proposal.execute(): proposal ${this.id} already executed`
             return Error(msg)
           }
+          await transaction.call()
           return err
         }
         return this.context.sendTransaction(transaction, map, errorHandler)

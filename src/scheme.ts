@@ -326,7 +326,6 @@ export class Scheme extends SchemeBase  {
       const context = this.context
       let createTransaction: () => any = () => null
       let map: any
-      const errHandler = (err: Error) => err
       const state = await this.fetchStaticState()
 
       switch (state.name) {
@@ -379,7 +378,7 @@ export class Scheme extends SchemeBase  {
           throw Error(msg)
       }
 
-      const sendTransactionObservable = context.sendTransaction(createTransaction, map, errHandler)
+      const sendTransactionObservable = context.sendTransaction(createTransaction, map)
       const sub = sendTransactionObservable.subscribe(observer)
 
       return () => sub.unsubscribe()

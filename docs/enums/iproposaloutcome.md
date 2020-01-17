@@ -16,7 +16,7 @@
 
 • **Fail**:
 
-*Defined in [proposal.ts:40](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L40)*
+*Defined in [proposal.ts:40](https://github.com/daostack/client/blob/1bc237e/src/proposal.ts#L40)*
 
 ___
 
@@ -24,7 +24,7 @@ ___
 
 • **None**:
 
-*Defined in [proposal.ts:38](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L38)*
+*Defined in [proposal.ts:38](https://github.com/daostack/client/blob/1bc237e/src/proposal.ts#L38)*
 
 ___
 
@@ -32,4 +32,4 @@ ___
 
 • **Pass**:
 
-*Defined in [proposal.ts:39](https://github.com/daostack/client/blob/7361fcc/src/proposal.ts#L39)*
+*Defined in [proposal.ts:39](https://github.com/daostack/client/blob/1bc237e/src/proposal.ts#L39)*
