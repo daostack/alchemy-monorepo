@@ -133,13 +133,16 @@ export class Proposal implements IStateful<IProposalState> {
         id
         beneficiary
         ethReward
+        ethRewardLeft
         externalToken
         externalTokenReward
-        externalToken
+        externalTokenRewardLeft
         nativeTokenReward
+        nativeTokenRewardLeft
         periods
         periodLength
         reputationReward
+        reputationChangeLeft
         alreadyRedeemedReputationPeriods
         alreadyRedeemedExternalTokenPeriods
         alreadyRedeemedNativeTokenPeriods
@@ -399,6 +402,27 @@ export class Proposal implements IStateful<IProposalState> {
         throw Error(`Unexpected proposal state: competition is set, but contributionReward is not`)
       }
       if (!!item.contributionReward) {
+        const ethRewardLeft = (
+          item.contributionReward.ethRewardLeft !== null &&
+            new BN(item.contributionReward.ethRewardLeft) ||
+            null
+        )
+        const externalTokenRewardLeft = (
+          item.contributionReward.externalTokenRewardLeft !== null &&
+            new BN(item.contributionReward.externalTokenRewardLeft) ||
+            null
+        )
+        const nativeTokenRewardLeft = (
+          item.contributionReward.nativeTokenRewardLeft !== null &&
+            new BN(item.contributionReward.nativeTokenRewardLeft) ||
+            null
+        )
+        const reputationChangeLeft = (
+          item.contributionReward.reputationChangeLeft !== null &&
+            new BN(item.contributionReward.reputationChangeLeft) ||
+            null
+        )
+
         type = IProposalType.ContributionReward
         contributionReward = {
           alreadyRedeemedEthPeriods: Number(item.contributionReward.alreadyRedeemedEthPeriods),
@@ -407,11 +431,15 @@ export class Proposal implements IStateful<IProposalState> {
           alreadyRedeemedReputationPeriods: Number(item.contributionReward.alreadyRedeemedReputationPeriods),
           beneficiary: item.contributionReward.beneficiary,
           ethReward: new BN(item.contributionReward.ethReward),
+          ethRewardLeft,
           externalToken: item.contributionReward.externalToken,
           externalTokenReward: new BN(item.contributionReward.externalTokenReward),
+          externalTokenRewardLeft,
           nativeTokenReward: new BN(item.contributionReward.nativeTokenReward),
+          nativeTokenRewardLeft,
           periodLength: Number(item.contributionReward.periodLength),
           periods: Number(item.contributionReward.periods),
+          reputationChangeLeft,
           reputationReward: new BN(item.contributionReward.reputationReward)
         }
         if (!!item.competition) {

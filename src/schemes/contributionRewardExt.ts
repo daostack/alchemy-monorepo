@@ -4,6 +4,7 @@ import { IProposalBaseCreateOptions, Proposal } from '../proposal'
 import { Address } from '../types'
 import { NULL_ADDRESS } from '../utils'
 
+// // this interface is not used - it is conflated with IContributionReward
 export interface IContributionRewardExt {
   beneficiary: Address
   externalTokenReward: BN
@@ -17,6 +18,10 @@ export interface IContributionRewardExt {
   alreadyRedeemedReputationPeriods: number
   alreadyRedeemedExternalTokenPeriods: number
   alreadyRedeemedEthPeriods: number
+  reputationChangeLeft: BN
+  nativeTokenRewardLeft: BN
+  ethRewardLeft: BN
+  externalTokenRewardLeft: BN
 }
 
 export interface IProposalCreateOptionsContributionRewardExt extends IProposalBaseCreateOptions {

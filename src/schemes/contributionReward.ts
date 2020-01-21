@@ -17,6 +17,10 @@ export interface IContributionReward {
   alreadyRedeemedReputationPeriods: number
   alreadyRedeemedExternalTokenPeriods: number
   alreadyRedeemedEthPeriods: number
+  reputationChangeLeft: BN | null
+  nativeTokenRewardLeft: BN | null
+  ethRewardLeft: BN | null
+  externalTokenRewardLeft: BN | null
 }
 
 export interface IProposalCreateOptionsCR {

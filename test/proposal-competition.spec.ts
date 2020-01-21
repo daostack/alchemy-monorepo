@@ -38,6 +38,8 @@ describe('Competition Proposal', () => {
   let suggestion2: any
   let suggestion3: any
   let suggestion4: any
+  const ethReward = new BN('300')
+  const reputationReward = new BN('10111')
   // let snapshotId: any
 
   function addSeconds(date: Date, seconds: number) {
@@ -115,13 +117,13 @@ describe('Competition Proposal', () => {
     const proposalOptions  = {
       dao: dao.id,
       endTime: addSeconds(startTime, 2000),
-      ethReward: toWei('300'),
+      ethReward,
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
       nativeTokenReward: toWei('1'),
       numberOfVotesPerVoter: 3,
       proposalType: 'competition',
-      reputationReward: toWei('10'),
+      reputationReward,
       rewardSplit: [1, 2, 97],
       startTime: null,
       suggestionsEndTime: addSeconds(startTime, 1000),
@@ -152,7 +154,6 @@ describe('Competition Proposal', () => {
     expect(contributionRewardExt).toBeInstanceOf(CompetitionScheme)
     const scheme = new  CompetitionScheme(contributionRewardExt.id, arc)
 
-    const ethReward =  new BN(1000000)
     // make sure that the DAO has enough Ether to pay forthe reward
     await arc.web3.eth.sendTransaction({
       gas: 4000000,
@@ -160,7 +161,6 @@ describe('Competition Proposal', () => {
       to: dao.id,
       value: ethReward
     })
-    const reputationReward = new BN(10101010)
     const externalTokenReward = new BN(0)
     const nativeTokenReward = new BN(0)
 
@@ -206,8 +206,7 @@ describe('Competition Proposal', () => {
     expect(lastState().contributionReward).toMatchObject({
       alreadyRedeemedEthPeriods: 0,
       ethReward,
-      nativeTokenReward,
-      reputationReward
+      nativeTokenReward
     })
     expect(lastState().competition).toMatchObject({
       endTime: proposalOptions.endTime,
@@ -339,7 +338,6 @@ describe('Competition Proposal', () => {
 
   async function createCompetition(options: { rewardSplit?: number[]}  = {}) {
     const scheme = new  CompetitionScheme(contributionRewardExt.id, arc)
-    const ethReward =  new BN(10000000000)
     // make sure that the DAO has enough Ether to pay forthe reward
     await arc.web3.eth.sendTransaction({
       gas: 4000000,
@@ -347,7 +345,6 @@ describe('Competition Proposal', () => {
       to: dao.id,
       value: ethReward
     })
-    const reputationReward = new BN(10101010)
     const externalTokenReward = new BN(0)
     const nativeTokenReward = new BN(0)
     const now = await getBlockTime(arc.web3)
@@ -417,6 +414,36 @@ describe('Competition Proposal', () => {
     return competition
   }
 
+  it(`Rewards left are updated correctdly`, async () => {
+    // before any votes are cast, all suggesitons are winnners
+    const competition = await createCompetition()
+    const proposal = new Proposal(competition.id, arc)
+    let competitionState: any
+
+    await proposal.state().subscribe(
+      (state) => competitionState = state
+    )
+    await waitUntilTrue(() => !!competitionState)
+    expect(competitionState.contributionReward).toMatchObject({
+      ethRewardLeft: null,
+      externalTokenRewardLeft: null,
+      nativeTokenRewardLeft: null,
+      reputationChangeLeft: null
+    })
+    // redeem the proposal
+    await proposal.claimRewards().send()
+    // wait for indexing to be done
+    await waitUntilTrue(() => {
+      return competitionState.contributionReward.ethRewardLeft !== null
+    })
+    expect(competitionState.contributionReward).toMatchObject({
+      ethRewardLeft: ethReward,
+      externalTokenRewardLeft: new BN(0),
+      nativeTokenRewardLeft: new BN(0),
+      reputationChangeLeft: reputationReward
+    })
+  })
+
   it(`No votes is no winners`, async () => {
     // before any votes are cast, all suggesitons are winnners
     await createCompetition()
@@ -465,10 +492,10 @@ describe('Competition Proposal', () => {
     await suggestion1.redeem(beneficiary).send()
     let balanceAfter = new BN(await arc.web3.eth.getBalance(beneficiary))
     let balanceDelta = balanceAfter.sub(balanceBefore)
-    expect(balanceDelta.toString()).toEqual('5000000000')
+    expect(balanceDelta.toString()).toEqual('150')
     const crExtBalanceAfter = await arc.web3.eth.getBalance(crextContractAddress)
     const crExtBalanceDelta = new BN(crExtBalanceBefore).sub(new BN(crExtBalanceAfter))
-    expect(crExtBalanceDelta.toString()).toEqual('5000000000')
+    expect(crExtBalanceDelta.toString()).toEqual('150')
 
     // the reward _is_ redeemed
     await expect(suggestion1.redeem(beneficiary).send()).rejects.toThrow('suggestion was already redeemed')
@@ -477,7 +504,7 @@ describe('Competition Proposal', () => {
     await suggestion2.redeem(beneficiary).send()
     balanceAfter = new BN(await arc.web3.eth.getBalance(beneficiary))
     balanceDelta = balanceAfter.sub(balanceBefore)
-    expect(balanceDelta.toString()).toEqual('5000000000')
+    expect(balanceDelta.toString()).toEqual('150')
 
     expect(await isWinner(suggestion1)).toEqual(true)
     expect(await isWinner(suggestion2)).toEqual(true)
@@ -515,7 +542,7 @@ describe('Competition Proposal', () => {
     await suggestion3.redeem(beneficiary).send()
     let balanceAfter = new BN(await arc.web3.eth.getBalance(beneficiary))
     let balanceDelta = balanceAfter.sub(balanceBefore)
-    expect(balanceDelta.toString()).toEqual((new BN(8000000000)).toString())
+    expect(balanceDelta.toString()).toEqual((new BN(240)).toString())
 
     balanceBefore = new BN(await arc.web3.eth.getBalance(beneficiary))
     await suggestion1.redeem(beneficiary).send()
@@ -587,7 +614,7 @@ describe('Competition Proposal', () => {
       beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
       dao: dao.id,
       endTime: addSeconds(startTime, 3000),
-      ethReward: toWei('300'),
+      ethReward,
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
       nativeTokenReward: toWei('1'),
