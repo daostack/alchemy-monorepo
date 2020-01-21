@@ -580,10 +580,6 @@ export class Proposal implements IStateful<IProposalState> {
    * @return a web3 Contract instance
    */
   public redeemerContract() {
-    // TODO: the Redeemer contract version is hardcoced until we find a way around issues
-    // https://github.com/daostack/subgraph/issues/290
-    // const contractInfoOfScheme = this.context.getContractInfo(this.schemeAddress)
-    // const REDEEMER_CONTRACT_VERSION = contractInfoOfScheme.version
     const contractInfo = this.context.getContractInfoByName('Redeemer', REDEEMER_CONTRACT_VERSION)
     return this.context.getContract(contractInfo.address)
   }
