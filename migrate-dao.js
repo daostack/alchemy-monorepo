@@ -108,14 +108,20 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     opts
   )
 
-  const randomName = utils.generateRnadomName()
+  let randomName = utils.generateRnadomName()
 
-  const [orgName, tokenName, tokenSymbol, founders] = [
+  if (deploymentState.orgName !== undefined) {
+    randomName = deploymentState.orgName
+  }
+
+  let [orgName, tokenName, tokenSymbol, founders] = [
     migrationParams.orgName !== undefined ? migrationParams.orgName : randomName,
     migrationParams.tokenName !== undefined ? migrationParams.tokenName : randomName + ' Token',
     migrationParams.tokenSymbol !== undefined ? migrationParams.tokenSymbol : randomName[0] + randomName.split(' ')[1][0] + 'T',
     migrationParams.founders
   ]
+
+  deploymentState.orgName = orgName
 
   let avatar
   let daoToken
