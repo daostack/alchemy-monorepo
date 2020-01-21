@@ -113,7 +113,7 @@
     "js-logger": "^1.6.0",
     "rxjs": "6.4.0",
     "subscriptions-transport-ws": "^0.9.16",
-    "web3": "1.2.2",
+    "web3": "1.2.4",
     "ws": "^6.2.1"
   }
 }
