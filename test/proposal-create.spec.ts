@@ -114,7 +114,7 @@ describe('Create a ContributionReward proposal', () => {
     // TODO - do the round trip test to see if subgraph properly indexs the fields
     // (depends on https://github.com/daostack/subgraph/issues/42)
     const savedData = await arc.ipfs.cat(proposalState.descriptionHash) // + proposalState.descriptionHash)
-    expect(JSON.parse(savedData.toString())).toEqual({
+    expect(savedData).toEqual({
       description: options.description,
       title: options.title,
       url: options.url

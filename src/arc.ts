@@ -6,6 +6,7 @@ import { DAO, IDAOQueryOptions } from './dao'
 import { GraphNodeObserver, IApolloQueryOptions } from './graphnode'
 export { IApolloQueryOptions } from './graphnode'
 import { Event, IEventQueryOptions } from './event'
+import { IPFSClient } from './ipfsClient'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { IProposalQueryOptions, Proposal } from './proposal'
@@ -15,7 +16,6 @@ import { ITagQueryOptions, Tag } from './tag'
 import { Token } from './token'
 import { Address, IPFSProvider, Web3Provider } from './types'
 import { isAddress } from './utils'
-const IPFSClient = require('ipfs-http-client')
 const Web3 = require('web3')
 
 /**
@@ -85,7 +85,7 @@ export class Arc extends GraphNodeObserver {
     }
 
     if (this.ipfsProvider) {
-      this.ipfs = IPFSClient(this.ipfsProvider)
+      this.ipfs = new IPFSClient(this.ipfsProvider)
     }
 
     // by default, we subscribe to queries
@@ -441,10 +441,9 @@ export class Arc extends GraphNodeObserver {
     Logger.debug('Saving data on IPFS...')
     let descriptionHash: string = ''
     try {
-      const ipfsResponse = await this.ipfs.add(Buffer.from(JSON.stringify(ipfsDataToSave)))
-      descriptionHash = ipfsResponse[0].path
+      descriptionHash = await this.ipfs.addString(JSON.stringify(ipfsDataToSave))
       // pin the file
-      await this.ipfs.pin.add(descriptionHash)
+      await this.ipfs.pinHash(descriptionHash)
     } catch (error) {
       throw error
     }

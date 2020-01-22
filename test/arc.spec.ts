@@ -27,11 +27,7 @@ describe('Arc ', () => {
       contractInfos: [],
       graphqlHttpProvider: 'https://graphql.provider',
       graphqlWsProvider: 'https://graphql.provider',
-      ipfsProvider: {
-        host: 'localhost',
-        port: '5001',
-        protocol: 'https'
-      },
+      ipfsProvider: 'http://localhost:5001/api/v0',
       web3Provider: 'wss://web3.provider'
     })
     expect(arc).toBeInstanceOf(Arc)

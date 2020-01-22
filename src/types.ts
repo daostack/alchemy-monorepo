@@ -6,6 +6,7 @@ export type Date = number
 export type Hash = string
 export type Web3Receipt = any
 export type Web3Provider = string | object
+export type IPFSProvider = string
 
 export interface IStateful<T> {
   state: (apolloQueryOptions: IApolloQueryOptions) => Observable<T>
@@ -18,5 +19,3 @@ export interface ICommonQueryOptions {
   orderDirection?: 'asc' | 'desc'
   where?: any
 }
-
-export type IPFSProvider = string| { host: string, protocol?: string, port?: string, apiPath?: string}
