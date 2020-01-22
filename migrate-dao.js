@@ -702,16 +702,11 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       }
       let abi = contractJson.abi
       let bytecode = contractJson.bytecode
+      let contractParams = []
 
       const StandAloneContract = new web3.eth.Contract(abi, undefined, opts)
-      const { receipt, result: standAloneContract } = await sendTx(StandAloneContract.deploy({
-        data: bytecode,
-        arguments: null
-      }), `Migrating ${standAlone.name}...`)
-      await logTx(receipt, `${standAloneContract.options.address} => ${standAlone.name}`)
 
       if (standAlone.params !== undefined) {
-        let contractParams = []
         for (let i in standAlone.params) {
           if (standAlone.params[i].StandAloneContract !== undefined) {
             contractParams.push(deploymentState.StandAloneContracts[standAlone.params[i].StandAloneContract].address)
@@ -719,6 +714,15 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
             contractParams.push(standAlone.params[i])
           }
         }
+      }
+
+      const { receipt, result: standAloneContract } = await sendTx(StandAloneContract.deploy({
+        data: bytecode,
+        arguments: standAlone.constructor ? contractParams : null
+      }), `Migrating ${standAlone.name}...`)
+      await logTx(receipt, `${standAloneContract.options.address} => ${standAlone.name}`)
+
+      if (standAlone.constructor !== true && standAlone.params !== undefined) {
         const contractSetParams = standAloneContract.methods.initialize(...contractParams)
 
         tx = (await sendTx(contractSetParams, `Initializing ${standAlone.name}...`)).receipt

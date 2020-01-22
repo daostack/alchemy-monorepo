@@ -284,6 +284,8 @@ Example migration parameters object:
      {
       "name": "RepAllocation",
       // If your contract has an initialize / constructor method which accepts arguments please add them here.
+      // unset constructor if using initialize
+      "constructor": false,
       "params": [
         100000,
         { "StandAloneContract": 0 }
