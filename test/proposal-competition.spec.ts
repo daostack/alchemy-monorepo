@@ -311,6 +311,9 @@ describe('Competition Proposal', () => {
     const vote1 = vote1receipt.result
     expect(vote1).toBeInstanceOf(CompetitionVote)
 
+    // if we vote twice we get an error
+    expect(suggestion1.vote().send()).rejects.toThrow('already voted on this suggestion')
+
     let competitionVotes: CompetitionVote[] = []
     CompetitionVote.search(arc, {where: { suggestion: suggestion2.id}}).subscribe(
       (votes) => { competitionVotes = votes}
