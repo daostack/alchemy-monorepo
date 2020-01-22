@@ -1,6 +1,6 @@
 {
   "name": "@daostack/client",
-  "version": "0.2.47",
+  "version": "0.2.48",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -65,7 +65,7 @@
     ]
   },
   "devDependencies": {
-    "@daostack/migration": "0.0.1-rc.37-v1",
+    "@daostack/migration": "0.0.1-rc.38-v2",
     "@types/graphql": "^14.2.2",
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/jest": "^24.0.15",

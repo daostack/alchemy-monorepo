@@ -262,7 +262,7 @@ export class CompetitionScheme extends SchemeBase {
           return err
         }
       }
-      const msg = `Error creating proposal with options ${options}: ${err.message}`
+      const msg = `Error creating proposal: ${err.message}`
       return Error(msg)
     }
   }
