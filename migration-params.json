@@ -19,7 +19,7 @@
     {
       "name": "ContributionRewardExt",
       "fromArc": true,
-      "arcVersion": "0.0.1-rc.38"
+      "arcVersion": "0.0.1-rc.39"
     },
     {
       "name": "Competition",
@@ -27,7 +27,7 @@
       "params": [
         { "StandAloneContract": 1 }
       ],
-      "arcVersion": "0.0.1-rc.38"
+      "arcVersion": "0.0.1-rc.39"
     }
   ],
   "VotingMachinesParams": [
@@ -79,7 +79,7 @@
       "permissions":"0x00000000",
       "alias":"ContributionRewardExt",
       "fromArc":true,
-      "arcVersion": "0.0.1-rc.38"
+      "arcVersion": "0.0.1-rc.39"
    }
   ],
   "unregisterOwner": true,
