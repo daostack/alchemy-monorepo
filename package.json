@@ -1,6 +1,6 @@
 {
   "name": "@daostack/client",
-  "version": "0.2.48",
+  "version": "0.2.52",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -25,15 +25,14 @@
     "build:docs": "typedoc --out docs --target commonjs --theme markdown --mode file --plugin typedoc-plugin-markdown src",
     "bundle": "rollup -c rollup.config.ts -w",
     "lint": "npm run tslint",
-    "prepare": "npm run copy-abis && npm run build",
+    "prepublish": "npm run copy-abis && npm run build",
     "copy-abis": "node scripts/copyABIsFromMigration.js",
     "prebuild": "rimraf dist",
     "quality": "npm run test:prod",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "test": "jest --runInBand --forceExit",
     "test:watch": "jest --watch",
-    "tslint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
-    "postinstall": "cd node_modules/@daostack/migration && npm run optimize-abis:no-bytecode"
+    "tslint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'"
   },
   "jest": {
     "transform": {

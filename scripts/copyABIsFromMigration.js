@@ -10,6 +10,7 @@ async function optimizeABIs () {
   optimizer.initDirectory()
   await optimizer.noBytecode()
   await optimizer.noWhitespace()
+  await optimizer.noDuplicates()
 }
 
 async function copyMigrationScript () {
