@@ -15,6 +15,7 @@ import { concat,
   NULL_ADDRESS,
   secondSinceEpochToDate
 } from '../utils'
+import { IVoteQueryOptions } from '../vote'
 import {  ISchemeState, SchemeBase } from './base'
 
 const Web3 = require('web3')
@@ -71,8 +72,8 @@ export interface ICompetitionSuggestionState {
 
 export interface ICompetitionVoteState {
   id?: string
-  // proposal: CompetitionProposal!
-  // suggestion: CompetitionSuggestion!
+  proposal: string
+  suggestion: string
   voter: Address
   createdAt?: Date
   reputation: BN
@@ -309,11 +310,18 @@ export class CompetitionScheme extends SchemeBase {
       } else {
         const eventName = 'NewVote'
         // emit NewVote(proposalId, _suggestionId, msg.sender, reputation);
-        // const suggestionId = receipt.events[eventName].returnValues._suggestionId
+        const suggestionId = receipt.events[eventName].returnValues._suggestionId
         const voter = receipt.events[eventName].returnValues._voter
         const reputation = receipt.events[eventName].returnValues._reputation
+        const  proposal = receipt.events[eventName].returnValues._proposalId
+        const suggestion = CompetitionSuggestion.calculateId({
+          scheme: this.id,
+          suggestionId
+        })
         return new CompetitionVote({
+          proposal,
           reputation,
+          suggestion,
           voter
         }, this.context)
       }
@@ -505,13 +513,22 @@ export class Competition { // extends Proposal {
     options.where.proposal = this.id
     return  CompetitionSuggestion.search(this.context, options, apolloQueryOptions)
   }
+  public votes(
+      options: IVoteQueryOptions= {},
+      apolloQueryOptions: IApolloQueryOptions = {}
+    ): Observable<CompetitionVote[]> {
+    if (!options.where) { options.where = {}}
+    options.where.proposal = this.id
+    return  CompetitionVote.search(this.context, options, apolloQueryOptions)
+  }
+
 }
 
 export interface ICompetitionSuggestionQueryOptions extends ICommonQueryOptions {
   where?: {
     id?: string, // id of the competition
     proposal?: string, // id of the proposal
-    suggestionId?: string // the "suggestionId" is a counter that is unique to the scheme
+    suggestionId?: number // the "suggestionId" is a counter that is unique to the scheme
       // - and is not to be confused with suggestion.id
     positionInWinnerList?: number|null
     positionInWinnerList_not?: number|null
@@ -731,14 +748,7 @@ export class CompetitionVote {
   ): Observable<CompetitionVote[]> {
     if (!options.where) { options.where = {}}
 
-    const itemMap = (item: any) => new CompetitionVote({
-      createdAt: secondSinceEpochToDate(item.createdAt),
-      id: item.id,
-      reputation: item.reputation,
-      voter: item.voter
-    }, context)
-
-    const query = gql`query CompetitionSuggestionSearch
+    const query = gql`query CompetitionVoteSearch
       {
         competitionVotes ${createGraphQlQuery(options)} {
           ...CompetitionVoteFields
@@ -747,12 +757,27 @@ export class CompetitionVote {
       ${CompetitionVote.fragments.CompetitionVoteFields}
       `
 
+    const itemMap = (item: any)  => {
+      return new CompetitionVote(CompetitionVote.itemMap(item), context)
+    }
     return context.getObservableList(
       query,
       itemMap,
       apolloQueryOptions
     ) as Observable<CompetitionVote[]>
   }
+  public static itemMap(item: any) {
+
+    return {
+      createdAt: secondSinceEpochToDate(item.createdAt),
+      id: item.id,
+      proposal: item.proposal.id,
+      reputation: item.reputation,
+      suggestion: item.suggestion.id,
+      voter: item.voter
+    }
+  }
+
   public id?: string
   public staticState?: ICompetitionVoteState
 
@@ -767,8 +792,21 @@ export class CompetitionVote {
   }
 
   public setStaticState(opts: ICompetitionVoteState) {
+    this.id = opts.id
     this.staticState = opts
   }
+  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<ICompetitionVoteState> {
+    const query = gql`query CompetitionVoteById
+      {
+        competitionVote (id: "${this.id}") {
+          ...CompetitionVoteFields
+        }
+      }
+      ${CompetitionVote.fragments.CompetitionVoteFields}
+      `
+    return  this.context.getObservableObject(query, CompetitionVote.itemMap, apolloQueryOptions)
+  }
+
 }
 
 /**

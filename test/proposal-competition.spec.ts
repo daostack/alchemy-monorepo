@@ -34,7 +34,8 @@ describe('Competition Proposal', () => {
   let contributionRewardExtState: ISchemeState
   let address0: string
   let address1: string
-  let suggestion1: any
+  let proposal: Proposal
+  let suggestion1: CompetitionSuggestion
   let suggestion2: any
   let suggestion3: any
   let suggestion4: any
@@ -190,7 +191,7 @@ describe('Competition Proposal', () => {
 
     // CREATE PROPOSAL
     const tx = await scheme.createProposal(proposalOptions).send()
-    const proposal = tx.result
+    proposal = tx.result
     expect(proposal).toBeInstanceOf(Proposal)
 
     const states: IProposalState[] = []
@@ -447,6 +448,28 @@ describe('Competition Proposal', () => {
     })
   })
 
+  it('Vote state works', async () => {
+    const competition = await createCompetition()
+
+    await suggestion1.vote().send()
+    let voteIsIndexed = false
+    suggestion1.state().subscribe((s: ICompetitionSuggestionState) => {
+      voteIsIndexed = (s.positionInWinnerList !== null)
+    })
+    await waitUntilTrue(() => voteIsIndexed)
+
+    const votes = await competition.votes().pipe(first()).toPromise()
+    expect(votes.length).toEqual(1)
+    const vote = votes[0]
+    const voteState = await vote.state().pipe(first()).toPromise()
+    // expect(vote.id).toEqual(vote1.id)
+    expect(voteState).toMatchObject({
+      id: vote.id,
+      proposal: competition.id,
+      suggestion: suggestion1.id
+    })
+
+  })
   it(`No votes is no winners`, async () => {
     // before any votes are cast, all suggesitons are winnners
     await createCompetition()
@@ -635,7 +658,7 @@ describe('Competition Proposal', () => {
     }
 
     const tx = await dao.createProposal(proposalOptions).send()
-    const proposal = tx.result
+    proposal = tx.result
     expect(proposal).toBeInstanceOf(Proposal)
 
   })
