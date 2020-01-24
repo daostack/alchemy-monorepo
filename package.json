@@ -26,7 +26,6 @@
     "bundle": "rollup -c rollup.config.ts -w",
     "lint": "npm run tslint",
     "prepare": "npm run copy-abis && npm run build",
-    "xcopy-abis": "cd node_modules/@daostack/migration && npm run optimize-abis:no-bytecode && cd ../../.. && rimraf src/abis/* && node scripts/copyABIsFromMigration.js",
     "copy-abis": "node scripts/copyABIsFromMigration.js",
     "prebuild": "rimraf dist",
     "quality": "npm run test:prod",

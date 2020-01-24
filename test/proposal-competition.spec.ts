@@ -480,8 +480,7 @@ describe('Competition Proposal', () => {
     expect(suggestion1.redeem().send()).rejects.toThrow('not in winners list')
   })
 
-  // TODO: unskipt this test once https://github.com/daostack/subgraph/issues/452 is resolved
-  it.skip('position is calculated correctly and redemptions work', async () => {
+  it('position is calculated correctly and redemptions work', async () => {
     let voteIsIndexed: boolean
     await createCompetition()
 
@@ -539,8 +538,7 @@ describe('Competition Proposal', () => {
     expect(await isWinner(suggestion4)).toEqual(false)
   })
 
-  // TODO: unskipt this test once https://github.com/daostack/subgraph/issues/452 is resolved
-  it.skip('position is calculated correctly (2)', async () => {
+  it('position is calculated correctly (2)', async () => {
     const competition = await createCompetition()
     await suggestion1.vote().send()
     arc.setAccount(address0)
