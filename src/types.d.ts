@@ -6816,3 +6816,5 @@ export enum UControllerUpgradeController_OrderBy {
   AvatarAddress = 'avatarAddress',
   NewController = 'newController'
 }
+
+declare module '@daostack/migration'

@@ -25,13 +25,16 @@
     "build:docs": "typedoc --out docs --target commonjs --theme markdown --mode file --plugin typedoc-plugin-markdown src",
     "bundle": "rollup -c rollup.config.ts -w",
     "lint": "npm run tslint",
-    "prepare": "rimraf src/abis && node scripts/copyABIsFromMigration.js && npm run build",
+    "prepare": "npm run copy-abis && npm run build",
+    "xcopy-abis": "cd node_modules/@daostack/migration && npm run optimize-abis:no-bytecode && cd ../../.. && rimraf src/abis/* && node scripts/copyABIsFromMigration.js",
+    "copy-abis": "node scripts/copyABIsFromMigration.js",
     "prebuild": "rimraf dist",
     "quality": "npm run test:prod",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "test": "jest --runInBand --forceExit",
     "test:watch": "jest --watch",
-    "tslint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'"
+    "tslint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "postinstall": "cd node_modules/@daostack/migration && npm run optimize-abis:no-bytecode"
   },
   "jest": {
     "transform": {

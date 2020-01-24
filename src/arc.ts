@@ -299,8 +299,11 @@ export class Arc extends GraphNodeObserver {
     }
     // //End of workaround
 
-    const abi = require(`${ABI_DIR}/${version}/${abiName}.json`)
-    return abi
+    let artefact = require(`${ABI_DIR}/${version}/${abiName}.json`)
+    if (artefact.rootVersion) {
+      artefact = require(`${ABI_DIR}/${artefact.rootVersion}/${abiName}.json`)
+    }
+    return artefact.abi
   }
 
   /**

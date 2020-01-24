@@ -7,7 +7,7 @@ import { DAO } from '../dao'
 import { mapGenesisProtocolParams } from '../genesisProtocol'
 import { IApolloQueryOptions } from '../graphnode'
 import { Operation, toIOperationObservable } from '../operation'
-import { IProposalBaseCreateOptions, IProposalQueryOptions, Proposal } from '../proposal'
+import { IProposalBaseCreateOptions, IProposalQueryOptions, IProposalState, Proposal } from '../proposal'
 import { Address, ICommonQueryOptions } from '../types'
 import { concat,
   createGraphQlQuery, dateToSecondsSinceEpoch, getBlockTime,
@@ -478,7 +478,7 @@ export class Competition { // extends Proposal {
     const proposal = new Proposal(this.id, this.context)
     const observable = proposal.state().pipe(
       first(),
-      concatMap((competitionState) => {
+      concatMap((competitionState: IProposalState) => {
         const scheme = new CompetitionScheme(competitionState.scheme, this.context)
         return scheme.voteSuggestion({suggestionId})
       })
@@ -489,7 +489,7 @@ export class Competition { // extends Proposal {
     const proposal = new Proposal(this.id, this.context)
     const observable = proposal.state().pipe(
       first(),
-      concatMap((competitionState) => {
+      concatMap((competitionState: IProposalState) => {
         const scheme = new CompetitionScheme(competitionState.scheme, this.context)
         return scheme.redeemSuggestion({suggestionId, beneficiary})
       })
@@ -661,7 +661,7 @@ export class CompetitionSuggestion {
   public vote(): Operation<CompetitionVote> {
     const observable = this.state().pipe(
       first(),
-      concatMap((suggestionState) => {
+      concatMap((suggestionState: ICompetitionSuggestionState) => {
         const competition = new Competition(suggestionState.proposal, this.context)
         return competition.voteSuggestion(suggestionState.suggestionId)
       })
@@ -693,7 +693,7 @@ export class CompetitionSuggestion {
   public redeem(beneficiary: Address = NULL_ADDRESS): Operation<boolean> {
      const observable = this.state().pipe(
       first(),
-      concatMap((suggestionState) => {
+      concatMap((suggestionState: ICompetitionSuggestionState) => {
         const competition = new Competition(suggestionState.proposal, this.context)
         return competition.redeemSuggestion(suggestionState.suggestionId, beneficiary)
       })

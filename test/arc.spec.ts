@@ -4,6 +4,7 @@ import { first } from 'rxjs/operators'
 import Arc from '../src/index'
 import { Proposal } from '../src/proposal'
 import { Scheme } from '../src/scheme'
+import { REDEEMER_CONTRACT_VERSIONS } from '../src/settings'
 import { Address } from '../src/types'
 import {
   fromWei,
@@ -215,4 +216,10 @@ describe('Arc ', () => {
     expect(anAddress).toEqual(anAddress.toLowerCase())
   })
 
+  it('arc.getABI works', async () => {
+    const arc = await newArc()
+    await arc.fetchContractInfos()
+    const abi = arc.getABI(undefined, 'Redeemer', REDEEMER_CONTRACT_VERSIONS[0])
+    expect(abi[0].name).toEqual('redeem')
+  })
 })
