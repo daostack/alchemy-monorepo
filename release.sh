@@ -6,6 +6,7 @@ echo "publish to npm"
 npm publish
 # tag on github
 echo "create tag ${package_version}"
+git ci -a -m "Package version ${package_version}"
 git tag -a $package_version -m "Release of version $package_version"
 git push --tags
 # done

@@ -1,6 +1,6 @@
 {
   "name": "@daostack/client",
-  "version": "0.2.52",
+  "version": "0.2.53",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -66,7 +66,7 @@
     ]
   },
   "devDependencies": {
-    "@daostack/migration": "0.0.1-rc.38-v2",
+    "@daostack/migration": "0.0.1-rc.39-v2",
     "@types/graphql": "^14.2.2",
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/jest": "^24.0.15",
@@ -86,6 +86,7 @@
     "replace-in-file": "^3.4.4",
     "rimraf": "^2.6.2",
     "rollup": "^0.68.0",
+    "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-commonjs": "^9.3.4",
     "rollup-plugin-json": "^3.1.0",
     "rollup-plugin-node-resolve": "^3.4.0",
