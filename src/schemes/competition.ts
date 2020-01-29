@@ -557,6 +557,7 @@ export class CompetitionSuggestion implements IStateful<ICompetitionSuggestionSt
         id
       }
       # fulltext: [string]
+      beneficiary
       suggester
       # votes: [CompetitionVote!] @derivedFrom(field: "suggestion")
       totalVotes
