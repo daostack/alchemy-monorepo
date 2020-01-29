@@ -351,11 +351,11 @@ describe('Competition Proposal', () => {
     const suggestion1State = await suggestion1.state().pipe(first()).toPromise()
     expect(suggestion1State).toMatchObject({
       ...suggestion1Options,
-      beneficiary: undefined, // should be address1 after https://github.com/daostack/subgraph/issues/459 is resolved
+      beneficiary: address1,
       id: suggestion1.id,
       redeemedAt: null,
       rewardPercentage: 0,
-      suggester: address1, // should be address0 after https://github.com/daostack/subgraph/issues/459 is resolved
+      suggester: address0,
       tags: ['tag1', 'tag2'],
       title: 'title',
       totalVotes: new BN(0)
@@ -658,8 +658,7 @@ describe('Competition Proposal', () => {
 
   })
 
-  // TODO: this test is skipped while waiting for https://github.com/daostack/subgraph/issues/459
-  it.skip(`Beneficiary is recognized and different from suggestion`, async () => {
+  it(`Beneficiary is recognized and different from suggestor`, async () => {
     // lets create some suggestions
     const competition =  await createCompetition()
     const suggestionOptions = {
