@@ -98,7 +98,7 @@
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.15.0",
     "typedoc-plugin-markdown": "^2.2.4",
-    "typescript": "^3.5.3",
+    "typescript": "^3.7.5",
     "u": "^0.1.0"
   },
   "dependencies": {
@@ -113,7 +113,7 @@
     "isomorphic-fetch": "^2.2.1",
     "isomorphic-ws": "^4.0.1",
     "js-logger": "^1.6.0",
-    "rxjs": "6.4.0",
+    "rxjs": "^6.5.4",
     "subscriptions-transport-ws": "^0.9.16",
     "web3": "1.2.4",
     "ws": "^6.2.1"
