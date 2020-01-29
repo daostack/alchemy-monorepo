@@ -1,7 +1,7 @@
 import { defaultDataIdFromObject, InMemoryCache } from 'apollo-cache-inmemory'
 import { ApolloClient, ApolloQueryResult } from 'apollo-client'
-import { FetchResult, Observable as ZenObservable } from 'apollo-link'
-import { split } from 'apollo-link'
+import { ApolloLink, FetchResult, Observable as ZenObservable, split } from 'apollo-link'
+import { onError } from 'apollo-link-error'
 import { HttpLink } from 'apollo-link-http'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
@@ -55,19 +55,24 @@ export function createApolloClient(options: {
     httpLink
   )
   // we can also add error handling
-  // const errorHandlingLink = apollolink.from([
-  //     onerror(({ graphqlerrors, networkerror }) => {
-  //       if (graphqlerrors) {
-  //         graphqlerrors.map(({ message, locations, path }) =>
-  //           console.log(
-  //             `[graphql error]: message: ${message}, location: ${locations}, path: ${path}`,
-  //           ),
-  //         );
-  //       if (networkerror) { console.log(`[network error]: ${networkerror}`)}
-  //       }
-  //     }),
-  //     wsorhttplink
-  //   ])
+  const errorHandlingLink = ApolloLink.from([
+    // @ts-ignore
+    onError((event) => {
+      console.log(event)
+      if (event.graphQLErrors) {
+        event.graphQLErrors.map((err: any) =>
+          console.log(
+            `[graphql error]: message: ${err.message}, location: ${err.locations}, path: ${err.path}`
+          )
+        )
+      }
+      if (event.networkError) {
+        console.log(`[network error]: ${event.networkError}`)
+        throw event.networkError
+      }
+    }),
+    wsOrHttpLink
+  ])
 
   const client = new ApolloClient({
     cache: new InMemoryCache({
@@ -102,7 +107,7 @@ export function createApolloClient(options: {
       }
     }),
     connectToDevTools: true,
-    link: wsOrHttpLink
+    link: errorHandlingLink
   })
   return client
 }
@@ -207,7 +212,7 @@ export class GraphNodeObserver {
             return !r.loading
           }), // filter empty results
           catchError((err: Error) => {
-            throw Error(`${err.name}: ${err.message}\n${query.loc.source.body}`)
+            throw Error(`11. ${err.name}: ${err.message}\n${query.loc.source.body}`)
           })
         )
         .subscribe(observer)
