@@ -1,6 +1,6 @@
 {
   "name": "@daostack/client",
-  "version": "0.2.54",
+  "version": "0.2.56",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -114,7 +114,7 @@
     "isomorphic-fetch": "^2.2.1",
     "isomorphic-ws": "^4.0.1",
     "js-logger": "^1.6.0",
-    "rxjs": "^6.5.4",
+    "rxjs": "6.4.0",
     "subscriptions-transport-ws": "^0.9.16",
     "web3": "1.2.4",
     "ws": "^6.2.1"
