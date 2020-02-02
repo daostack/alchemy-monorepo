@@ -112,6 +112,8 @@ async function migrateDemoTest ({ arcVersion, web3, spinner, confirm, opts, migr
   if (network === 'private') {
     if (await web3.eth.net.getId() === 100) {
       network = 'xdai'
+    } else if (await web3.eth.net.getId() === 77) {
+      network = 'sokol'
     }
   }
 

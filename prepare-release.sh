@@ -49,8 +49,13 @@ npm run migrate -- --gasPrice 30 --provider $mainnet_provider --private-key $mai
 fi
 if [ ! -z "$xdai_private_key" ]; then
 # migrate xdai
-echo "Migrating xdai..."
+echo "Migrating xDai..."
 npm run migrate -- --gasPrice 5 --provider $xdai_provider --private-key $xdai_private_key "$@"
+fi
+if [ ! -z "$sokol_private_key" ]; then
+# migrate sokol
+echo "Migrating Sokol..."
+npm run migrate -- --gasPrice 5 --provider $sokol_provider --private-key $sokol_private_key "$@"
 fi
 # set version
 echo "Setting version..."
