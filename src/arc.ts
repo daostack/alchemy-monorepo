@@ -10,8 +10,10 @@ import { IPFSClient } from './ipfsClient'
 import { Logger } from './logger'
 import { Operation, sendTransaction, web3receipt } from './operation'
 import { IProposalQueryOptions, Proposal } from './proposal'
+import { IRewardQueryOptions, Reward } from './reward'
 import { ISchemeQueryOptions, Scheme } from './scheme'
 import { ABI_DIR } from './settings'
+import { IStakeQueryOptions, Stake } from './stake'
 import { ITagQueryOptions, Tag } from './tag'
 import { Token } from './token'
 import { Address, IPFSProvider, Web3Provider } from './types'
@@ -170,11 +172,26 @@ export class Arc extends GraphNodeObserver {
   ): Observable<Proposal[]> {
     return Proposal.search(this, options, apolloQueryOptions)
   }
+
   public events(
     options: IEventQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Event[]> {
     return Event.search(this, options, apolloQueryOptions)
+  }
+
+  public rewards(
+    options: IRewardQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Reward[]> {
+    return Reward.search(this, options, apolloQueryOptions)
+  }
+
+  public stakes(
+    options: IStakeQueryOptions = {},
+    apolloQueryOptions: IApolloQueryOptions = {}
+  ): Observable<Stake[]> {
+    return Stake.search(this, options, apolloQueryOptions)
   }
 
   public ethBalance(owner: Address): Observable<BN> {

@@ -102,7 +102,7 @@ export class Reward implements IStateful<IRewardState> {
       createdAt: item.createdAt,
       daoBountyForStaker: new BN(item.daoBountyForStaker),
       id: item.id,
-      proposalId: item.proposalId,
+      proposalId: item.proposal.id,
       reputationForProposer: new BN(item.reputationForProposer),
       reputationForVoter: new BN(item.reputationForVoter),
       tokenAddress: item.tokenAddress,

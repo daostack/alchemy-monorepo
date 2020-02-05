@@ -872,6 +872,36 @@ export class Proposal implements IStateful<IProposalState> {
     return toIOperationObservable(observable)
   }
 
+  public executeBoosted(): Operation<any> {
+    const observable = from(this.votingMachine()).pipe(
+      concatMap((votingMachine) => {
+        const transaction = votingMachine.methods.executeBoosted(this.id)
+        console.log(votingMachine.options.address)
+        const map = (receipt: any) => {
+          if (Object.keys(receipt.events).length  === 0) {
+            // this does not mean that anything failed
+            return receipt
+          } else {
+            return receipt
+          }
+        }
+        const errorHandler = async (err: Error) => {
+          const proposalDataFromVotingMachine = await votingMachine.methods.proposals(this.id).call()
+
+          if (proposalDataFromVotingMachine.callbacks === NULL_ADDRESS) {
+            const msg = `Error in proposal.executeBoosted(): A proposal with id ${this.id} does not exist`
+            return Error(msg)
+          }
+          console.log('accling...')
+          await transaction.call()
+          return err
+        }
+        return this.context.sendTransaction(transaction, map, errorHandler)
+      })
+    )
+    return toIOperationObservable(observable)
+  }
+
 }
 
 enum ProposalQuerySortOptions {

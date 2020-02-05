@@ -181,7 +181,7 @@ export class Stake implements IStateful<IStakeState> {
         throw Error(`Could not find a Stake with id ${this.id}`)
       }
       this.setStaticState({
-        amount: item.reputation,
+        amount: new BN(item.amount),
         createdAt: item.createdAt,
         id: item.id,
         outcome: item.outcome,
@@ -189,7 +189,7 @@ export class Stake implements IStateful<IStakeState> {
         staker: item.staker
       })
       return {
-        amount: item.reputation,
+        amount: new BN(item.amount),
         createdAt: item.createdAt,
         id: item.id,
         outcome: item.outcome,
