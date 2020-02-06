@@ -3,6 +3,7 @@ import { ApolloClient, ApolloQueryResult } from 'apollo-client'
 import { ApolloLink, FetchResult, Observable as ZenObservable, split } from 'apollo-link'
 import { onError } from 'apollo-link-error'
 import { HttpLink } from 'apollo-link-http'
+import { RetryLink } from 'apollo-link-retry'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 import gql from 'graphql-tag'
@@ -26,7 +27,9 @@ export interface IObservable<T> extends Observable<T> {
 export function createApolloClient(options: {
   graphqlHttpProvider: string,
   graphqlWsProvider: string,
-  graphqlPrefetchHook?: any // a callback function that will be called for each query sent to the link
+  prefetchHook?: (query: any) => any, // a callback function that will be called for each query sent to the link
+  errHandler?: (event: any) => any,
+  retryLink?: any // apollo retry link instance
 }) {
   const httpLink = new HttpLink({
     credentials: 'same-origin',
@@ -45,8 +48,8 @@ export function createApolloClient(options: {
   const wsOrHttpLink = split(
     // split based on operation type
     ({ query }) => {
-      if (options.graphqlPrefetchHook) {
-        options.graphqlPrefetchHook(query)
+      if (options.prefetchHook) {
+        options.prefetchHook(query)
       }
       const definition = getMainDefinition(query)
       return definition.kind === 'OperationDefinition' && definition.operation === 'subscription'
@@ -55,59 +58,78 @@ export function createApolloClient(options: {
     httpLink
   )
   // we can also add error handling
-  const errorHandlingLink = ApolloLink.from([
-    // @ts-ignore
-    onError((event) => {
-      console.log(event)
+  if (!options.retryLink) {
+    options.retryLink = new RetryLink({
+      attempts: {
+        max: 5,
+        // @ts-ignore
+        retryIf: (error, operation) =>  !!error
+      },
+      delay: {
+        initial: 300,
+        jitter: true,
+        max: Infinity
+      }
+    })
+  }
+
+  if (!options.errHandler) {
+    options.errHandler = (event) => {
       if (event.graphQLErrors) {
         event.graphQLErrors.map((err: any) =>
-          console.log(
+          Logger.error(
             `[graphql error]: message: ${err.message}, location: ${err.locations}, path: ${err.path}`
           )
         )
       }
       if (event.networkError) {
-        console.log(`[network error]: ${event.networkError}`)
-        throw event.networkError
+        Logger.error(`[network error]: ${event.networkError}`)
       }
-    }),
+    }
+  }
+  const errorHandlingLink = onError(options.errHandler)
+
+  const link = ApolloLink.from([
+    errorHandlingLink,
+    options.retryLink,
     wsOrHttpLink
   ])
 
-  const client = new ApolloClient({
-    cache: new InMemoryCache({
-      cacheRedirects: {
-        Query: {
-          controllerScheme: (_, args, { getCacheKey }) => {
-            return getCacheKey({ __typename: 'ControllerScheme', id: args.id })
-          },
-          dao: (_, args, { getCacheKey }) =>  {
-            return getCacheKey({ __typename: 'DAO', id: args.id })
-          },
-          proposal: (_, args, { getCacheKey }) => {
-            return getCacheKey({ __typename: 'Proposal', id: args.id })
-          },
-          proposalStake: (_, args, { getCacheKey }) => {
-            return getCacheKey({ __typename: 'ProposalStake', id: args.id })
-          },
-          proposalVote: (_, args, { getCacheKey }) => {
-            return getCacheKey({ __typename: 'ProposalVote', id: args.id })
-          },
-          reputationHolder: (_, args, { getCacheKey }) => {
-            return getCacheKey({ __typename: 'ReputationHolder', id: args.id })
-          }
-        }
-      },
-      dataIdFromObject: (object) => {
-        switch (object.__typename) {
-          case 'ProposalVote': return undefined
-          case 'ProposalStake': return undefined
-          default: return defaultDataIdFromObject(object) // fall back to default handling
+  const cache = new InMemoryCache({
+    cacheRedirects: {
+      Query: {
+        controllerScheme: (_, args, { getCacheKey }) => {
+          return getCacheKey({ __typename: 'ControllerScheme', id: args.id })
+        },
+        dao: (_, args, { getCacheKey }) =>  {
+          return getCacheKey({ __typename: 'DAO', id: args.id })
+        },
+        proposal: (_, args, { getCacheKey }) => {
+          return getCacheKey({ __typename: 'Proposal', id: args.id })
+        },
+        proposalStake: (_, args, { getCacheKey }) => {
+          return getCacheKey({ __typename: 'ProposalStake', id: args.id })
+        },
+        proposalVote: (_, args, { getCacheKey }) => {
+          return getCacheKey({ __typename: 'ProposalVote', id: args.id })
+        },
+        reputationHolder: (_, args, { getCacheKey }) => {
+          return getCacheKey({ __typename: 'ReputationHolder', id: args.id })
         }
       }
-    }),
-    connectToDevTools: true,
-    link: errorHandlingLink
+    },
+    dataIdFromObject: (object) => {
+      switch (object.__typename) {
+        case 'ProposalVote': return undefined
+        case 'ProposalStake': return undefined
+        default: return defaultDataIdFromObject(object) // fall back to default handling
+      }
+    }
+  })
+  const client = new ApolloClient({
+    cache,
+    connectToDevTools: true, // TODO: this probably not in production!
+    link
   })
   return client
 }
@@ -127,16 +149,20 @@ export class GraphNodeObserver {
     graphqlHttpProvider?: string
     graphqlWsProvider?: string
     graphqlSubscribeToQueries?: boolean
+    prefetchHook?: any
+    errHandler?: any
+    retryLink?: any
   }) {
     this.graphqlSubscribeToQueries = (
       options.graphqlSubscribeToQueries === undefined || options.graphqlSubscribeToQueries
     )
     if (options.graphqlHttpProvider && options.graphqlWsProvider) {
-      this.graphqlHttpProvider = options.graphqlHttpProvider
-      this.graphqlWsProvider = options.graphqlWsProvider
+      this.graphqlHttpProvider = options.graphqlHttpProvider as string
+      this.graphqlWsProvider = options.graphqlWsProvider as string
       this.apolloClient = createApolloClient({
-        graphqlHttpProvider: this.graphqlHttpProvider,
-        graphqlWsProvider: this.graphqlWsProvider
+        ...options,
+        graphqlHttpProvider: this.graphqlHttpProvider as string,
+        graphqlWsProvider: this.graphqlWsProvider as string
       })
     }
   }

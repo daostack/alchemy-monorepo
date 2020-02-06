@@ -42,7 +42,7 @@ export class Arc extends GraphNodeObserver {
   public contracts: {[key: string]: any} = {} // a cache for the contracts
   public contractsR: {[key: string]: any} = {} // a cache for teh "read-only" contracts
 
-  // accounts obseved by ethBalance
+  // accounts observed by ethBalance
   public blockHeaderSubscription: Subscription|undefined = undefined
   public observedAccounts: { [address: string]: {
       observable?: Observable<BN>
@@ -64,11 +64,17 @@ export class Arc extends GraphNodeObserver {
     graphqlPrefetchHook?: (query: any) => void
     /** determines whether a query should subscribe to updates from the graphProvider. Default is true.  */
     graphqlSubscribeToQueries?: boolean
+    /** an apollo-retry-link instance as https://www.apollographql.com/docs/link/links/retry/#default-configuration */
+    graphqlRetryLink?: any,
+    graphqlErrHandler?: any
   }) {
     super({
+      errHandler: options.graphqlErrHandler,
       graphqlHttpProvider: options.graphqlHttpProvider,
       graphqlSubscribeToQueries: options.graphqlSubscribeToQueries,
-      graphqlWsProvider: options.graphqlWsProvider
+      graphqlWsProvider: options.graphqlWsProvider,
+      prefetchHook: options.graphqlPrefetchHook,
+      retryLink: options.graphqlRetryLink
     })
     this.ipfsProvider = options.ipfsProvider || ''
 

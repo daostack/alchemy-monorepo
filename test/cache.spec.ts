@@ -125,19 +125,18 @@ describe('apolloClient caching checks', () => {
 
     arc.apolloClient = createApolloClient({
       graphqlHttpProvider,
-      graphqlPrefetchHook: (query: any) => {
+      graphqlWsProvider,
+      prefetchHook: (query: any) => {
         const definition = getMainDefinition(query)
-        // console.log(query)
         // @ts-ignore
         if (definition.operation === 'subscription') {
           networkSubscriptions.push(definition)
         } else {
           networkQueries.push(definition)
         }
-        // console.log(definition)
-      },
-      graphqlWsProvider
+      }
     })
+
     expect(networkSubscriptions.length).toEqual(0)
     expect(networkQueries.length).toEqual(0)
     const daos = await arc.daos({}, { subscribe: false, fetchAllData: true}).pipe(first()).toPromise()

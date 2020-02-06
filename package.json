@@ -107,6 +107,7 @@
     "apollo-client-ws": "^2.5.0",
     "apollo-link-error": "^1.1.12",
     "apollo-link-http": "^1.5.15",
+    "apollo-link-retry": "^2.2.15",
     "apollo-link-ws": "^1.0.18",
     "form-data": "^3.0.0",
     "graphql": "^14.4.2",
