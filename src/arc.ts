@@ -8,7 +8,7 @@ export { IApolloQueryOptions } from './graphnode'
 import { Event, IEventQueryOptions } from './event'
 import { IPFSClient } from './ipfsClient'
 import { Logger } from './logger'
-import { Operation, sendTransaction, web3receipt } from './operation'
+import { Operation, sendTransaction, transactionErrorHandler, web3receipt } from './operation'
 import { IProposalQueryOptions, Proposal } from './proposal'
 import { IRewardQueryOptions, Reward } from './reward'
 import { ISchemeQueryOptions, Scheme } from './scheme'
@@ -439,9 +439,8 @@ export class Arc extends GraphNodeObserver {
   public sendTransaction<T>(
     transaction: any,
     mapToObject: (receipt: web3receipt) => T,
-    errorHandler?: (error: Error) => Promise<Error> | Error
+    errorHandler?: transactionErrorHandler
   ): Operation<T> {
-
     return sendTransaction(this, transaction, mapToObject, errorHandler)
   }
 

@@ -293,8 +293,9 @@ export abstract class SchemeBase implements IStateful<ISchemeState> {
 
     return (receipt) => receipt.result
   }
-  public createProposalErrorHandler(options?: any): (err: Error) => Error|Promise<Error> {
-    return (err) => err
+  public createProposalErrorHandler(options?: any): ((err: Error) => Error|Promise<Error>)|undefined {
+    return undefined
+    // return (err) => err
   }
 
   public createProposal(options: IProposalCreateOptions): Operation<Proposal>  {
@@ -315,154 +316,6 @@ export abstract class SchemeBase implements IStateful<ISchemeState> {
   }
 
   public abstract state(apolloQueryOptions: IApolloQueryOptions): Observable < ISchemeState >
-
-  public x() {
-
-    // const query = gql`query SchemeState
-    //   {
-    //     controllerScheme (id: "${this.id}") {
-    //       ...SchemeFields
-    //     }
-    //   }
-    //   ${SchemeBase.fragments.SchemeFields}
-    // `
-
-    // const itemMap = (item: any): ISchemeState|null => {
-    //   if (!item) {
-    //     return null
-    //   }
-
-    //   let name = item.name
-    //   if (!name) {
-
-    //     try {
-    //       name = this.context.getContractInfo(item.address).name
-    //     } catch (err) {
-    //       if (err.message.match(/no contract/ig)) {
-    //         // continue
-    //       } else {
-    //         throw err
-    //       }
-    //     }
-    //   }
-    //   const uGenericSchemeParams = item.uGenericSchemeParams && {
-    //     contractToCall: item.uGenericSchemeParams.contractToCall,
-    //     voteParams: mapGenesisProtocolParams(item.uGenericSchemeParams.voteParams),
-    //     votingMachine: item.uGenericSchemeParams.votingMachine
-    //   }
-    //   const contributionRewardParams = item.contributionRewardParams && {
-    //     voteParams: mapGenesisProtocolParams(item.contributionRewardParams.voteParams),
-    //     votingMachine: item.contributionRewardParams.votingMachine
-    //   }
-    //   const contributionRewardExtParams = item.contributionRewardExtParams && {
-    //     rewarder: item.contributionRewardExtParams.rewarder,
-    //     voteParams: mapGenesisProtocolParams(item.contributionRewardExtParams.voteParams),
-    //     votingMachine: item.contributionRewardExtParams.votingMachine
-    //   }
-    //   const schemeRegistrarParams = item.schemeRegistrarParams && {
-    //     voteRegisterParams: mapGenesisProtocolParams(item.schemeRegistrarParams.voteRegisterParams),
-    //     voteRemoveParams: mapGenesisProtocolParams(item.schemeRegistrarParams.voteRemoveParams),
-    //     votingMachine: item.schemeRegistrarParams.votingMachine
-    //   }
-    //   const genericSchemeParams = item.genericSchemeParams  && {
-    //     contractToCall: item.genericSchemeParams.contractToCall,
-    //     voteParams: mapGenesisProtocolParams(item.genericSchemeParams.voteParams),
-    //     votingMachine: item.genericSchemeParams.votingMachine
-    //   }
-    //   const schemeParams = (
-    //     uGenericSchemeParams || contributionRewardParams ||
-    //     schemeRegistrarParams || genericSchemeParams || contributionRewardExtParams
-    //   )
-    //   return {
-    //     address: item.address,
-    //     canDelegateCall: item.canDelegateCall,
-    //     canManageGlobalConstraints: item.canManageGlobalConstraints,
-    //     canRegisterSchemes: item.canRegisterSchemes,
-    //     canUpgradeController: item.canUpgradeController,
-    //     contributionRewardExtParams,
-    //     contributionRewardParams,
-    //     dao: item.dao.id,
-    //     genericSchemeParams,
-    //     id: item.id,
-    //     name,
-    //     numberOfBoostedProposals: Number(item.numberOfBoostedProposals),
-    //     numberOfPreBoostedProposals: Number(item.numberOfPreBoostedProposals),
-    //     numberOfQueuedProposals: Number(item.numberOfQueuedProposals),
-    //     paramsHash: item.paramsHash,
-    //     schemeParams,
-    //     schemeRegistrarParams,
-    //     uGenericSchemeParams,
-    //     version: item.version
-    //   }
-    // }
-    // return  this.context.getObservableObject(query, itemMap, apolloQueryOptions) as Observable<ISchemeState>
-  }
-
-  // public xxcreateProposal(options: IProposalCreateOptions): Operation<Proposal>  {
-  //   const observable = Observable.create(async (observer: any) => {
-  //     let msg: string
-  //     const context = this.context
-  //     let createTransaction: () => any = () => null
-  //     let map: any
-  //     const errHandler = (err: Error) => err
-  //     const state = await this.fetchStaticState()
-
-  //     switch (state.name) {
-  //       case 'ContributionReward':
-  //         createTransaction  = ContributionReward.createProposal(options, this.context)
-  //         map = ContributionReward.createTransactionMap(options, this.context)
-  //         break
-  //       case 'ContributionRewardExt':
-  //         // TODO: ContributionRewardExt can also be used to create a Competition proposal
-  //         // For now, we explicitly pass this in the options, but in reality (once 36-4 is released) we
-  //         // should be able to sniff this: if the rewarder of the scheme is a Contribution.sol instance....
-  //         // if (options.proposalType === 'competition') {
-  //         //   createTransaction = Competition.createProposal(options, this.context)
-  //         //   map = Competition.createTransactionMap(options, this.context),
-  //         //   errHandler = Competition.createProposalErrorHandler
-  //         // } else {
-  //         //   createTransaction  = ContributionRewardExt.createProposal(options, this.context)
-  //         //   map = ContributionRewardExt.createTransactionMap(options, this.context)
-  //         // }
-  //         // break
-
-  //       case 'UGenericScheme':
-  //           createTransaction  = UGenericScheme.createTransaction(options, this.context)
-  //           map = UGenericScheme.createTransactionMap(options, this.context)
-  //           break
-
-  //       case 'GenericScheme':
-  //         const versionNumber = Number(state.version.split('rc.')[1])
-  //         if (versionNumber < 23) {
-  //           // the pre-24 " GenericScheme" contracts have beeen renamed to UGenericScheme
-  //           createTransaction  = UGenericScheme.createTransaction(options, this.context)
-  //           map = UGenericScheme.createTransactionMap(options, this.context)
-  //           break
-  //         } else {
-  //           createTransaction  = GenericScheme.createTransaction(options, this.context)
-  //           map = GenericScheme.createTransactionMap(options, this.context)
-  //           break
-  //         }
-
-  //       case 'SchemeRegistrar':
-  //         createTransaction  = SchemeRegistrar.createTransaction(options, this.context)
-  //         map = SchemeRegistrar.createTransactionMap(options, this.context)
-  //         break
-
-  //       default:
-  //         msg = `Unknown proposal scheme: '${state.name}'`
-  //         msg = `${state.name} ${state.name === 'ContributionRewardExt'}`
-  //         throw Error(msg)
-  //     }
-
-  //     const sendTransactionObservable = context.sendTransaction(createTransaction, map, errHandler)
-  //     const sub = sendTransactionObservable.subscribe(observer)
-
-  //     return () => sub.unsubscribe()
-  //   })
-
-  //   return toIOperationObservable(observable)
-  // }
 
   public proposals(
     options: IProposalQueryOptions = {},

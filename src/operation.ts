@@ -39,6 +39,9 @@ export type Operation<T> = IOperationObservable<ITransactionUpdate<T>>
 
 export type web3receipt = object
 
+export type transactionErrorHandler =  (
+  error: Error, transaction?: any, options?: { from?: string}) => Promise<Error> | Error
+
 /**
  *
  *  * send a transaction to the ethereumblockchain, and return a observable of ITransactionUpdatessend
@@ -57,7 +60,7 @@ export type web3receipt = object
  * @param {*} transaction A Web3 transaction object to send
  * @param {((receipt: web3receipt) => T | Promise<T>)} mapReceipt A function that takes the receipt of
  *  the transaction and returns an object
- * @param {((error: Error) => Promise<Error> | Error)} [errorHandler]
+ * @param {((error: Error, transaction: any, options: { from?: string }) => Promise<Error> | Error)} [errorHandler]
  *  A function that takes an error, and either returns or throws a more informative Error
  *  if errorHander is not provided, a default error handler will throw any errors thrown by calling `transaction.call()`
  * @returns {Operation<T>}
@@ -66,15 +69,11 @@ export function sendTransaction<T>(
   context: Arc,
   transaction: any,
   mapReceipt: (receipt: web3receipt) => T | Promise<T>,
-  errorHandler?: (error: Error) => Promise<Error> | Error
-): Operation<T> {
-
-  if (!errorHandler) {
-    errorHandler = async (err: Error) => {
-      await transaction.call()
-      return err
+  errorHandler: transactionErrorHandler = async (err: Error, tx: any = transaction, options: { from?: string} = {}) => {
+      await tx.call(options)
+      throw err
     }
-  }
+): Operation<T> {
 
   const observable = Observable.create(async (observer: Observer<ITransactionUpdate<T>>) => {
     let transactionHash: string
@@ -97,7 +96,7 @@ export function sendTransaction<T>(
       gasEstimate = await tx.estimateGas({ from })
     } catch (error) {
       try {
-        error = await (errorHandler as (error: Error) => Promise<Error> | Error)(error)
+        error = await errorHandler(error, transaction, {from})
       } catch (err) {
         error = err
       }
