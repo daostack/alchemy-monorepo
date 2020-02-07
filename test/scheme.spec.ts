@@ -132,8 +132,7 @@ describe('Scheme', () => {
       name: 'GenericScheme'
     })
 
-    // the subgraph is a bit weird here, popoulating uGenericSchemeParams instead of the expected schemeParams
-    expect(state.uGenericSchemeParams).toEqual(state.schemeParams)
+    expect(state.genericSchemeParams).toEqual(state.schemeParams)
   })
 
   it('state() should be equal to proposal.state().scheme', async () => {
