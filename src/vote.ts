@@ -61,8 +61,6 @@ export class Vote implements IStateful<IVoteState> {
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable <Vote[]> {
     if (!options.where) { options.where = {}}
-    let where = ''
-
     const proposalId = options.where.proposal
     // if we are searching for votes of a specific proposal (a common case), we
     // will structure the query so that votes are stored in the cache together wit the proposal
@@ -70,13 +68,14 @@ export class Vote implements IStateful<IVoteState> {
       delete options.where.proposal
     }
 
+    let where = ''
     for (const key of Object.keys(options.where)) {
       if (options.where[key] === undefined) {
         continue
       }
 
       if (key === 'voter' || key === 'dao') {
-        const option = options.where[key] = options.where[key] as string
+        const option = options.where[key] as string
         isAddress(option)
         options.where[key] = option.toLowerCase()
       }
@@ -109,12 +108,15 @@ export class Vote implements IStateful<IVoteState> {
       }, context)
     }
 
-    if (proposalId) {
+    // if we are searching for votes of a specific proposal (a common case), we
+    // will structure the query so that votes are stored in the cache together with the proposal
+    // if (options.where.proposal && !options.where.id) {
+    if (proposalId && !options.where.id) {
       query = gql`query ProposalVotesSearchFromProposal
         {
           proposal (id: "${proposalId}") {
             id
-            votes ${createGraphQlQuery(options, where)} {
+            votes ${createGraphQlQuery({ where: { ...options.where, proposal: undefined}}, where)} {
               ...VoteFields
             }
           }

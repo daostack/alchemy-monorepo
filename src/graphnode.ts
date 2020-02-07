@@ -98,6 +98,18 @@ export function createApolloClient(options: {
   const cache = new InMemoryCache({
     cacheRedirects: {
       Query: {
+        // competition: (_, args, { getCacheKey }) => {
+        //   return getCacheKey({ __typename: 'CompetitionProposal', id: args.id })
+        // },
+        competitionProposal: (_, args, { getCacheKey }) => {
+          return getCacheKey({ __typename: 'CompetitionProposal', id: args.id })
+        },
+        competitionSuggestion: (_, args, { getCacheKey }) => {
+          return getCacheKey({ __typename: 'CompetitionSuggestion', id: args.id })
+        },
+        competitionVote: (_, args, { getCacheKey }) => {
+          return getCacheKey({ __typename: 'CompetitionVote', id: args.id })
+        },
         controllerScheme: (_, args, { getCacheKey }) => {
           return getCacheKey({ __typename: 'ControllerScheme', id: args.id })
         },
@@ -122,6 +134,8 @@ export function createApolloClient(options: {
       switch (object.__typename) {
         case 'ProposalVote': return undefined
         case 'ProposalStake': return undefined
+        case 'CompetitionSuggestion': return undefined
+        case 'CompetitionVote': return undefined
         default: return defaultDataIdFromObject(object) // fall back to default handling
       }
     }

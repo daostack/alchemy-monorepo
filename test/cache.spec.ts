@@ -108,6 +108,7 @@ describe('apolloClient caching checks', () => {
       results.push(x)
     })
     await waitUntilTrue(() => subscribed)
+
     const proposalVotes = await proposal.votes({ where: { voter: voterAddress}}, { fetchPolicy: 'cache-only'})
       .pipe(first()).toPromise()
     expect(proposalVotes.map((v: Vote) => v.id)).toEqual([vote.id])

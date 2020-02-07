@@ -462,10 +462,6 @@ export class Competition { // extends Proposal {
       } else {
         const eventName = 'NewSuggestion'
         const suggestionId = receipt.events[eventName].returnValues._suggestionId
-        // const competitionSuggestionId = CompetitionSuggestion.calculateId({
-        //   scheme: this.id,
-        //   suggestionId
-        // })
         return new CompetitionSuggestion({ scheme: (schemeState as ISchemeState).id, suggestionId }, this.context)
       }
     }
@@ -519,6 +515,7 @@ export class Competition { // extends Proposal {
     options.where.proposal = this.id
     return CompetitionSuggestion.search(this.context, options, apolloQueryOptions)
   }
+
   public votes(
     options: IVoteQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
@@ -582,24 +579,49 @@ export class CompetitionSuggestion implements IStateful<ICompetitionSuggestionSt
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<CompetitionSuggestion[]> {
 
+    let query
     const itemMap = (item: any) => {
       return new CompetitionSuggestion(this.mapItemToObject(item, context) as ICompetitionSuggestionState, context)
     }
 
-    const query = gql`query CompetitionSuggestionSearch
-      {
-        competitionSuggestions ${createGraphQlQuery(options)} {
-          ...CompetitionSuggestionFields
+    // if we are looing for the suggestions of a particular proposal, we prime the cache..
+    if (options.where && options.where.proposal && !options.where.id) {
+      query = gql`query CompetitionSuggestionSearchByProposal
+        {
+          competitionProposal (id: "${options.where.proposal}") {
+              suggestions ${createGraphQlQuery({ where: {...options.where, proposal: undefined}})} {
+                ...CompetitionSuggestionFields
+              }
+            }
         }
-      }
-      ${CompetitionSuggestion.fragments.CompetitionSuggestionFields}
+        ${CompetitionSuggestion.fragments.CompetitionSuggestionFields}
+      `
+      return context.getObservableObject(
+        query,
+        (r: any) => {
+          if (r === null) { // no such proposal was found
+            return []
+          }
+          return r.suggestions.map(itemMap)
+        },
+        apolloQueryOptions
+      ) as Observable<CompetitionSuggestion[]>
+    } else {
+      query = gql`query CompetitionSuggestionSearch
+        {
+          competitionSuggestions ${createGraphQlQuery(options)} {
+            ...CompetitionSuggestionFields
+          }
+        }
+        ${CompetitionSuggestion.fragments.CompetitionSuggestionFields}
       `
 
-    return context.getObservableList(
-      query,
-      itemMap,
-      apolloQueryOptions
-    ) as Observable<CompetitionSuggestion[]>
+      return context.getObservableList(
+        query,
+        itemMap,
+        apolloQueryOptions
+      ) as Observable<CompetitionSuggestion[]>
+    }
   }
 
   private static mapItemToObject(item: any, context: Arc): ICompetitionSuggestionState | null {
@@ -637,10 +659,10 @@ export class CompetitionSuggestion implements IStateful<ICompetitionSuggestionSt
   }
 
   public id: string
-  public suggestionId?: number
-  public staticState?: ICompetitionSuggestionState
+  public suggestionId ?: number
+  public staticState ?: ICompetitionSuggestionState
 
-  constructor(
+constructor(
     idOrOpts: string | { suggestionId: number, scheme: string } | ICompetitionSuggestionState,
     public context: Arc
   ) {
@@ -665,11 +687,11 @@ export class CompetitionSuggestion implements IStateful<ICompetitionSuggestionSt
     this.staticState = opts
   }
 
-  public async fetchStaticState(): Promise<ICompetitionSuggestionState> {
+  public async fetchStaticState(): Promise < ICompetitionSuggestionState > {
     return this.state({ fetchPolicy: 'cache-first' }).pipe(first()).toPromise()
   }
 
-  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<ICompetitionSuggestionState> {
+  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable < ICompetitionSuggestionState > {
     const query = gql`query SchemeState
       {
         competitionSuggestion (id: "${this.id}") {
@@ -683,7 +705,7 @@ export class CompetitionSuggestion implements IStateful<ICompetitionSuggestionSt
     return this.context.getObservableObject(query, itemMap, apolloQueryOptions)
   }
 
-  public vote(): Operation<CompetitionVote> {
+  public vote(): Operation < CompetitionVote > {
     const observable = this.state().pipe(
       first(),
       concatMap((suggestionState: ICompetitionSuggestionState) => {
@@ -697,7 +719,7 @@ export class CompetitionSuggestion implements IStateful<ICompetitionSuggestionSt
   public votes(
     options: ICompetitionVoteQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
-  ): Observable<CompetitionVote[]> {
+  ): Observable < CompetitionVote[] > {
     if (!options.where) { options.where = {} }
     options.where = { ...options.where, suggestion: this.id }
     return CompetitionVote.search(this.context, options, apolloQueryOptions)
@@ -715,7 +737,7 @@ export class CompetitionSuggestion implements IStateful<ICompetitionSuggestionSt
     return suggestionState.isWinner
   }
 
-  public redeem(): Operation<boolean> {
+  public redeem(): Operation < boolean > {
      const observable = this.state().pipe(
       first(),
       concatMap((suggestionState: ICompetitionSuggestionState) => {
@@ -756,23 +778,49 @@ export class CompetitionVote implements IStateful<ICompetitionVoteState> {
   ): Observable<CompetitionVote[]> {
     if (!options.where) { options.where = {} }
 
-    const query = gql`query CompetitionVoteSearch
-      {
-        competitionVotes ${createGraphQlQuery(options)} {
-          ...CompetitionVoteFields
-        }
-      }
-      ${CompetitionVote.fragments.CompetitionVoteFields}
-      `
-
     const itemMap = (item: any) => {
       return new CompetitionVote(CompetitionVote.itemMap(item), context)
     }
-    return context.getObservableList(
-      query,
-      itemMap,
-      apolloQueryOptions
-    ) as Observable<CompetitionVote[]>
+    let query
+    if (options.where.suggestion && !options.where.id) {
+      query = gql`query CompetitionVoteSearchBySuggestion
+        {
+          competitionSuggestion (id: "${options.where.suggestion}") {
+            votes ${createGraphQlQuery({ where: { ...options.where, suggestion: undefined}})} {
+              ...CompetitionVoteFields
+            }
+          }
+        }
+        ${CompetitionVote.fragments.CompetitionVoteFields}
+      `
+
+      return context.getObservableObject(
+        query,
+        (r: any) => {
+          if (r === null) { // no such proposal was found
+            return []
+          }
+          return r.votes.map(itemMap)
+        },
+        apolloQueryOptions
+      ) as Observable<CompetitionVote[]>
+     } else {
+
+      query = gql`query CompetitionVoteSearch
+        {
+          competitionVotes ${createGraphQlQuery(options)} {
+            ...CompetitionVoteFields
+          }
+        }
+        ${CompetitionVote.fragments.CompetitionVoteFields}
+      `
+
+      return context.getObservableList(
+        query,
+        itemMap,
+        apolloQueryOptions
+      ) as Observable<CompetitionVote[]>
+    }
   }
   public static itemMap(item: any) {
 

@@ -103,7 +103,7 @@ export class Stake implements IStateful<IStakeState> {
       }, context)
     }
 
-    if (proposalId) {
+    if (proposalId && !options.where.id) {
       query = gql`query ProposalStakesSearchFromProposal
         {
           proposal (id: "${proposalId}") {

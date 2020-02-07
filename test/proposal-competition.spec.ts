@@ -1,4 +1,5 @@
 import BN = require('bn.js')
+import gql from 'graphql-tag'
 import { first } from 'rxjs/operators'
 import {
   Arc,
@@ -12,7 +13,8 @@ import {
   IProposalStage,
   IProposalState,
   ISchemeState,
-  Proposal
+  Proposal,
+  Scheme
 } from '../src'
 import { getBlockTime } from '../src/utils'
 import {
@@ -53,12 +55,12 @@ describe('Competition Proposal', () => {
   }
 
   async function getPosition(suggestion: CompetitionSuggestion) {
-    const state = await suggestion.state().pipe(first()).toPromise()
+    const state = await suggestion.state({ fetchPolicy: 'no-cache'}).pipe(first()).toPromise()
     return state.positionInWinnerList
   }
 
   async function isWinner(suggestion: CompetitionSuggestion) {
-    const state = await suggestion.state().pipe(first()).toPromise()
+    const state = await suggestion.state({fetchPolicy: 'no-cache'}).pipe(first()).toPromise()
     return state.isWinner
   }
 
@@ -553,8 +555,10 @@ describe('Competition Proposal', () => {
     })
     await waitUntilTrue(() => voteIsIndexed)
 
-    expect(await getPosition(suggestion1)).toEqual(1)
+    await waitUntilTrue(() => voteIsIndexed)
+
     expect(await getPosition(suggestion2)).toEqual(1)
+    expect(await getPosition(suggestion1)).toEqual(1)
     expect(await getPosition(suggestion3)).toEqual(0)
     expect(await getPosition(suggestion4)).toEqual(null)
 
@@ -685,6 +689,95 @@ describe('Competition Proposal', () => {
       suggester: address0,
       totalVotes: new BN(0)
     })
+
+  })
+
+  it('pre-fetching competition.suggestions works', async () => {
+    // find a proposal in a scheme that has > 1 votes
+    const competition =  await createCompetition()
+    // check if the competition has indeed some suggestions
+
+    const suggestions = await competition.suggestions().pipe(first()).toPromise()
+    expect(suggestions.length).toBeGreaterThan(0)
+
+    // now we have our objects, reset the cache
+    await (arc.apolloClient as any).cache.reset()
+    expect((arc.apolloClient as any).cache.data.data).toEqual({})
+
+    // // construct our superquery that will fill the cache
+    const query = gql`query {
+      proposals (where: { id: "${competition.id}"}) {
+        ...ProposalFields
+        competition {
+          id
+          suggestions { ...CompetitionSuggestionFields }
+        }
+      }
+    }
+    ${Proposal.fragments.ProposalFields}
+    ${Scheme.fragments.SchemeFields}
+    ${CompetitionSuggestion.fragments.CompetitionSuggestionFields}
+    `
+
+    await arc.sendQuery(query)
+    // now see if we can get our informatino directly from the cache
+
+    const cachedSugestions = await competition.suggestions({}, { fetchPolicy: 'cache-only'})
+      .pipe(first()).toPromise()
+    expect(cachedSugestions.map((v: CompetitionSuggestion) => v.id))
+      .toEqual(suggestions.map((v: CompetitionSuggestion) => v.id))
+
+  })
+
+  it('pre-fetching suggestion.votes works', async () => {
+    // find a proposal in a scheme that has > 1 votes
+    await createCompetition()
+
+    await suggestion1.vote().send()
+    let voteIsIndexed = false
+    suggestion1.state().subscribe((s: ICompetitionSuggestionState) => {
+      voteIsIndexed = (s.positionInWinnerList !== null)
+    })
+    await waitUntilTrue(() => voteIsIndexed)
+
+    // check if the competition has indeed some suggestions
+
+    const votes = await suggestion1.votes().pipe(first()).toPromise()
+    expect(votes.length).toBeGreaterThan(0)
+
+    // now we have our objects, reset the cache
+    await (arc.apolloClient as any).cache.reset()
+    expect((arc.apolloClient as any).cache.data.data).toEqual({})
+
+    // // construct our superquery that will fill the cache
+    const query = gql`query
+      {
+        competitionSuggestion (id: "${suggestion1.id}") {
+          id
+          votes {
+            ...CompetitionVoteFields
+          }
+        }
+      }
+      ${Proposal.fragments.ProposalFields}
+      ${Scheme.fragments.SchemeFields}
+      ${CompetitionSuggestion.fragments.CompetitionSuggestionFields}
+      ${CompetitionVote.fragments.CompetitionVoteFields}
+    `
+
+    let subscribed = false
+    const results: any[] = []
+    arc.getObservable(query, { subscribe: true, fetchPolicy: 'no-cache'}).subscribe((x: any) => {
+      subscribed = true
+      results.push(x)
+    })
+    await waitUntilTrue(() => subscribed)
+
+    // now see if we can get our information directly from the cache
+    const cachedVotes = await suggestion1.votes({}, { fetchPolicy: 'cache-only'})
+      .pipe(first()).toPromise()
+    expect(cachedVotes.map((v: CompetitionVote) => v.id))
+      .toEqual(votes.map((v: CompetitionVote) => v.id))
 
   })
 })
