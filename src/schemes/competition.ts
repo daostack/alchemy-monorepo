@@ -83,7 +83,7 @@ export interface ICompetitionVoteState {
 
 export class CompetitionScheme extends SchemeBase {
   public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<ISchemeState> {
-    const query = gql`query SchemeState
+    const query = gql`query SchemeStateById
       {
         controllerScheme (id: "${this.id}") {
           ...SchemeFields
@@ -486,6 +486,9 @@ export class Competition { // extends Proposal {
     const observable = proposal.state().pipe(
       first(),
       concatMap((competitionState: IProposalState) => {
+        if (competitionState === null) {
+          throw Error(`Cannot vote on this suggestion, because the competition with id ${this.id} could not be foound`)
+        }
         const scheme = new CompetitionScheme(competitionState.scheme, this.context)
         return scheme.voteSuggestion({ suggestionId })
       })
@@ -541,7 +544,7 @@ export class CompetitionSuggestion implements IStateful<ICompetitionSuggestionSt
       id
       suggestionId
       proposal {
-        id
+       id
       }
       descriptionHash
       title
@@ -689,7 +692,7 @@ constructor(
   }
 
   public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable < ICompetitionSuggestionState > {
-    const query = gql`query SchemeState
+    const query = gql`query CompetitionSuggestionById
       {
         competitionSuggestion (id: "${this.id}") {
           ...CompetitionSuggestionFields
@@ -783,6 +786,7 @@ export class CompetitionVote implements IStateful<ICompetitionVoteState> {
       query = gql`query CompetitionVoteSearchBySuggestion
         {
           competitionSuggestion (id: "${options.where.suggestion}") {
+            id
             votes ${createGraphQlQuery({ where: { ...options.where, suggestion: undefined}})} {
               ...CompetitionVoteFields
             }

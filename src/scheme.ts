@@ -303,7 +303,7 @@ export class Scheme extends SchemeBase  {
   }
 
   public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<ISchemeState> {
-    const query = gql`query SchemeState
+    const query = gql`query SchemeStateById
       {
         controllerScheme (id: "${this.id}") {
           ...SchemeFields
