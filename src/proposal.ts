@@ -18,8 +18,10 @@ import * as SchemeRegistrar from './schemes/schemeRegistrar'
 import { CONTRIBUTION_REWARD_DUMMY_VERSION, REDEEMER_CONTRACT_VERSIONS } from './settings'
 import { IStakeQueryOptions, Stake } from './stake'
 import { Address, Date, ICommonQueryOptions, IStateful } from './types'
-import { createGraphQlQuery, isAddress, NULL_ADDRESS, realMathToNumber,
-  secondSinceEpochToDate } from './utils'
+import {
+  createGraphQlQuery, isAddress, NULL_ADDRESS, realMathToNumber,
+  secondSinceEpochToDate
+} from './utils'
 import { IVoteQueryOptions, Vote } from './vote'
 
 export const IProposalType = {
@@ -68,8 +70,8 @@ export interface IProposalStaticState {
 export interface IProposalState extends IProposalStaticState {
   accountsWithUnclaimedRewards: Address[],
   boostedAt: Date
-  contributionReward: ContributionReward.IContributionReward|null
-  competition: ICompetitionProposalState|null
+  contributionReward: ContributionReward.IContributionReward | null
+  competition: ICompetitionProposalState | null
   confidenceThreshold: number
   closingAt: Date
   createdAt: Date
@@ -79,7 +81,7 @@ export interface IProposalState extends IProposalStaticState {
   executedAt: Date
   executionState: IExecutionState
   expiresInQueueAt: Date
-  genericScheme: GenericScheme.IGenericScheme|null
+  genericScheme: GenericScheme.IGenericScheme | null
   genesisProtocolParams: IGenesisProtocolParams
   organizationId: string
   paramsHash: string
@@ -88,7 +90,7 @@ export interface IProposalState extends IProposalStaticState {
   proposer: Address
   queue: IQueueState
   quietEndingPeriodBeganAt: Date
-  schemeRegistrar: SchemeRegistrar.ISchemeRegistrar|null
+  schemeRegistrar: SchemeRegistrar.ISchemeRegistrar | null
   resolvedAt: Date
   stage: IProposalStage
   stakesFor: BN
@@ -126,6 +128,8 @@ export class Proposal implements IStateful<IProposalState> {
         rewardSplit
         snapshotBlock
         startTime
+        totalSuggestions
+        totalVotes
         votingStartTime
 
       }
@@ -328,9 +332,9 @@ export class Proposal implements IStateful<IProposalState> {
 
   public context: Arc
   public id: string
-  public staticState: IProposalStaticState|undefined
+  public staticState: IProposalStaticState | undefined
   constructor(
-    idOrOpts: string|IProposalStaticState,
+    idOrOpts: string | IProposalStaticState,
     context: Arc
   ) {
     if (typeof idOrOpts === 'string') {
@@ -350,7 +354,7 @@ export class Proposal implements IStateful<IProposalState> {
     if (!!this.staticState) {
       return this.staticState
     } else {
-      const state = await this.state({subscribe: false}).pipe(first()).toPromise()
+      const state = await this.state({ subscribe: false }).pipe(first()).toPromise()
       if (state === null) {
         throw Error(`No proposal with id ${this.id} was found in the subgraph`)
       }
@@ -386,41 +390,41 @@ export class Proposal implements IStateful<IProposalState> {
 
     `
 
-    const itemMap = (item: any): IProposalState|null => {
+    const itemMap = (item: any): IProposalState | null => {
       if (item === null || item === undefined) {
         // no proposal was found - we return null
         // throw Error(`No proposal with id ${this.id} could be found`)
         return null
       }
 
-      let contributionReward: ContributionReward.IContributionReward|null = null
-      let competition: ICompetitionProposalState|null = null
+      let contributionReward: ContributionReward.IContributionReward | null = null
+      let competition: ICompetitionProposalState | null = null
       let type: IProposalType
-      let genericScheme: GenericScheme.IGenericScheme|null = null
-      let schemeRegistrar: SchemeRegistrar.ISchemeRegistrar|null = null
+      let genericScheme: GenericScheme.IGenericScheme | null = null
+      let schemeRegistrar: SchemeRegistrar.ISchemeRegistrar | null = null
       if (!!item.competition && !item.contributionReward) {
         throw Error(`Unexpected proposal state: competition is set, but contributionReward is not`)
       }
       if (!!item.contributionReward) {
         const ethRewardLeft = (
           item.contributionReward.ethRewardLeft !== null &&
-            new BN(item.contributionReward.ethRewardLeft) ||
-            null
+          new BN(item.contributionReward.ethRewardLeft) ||
+          null
         )
         const externalTokenRewardLeft = (
           item.contributionReward.externalTokenRewardLeft !== null &&
-            new BN(item.contributionReward.externalTokenRewardLeft) ||
-            null
+          new BN(item.contributionReward.externalTokenRewardLeft) ||
+          null
         )
         const nativeTokenRewardLeft = (
           item.contributionReward.nativeTokenRewardLeft !== null &&
-            new BN(item.contributionReward.nativeTokenRewardLeft) ||
-            null
+          new BN(item.contributionReward.nativeTokenRewardLeft) ||
+          null
         )
         const reputationChangeLeft = (
           item.contributionReward.reputationChangeLeft !== null &&
-            new BN(item.contributionReward.reputationChangeLeft) ||
-            null
+          new BN(item.contributionReward.reputationChangeLeft) ||
+          null
         )
 
         type = IProposalType.ContributionReward
@@ -454,6 +458,8 @@ export class Proposal implements IStateful<IProposalState> {
             snapshotBlock: item.competition.snapshotBlock,
             startTime: secondSinceEpochToDate(item.competition.startTime),
             suggestionsEndTime: secondSinceEpochToDate(item.competition.suggestionsEndTime),
+            totalSuggestions: Number(item.competition.totalSuggestions),
+            totalVotes: Number(item.competition.totalVotes),
             votingStartTime: secondSinceEpochToDate(item.competition.votingStartTime)
           }
 
@@ -481,7 +487,7 @@ export class Proposal implements IStateful<IProposalState> {
         } else {
           throw Error(`Unknown proposal type: schemeRegistrar without a scheme to register or to remove`)
         }
-        schemeRegistrar =  {
+        schemeRegistrar = {
           decision: item.schemeRegistrar.decision,
           id: item.schemeRegistrar.id,
           schemeRegistered: item.schemeRegistrar.schemeRegistered,
@@ -623,7 +629,7 @@ export class Proposal implements IStateful<IProposalState> {
   }
 
   public votes(options: IVoteQueryOptions = {}, apolloQueryOptions: IApolloQueryOptions = {}): Observable<Vote[]> {
-    if (!options.where) { options.where = {}}
+    if (!options.where) { options.where = {} }
     options.where.proposal = this.id
     return Vote.search(this.context, options, apolloQueryOptions)
   }
@@ -635,7 +641,7 @@ export class Proposal implements IStateful<IProposalState> {
    *  all the sender's rep will be used
    * @return  an observable Operation<Vote>
    */
-  public vote(outcome: IProposalOutcome, amount: number = 0): Operation<Vote|null> {
+  public vote(outcome: IProposalOutcome, amount: number = 0): Operation<Vote | null> {
 
     const mapReceipt = (receipt: any) => {
       const event = receipt.events.VoteProposal
@@ -656,17 +662,17 @@ export class Proposal implements IStateful<IProposalState> {
 
     const observable = from(this.votingMachine()).pipe(
       concatMap((votingMachine) => {
-       const voteMethod = votingMachine.methods.vote(
+        const voteMethod = votingMachine.methods.vote(
           this.id,  // proposalId
           outcome, // a value between 0 to and the proposal number of choices.
           amount.toString(), // amount of reputation to vote with . if _amount == 0 it will use all voter reputation.
           NULL_ADDRESS
         )
 
-       const errorHandler = async (error: Error) => {
+        const errorHandler = async (error: Error) => {
           const proposal = this
           const proposalDataFromVotingMachine = await votingMachine.methods.proposals(proposal.id).call()
-          if (proposalDataFromVotingMachine.proposer === NULL_ADDRESS ) {
+          if (proposalDataFromVotingMachine.proposer === NULL_ADDRESS) {
             return Error(`Error in vote(): unknown proposal with id ${proposal.id}`)
           }
 
@@ -680,7 +686,7 @@ export class Proposal implements IStateful<IProposalState> {
           return error
         }
 
-       return this.context.sendTransaction(voteMethod, mapReceipt, errorHandler)
+        return this.context.sendTransaction(voteMethod, mapReceipt, errorHandler)
       })
     )
 
@@ -692,7 +698,7 @@ export class Proposal implements IStateful<IProposalState> {
   }
 
   public stakes(options: IStakeQueryOptions = {}, apolloQueryOptions: IApolloQueryOptions = {}): Observable<Stake[]> {
-    if (!options.where) { options.where = {}}
+    if (!options.where) { options.where = {} }
     options.where.proposal = this.id
     return Stake.search(this.context, options, apolloQueryOptions)
   }
@@ -709,26 +715,26 @@ export class Proposal implements IStateful<IProposalState> {
 
         const map = (receipt: any) => { // map extracts Stake instance from receipt
 
-            const event = receipt.events.Stake
-            if (!event) {
-              // for some reason, a transaction was mined but no error was raised before
-              throw new Error(`Error staking: no "Stake" event was found - ${Object.keys(receipt.events)}`)
-            }
-            return new Stake({
-              amount: event.returnValues._reputation, // amount
-              // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
-              createdAt: undefined,
-              outcome,
-              proposal: this.id, // proposalID
-              staker: event.returnValues._staker
-            }, this.context)
+          const event = receipt.events.Stake
+          if (!event) {
+            // for some reason, a transaction was mined but no error was raised before
+            throw new Error(`Error staking: no "Stake" event was found - ${Object.keys(receipt.events)}`)
+          }
+          return new Stake({
+            amount: event.returnValues._reputation, // amount
+            // createdAt is "about now", but we cannot calculate the data that will be indexed by the subgraph
+            createdAt: undefined,
+            outcome,
+            proposal: this.id, // proposalID
+            staker: event.returnValues._staker
+          }, this.context)
         }
 
-        const errorHandler =  async (error: Error) => {
+        const errorHandler = async (error: Error) => {
           const proposal = this
           const proposalState = await (await this.votingMachine()).methods.proposals(proposal.id).call()
           const stakingToken = this.stakingToken()
-          if (proposalState.proposer === NULL_ADDRESS ) {
+          if (proposalState.proposer === NULL_ADDRESS) {
             return new Error(`Unknown proposal with id ${proposal.id}`)
           }
           // staker has sufficient balance
@@ -781,7 +787,7 @@ export class Proposal implements IStateful<IProposalState> {
     options: IRewardQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
   ): Observable<Reward[]> {
-    if (!options.where) { options.where = {}}
+    if (!options.where) { options.where = {} }
     options.where.proposal = this.id
     return Reward.search(this.context, options, apolloQueryOptions)
   }
@@ -802,7 +808,7 @@ export class Proposal implements IStateful<IProposalState> {
     const observable = this.state().pipe(
       first(),
       concatMap((state) => {
-        let schemeAddress: Address|null
+        let schemeAddress: Address | null
         if (state.contributionReward) {
           schemeAddress = state.scheme.address
         } else {
@@ -846,7 +852,7 @@ export class Proposal implements IStateful<IProposalState> {
       concatMap((votingMachine) => {
         const transaction = votingMachine.methods.execute(this.id)
         const map = (receipt: any) => {
-          if (Object.keys(receipt.events).length  === 0) {
+          if (Object.keys(receipt.events).length === 0) {
             // this does not mean that anything failed
             return receipt
           } else {
@@ -878,7 +884,7 @@ export class Proposal implements IStateful<IProposalState> {
         const transaction = votingMachine.methods.executeBoosted(this.id)
         console.log(votingMachine.options.address)
         const map = (receipt: any) => {
-          if (Object.keys(receipt.events).length  === 0) {
+          if (Object.keys(receipt.events).length === 0) {
             // this does not mean that anything failed
             return receipt
           } else {
@@ -929,7 +935,7 @@ export interface IProposalQueryOptions extends ICommonQueryOptions {
     scheme?: Address
     orderBy?: ProposalQuerySortOptions
     type?: IProposalType
-    [key: string]: any|undefined
+    [key: string]: any | undefined
   }
 }
 
@@ -946,7 +952,7 @@ export interface IProposalBaseCreateOptions {
 }
 
 export type IProposalCreateOptions = (
-  (IProposalBaseCreateOptions & GenericScheme.IProposalCreateOptionsGS ) |
+  (IProposalBaseCreateOptions & GenericScheme.IProposalCreateOptionsGS) |
   (IProposalBaseCreateOptions & SchemeRegistrar.IProposalCreateOptionsSR) |
   (IProposalBaseCreateOptions & ContributionReward.IProposalCreateOptionsCR) |
   (ContributionRewardExt.IProposalCreateOptionsContributionRewardExt) |
