@@ -119,10 +119,12 @@ export class Proposal implements IStateful<IProposalState> {
       confidenceThreshold
       competition {
         id
+        admin
         endTime
         contract
         suggestionsEndTime
         createdAt
+        numberOfWinningSuggestions
         numberOfVotesPerVoters
         numberOfWinners
         rewardSplit
@@ -448,12 +450,14 @@ export class Proposal implements IStateful<IProposalState> {
         }
         if (!!item.competition) {
           competition = {
+            admin: item.competition.admin,
             contract: item.competition.contract,
             createdAt: secondSinceEpochToDate(item.competition.createdAt),
             endTime: secondSinceEpochToDate(item.competition.endTime),
             id: item.competition.id,
             numberOfVotesPerVoter: Number(item.competition.numberOfVotesPerVoters),
             numberOfWinners: Number(item.competition.numberOfWinners),
+            numberOfWinningSuggestions: Number(item.competition.numberOfWinningSuggestions),
             rewardSplit: item.competition.rewardSplit.map((perc: string) => Number(perc)),
             snapshotBlock: item.competition.snapshotBlock,
             startTime: secondSinceEpochToDate(item.competition.startTime),

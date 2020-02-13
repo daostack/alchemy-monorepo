@@ -23,6 +23,7 @@ const Web3 = require('web3')
 
 export interface ICompetitionProposalState {
   id: string
+  admin: Address
   contract: Address
   endTime: Date
   numberOfWinners: number
@@ -35,6 +36,7 @@ export interface ICompetitionProposalState {
   createdAt: Date
   totalVotes: number
   totalSuggestions: number
+  numberOfWinningSuggestions: number
 }
 
 export interface IProposalCreateOptionsCompetition extends IProposalBaseCreateOptions {
