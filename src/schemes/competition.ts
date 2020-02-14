@@ -9,7 +9,8 @@ import { IApolloQueryOptions } from '../graphnode'
 import { Operation, toIOperationObservable } from '../operation'
 import { IProposalBaseCreateOptions, IProposalQueryOptions, IProposalState, Proposal } from '../proposal'
 import { Address, ICommonQueryOptions, IStateful } from '../types'
-import { concat,
+import {
+  concat,
   createGraphQlQuery, dateToSecondsSinceEpoch, getBlockTime,
   hexStringToUint8Array,
   NULL_ADDRESS,
@@ -22,6 +23,7 @@ const Web3 = require('web3')
 
 export interface ICompetitionProposalState {
   id: string
+  admin: Address
   contract: Address
   endTime: Date
   numberOfWinners: number
@@ -32,6 +34,9 @@ export interface ICompetitionProposalState {
   numberOfVotesPerVoter: number
   snapshotBlock: number
   createdAt: Date
+  totalVotes: number
+  totalSuggestions: number
+  numberOfWinningSuggestions: number
 }
 
 export interface IProposalCreateOptionsCompetition extends IProposalBaseCreateOptions {
@@ -589,7 +594,7 @@ export class CompetitionSuggestion implements IStateful<ICompetitionSuggestionSt
       query = gql`query CompetitionSuggestionSearchByProposal
         {
           competitionProposal (id: "${options.where.proposal}") {
-              suggestions ${createGraphQlQuery({ where: {...options.where, proposal: undefined}})} {
+              suggestions ${createGraphQlQuery({ where: { ...options.where, proposal: undefined } })} {
                 ...CompetitionSuggestionFields
               }
             }
@@ -637,7 +642,7 @@ export class CompetitionSuggestion implements IStateful<ICompetitionSuggestionSt
     if (item.positionInWinnerList !== null) {
       positionInWinnerList = Number(item.positionInWinnerList)
     }
-    return  {
+    return {
       beneficiary: item.beneficiary,
       createdAt: secondSinceEpochToDate(item.createdAt),
       description: item.description,
@@ -659,10 +664,10 @@ export class CompetitionSuggestion implements IStateful<ICompetitionSuggestionSt
   }
 
   public id: string
-  public suggestionId ?: number
-  public staticState ?: ICompetitionSuggestionState
+  public suggestionId?: number
+  public staticState?: ICompetitionSuggestionState
 
-constructor(
+  constructor(
     idOrOpts: string | { suggestionId: number, scheme: string } | ICompetitionSuggestionState,
     public context: Arc
   ) {
@@ -687,11 +692,11 @@ constructor(
     this.staticState = opts
   }
 
-  public async fetchStaticState(): Promise < ICompetitionSuggestionState > {
+  public async fetchStaticState(): Promise<ICompetitionSuggestionState> {
     return this.state({ fetchPolicy: 'cache-first' }).pipe(first()).toPromise()
   }
 
-  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable < ICompetitionSuggestionState > {
+  public state(apolloQueryOptions: IApolloQueryOptions = {}): Observable<ICompetitionSuggestionState> {
     const query = gql`query CompetitionSuggestionById
       {
         competitionSuggestion (id: "${this.id}") {
@@ -705,7 +710,7 @@ constructor(
     return this.context.getObservableObject(query, itemMap, apolloQueryOptions)
   }
 
-  public vote(): Operation < CompetitionVote > {
+  public vote(): Operation<CompetitionVote> {
     const observable = this.state().pipe(
       first(),
       concatMap((suggestionState: ICompetitionSuggestionState) => {
@@ -719,7 +724,7 @@ constructor(
   public votes(
     options: ICompetitionVoteQueryOptions = {},
     apolloQueryOptions: IApolloQueryOptions = {}
-  ): Observable < CompetitionVote[] > {
+  ): Observable<CompetitionVote[]> {
     if (!options.where) { options.where = {} }
     options.where = { ...options.where, suggestion: this.id }
     return CompetitionVote.search(this.context, options, apolloQueryOptions)
@@ -737,15 +742,15 @@ constructor(
     return suggestionState.isWinner
   }
 
-  public redeem(): Operation < boolean > {
-     const observable = this.state().pipe(
+  public redeem(): Operation<boolean> {
+    const observable = this.state().pipe(
       first(),
       concatMap((suggestionState: ICompetitionSuggestionState) => {
         const competition = new Competition(suggestionState.proposal, this.context)
         return competition.redeemSuggestion(suggestionState.suggestionId)
       })
     )
-     return toIOperationObservable(observable)
+    return toIOperationObservable(observable)
   }
 }
 export interface ICompetitionVoteQueryOptions extends ICommonQueryOptions {
@@ -787,7 +792,7 @@ export class CompetitionVote implements IStateful<ICompetitionVoteState> {
         {
           competitionSuggestion (id: "${options.where.suggestion}") {
             id
-            votes ${createGraphQlQuery({ where: { ...options.where, suggestion: undefined}})} {
+            votes ${createGraphQlQuery({ where: { ...options.where, suggestion: undefined } })} {
               ...CompetitionVoteFields
             }
           }
@@ -805,7 +810,7 @@ export class CompetitionVote implements IStateful<ICompetitionVoteState> {
         },
         apolloQueryOptions
       ) as Observable<CompetitionVote[]>
-     } else {
+    } else {
 
       query = gql`query CompetitionVoteSearch
         {
