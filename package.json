@@ -21,6 +21,7 @@
     "migrate.base": "node ./migrate.js base",
     "migrate.dao": "node ./migrate.js dao",
     "migrate.demo": "node ./migrate.js demo",
+    "migrate.update-registry": "node ./migrate.js update-registry",
     "docker:build": "docker build . -t daostack/migration:$(cat package.json | jq -r '.version')",
     "docker:push": "docker push daostack/migration:$(cat package.json | jq -r '.version')",
     "prepare-release": "./prepare-release.sh",
