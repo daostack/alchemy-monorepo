@@ -11,6 +11,7 @@ const migrateBase = require('./migrate-base')
 const migrateDAO = require('./migrate-dao')
 const migrateDemoTest = require('./migrate-demo-test')
 const updateDAORegistry = require('./helper-scripts/dao-registry')
+const allocateReputation = require('./helper-scripts/rep-allocation')
 const path = require('path')
 
 async function migrate (opts) {
@@ -330,6 +331,7 @@ function cli () {
     .command('dao', 'Migrate base contracts', yargs => yargs, wrapCommand(migrateDAO))
     .command('demo', 'Migrate base contracts', yargs => yargs, wrapCommand(migrateDemoTest))
     .command('update-registry', 'Update DAORegistry DAOs', yargs => yargs, wrapCommand(updateDAORegistry))
+    .command('allocate-reputation', 'Allocate reputation in RepAllocation scheme', yargs => yargs, wrapCommand(allocateReputation))
     .showHelpOnFail(false)
     .completion()
     .wrap(120)
@@ -346,6 +348,7 @@ if (require.main === module) {
     migrateDAO: wrapCommand(migrateDAO),
     migrateDemoTest: wrapCommand(migrateDemoTest),
     updateDAORegistry: wrapCommand(updateDAORegistry),
+    allocateReputation: wrapCommand(allocateReputation),
     migrateScript: wrapCommand,
     cli
   }

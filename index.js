@@ -16,7 +16,7 @@ module.exports = {
     if (network in migration) {
       return migration[network]
     } else {
-      throw new Error(`Could not retreive migration result for network ${network}`)
+      throw new Error(`Could not retrieve migration result for network ${network}`)
     }
   },
   ...require('./migrate')
