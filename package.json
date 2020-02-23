@@ -51,7 +51,7 @@
     "@daostack/arc-hive": "0.0.1-rc.4",
     "ethereumjs-wallet": "^0.6.3",
     "fstream": "^1.0.12",
-    "ganache-cli": "6.7.0",
+    "ganache-cli": "6.9.0",
     "hdwallet-accounts": "0.0.1",
     "inquirer": "^6.2.2",
     "jsonschema": "^1.2.4",
@@ -61,7 +61,7 @@
     "prompt-confirm": "^2.0.4",
     "rimraf": "^2.6.3",
     "tar": "^4.4.8",
-    "web3": "1.0.0-beta.37",
+    "web3": "1.2.6",
     "yargs": "^12.0.2"
   },
   "devDependencies": {
