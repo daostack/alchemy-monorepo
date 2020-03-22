@@ -511,25 +511,50 @@ export class Proposal implements IStateful<IProposalState> {
       const threshold = realMathToNumber(new BN(item.gpQueue.threshold))
       const stakesFor = new BN(item.stakesFor)
       const stakesAgainst = new BN(item.stakesAgainst)
-
-      // upstakeNeededToPreBoost is the amount of tokens needed to upstake to move to the preboost queue
-      // this is only non-zero for Queued proposals
-      // note that the number can be negative!
-      let upstakeNeededToPreBoost: BN = new BN(0)
+      /**
+       * for doing multiplication between floating point (threshold) and BN numbers
+       */
       const PRECISION = Math.pow(2, 40)
-      if (stage === IProposalStage.Queued) {
 
+      /**
+       * The number of up-staking tokens (usually GEN) needed to qualify a queued proposal to move into the
+       * pre-boosted queue.
+       *
+       * Only computed for queued proposals.
+       *
+       * The equation is derived from: threshold = (stakesFor + upstakeNeededToPreBoost) / stakesAgainst
+       *
+       * Where `upstakeNeededToPreBoost` is:
+       *
+       * >= 0 : then any number of up-staking tokens greater than upstakeNeededToPreBoost will qualify
+       *        to move the proposal to the preboost queue
+       * <  0 : then the proposal ought already to be pre-boosted
+       */
+      let upstakeNeededToPreBoost: BN = new BN(0)
+      if (stage === IProposalStage.Queued) {
         upstakeNeededToPreBoost = new BN(threshold * PRECISION)
           .mul(stakesAgainst)
           .div(new BN(PRECISION))
           .sub(stakesFor)
       }
-      // upstakeNeededToPreBoost is the amount of tokens needed to upstake to move to the Queued queue
-      // this is only non-zero for Preboosted proposals
-      // note that the number can be negative!
+
+      /**
+       * The number of down-staking tokens (usually GEN) needed to qualify a pre-boosted proposal to move back
+       * to the Queued queue.
+       * Only computed for PreBoosted proposals.
+       *
+       * The equation is derived from: threshold = stakesFor / (stakesAgainst + downStakeNeededToQueue)
+       *
+       * When `downStakeNeededToQueue` is:
+       *
+       * >  0 : then any number of down-staking tokens greater-than-or-equal to downStakeNeededToQueue will qualify
+       *        to move the proposal to the Queued queue
+       * <= 0 : then the proposal ought to already be in the Queued queue
+       */
       let downStakeNeededToQueue: BN = new BN(0)
       if (stage === IProposalStage.PreBoosted) {
-        downStakeNeededToQueue = stakesFor.mul(new BN(PRECISION))
+        downStakeNeededToQueue = stakesFor
+          .mul(new BN(PRECISION))
           .div(new BN(threshold * PRECISION))
           .sub(stakesAgainst)
       }
