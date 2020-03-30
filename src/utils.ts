@@ -145,7 +145,7 @@ export function createGraphQlWhereQuery(where?: {[key: string]: string|string[]|
     }
 
     let value = where[key]
-    if (value === null) {
+    if (value === null || typeof(value) === 'boolean') {
       result += `${key}: ${value}\n`
     } else if (key === 'dao' || key === 'address') {
       isAddress(value as string)

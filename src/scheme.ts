@@ -2,10 +2,10 @@ import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from './arc'
-import { IGenesisProtocolParams, mapGenesisProtocolParams } from './genesisProtocol'
+import { mapGenesisProtocolParams } from './genesisProtocol'
 import { Operation, toIOperationObservable } from './operation'
 import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './proposal'
-import { SchemeBase } from './schemes/base'
+import { ISchemeQueryOptions, ISchemeState, ISchemeStaticState, SchemeBase } from './schemes/base'
 import { CompetitionScheme, isCompetitionScheme } from './schemes/competition'
 import * as Competition from './schemes/competition'
 import * as ContributionReward from './schemes/contributionReward'
@@ -14,93 +14,10 @@ import * as GenericScheme from './schemes/genericScheme'
 import { ReputationFromTokenScheme } from './schemes/reputationFromToken'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
 import * as UGenericScheme from './schemes/uGenericScheme'
-// import { DAO } from './dao'
-// import { IStateful } from './types'
-import { Address, ICommonQueryOptions } from './types'
+import { Address } from './types'
 import { createGraphQlQuery } from './utils'
 
-export interface ISchemeStaticState {
-  id: string
-  address: Address
-  dao: Address
-  name: string
-  paramsHash: string
-  version: string
-}
-
-export interface ISchemeState extends ISchemeStaticState {
-  canDelegateCall: boolean
-  canRegisterSchemes: boolean
-  canUpgradeController: boolean
-  canManageGlobalConstraints: boolean
-  dao: Address
-  paramsHash: string
-  contributionRewardParams?: IContributionRewardParams
-  contributionRewardExtParams?: IContributionRewardExtParams
-  genericSchemeParams?: IGenericSchemeParams
-  schemeRegistrarParams?: {
-    votingMachine: Address
-    voteRemoveParams: IGenesisProtocolParams
-    voteRegisterParams: IGenesisProtocolParams
-  } | null
-  numberOfQueuedProposals: number
-  numberOfPreBoostedProposals: number
-  numberOfBoostedProposals: number
-  uGenericSchemeParams?: IGenericSchemeParams
-  schemeParams?: IGenericSchemeParams | IContributionRewardParams | IContributionRewardExtParams | ISchemeRegisterParams
-}
-
-export interface IGenericSchemeParams {
-  votingMachine: Address
-  contractToCall: Address
-  voteParams: IGenesisProtocolParams
-}
-
-export interface IContributionRewardParams {
-  votingMachine: Address
-  voteParams: IGenesisProtocolParams
-}
-export interface IContributionRewardExtParams {
-  votingMachine: Address
-  voteParams: IGenesisProtocolParams
-  rewarder: Address
-}
-
-export interface ISchemeRegisterParams {
-  votingMachine: Address
-  contractToCall: Address
-  voteParams: IGenesisProtocolParams
-}
-
-export interface ISchemeQueryOptions extends ICommonQueryOptions {
-  where?: {
-    address?: Address
-    canDelegateCall?: boolean
-    canRegisterSchemes?: boolean
-    canUpgradeController?: boolean
-    canManageGlobalConstraints?: boolean
-    dao?: Address
-    id?: string
-    name?: string
-    paramsHash?: string
-    [key: string]: any
-  }
-}
-
-export interface ISchemeQueryOptions extends ICommonQueryOptions {
-  where?: {
-    address?: Address
-    canDelegateCall?: boolean
-    canRegisterSchemes?: boolean
-    canUpgradeController?: boolean
-    canManageGlobalConstraints?: boolean
-    dao?: Address
-    id?: string
-    name?: string
-    paramsHash?: string
-    [key: string]: any
-  }
-}
+export { ISchemeQueryOptions, ISchemeState, ISchemeStaticState } from './schemes/base'
 
 /**
  * A Scheme represents a scheme instance that is registered at a DAO
@@ -242,6 +159,7 @@ export class Scheme extends SchemeBase  {
       dao: item.dao.id,
       genericSchemeParams,
       id: item.id,
+      isRegistered: item.isRegistered,
       name,
       numberOfBoostedProposals: Number(item.numberOfBoostedProposals),
       numberOfPreBoostedProposals: Number(item.numberOfPreBoostedProposals),

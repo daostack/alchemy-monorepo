@@ -154,6 +154,7 @@ export class CompetitionScheme extends SchemeBase {
         dao: item.dao.id,
         genericSchemeParams,
         id: item.id,
+        isRegistered: item.isRegistered,
         name,
         numberOfBoostedProposals: Number(item.numberOfBoostedProposals),
         numberOfPreBoostedProposals: Number(item.numberOfPreBoostedProposals),

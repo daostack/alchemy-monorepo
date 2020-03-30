@@ -2,19 +2,13 @@ import gql from 'graphql-tag'
 import { Observable } from 'rxjs'
 import { first } from 'rxjs/operators'
 import { Arc, IApolloQueryOptions } from '../arc'
-// import { DAO } from './dao'
 import { IGenesisProtocolParams } from '../genesisProtocol'
 import { Operation, toIOperationObservable } from '../operation'
 import {
   IProposalCreateOptions,
   IProposalQueryOptions, Proposal } from '../proposal'
 import { Address, ICommonQueryOptions, IStateful } from '../types'
-// import * as ContributionReward from './contributionReward'
-// import * as ContributionRewardExt from './schemes/contributionRewardExt'
-// import * as GenericScheme from './genericScheme'
 import { ReputationFromTokenScheme } from './reputationFromToken'
-// import * as SchemeRegistrar from './schemeRegistrar'
-// import * as UGenericScheme from './uGenericScheme'
 
 export interface ISchemeStaticState {
   id: string
@@ -31,6 +25,7 @@ export interface ISchemeState extends ISchemeStaticState {
   canUpgradeController: boolean
   canManageGlobalConstraints: boolean
   dao: Address
+  isRegistered: boolean
   paramsHash: string
   contributionRewardParams?: IContributionRewardParams
   contributionRewardExtParams?: IContributionRewardExtParams
@@ -78,21 +73,7 @@ export interface ISchemeQueryOptions extends ICommonQueryOptions {
     canManageGlobalConstraints?: boolean
     dao?: Address
     id?: string
-    name?: string
-    paramsHash?: string
-    [key: string]: any
-  }
-}
-
-export interface ISchemeQueryOptions extends ICommonQueryOptions {
-  where?: {
-    address?: Address
-    canDelegateCall?: boolean
-    canRegisterSchemes?: boolean
-    canUpgradeController?: boolean
-    canManageGlobalConstraints?: boolean
-    dao?: Address
-    id?: string
+    isRegistered?: boolean
     name?: string
     paramsHash?: string
     [key: string]: any
@@ -114,6 +95,7 @@ export abstract class SchemeBase implements IStateful<ISchemeState> {
       canRegisterSchemes
       canUpgradeController
       canManageGlobalConstraints
+      isRegistered
       paramsHash
       contributionRewardParams {
         id

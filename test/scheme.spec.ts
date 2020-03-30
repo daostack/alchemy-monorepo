@@ -51,9 +51,10 @@ describe('Scheme', () => {
     }))
     expect((schemeStates.map((r) => r.name)).sort()).toEqual([
       'ContributionReward',
+      'ControllerCreator',
+      'DaoCreator',
       'SchemeRegistrar',
       'UGenericScheme'
-
     ].sort())
     result = await Scheme.search(arc, {where: {dao: dao.id, name: 'ContributionReward'}})
         .pipe(first()).toPromise()

@@ -39,5 +39,6 @@ npm run test -- --watch
 ### Commands
 
  - `npm run build`: Generate bundles and typings, create docs
+ - `npm run build:watch`: Generate bundles and typings, create docs, watches for files to change and rebuilds when they do
  - `npm run lint`: Lints code
  - `npm run test`: run all tests
