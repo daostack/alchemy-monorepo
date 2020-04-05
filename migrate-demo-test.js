@@ -65,9 +65,15 @@ async function migrateDemoTest ({ arcVersion, web3, spinner, confirm, opts, migr
 
   const crParamsHash = await setContributionRewardParams(gpParamsHash) // FIXME
 
-  const ActionMock = Number(this.arcVersion.slice(-2)) < 34 ? await migrateActionMock() : null
+  const ActionMock = await migrateActionMock()
 
-  const gsParamsHash = Number(this.arcVersion.slice(-2)) < 34 ? await setUGenericSchemeParams(gpParamsHash, ActionMock) : null // FIXME
+  let gsParamsHash
+  let genericSchemeAddress
+  if (Number(this.arcVersion.slice(-2)) < 34) {
+    gsParamsHash = await setUGenericSchemeParams(gpParamsHash, ActionMock)
+  } else {
+    genericSchemeAddress = await setGenericSchemeParams(avatarAddress, gpParamsHash, ActionMock)
+  }
 
   const srParamsHash = await setSchemeRegistrarParams(gpParamsHash) // FIXME
 
@@ -88,6 +94,12 @@ async function migrateDemoTest ({ arcVersion, web3, spinner, confirm, opts, migr
     schemes.push({
       address: Number(this.arcVersion.slice(-2)) >= 24 ? this.base.UGenericScheme : this.base.GenericScheme,
       params: gsParamsHash,
+      permissions: '0x00000010'
+    })
+  } else {
+    schemes.push({
+      address: genericSchemeAddress,
+      params: '0x0000000000000000000000000000000000000000000000000000000000000000',
       permissions: '0x00000010'
     })
   }
@@ -457,6 +469,35 @@ async function setUGenericSchemeParams (gpParamsHash, actionMock) {
   await this.logTx(tx, 'Generic Scheme Set Parameters.')
 
   return gsParamsHash
+}
+
+async function setGenericSchemeParams (avatar, gpParamsHash, actionMock) {
+  this.spinner.start('Setting Generic Scheme Parameters...')
+
+  const {
+    GenesisProtocol
+  } = this.base
+
+  let tx
+
+  const genericScheme = await new this.web3.eth.Contract(require(`./contracts/${this.arcVersion}/GenericScheme.json`).abi, undefined, this.opts).deploy({
+    data: require(`./contracts/${this.arcVersion}/GenericScheme.json`).bytecode,
+    arguments: []
+  }).send({
+    from: this.web3.eth.defaultAccount
+  })
+
+  const gsInit = genericScheme.methods.initialize(
+    avatar,
+    GenesisProtocol,
+    gpParamsHash,
+    actionMock
+  )
+
+  tx = await gsInit.send()
+  await this.logTx(tx, 'Generic Scheme Initialize.')
+
+  return genericScheme.options.address
 }
 
 async function setSchemeRegistrarParams (gpParamsHash) {
