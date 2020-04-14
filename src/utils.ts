@@ -115,7 +115,7 @@ export function createGraphQlQuery(options: ICommonQueryOptions, where: string =
   if (where) {
     queryString += `where: {
       ${where}
-    }`
+    }\n`
   }
   if (options.first) {
     queryString += `first: ${options.first}\n`

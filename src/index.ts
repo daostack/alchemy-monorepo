@@ -1,5 +1,5 @@
 export { Arc, IContractInfo } from './arc'
-export { DAO, IDAOState, IDAOStaticState, IDAOQueryOptions } from './dao'
+export { DAO, DAOFieldsFragment, IDAOState, IDAOStaticState, IDAOQueryOptions } from './dao'
 export { IGenesisProtocolParams } from './genesisProtocol'
 export { createApolloClient } from './graphnode'
 export { Event, IEventState, IEventStaticState, IEventQueryOptions } from './event'

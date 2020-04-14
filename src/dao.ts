@@ -46,21 +46,20 @@ export interface IDAOQueryOptions extends ICommonQueryOptions {
   }
 }
 
+export const DAOFieldsFragment = gql`
+  fragment DAOFields on DAO {
+    id
+    name
+    nativeReputation { id, totalSupply }
+    nativeToken { id, name, symbol, totalSupply }
+    numberOfQueuedProposals
+    numberOfPreBoostedProposals
+    numberOfBoostedProposals
+    register
+    reputationHoldersCount
+}`
+
 export class DAO implements IStateful<IDAOState> {
-  public static fragments = {
-    DAOFields: gql`
-      fragment DAOFields on DAO {
-        id
-        name
-        nativeReputation { id, totalSupply }
-        nativeToken { id, name, symbol, totalSupply }
-        numberOfQueuedProposals
-        numberOfPreBoostedProposals
-        numberOfBoostedProposals
-        register
-        reputationHoldersCount
-    }`
-  }
 
   /**
    * DAO.search(context, options) searches for DAO entities
@@ -88,7 +87,13 @@ export class DAO implements IStateful<IDAOState> {
         options.where[key] = option.toLowerCase()
       }
 
-      where += `${key}: "${options.where[key] as string}"\n`
+      if (Array.isArray(options.where[key])) {
+        // Support for operators like _in
+        const values = options.where[key].map((val: number) => '"' + val + '"')
+        where += `${key}: [${values.join(',')}]\n`
+      } else {
+        where += `${key}: "${options.where[key] as string}"\n`
+      }
     }
 
     let query
@@ -98,14 +103,13 @@ export class DAO implements IStateful<IDAOState> {
           ...DAOFields
           }
         }
-        ${DAO.fragments.DAOFields}`
+        ${DAOFieldsFragment}`
     } else {
       query = gql`query SearchDaoIds {
         daos ${createGraphQlQuery(options, where)} {
           id
         }
       }`
-
     }
 
     return context.getObservableList(
@@ -121,8 +125,8 @@ export class DAO implements IStateful<IDAOState> {
             register: r.register,
             reputation,
             token,
-            tokenName: r.tokenName,
-            tokenSymbol: r.tokenSymbol
+            tokenName: r.nativeToken.name,
+            tokenSymbol: r.nativeToken.symbol
           }, context)
         } else {
           return new DAO(r.id, context)
@@ -178,7 +182,7 @@ export class DAO implements IStateful<IDAOState> {
           ...DAOFields
         }
       }
-      ${DAO.fragments.DAOFields}
+      ${DAOFieldsFragment}
      `
 
     const itemMap = (item: any): IDAOState => {

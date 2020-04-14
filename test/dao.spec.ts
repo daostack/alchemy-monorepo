@@ -37,6 +37,11 @@ describe('DAO', () => {
     expect(result.length).toEqual(0)
     result = await DAO.search(arc, {where: { register: 'registered'}}).pipe(first()).toPromise()
     expect(result.length).toBeGreaterThan(0)
+
+    // test _in queries
+    const dao = await getTestDAO()
+    result = await DAO.search(arc, {where: { id_in: [dao.id] }}).pipe(first()).toPromise()
+    expect(result.length).toBeGreaterThan(0)
   })
 
   it('fetchAllData in DAO.search works', async () => {
