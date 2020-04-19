@@ -712,6 +712,14 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
         for (let i in standAlone.params) {
           if (standAlone.params[i].StandAloneContract !== undefined) {
             contractParams.push(deploymentState.StandAloneContracts[standAlone.params[i].StandAloneContract].address)
+          } else if (standAlone.params[i] === 'GenesisProtocolAddress') {
+            contractParams.push(GenesisProtocol)
+          } else if (standAlone.params[i] === 'AvatarAddress') {
+            contractParams.push(avatar.options.address)
+          } else if (standAlone.params[i] === 'DAOTokenAddress') {
+            contractParams.push(daoToken.options.address)
+          } else if (standAlone.params[i] === 'ReputationAddress') {
+            contractParams.push(reputation.options.address)
           } else {
             contractParams.push(standAlone.params[i])
           }
@@ -789,6 +797,12 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
             schemeParams.push(deploymentState.votingMachinesParams[customeScheme.params[i].voteParams])
           } else if (customeScheme.params[i] === 'GenesisProtocolAddress') {
             schemeParams.push(GenesisProtocol)
+          } else if (customeScheme.params[i] === 'AvatarAddress') {
+            schemeParams.push(avatar.options.address)
+          } else if (customeScheme.params[i] === 'DAOTokenAddress') {
+            schemeParams.push(daoToken.options.address)
+          } else if (customeScheme.params[i] === 'ReputationAddress') {
+            schemeParams.push(reputation.options.address)
           } else {
             schemeParams.push(customeScheme.params[i])
           }
@@ -812,6 +826,10 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
             schemeParams.push(deploymentState.StandAloneContracts[customeScheme.params[i].StandAloneContract].address)
           } else if (customeScheme.params[i] === 'AvatarAddress') {
             schemeParams.push(avatar.options.address)
+          } else if (customeScheme.params[i] === 'DAOTokenAddress') {
+            schemeParams.push(daoToken.options.address)
+          } else if (customeScheme.params[i] === 'ReputationAddress') {
+            schemeParams.push(reputation.options.address)
           } else {
             schemeParams.push(customeScheme.params[i])
           }
