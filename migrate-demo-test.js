@@ -340,7 +340,7 @@ async function submitDemoProposals (accounts, web3, avatarAddress, externalToken
     voter: accounts[1].address
   })
 
-  await increaseTime(259300, web3)
+  await increaseTime(601, web3)
 
   await voteOnProposal({
     proposalId: boostedProposalId,
