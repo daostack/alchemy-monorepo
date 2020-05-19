@@ -1,7 +1,7 @@
 /**
  * To run this example, you must
- * 1. git checkout https://github.com/daostack/client
- * 2. npmm install
+ * 1. git clone https://github.com/daostack/client // clone the repository
+ * 2. cd client && npm install // install cilent
  * 3. npm run build // build th epackage
  * 3. docker-compose up -d // this will start docker containers with the test services
  * 4. node documentation/demo.js // run this file
