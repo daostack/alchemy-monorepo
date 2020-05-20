@@ -1,3 +1,4 @@
+import BN = require('bn.js')
 import { Arc } from '../arc'
 import { Proposal } from '../proposal'
 import { Address } from '../types'
@@ -14,6 +15,7 @@ export interface IGenericScheme {
   callData: string
   executed: boolean
   returnValue: string
+  value: BN
 }
 
 export interface IProposalCreateOptionsGS {

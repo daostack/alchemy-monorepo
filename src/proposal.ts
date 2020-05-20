@@ -173,6 +173,7 @@ export class Proposal implements IStateful<IProposalState> {
         callData
         executed
         returnValue
+        value
       }
       genesisProtocolParams {
         id
@@ -475,7 +476,8 @@ export class Proposal implements IStateful<IProposalState> {
           contractToCall: item.genericScheme.contractToCall,
           executed: item.genericScheme.executed,
           id: item.genericScheme.id,
-          returnValue: item.genericScheme.returnValue
+          returnValue: item.genericScheme.returnValue,
+          value: new BN(item.genericScheme.value)
         }
       } else if (item.schemeRegistrar) {
         if (item.schemeRegistrar.schemeToRegister) {

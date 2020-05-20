@@ -5,9 +5,11 @@ import {
   IProposalState,
   ISchemeStaticState,
   Proposal
-  } from '../src'
-import { createAProposal, getTestAddresses, ITestAddresses, LATEST_ARC_VERSION,
-  newArc, voteToPassProposal, waitUntilTrue } from './utils'
+} from '../src'
+import {
+  createAProposal, getTestAddresses, ITestAddresses, LATEST_ARC_VERSION,
+  newArc, voteToPassProposal, waitUntilTrue, BN
+} from './utils'
 
 jest.setTimeout(60000)
 
@@ -24,7 +26,7 @@ describe('Proposal', () => {
   })
 
   it('Check proposal state is correct', async () => {
-    const daos = await arc.daos({where: { name: 'Nectar DAO'}}).pipe(first()).toPromise()
+    const daos = await arc.daos({ where: { name: 'Nectar DAO' } }).pipe(first()).toPromise()
     const dao = daos[0]
     if (dao === undefined) {
       throw Error(`Could not find "Nectar DAO"`)
@@ -36,13 +38,13 @@ describe('Proposal', () => {
     const actionMock = new arc.web3.eth.Contract(actionMockABI, testAddresses.test.ActionMock)
     const callData = await actionMock.methods.test2(dao.id).encodeABI()
 
-    const schemes = await dao.schemes({ where: {name: 'GenericScheme' }}).pipe(first()).toPromise()
+    const schemes = await dao.schemes({ where: { name: 'GenericScheme' } }).pipe(first()).toPromise()
     const genericScheme = schemes[0].staticState as ISchemeStaticState
     const proposal = await createAProposal(dao, {
       callData,
       scheme: genericScheme.address,
       schemeToRegister: actionMock.options.address,
-      value: 0
+      value: '1'
     })
     expect(proposal).toBeInstanceOf(Proposal)
 
@@ -55,7 +57,8 @@ describe('Proposal', () => {
     expect(lastState().genericScheme).toMatchObject({
       callData,
       executed: false,
-      returnValue: null
+      returnValue: null,
+      value: new BN('1')
     })
 
     // accept the proposal by voting the hell out of it

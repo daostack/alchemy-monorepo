@@ -5,10 +5,12 @@ import {
   IProposalStage,
   IProposalState,
   Proposal
-  } from '../src/proposal'
-import { IGenericScheme} from '../src/schemes/genericScheme'
-import { createAProposal, getTestAddresses, getTestDAO, ITestAddresses, LATEST_ARC_VERSION,
-  newArc, voteToPassProposal, waitUntilTrue } from './utils'
+} from '../src/proposal'
+import { IGenericScheme } from '../src/schemes/genericScheme'
+import {
+  createAProposal, getTestAddresses, getTestDAO, ITestAddresses, LATEST_ARC_VERSION,
+  newArc, voteToPassProposal, waitUntilTrue, BN
+} from './utils'
 
 jest.setTimeout(60000)
 
@@ -34,10 +36,10 @@ describe('Proposal', () => {
     const version = '0.0.1-rc.32'
     testAddresses = getTestAddresses(arc)
     // dao = await getTestDAO()
-    const ugenericSchemes = await arc.schemes({where: {name: "UGenericScheme", version}}).pipe(first()).toPromise()
+    const ugenericSchemes = await arc.schemes({ where: { name: "UGenericScheme", version } }).pipe(first()).toPromise()
     const ugenericScheme = ugenericSchemes[0]
     const ugenericSchemeState = await ugenericScheme.state().pipe(first()).toPromise()
-    dao  = new DAO(ugenericSchemeState.dao, arc)
+    dao = new DAO(ugenericSchemeState.dao, arc)
     const states: IProposalState[] = []
     const lastState = (): IProposalState => states[states.length - 1]
 
@@ -50,7 +52,7 @@ describe('Proposal', () => {
       // scheme: testAddresses.base.UGenericScheme,
       scheme: ugenericSchemeState.address,
       schemeToRegister: actionMock.options.address,
-      value: 0
+      value: '1'
     })
     expect(proposal).toBeInstanceOf(Proposal)
 
@@ -63,7 +65,8 @@ describe('Proposal', () => {
     expect(lastState().genericScheme).toMatchObject({
       callData,
       executed: false,
-      returnValue: null
+      returnValue: null,
+      value: new BN('1')
     })
 
     // accept the proposal by voting the hell out of it
