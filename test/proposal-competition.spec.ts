@@ -711,7 +711,7 @@ describe('Competition Proposal', () => {
   })
 
   describe('pre-fetching competition.suggestions part 1', () => {
-    it('pre-fetching competition.suggestions works', async () => {
+    it.skip('pre-fetching competition.suggestions works', async () => {
       // find a proposal in a scheme that has > 1 votes
       const competition =  await createCompetition()
       // check if the competition has indeed some suggestions

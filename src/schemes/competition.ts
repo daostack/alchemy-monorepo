@@ -263,7 +263,6 @@ export class CompetitionScheme extends SchemeBase {
 
   public createProposalErrorHandler(options: any): (err: Error) => Error | Promise<Error> {
     return async (err) => {
-      console.log(`hanlding errrrrr`)
       const tx = await this.createProposalTransaction(options)()
       try {
         await tx.call()
