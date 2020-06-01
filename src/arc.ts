@@ -39,12 +39,13 @@ export class Arc extends GraphNodeObserver {
    * a mapping of contrct names to contract addresses
    */
   public contractInfos: IContractInfo[]
-  public contracts: {[key: string]: any} = {} // a cache for the contracts
-  public contractsR: {[key: string]: any} = {} // a cache for teh "read-only" contracts
+  public contracts: { [key: string]: any } = {} // a cache for the contracts
+  public contractsR: { [key: string]: any } = {} // a cache for teh "read-only" contracts
 
   // accounts observed by ethBalance
-  public blockHeaderSubscription: Subscription|undefined = undefined
-  public observedAccounts: { [address: string]: {
+  public blockHeaderSubscription: Subscription | undefined = undefined
+  public observedAccounts: {
+    [address: string]: {
       observable?: Observable<BN>
       observer?: Observer<BN>
       lastBalance?: string
@@ -125,6 +126,7 @@ export class Arc extends GraphNodeObserver {
         name
         version
         address
+        alias
       }
     }`
     // const result = await this.getObservableList(query, itemMap, apolloQueryOptions).pipe(first()).toPromise()
@@ -204,11 +206,11 @@ export class Arc extends GraphNodeObserver {
     if (!this.observedAccounts[owner]) {
       this.observedAccounts[owner] = {
         subscriptionsCount: 1
-       }
+      }
     }
     if (this.observedAccounts[owner].observable) {
-        this.observedAccounts[owner].subscriptionsCount += 1
-        return this.observedAccounts[owner].observable as Observable<BN>
+      this.observedAccounts[owner].subscriptionsCount += 1
+      return this.observedAccounts[owner].observable as Observable<BN>
     }
 
     const observable = Observable.create((observer: Observer<BN>) => {
@@ -225,7 +227,7 @@ export class Arc extends GraphNodeObserver {
 
       // set up the blockheadersubscription if it does not exist yet
       if (!this.blockHeaderSubscription) {
-        const subscribeToBlockHeaders = () =>   {
+        const subscribeToBlockHeaders = () => {
           this.blockHeaderSubscription = this.web3Read.eth.subscribe('newBlockHeaders', async (err: Error) => {
             Object.keys(this.observedAccounts).forEach(async (addr) => {
               const accInfo = this.observedAccounts[addr]
@@ -294,10 +296,10 @@ export class Arc extends GraphNodeObserver {
 
   public getContractInfoByName(name: string, version: string) {
     for (const contractInfo of this.contractInfos) {
-        if (contractInfo.name === name && contractInfo.version === version) {
-          return contractInfo
-        }
+      if (contractInfo.name === name && contractInfo.version === version) {
+        return contractInfo
       }
+    }
     if (!this.contractInfos) {
       throw Error(`no contract info was found - did you call "arc.setContractInfos(...)"?`)
     }
@@ -389,7 +391,7 @@ export class Arc extends GraphNodeObserver {
       if (web3.eth.accounts[0]) {
         observer.next(web3.eth.accounts[0].address)
         prevAccount = web3.eth.accounts[0].address
-      } else if (web3.eth.defaultAccount ) {
+      } else if (web3.eth.defaultAccount) {
         observer.next(web3.eth.defaultAccount)
         prevAccount = web3.eth.defaultAccount
       }
@@ -407,7 +409,7 @@ export class Arc extends GraphNodeObserver {
           }
         })
       }, interval)
-      return() => clearTimeout(timeout)
+      return () => clearTimeout(timeout)
     })
   }
 
@@ -449,7 +451,7 @@ export class Arc extends GraphNodeObserver {
    * @param  options an Object to save. This object must have title, url and desction defined
    * @return  a Promise that resolves in the IPFS Hash where the file is saved
    */
-  public async saveIPFSData(options: { title?: string, url?: string, description?: string, tags?: string[]}):
+  public async saveIPFSData(options: { title?: string, url?: string, description?: string, tags?: string[] }):
     Promise<string> {
     let ipfsDataToSave: object = {}
     if (options.title || options.url || options.description || options.tags !== undefined) {
@@ -486,4 +488,5 @@ export interface IContractInfo {
   version: string
   address: Address
   name: string
+  alias: string
 }

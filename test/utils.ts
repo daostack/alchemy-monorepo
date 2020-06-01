@@ -4,7 +4,7 @@ import { first } from 'rxjs/operators'
 import { IContractInfo, IProposalCreateOptions, Proposal } from '../src'
 import { Arc } from '../src/arc'
 import { DAO } from '../src/dao'
-import { IProposalOutcome} from '../src/proposal'
+import { IProposalOutcome } from '../src/proposal'
 import { Reputation } from '../src/reputation'
 import { Address } from '../src/types'
 
@@ -55,13 +55,13 @@ export interface ITestAddresses {
     executedProposalId: Address,
     queuedProposalId: Address,
     preBoostedProposalId: Address,
-    [key: string]: Address|{ [key: string]: Address }
+    [key: string]: Address | { [key: string]: Address }
   }
 }
 
 export function getTestAddresses(arc: Arc, version: string = LATEST_ARC_VERSION): ITestAddresses {
   // const contractInfos = arc.contractInfos
-  const migrationFile = path.resolve(`${require.resolve('@daostack/migration' )}/../migration.json`)
+  const migrationFile = path.resolve(`${require.resolve('@daostack/migration')}/../migration.json`)
   const migration = require(migrationFile).private
   let UGenericScheme: string = ''
   try {
@@ -96,7 +96,7 @@ export async function getOptions(web3: any) {
   }
 }
 
-export async function newArc(options: { [key: string]: any} = {}): Promise<Arc> {
+export async function newArc(options: { [key: string]: any } = {}): Promise<Arc> {
   const defaultOptions = {
     graphqlHttpProvider,
     graphqlWsProvider,
@@ -160,7 +160,7 @@ export async function createAProposal(
   if (!dao) {
     dao = await getTestDAO()
   }
-  options  = {
+  options = {
     beneficiary: '0xffcf8fdee72ac11b5c542428b35eef5769c409f0',
     ethReward: toWei('300'),
     externalTokenAddress: undefined,
@@ -209,11 +209,11 @@ export async function voteToPassProposal(proposal: Proposal) {
   const accounts = arc.web3.eth.accounts.wallet
   // make sure the proposal is indexed
   await waitUntilTrue(async () => {
-    const state = await proposal.state({ fetchPolicy: 'network-only'}).pipe(first()).toPromise()
+    const state = await proposal.state({ fetchPolicy: 'network-only' }).pipe(first()).toPromise()
     return !!state
   })
 
-  for (let i = 0; i <= 3; i ++) {
+  for (let i = 0; i <= 3; i++) {
     try {
       arc.setAccount(accounts[i].address)
       await proposal.vote(IProposalOutcome.Pass).send()
@@ -326,14 +326,15 @@ export async function firstResult(observable: Observable<any>) {
   return observable.pipe(first()).toPromise()
 }
 
-export function getContractAddressesFromMigration(environment: 'private'|'rinkeby'|'mainnet'): IContractInfo[] {
+export function getContractAddressesFromMigration(environment: 'private' | 'rinkeby' | 'mainnet'): IContractInfo[] {
   const migration = require('@daostack/migration/migration.json')[environment]
   const contracts: IContractInfo[] = []
-  for (const version of Object.keys( migration.base)) {
+  for (const version of Object.keys(migration.base)) {
     for (const name of Object.keys(migration.base[version])) {
       contracts.push({
         address: migration.base[version][name].toLowerCase(),
         id: migration.base[version][name],
+        alias: migration.base[version][name], // fake the data for tests
         name,
         version
       })

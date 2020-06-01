@@ -181,7 +181,7 @@ describe('Arc ', () => {
     // these tests are a bit clumsy, because we have access to only a single node
 
     // we now expect all read operations to fail, and all write operations to succeed
-    const arcWrite = await newArc({ web3ProviderRead: 'http://does.not.exist'})
+    const arcWrite = await newArc({ web3ProviderRead: 'http://does.not.exist' })
 
     expect(arcWrite.ethBalance('0x90f8bf6a479f320ead074411a4b0e7944ea81111').pipe(first()).toPromise())
       .rejects.toThrow()
@@ -192,7 +192,7 @@ describe('Arc ', () => {
       .pipe(first()).toPromise())
       .rejects.toThrow()
     // we now expect all write operations to fail, and all read operations to succeed
-    const arcRead = await newArc({ web3Provider: 'http://doesnotexist.com', web3ProviderRead: web3Provider})
+    const arcRead = await newArc({ web3Provider: 'http://doesnotexist.com', web3ProviderRead: web3Provider })
     expect(await arcRead.ethBalance('0x90f8bf6a479f320ead074411a4b0e7944ea81111').pipe(first()).toPromise())
       .toEqual(new BN(0))
   })
@@ -221,5 +221,14 @@ describe('Arc ', () => {
     await arc.fetchContractInfos()
     const abi = arc.getABI(undefined, 'Redeemer', REDEEMER_CONTRACT_VERSIONS[0])
     expect(abi[0].name).toEqual('redeem')
+  })
+
+  it('scheme contractInfo should contain alias', async () => {
+    const arc = await newArc()
+    const schemeId = '0x405fC0EE23C7fcd0a41A864505Fe8c969ca3eF6A'
+
+    const contractInfo = arc.getContractInfo(schemeId)
+
+    expect(contractInfo.alias).toEqual("ContributionRewardExt")
   })
 })
