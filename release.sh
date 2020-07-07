@@ -6,7 +6,7 @@ package_version=$(cat package.json | jq -r '.version')
 
 # tag on github
 echo "create tag ${package_version}"
-git ci -a -m "Package version ${package_version}" --allow-empty
+git commit -a -m "Package version ${package_version}" --allow-empty
 git tag -a $package_version -m "Release of version $package_version"
 git push --tags
 
