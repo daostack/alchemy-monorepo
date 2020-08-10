@@ -73,7 +73,7 @@ describe('Competition Proposal', () => {
     arc = await newArc()
     // we'll get a `ContributionRewardExt` contract
     // find the corresponding scheme object
-    const ARC_VERSION = '0.0.1-rc.40'
+    const ARC_VERSION = '0.0.1-rc.43'
     const contributionRewardExtContract  = arc.getContractInfoByName(`ContributionRewardExt`, ARC_VERSION)
     const contributionRewardExtAddres = contributionRewardExtContract.address
     // const contributionRewardExtAddres = '0x68c29524E583380aF7896f7e63463740225Ac026'.toLowerCase()
@@ -251,7 +251,7 @@ describe('Competition Proposal', () => {
     const startTime = addSeconds(now, 3)
     const proposalOptions = {
       dao: dao.id,
-      endTime: addSeconds(startTime, 200),
+      endTime: addSeconds(startTime, 500),
       ethReward,
       externalTokenAddress: undefined,
       externalTokenReward,
@@ -628,7 +628,7 @@ describe('Competition Proposal', () => {
 
   it('CompetionScheme is recognized', async () => {
     // we'll get a `ContributionRewardExt` contract that has a Compietion contract as a rewarder
-    const ARC_VERSION = '0.0.1-rc.39'
+    const ARC_VERSION = '0.0.1-rc.43'
     const contributionRewardExtContract = arc.getContractInfoByName(`ContributionRewardExt`, ARC_VERSION)
     // find the corresponding scheme object
     const contributionRewardExts = await arc

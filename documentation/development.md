@@ -5,7 +5,7 @@ The package is provided with convenient docker containers that provide  a  compl
 
 Get all services running:
 ```sh
-docker-compose up
+npm run test-env-up
 ```
 
 This command will build and start a graph instance, ganache, IPFS and postgresql.

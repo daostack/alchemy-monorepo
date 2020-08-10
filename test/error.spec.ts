@@ -13,7 +13,7 @@ describe('client handles errors', () => {
     const graphqlWsProvider = 'http://127.0.0.1:8001/name/doesnotexist'
 
     let retries = 0
-    const retryLink = new RetryLink({
+    const retryLink = await new RetryLink({
       attempts: {
         max: 3, // max number of retry attempts
         retryIf: (error, _operation) => {
@@ -28,7 +28,7 @@ describe('client handles errors', () => {
       }
     })
 
-    const arc = new Arc({
+    const arc = await new Arc({
       graphqlHttpProvider,
       graphqlRetryLink: retryLink,
       graphqlWsProvider,
