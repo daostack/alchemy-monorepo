@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc.js",
-  "version": "0.2.72",
+  "version": "0.2.73",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
