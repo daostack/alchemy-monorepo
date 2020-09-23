@@ -85,3 +85,17 @@ new Proposal("0x1245").votes({ subscribe: false }).subscribe(
   }
   )
 ```
+Another way to keep your query data up-to-date is by polling (instead of subscriptions):
+
+  ```
+ arc.daos({}, { polling: true })
+ ```
+ The default polling interval (15 seconds) is chosen if you don't provide one or if it's `0`. You can set your own polling interval (in milliseconds):
+ ```
+ arc.daos({}, { polling: true, pollInterval: 10000 })
+ ```
+ Note that the following will generate errors:
+ - setting both `polling` and `subscribe` to `true`
+ - setting `pollInterval` without setting `polling` or with setting `polling` to `false`
+
+  **NOTE:** When setting `polling: true` the `fetchPolicy` is automatically set to `network-only` even if you set other `fetchPolicy`.

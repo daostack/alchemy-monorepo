@@ -118,8 +118,50 @@ describe('apolloClient', () => {
     await mintSomeReputation()
 
     await waitUntilTrue(() => returnedData.length >= 2 )
-    // expect(cntr).toEqual(3)
+
     subscription.unsubscribe()
+  })
+
+  it('getObservable works with polling', async () => {
+    const arc = new Arc({
+      contractInfos: getContractAddressesFromMigration('private'),
+      graphqlHttpProvider,
+      graphqlWsProvider,
+      ipfsProvider: '',
+      web3Provider: 'ws://127.0.0.1:8545'
+    })
+    const query = gql`{
+        reputationMints {
+          contract
+          amount
+          address
+        }
+      }
+    `
+    expect(() => { arc.getObservable(query, { subscribe: true, polling: true }) }).toThrowError(`Subscribe and polling can't be both true`)
+    expect(() => { arc.getObservable(query, { pollInterval: 500 }) }).toThrowError(`Can't set poll interval if polling set to false or undefined`)
+
+    const observable = arc.getObservable(query, { polling: true })
+
+    const returnedData: object[] = []
+
+    const subscription = observable.subscribe(
+      (eventData: any) => {
+        returnedData.push(eventData.data)
+      },
+      (err: any) => {
+        throw err
+      }
+    )
+
+    await mintSomeReputation()
+    await mintSomeReputation()
+
+    await waitUntilTrue(() => returnedData.length >= 2 )
+
+    subscription.unsubscribe()
+
+
   })
 
   it('subscribe manually', async () => {

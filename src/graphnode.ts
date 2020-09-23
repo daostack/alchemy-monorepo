@@ -17,12 +17,16 @@ import { zenToRxjsObservable } from './utils'
 export interface IApolloQueryOptions {
   fetchPolicy?: 'cache-first' | 'network-only' | 'cache-only' | 'no-cache' | 'standby',
   subscribe?: true | false,
-  fetchAllData?: true | false
+  fetchAllData?: true | false,
+  polling?: true | false,
+  pollInterval?: number
 }
 
 export interface IObservable<T> extends Observable<T> {
   first: () => T
 }
+
+const DEFAULT_GRAPH_POLL_INTERVAL: number = 15000
 
 export function createApolloClient(options: {
   graphqlHttpProvider: string,
@@ -194,6 +198,16 @@ export class GraphNodeObserver {
     if (!this.apolloClient) {
       throw Error(`No connection to the graph - did you set graphqlHttpProvider and graphqlWsProvider?`)
     }
+    if (apolloQueryOptions.subscribe && apolloQueryOptions.polling) {
+      throw Error(
+        `Subscribe and polling can't be both true`
+      )
+    }
+    if (!apolloQueryOptions.polling && apolloQueryOptions.pollInterval !== undefined) {
+      throw Error(
+        `Can't set poll interval if polling set to false or undefined`
+      )
+    }
 
     const apolloClient = this.apolloClient as ApolloClient<object>
     const graphqlSubscribeToQueries = this.graphqlSubscribeToQueries
@@ -202,9 +216,15 @@ export class GraphNodeObserver {
       if (!apolloQueryOptions.fetchPolicy) {
         apolloQueryOptions.fetchPolicy = 'cache-first'
       }
+      if (apolloQueryOptions.polling) {
+        apolloQueryOptions.fetchPolicy = 'network-only'
+        if (apolloQueryOptions.pollInterval === undefined || apolloQueryOptions.pollInterval === 0) {
+          apolloQueryOptions.pollInterval = DEFAULT_GRAPH_POLL_INTERVAL
+        }
+      }
 
       let subscriptionSubscription: any
-      let subscribe: boolean = true
+      let subscribe: boolean | undefined
       if (apolloQueryOptions.subscribe !== undefined) {
         subscribe = apolloQueryOptions.subscribe
       } else if (graphqlSubscribeToQueries !== undefined) {
@@ -244,6 +264,7 @@ export class GraphNodeObserver {
         apolloClient.watchQuery({
           fetchPolicy: apolloQueryOptions.fetchPolicy,
           fetchResults: true,
+          pollInterval: apolloQueryOptions.pollInterval,
           query
         }))
         .pipe(
@@ -306,6 +327,7 @@ export class GraphNodeObserver {
     return observable
   }
 
+  // Until further notice, this function is commented out since it's not in use
   /**
    * Returns an observable that:
    * - sends a query over http and returns the current list of results
@@ -326,22 +348,22 @@ export class GraphNodeObserver {
    * @param filter filter the results
    * @return
    */
-  public getObservableListWithFilter(
-    query: any,
-    itemMap: (o: object) => object | null = (o) => o,
-    filterFunc: (o: object) => boolean,
-    apolloQueryOptions: IApolloQueryOptions = {}
-  ) {
-    const entity = query.definitions[0].selectionSet.selections[0].name.value
-    return this.getObservable(query, apolloQueryOptions).pipe(
-      map((r: ApolloQueryResult<object[]>) => {
-        if (!r.data[entity]) { throw Error(`Could not find ${entity} in ${r.data}`)}
-        return r.data[entity]
-      }),
-      filter(filterFunc),
-      map((rs: object[]) => rs.map(itemMap))
-    )
-  }
+  // public getObservableListWithFilter(
+  //   query: any,
+  //   itemMap: (o: object) => object | null = (o) => o,
+  //   filterFunc: (o: object) => boolean,
+  //   apolloQueryOptions: IApolloQueryOptions = {}
+  // ) {
+  //   const entity = query.definitions[0].selectionSet.selections[0].name.value
+  //   return this.getObservable(query, apolloQueryOptions).pipe(
+  //     map((r: ApolloQueryResult<object[]>) => {
+  //       if (!r.data[entity]) { throw Error(`Could not find ${entity} in ${r.data}`)}
+  //       return r.data[entity]
+  //     }),
+  //     filter(filterFunc),
+  //     map((rs: object[]) => rs.map(itemMap))
+  //   )
+  // }
 
   public getObservableObject(
     query: any,
