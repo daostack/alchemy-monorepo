@@ -28,6 +28,18 @@
         { "StandAloneContract": 1 }
       ],
       "arcVersion": "0.0.1-rc.43"
+    },
+    {
+      "name": "DxDaoSchemeConstraints",
+      "fromArc": true,
+      "params": [
+        10,
+        10,
+        [],
+        [],
+        []
+      ],
+      "arcVersion": "0.0.1-rc.46"
     }
   ],
   "VotingMachinesParams": [
@@ -80,7 +92,21 @@
       "alias":"ContributionRewardExt",
       "fromArc":true,
       "arcVersion": "0.0.1-rc.43"
-   }
+   },
+   {
+      "name":"GenericSchemeMultiCall",
+      "schemeName":"GenericSchemeMultiCall",
+      "isUniversal":false,
+      "params":[
+        "GenesisProtocolAddress",
+        { "voteParams":0 },
+        { "StandAloneContract": 3 }
+      ],
+      "permissions": "0x00000000",
+      "alias": "GenericSchemeMultiCall",
+      "fromArc": true,
+      "arcVersion": "0.0.1-rc.46"
+  }
   ],
   "unregisterOwner": true,
   "useUController": false,
