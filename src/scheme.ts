@@ -11,6 +11,7 @@ import * as Competition from './schemes/competition'
 import * as ContributionReward from './schemes/contributionReward'
 import * as ContributionRewardExt from './schemes/contributionRewardExt'
 import * as GenericScheme from './schemes/genericScheme'
+import * as GenericSchemeMultiCall from './schemes/genericSchemeMultiCall'
 import { ReputationFromTokenScheme } from './schemes/reputationFromToken'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
 import * as UGenericScheme from './schemes/uGenericScheme'
@@ -144,9 +145,16 @@ export class Scheme extends SchemeBase  {
       voteParams: mapGenesisProtocolParams(item.genericSchemeParams.voteParams),
       votingMachine: item.genericSchemeParams.votingMachine
     }
+    const genericSchemeMultiCallParams = item.genericSchemeMultiCallParams  && {
+      contractToCall: item.genericSchemeMultiCallParams.contractsToCall,
+      contractsWhiteList: item.genericSchemeMultiCallParams.contractsWhiteList,
+      schemeConstraints: item.genericSchemeMultiCallParams.schemeConstraints,
+      voteParams: mapGenesisProtocolParams(item.genericSchemeMultiCallParams.voteParams),
+      votingMachine: item.genericSchemeMultiCallParams.votingMachine
+    }
     const schemeParams = (
       uGenericSchemeParams || contributionRewardParams ||
-      schemeRegistrarParams || genericSchemeParams || contributionRewardExtParams
+      schemeRegistrarParams || genericSchemeParams || genericSchemeMultiCallParams || contributionRewardExtParams
     )
     return {
       address: item.address,
@@ -157,6 +165,7 @@ export class Scheme extends SchemeBase  {
       contributionRewardExtParams,
       contributionRewardParams,
       dao: item.dao.id,
+      genericSchemeMultiCallParams,
       genericSchemeParams,
       id: item.id,
       isRegistered: item.isRegistered,
@@ -284,6 +293,10 @@ export class Scheme extends SchemeBase  {
             map = GenericScheme.createTransactionMap(options, this.context)
             break
           }
+        case 'GenericSchemeMultiCall':
+          createTransaction  = GenericSchemeMultiCall.createTransaction(options, this.context)
+          map = GenericSchemeMultiCall.createTransactionMap(options, this.context)
+          break
 
         case 'SchemeRegistrar':
           createTransaction  = SchemeRegistrar.createTransaction(options, this.context)
