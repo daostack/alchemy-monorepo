@@ -14,6 +14,7 @@ import { ICompetitionProposalState, IProposalCreateOptionsCompetition } from './
 import * as ContributionReward from './schemes/contributionReward'
 import * as ContributionRewardExt from './schemes/contributionRewardExt'
 import * as GenericScheme from './schemes/genericScheme'
+import * as GenericSchemeMultiCall from './schemes/genericSchemeMultiCall'
 import * as SchemeRegistrar from './schemes/schemeRegistrar'
 import { CONTRIBUTION_REWARD_DUMMY_VERSION, REDEEMER_CONTRACT_VERSIONS } from './settings'
 import { IStakeQueryOptions, Stake } from './stake'
@@ -27,12 +28,14 @@ import { IVoteQueryOptions, Vote } from './vote'
 export const IProposalType = {
   ...ContributionReward.IProposalType,
   ...GenericScheme.IProposalType,
+  ...GenericSchemeMultiCall.IProposalType,
   ...SchemeRegistrar.IProposalType
 }
 
 type IProposalType = (
   ContributionReward.IProposalType |
   GenericScheme.IProposalType |
+  GenericSchemeMultiCall.IProposalType |
   SchemeRegistrar.IProposalType
 )
 
@@ -82,6 +85,7 @@ export interface IProposalState extends IProposalStaticState {
   executionState: IExecutionState
   expiresInQueueAt: Date
   genericScheme: GenericScheme.IGenericScheme | null
+  genericSchemeMultiCall: GenericSchemeMultiCall.IGenericSchemeMultiCall | null
   genesisProtocolParams: IGenesisProtocolParams
   organizationId: string
   paramsHash: string
@@ -174,6 +178,14 @@ export class Proposal implements IStateful<IProposalState> {
         executed
         returnValue
         value
+      }
+      genericSchemeMultiCall {
+        id
+        contractsToCall
+        callsData
+        executed
+        returnValues
+        values
       }
       genesisProtocolParams {
         id
@@ -404,6 +416,7 @@ export class Proposal implements IStateful<IProposalState> {
       let competition: ICompetitionProposalState | null = null
       let type: IProposalType
       let genericScheme: GenericScheme.IGenericScheme | null = null
+      let genericSchemeMultiCall: GenericSchemeMultiCall.IGenericSchemeMultiCall | null = null
       let schemeRegistrar: SchemeRegistrar.ISchemeRegistrar | null = null
       if (!!item.competition && !item.contributionReward) {
         throw Error(`Unexpected proposal state: competition is set, but contributionReward is not`)
@@ -478,6 +491,16 @@ export class Proposal implements IStateful<IProposalState> {
           id: item.genericScheme.id,
           returnValue: item.genericScheme.returnValue,
           value: new BN(item.genericScheme.value)
+        }
+      } else if (item.genericSchemeMultiCall) {
+        type = IProposalType.GenericSchemeMultiCall
+        genericSchemeMultiCall = {
+          callsData: item.genericSchemeMultiCall.callsData,
+          contractsToCall: item.genericSchemeMultiCall.contractsToCall,
+          executed: item.genericSchemeMultiCall.executed,
+          id: item.genericSchemeMultiCall.id,
+          returnValues: item.genericSchemeMultiCall.returnValues,
+          values: item.genericSchemeMultiCall.values
         }
       } else if (item.schemeRegistrar) {
         if (item.schemeRegistrar.schemeToRegister) {
@@ -589,6 +612,7 @@ export class Proposal implements IStateful<IProposalState> {
         executionState: IExecutionState[item.executionState] as any,
         expiresInQueueAt: Number(item.expiresInQueueAt),
         genericScheme,
+        genericSchemeMultiCall,
         genesisProtocolParams: mapGenesisProtocolParams(item.genesisProtocolParams),
         id: item.id,
         organizationId: item.organizationId,
@@ -984,6 +1008,7 @@ export interface IProposalBaseCreateOptions {
 
 export type IProposalCreateOptions = (
   (IProposalBaseCreateOptions & GenericScheme.IProposalCreateOptionsGS) |
+  (IProposalBaseCreateOptions & GenericSchemeMultiCall.IProposalCreateOptionsGSMultiCall) |
   (IProposalBaseCreateOptions & SchemeRegistrar.IProposalCreateOptionsSR) |
   (IProposalBaseCreateOptions & ContributionReward.IProposalCreateOptionsCR) |
   (ContributionRewardExt.IProposalCreateOptionsContributionRewardExt) |

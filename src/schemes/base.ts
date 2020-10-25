@@ -30,6 +30,7 @@ export interface ISchemeState extends ISchemeStaticState {
   contributionRewardParams?: IContributionRewardParams
   contributionRewardExtParams?: IContributionRewardExtParams
   genericSchemeParams?: IGenericSchemeParams
+  genericSchemeMultiCallParams?: IGenericSchemeMultiCallParams
   schemeRegistrarParams?: {
     votingMachine: Address
     voteRemoveParams: IGenesisProtocolParams
@@ -39,12 +40,20 @@ export interface ISchemeState extends ISchemeStaticState {
   numberOfPreBoostedProposals: number
   numberOfBoostedProposals: number
   uGenericSchemeParams?: IGenericSchemeParams
-  schemeParams?: IGenericSchemeParams | IContributionRewardParams | IContributionRewardExtParams | ISchemeRegisterParams
+  schemeParams?: IGenericSchemeParams | IGenericSchemeMultiCallParams | IContributionRewardParams
+  | IContributionRewardExtParams | ISchemeRegisterParams
 }
 
 export interface IGenericSchemeParams {
   votingMachine: Address
   contractToCall: Address
+  voteParams: IGenesisProtocolParams
+}
+
+export interface IGenericSchemeMultiCallParams {
+  votingMachine: Address
+  schemeConstraints: Address
+  contractsWhiteList: Address[]
   voteParams: IGenesisProtocolParams
 }
 
@@ -141,6 +150,26 @@ export abstract class SchemeBase implements IStateful<ISchemeState> {
       genericSchemeParams {
         votingMachine
         contractToCall
+        voteParams {
+          queuedVoteRequiredPercentage
+          queuedVotePeriodLimit
+          boostedVotePeriodLimit
+          preBoostedVotePeriodLimit
+          thresholdConst
+          limitExponentValue
+          quietEndingPeriod
+          proposingRepReward
+          votersReputationLossRatio
+          minimumDaoBounty
+          daoBountyConst
+          activationTime
+          voteOnBehalf
+        }
+      }
+      genericSchemeMultiCallParams {
+        votingMachine
+        schemeConstraints
+        contractsWhiteList
         voteParams {
           queuedVoteRequiredPercentage
           queuedVotePeriodLimit

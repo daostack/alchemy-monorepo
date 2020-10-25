@@ -225,7 +225,7 @@ describe('Arc ', () => {
 
   it('scheme contractInfo should contain alias', async () => {
     const arc = await newArc()
-    const schemeId = '0x405fC0EE23C7fcd0a41A864505Fe8c969ca3eF6A'
+    const schemeId = '0x248b2b6dddc29d88fec5a8c18153f4ccce3ca2fb'
 
     const contractInfo = arc.getContractInfo(schemeId)
 
