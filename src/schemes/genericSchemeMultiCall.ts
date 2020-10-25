@@ -57,7 +57,7 @@ export function createTransaction(options: any, context: Arc) {
  * @return         [description]
  */
 export function createTransactionMap(options: any, context: Arc) {
-  const eventName = 'NewCallProposal'
+  const eventName = 'NewMultiCallProposal'
   const map = async (receipt: any) => {
     const proposalId = receipt.events[eventName].returnValues._proposalId
     return new Proposal(proposalId, context)
