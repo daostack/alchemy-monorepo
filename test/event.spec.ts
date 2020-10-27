@@ -77,14 +77,14 @@ describe('Event', () => {
   it('paging and sorting works', async () => {
     const ls1 = await Event.search(arc, { first: 3, orderBy: 'id' }).pipe(first()).toPromise()
     expect(ls1.length).toEqual(3)
-    expect(Number(ls1[0].id)).toBeLessThan(Number(ls1[1].id))
+    expect(ls1[0].id < ls1[1].id)
 
     const ls2 = await Event.search(arc, { first: 2, skip: 2, orderBy: 'id' }).pipe(first()).toPromise()
     expect(ls2.length).toEqual(2)
-    expect(Number(ls1[2].id)).toEqual(Number(ls2[0].id))
+    expect(ls1[2].id === ls2[0].id)
 
     const ls3 = await Event.search(arc, {  orderBy: 'id', orderDirection: 'desc'}).pipe(first()).toPromise()
-    expect(Number(ls3[0].id)).toBeGreaterThanOrEqual(Number(ls3[1].id))
+    expect(ls3[0].id >= ls3[1].id)
   })
 
   it('fetchStaticState works as expected', async () => {

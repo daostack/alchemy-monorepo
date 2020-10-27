@@ -20,7 +20,7 @@ export interface IGenericScheme {
 
 export interface IProposalCreateOptionsGS {
   callData?: string
-  value?: number
+  value?: BN | number | string
 }
 
 export enum IProposalType {
@@ -40,7 +40,7 @@ export function createTransaction(options: any, context: Arc) {
     const genericScheme = context.getContract(options.scheme)
     const transaction = genericScheme.methods.proposeCall(
       options.callData,
-      options.value,
+      options.value.toString(),
       options.descriptionHash
     )
     return transaction

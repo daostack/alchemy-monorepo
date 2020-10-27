@@ -228,7 +228,7 @@ export class CompetitionScheme extends SchemeBase {
       // *         _competitionParams[4] - _suggestionsEndTime suggestion submition end time
 
       const competitionParams = [
-        options.startTime && dateToSecondsSinceEpoch(options.startTime) || '0',
+        options.startTime && dateToSecondsSinceEpoch(options.startTime) || 0,
         dateToSecondsSinceEpoch(options.votingStartTime) || 0,
         dateToSecondsSinceEpoch(options.endTime) || 0,
         options.numberOfVotesPerVoter.toString() || 0,
