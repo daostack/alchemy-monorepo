@@ -556,11 +556,29 @@
         "VoteInOrganizationScheme": "0xdFf79086E3c4379Cf32e1DD5B2c8e3ae9cbE728B",
         "OrganizationRegister": "0x65B11dccb031faBf489798a1c48D464Be240704b",
         "Redeemer": "0x47b2EE497D2316F6923d6c0c1E7094DaC5D2fc8D"
+      },
+      "0.0.1-rc.48": {
+        "GEN": "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
+        "DAORegistry": "0x1A1389AA3d641d8172Fc4D151f5e96c2B7d97622",
+        "DAOTracker": "0xD2027646aa008f885db2D75197361A2B2Cb08725",
+        "ControllerCreator": "0xD7d4A70cE187d4Aa1DB9A439303Dd6e885fe2560",
+        "DaoCreator": "0xa78E0C7210A9febdcC8DA48a796480f14406d432",
+        "GenesisProtocol": "0x69010c702559c98dC153CE4939D71C5c23928528",
+        "SchemeRegistrar": "0x58e23D7C63b8B3104e604f7dD9DB3F7A99776BCd",
+        "UpgradeScheme": "0xb4bDbACF7d7978d34C081c09f5CF1c1529fbB8bD",
+        "GlobalConstraintRegistrar": "0x65871722F196f0C4Ffd738A9a5002f6F56A0CC3E",
+        "ContributionReward": "0xA37dDCF919134f87C9C80D2F796Fa208a26c5D0A",
+        "AbsoluteVote": "0x0695a12682a7Bf8a05c5d3568Bba75E294A0ef35",
+        "QuorumVote": "0xFbc8cA65C78B8a5b0A1A3656a305b976A5a20D2b",
+        "TokenCapGC": "0x36219c5554b56193594ce60ebfe6a4849D0d6cc3",
+        "VoteInOrganizationScheme": "0xC7c72a734641b9242330b02F697B752e82Cb23eD",
+        "OrganizationRegister": "0x2FC5dfa278f5865fCc5e7D6f90564bc92812C0e4",
+        "Redeemer": "0x60575B8def42cfAb99E11376701c4da134EbBA09"
       }
     },
     "dao": {
       "0.0.1-rc.16": {
-        "name": "Bilious Snakes",
+        "name": "Quiescent Penciller",
         "Avatar": "0xE7A2C59e134ee81D4035Ae6DB2254f79308e334f",
         "DAOToken": "0xcDbe8b52A6c60A5f101d4A0F1f049f19a9e1D35F",
         "Reputation": "0x93cdbf39fB9e13BD253CA5819247D52fbabf0F2f",
@@ -576,7 +594,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x22d5C8BdD4346b390014a07109a8F830094d4abf",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -598,7 +616,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x22d5C8BdD4346b390014a07109a8F830094d4abf",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -608,13 +626,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0xB9bdBAEc07751F6d54d19A6B9995708873F3DE18",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.16"
       },
       "0.0.1-rc.17": {
-        "name": "Friable Maintenance",
+        "name": "Serpentine Scenographer",
         "Avatar": "0xc3E4EDA3c2Da722e7b143773EEd77249584B1782",
         "DAOToken": "0xe93194815959Fb5879daC1283b912AD78c3D13c3",
         "Reputation": "0xe5A79611891527028aa43faE7fAEE1671fFd3618",
@@ -630,7 +648,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x180D179Bbf473A30183Fe858E8416351D2170Fd2",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -652,7 +670,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x180D179Bbf473A30183Fe858E8416351D2170Fd2",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -662,13 +680,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x84b085c0d4B4D6fbf6490f8246Bc5cD317d2d4cD",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.17"
       },
       "0.0.1-rc.18": {
-        "name": "Defamatory Beets",
+        "name": "Fecund Curtains",
         "Avatar": "0x326284469fbC5D8E73fC23FBc19C6c378Bf36c16",
         "DAOToken": "0x6f01e10ED5B5b077348470a3a8BE5795d5805407",
         "Reputation": "0x5A090529FFAC76f56f7d4286f4dAd3127113CD50",
@@ -684,7 +702,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0xe67a1e001a30eF1e0EDE04637F1Aceb3F2080604",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -706,7 +724,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0xe67a1e001a30eF1e0EDE04637F1Aceb3F2080604",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -716,13 +734,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x3c3d89322de3aC6D5BCBD10801BbB2C68f5AC5f1",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.18"
       },
       "0.0.1-rc.19": {
-        "name": "Taciturn Potato",
+        "name": "Fecund Sawfiler",
         "Avatar": "0xAf6F348C0af707B0D9C23fb4e07ceDA5d9AaC465",
         "DAOToken": "0x6258F90A25c4fB7B8ee6331903767edD49De44e0",
         "Reputation": "0x76016A8076aA1CD967b946708C01A8274b75Fe4C",
@@ -738,7 +756,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x7322258910EeA3A9918b6bB64472fC15969e9d79",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -760,7 +778,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x7322258910EeA3A9918b6bB64472fC15969e9d79",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -770,13 +788,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0xF3Ecf410c2f4EF71691F63E409300f85c16c4f33",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.19"
       },
       "0.0.1-rc.21": {
-        "name": "Incendiary Chair",
+        "name": "Egregious Stick figures",
         "Avatar": "0xc16cC0eAA81e7db273C6FA043490187F88AC95A3",
         "DAOToken": "0x5b2551e046FD23470d9547e9f9750a294F5b7314",
         "Reputation": "0x31d43Fe0eD9d8226a7Ab36d3A98eF4cd26705A59",
@@ -792,7 +810,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x7fcFA6cE32bF1F20337bD6AA6805EF28A04e906f",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -814,7 +832,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x7fcFA6cE32bF1F20337bD6AA6805EF28A04e906f",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -824,13 +842,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x0Ca8A551544d39eb71BD0F70Af22e126C263409A",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.21"
       },
       "0.0.1-rc.22": {
-        "name": "Mendacious Woodworkers",
+        "name": "Insolent Toejam",
         "Avatar": "0x1d254E2079253f40250EA1ef4a1F6b2e10A0FFd3",
         "DAOToken": "0x347DEfE8eA9F7fA353183316e93a37528E88Ccf5",
         "Reputation": "0x06BfB68477aC38d5C7Da32f98Edede4d25456e0B",
@@ -846,7 +864,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x8d6ce59F3FDb84A36FEB7Dea7f4baC67746B980a",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -868,7 +886,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x8d6ce59F3FDb84A36FEB7Dea7f4baC67746B980a",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -878,13 +896,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0xa41795579e6779aE007200DE58DA175d78eE0bA6",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.22"
       },
       "0.0.1-rc.23": {
-        "name": "Nefarious Animator",
+        "name": "Baleful Potato",
         "Avatar": "0xF19157e4177eBbEfbd6ac73b3BACD1A02C033e75",
         "DAOToken": "0x7131784aaB27D21786e0100C8a02d3e49ea30AdA",
         "Reputation": "0xdBb1905de98C28d83132Ee2c50263A71f6a16130",
@@ -900,7 +918,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x56Ebc21A300882B23Adf6a2677D2993A34A9F8e5",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -922,7 +940,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x56Ebc21A300882B23Adf6a2677D2993A34A9F8e5",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -932,13 +950,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x4A2774a1A0F930640d435DDF0054D56eCF6D406D",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.23"
       },
       "0.0.1-rc.24": {
-        "name": "Munificent Engineering",
+        "name": "Friable Shop foreman",
         "Avatar": "0xADd5Df9945832672dd269F743e70E2abf4098141",
         "DAOToken": "0x2197DaE917b95CFa554C15EFB884e50b6ee3eb98",
         "Reputation": "0xF8E62eC7b04C5bd07C9d495B887C4d22B445EcA6",
@@ -960,7 +978,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x13BdacF2fd86DE458022fA78f8632D594dE6D916",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -982,7 +1000,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x13BdacF2fd86DE458022fA78f8632D594dE6D916",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -992,13 +1010,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x54537c7A445372d8Cfdb880d4B3F85191986c6B4",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.24"
       },
       "0.0.1-rc.25": {
-        "name": "Effulgent Statue",
+        "name": "Jocular Apples",
         "Avatar": "0xdb6157B31435f1a2379BffFBA3120Bb061ab5f1E",
         "DAOToken": "0xAf83A1008cf6587632C2DD6570460bDE9c862A56",
         "Reputation": "0x59C6A5A48B956fa76b807697Eb6275B7dB03D809",
@@ -1020,7 +1038,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0xa85FF6Fa9653EAa6aFa3187f19e2f559314799b4",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1042,7 +1060,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0xa85FF6Fa9653EAa6aFa3187f19e2f559314799b4",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1052,13 +1070,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x6c92a440e350E1ed2fb8fc11FfCdbcdf2EB4DcC6",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.25"
       },
       "0.0.1-rc.27": {
-        "name": "Hubristic Patternmaker",
+        "name": "Voluble Director",
         "Avatar": "0x8730E5158F1eC3BCC888d3B9eE975DF2CC653fED",
         "DAOToken": "0x76Fd8c50ebc56C8Ec6A62948C6d53b8Bc2783e43",
         "Reputation": "0x5B4eE31cA73943B8592cd2c46E356075AFa1064a",
@@ -1080,7 +1098,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x9c7bF8CD650436D53481B08A88dE07cde1c9813b",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1102,7 +1120,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x9c7bF8CD650436D53481B08A88dE07cde1c9813b",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1112,13 +1130,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0xB6100E25d6B5b0cFE679f9d46445fF17AF3A7c48",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.27"
       },
       "0.0.1-rc.28": {
-        "name": "Withering Statue",
+        "name": "Invidious Ukulele",
         "Avatar": "0xa8F4230327c686b191f957a60bD18DE9750E4338",
         "DAOToken": "0x69D396820cdb361Fb9974282a8cfE3a78332a213",
         "Reputation": "0xEF70c1e291BbE2E9529bD68C0d9692A3517f5141",
@@ -1140,7 +1158,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0xd9922eFc3FB9B76C8b335a033082987483eBC404",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1162,7 +1180,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0xd9922eFc3FB9B76C8b335a033082987483eBC404",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1172,13 +1190,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x0DFe637135e1D895fCf77fE254B41A82b9a1BA1C",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.28"
       },
       "0.0.1-rc.29": {
-        "name": "Concomitant Shop foreman",
+        "name": "Taciturn Hot air balloon",
         "Avatar": "0x50e1A76F37F5eF894fC959825bBDF8DC7dCB1F50",
         "DAOToken": "0x526f9aFCA1F147d17fB53138E314e147413b953f",
         "Reputation": "0xd5A32109fc12AAB72a3A1d5A92BEA856f680F3B3",
@@ -1200,7 +1218,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0xC3CCB5EF552A865F2fb4d26C86eE558A71857a32",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1222,7 +1240,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0xC3CCB5EF552A865F2fb4d26C86eE558A71857a32",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1232,13 +1250,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x15118cf0f444497C6807fa8e6168dD02672F13bD",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.29"
       },
       "0.0.1-rc.30": {
-        "name": "Gustatory Beets",
+        "name": "Adroit Artisan",
         "Avatar": "0x92203805A40019eaEa3b67166f13d694E61eca14",
         "DAOToken": "0x1E9f3F2cc302FE79fD82CE39D17F24F3517Acf87",
         "Reputation": "0xDA39B067929bEECD51A064116110d6aF40A284B1",
@@ -1260,7 +1278,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0xb9C0176703D52E08566a7aCf0e877714fE45Ae5b",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1282,7 +1300,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0xb9C0176703D52E08566a7aCf0e877714fE45Ae5b",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1292,13 +1310,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x199FDD17D65D56Ca7893D44def837239F1428982",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.30"
       },
       "0.0.1-rc.31": {
-        "name": "Minatory Sea barnacles",
+        "name": "Pervasive Sea barnacles",
         "Avatar": "0x98CcB5051fD767e2E89567bCCCA4Efc532250544",
         "DAOToken": "0x30dB4905b474aff3e1EAfc60394ece85dC524A92",
         "Reputation": "0x4992595a747d772bF291f64112735064BFc8878f",
@@ -1320,7 +1338,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x353B67029c2B8D94E0a89Bfacd18B2e41152B661",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1342,7 +1360,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x353B67029c2B8D94E0a89Bfacd18B2e41152B661",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1352,13 +1370,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x8A0446aA91aadaF9EC89b5E664145f8bb2FF4d6B",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.31"
       },
       "0.0.1-rc.32": {
-        "name": "Efficacious Stick figures",
+        "name": "Adamant Banjo",
         "Avatar": "0x6621372fFA1B23808886b1fb1BbB6F235603eEB0",
         "DAOToken": "0x8ffD5653a0a4d6FEcF912d8aF214C0a3063306c2",
         "Reputation": "0x587C9DF9Fd5252D223DA0F455Bc7858AADc4678d",
@@ -1380,7 +1398,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0xE1Fa62693b945288ddEe43eDf714c497d3D7c5fe",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1402,7 +1420,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0xE1Fa62693b945288ddEe43eDf714c497d3D7c5fe",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1412,13 +1430,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0xe39613CE5124f16E5904B51390d17F384F8515ec",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.32"
       },
       "0.0.1-rc.33": {
-        "name": "Munificent Director",
+        "name": "Hubristic Dolls",
         "Avatar": "0x57F909211c361AE0A11E269b74Dca470078c6e67",
         "DAOToken": "0xE9A11C4C015D142D090CFF82dEd1Deea5B824185",
         "Reputation": "0xCf9dB88B2bef5f498de16327b051C10A17bC6132",
@@ -1440,7 +1458,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0xBbA961069d46ae92006b7985fAA1e90e33c09D98",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1462,7 +1480,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0xBbA961069d46ae92006b7985fAA1e90e33c09D98",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1472,13 +1490,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0xe011485b54301995924F87Dd56dA2f0f1f289065",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.33"
       },
       "0.0.1-rc.34": {
-        "name": "Minatory Plumber",
+        "name": "Defamatory Artist",
         "Avatar": "0xAEe1d5e81f35bA953CdA00F21F34F7408A1A070D",
         "DAOToken": "0x864f2858EFEE96734A8F7f399AF1945ad3f00704",
         "Reputation": "0xea94EBee42A794871Fef7734ED6dF0cF5C6433Dd",
@@ -1500,7 +1518,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x1fbF3e5B4F4A8b1A4fB8128FB8234A22D2d4a148",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1522,7 +1540,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x1fbF3e5B4F4A8b1A4fB8128FB8234A22D2d4a148",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1532,13 +1550,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x45160c9E3fEc55c4cC4Dd2e35241105041a32d51",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.34"
       },
       "0.0.1-rc.35": {
-        "name": "Mannered Sawfiler",
+        "name": "Verdant Sawfiler",
         "Avatar": "0xDF7f67F1BcA6FBBc1b9EbD6F76d14726b40a6F40",
         "DAOToken": "0xb98870a1D3b0ed4452320845427936761c01CA9c",
         "Reputation": "0xedB100980FC543aB3e17A3F2E14F297b442f6bA9",
@@ -1560,7 +1578,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x4630E1AE57E0635c029a8A21374Dd210d02d830e",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1582,7 +1600,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x4630E1AE57E0635c029a8A21374Dd210d02d830e",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1592,13 +1610,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x9B8dF962ac65Ff2C08803443Cdbf30B60c633DFC",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.35"
       },
       "0.0.1-rc.36": {
-        "name": "Concomitant Captain",
+        "name": "Dilatory Beader",
         "Avatar": "0x3801027AC57598bf6e3E0d54a072f7A68AAB26F7",
         "DAOToken": "0xaf14C94420751ac650B46362F94b9db653daA6E5",
         "Reputation": "0x9AC9dd25c95eD41Da85aB6055f50C1E7CbC1DBFa",
@@ -1620,7 +1638,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x2B2F8e787bA2922d3aF4C773dC1C9720261bc99c",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1642,7 +1660,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x2B2F8e787bA2922d3aF4C773dC1C9720261bc99c",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1652,13 +1670,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0xd15Bb6B9A2B4d6C697557a872E41FeF9bE467F64",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.36"
       },
       "0.0.1-rc.37": {
-        "name": "Ubiquitous Senor",
+        "name": "Pervasive Statue",
         "Avatar": "0xF6E9dB99831815A181754bCf25ad98e7745e0ee8",
         "DAOToken": "0xCd17aC56cb74470d97BB92AE88cfb96a369689eE",
         "Reputation": "0x30FF9B1454f67Cc7A1D2907d35fC2354b726da89",
@@ -1680,7 +1698,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x4845BEAd787ACeAc404Fce7F408B655a7ed39fC5",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1702,7 +1720,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x4845BEAd787ACeAc404Fce7F408B655a7ed39fC5",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1712,13 +1730,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0xFF2B5b561343404a78234274d587B81523130407",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.37"
       },
       "0.0.1-rc.38": {
-        "name": "Baleful Opera singer",
+        "name": "Ruminative Coppersmith",
         "Avatar": "0xB4f03a5Af1eee9789ecC1072ac1433E29953E5e0",
         "DAOToken": "0x3E700CD1281560Eb5B681038f1e39562C8F9C956",
         "Reputation": "0x8652FaE53c9e0827b4028fdf02d04bC62A9d7ab4",
@@ -1740,7 +1758,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x636DB4fFBE6e8ea8137f6ED46AF4d918161d5516",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1762,7 +1780,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x636DB4fFBE6e8ea8137f6ED46AF4d918161d5516",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1772,13 +1790,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x0FA530c5c0014525767047c780E68881f43d08DF",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.38"
       },
       "0.0.1-rc.39": {
-        "name": "Salubrious Ukulele",
+        "name": "Defamatory Exorcism",
         "Avatar": "0x5951c93dCb47068fcbe1AcE235B2ea625d9823a5",
         "DAOToken": "0x820FbBC729B157f91CA5C2659aF2971C766e6A4b",
         "Reputation": "0xADb82bc43A7e402f40E1F166FC238c849791A928",
@@ -1800,7 +1818,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x49f4dc93c37949C2c682c94700547C7EcE44C439",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1822,7 +1840,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x49f4dc93c37949C2c682c94700547C7EcE44C439",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1832,13 +1850,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x86F2d3A404502D32B567B101eaE10337073510B9",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.39"
       },
       "0.0.1-rc.40": {
-        "name": "Salubrious Moldmaker",
+        "name": "Incendiary Producer",
         "Avatar": "0x63580Cd6d1c5C9d20d3A7710FbB6eB02c4DA928d",
         "DAOToken": "0x09b7F50aD63a1CEd9E9a6F0d14e57daba3E2b49E",
         "Reputation": "0x74CD5Da957841cbD25fd5bDafDe84a48701289Af",
@@ -1860,7 +1878,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x2159Cf23264D7bA6e1ff4CB9a9fBcB52D832AF2f",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1882,7 +1900,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x2159Cf23264D7bA6e1ff4CB9a9fBcB52D832AF2f",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1892,13 +1910,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0xd598a38E5c98Fcb0E1Dee5401D94425F8B0442AE",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.40"
       },
       "0.0.1-rc.41": {
-        "name": "Effulgent Wheelwright",
+        "name": "Parsimonious Scenographer",
         "Avatar": "0xde1837963BCa0cBDE1214c6ca83Ac8dCde7Cfe63",
         "DAOToken": "0x66688d72B4d3834Ed24b448D2894dA0D83e18f28",
         "Reputation": "0xa26d9ccFA2978Bb87F9De3705Ed0c1a126046E45",
@@ -1920,7 +1938,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x6A5d6554EC6a0bbDe9671488db2620B877B77FB3",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -1942,7 +1960,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x6A5d6554EC6a0bbDe9671488db2620B877B77FB3",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -1952,13 +1970,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x7331E275619166F9abAfE6a78D6923Ce29b2B64A",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.41"
       },
       "0.0.1-rc.42": {
-        "name": "Concomitant Dolls",
+        "name": "Ubiquitous Glitter",
         "Avatar": "0x638628f49E7697aC8712EAb836c9e3079AfA9216",
         "DAOToken": "0x7B2f5E1C477947Ed38376Ac68FCa8EB0f86bD202",
         "Reputation": "0x205D6BE1EE94f8F5c95E96a45713F9349D8F98b4",
@@ -1980,7 +1998,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0xb8E560f766fE3E7F292fc18435951F05756bA777",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -2002,7 +2020,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0xb8E560f766fE3E7F292fc18435951F05756bA777",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -2012,13 +2030,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x7BbF6Cf910827ca1Ebf3a5E6952e94F9Fb570864",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.42"
       },
       "0.0.1-rc.43": {
-        "name": "Voracious Circus",
+        "name": "Uxorious Patternmaker",
         "Avatar": "0xD2C4B60755127fce58a2646583B99885a980610c",
         "DAOToken": "0x108fa94a7B94B8b1A6719D6F15852E3FE33653C6",
         "Reputation": "0x3CC4B7516362bDCAC4e51CAf457B35A647739A61",
@@ -2040,7 +2058,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x7CBc9bde6aD71CD24cCb42D8a159684637365D3b",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -2062,7 +2080,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x7CBc9bde6aD71CD24cCb42D8a159684637365D3b",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -2072,13 +2090,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x98cc6899c021EeB312E031c88f35a725CF543B41",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.43"
       },
       "0.0.1-rc.44": {
-        "name": "Fulsome Coppersmith",
+        "name": "Effulgent Jellybeans",
         "Avatar": "0xAaB3c194A57597f02B9d32bE26a5507E102eBb6B",
         "DAOToken": "0x068b8d836b52D93b3B52f954A3c2E86e8c84D9dB",
         "Reputation": "0xed988e629b89Bd91DBecB703F987be50F0C53CDb",
@@ -2100,7 +2118,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x59eDAa2576368F9fA8D6B3747C64d4432429013b",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -2122,7 +2140,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x59eDAa2576368F9fA8D6B3747C64d4432429013b",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -2132,13 +2150,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x3658d27b9c70e6c35031ac348d8eb56b9BE77F33",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.44"
       },
       "0.0.1-rc.45": {
-        "name": "Obtuse Teacher",
+        "name": "Adroit Mermaid eggs",
         "Avatar": "0x2F41E4044469c3F061546d68F2FE81B96f81A17D",
         "DAOToken": "0x2E32AE73bDC7d8ea72A1623f6E3884C987580364",
         "Reputation": "0x92E3db4056b252ad5D3698141d7793703E10ed66",
@@ -2160,7 +2178,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0x3cB7eD60A1f26B575dfC01daC79720412B1Ba9ee",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -2182,7 +2200,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0x3cB7eD60A1f26B575dfC01daC79720412B1Ba9ee",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -2192,13 +2210,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x81bFD4b0F7b6A739A92F997345d46CF544f231aA",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.45"
       },
       "0.0.1-rc.46": {
-        "name": "Pervasive Dolls",
+        "name": "Sagacious Cupcake",
         "Avatar": "0xdFF215aEEC70AD95469AF6A4Bd2DAFAa8C43D644",
         "DAOToken": "0x0F933e6588359f289A7d1887A3f4B5f57dCa216c",
         "Reputation": "0x09D4560D468240c79a7Ff616d04E14cfbA638326",
@@ -2220,7 +2238,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0xd1a1ecbD6be2872221D804bd1B11E559ef3b77e1",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -2242,7 +2260,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0xd1a1ecbD6be2872221D804bd1B11E559ef3b77e1",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -2252,13 +2270,13 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0xE006ce6E0BC5df670051F820b57041655B7E0C25",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.46"
       },
       "0.0.1-rc.47": {
-        "name": "Gustatory Scenographer",
+        "name": "Gustatory Patternmaker",
         "Avatar": "0x3d9E3F230E8ad18fBE7A8f9131e30579Be01fCD1",
         "DAOToken": "0x9ac1CE3fF16241B40F1B04AFFbede8dBAA3E3A57",
         "Reputation": "0xF135846012087e68DaC55A4C11550A1306875478",
@@ -2280,7 +2298,7 @@
             "name": "GenericSchemeMultiCall",
             "alias": "GenericSchemeMultiCall",
             "address": "0xa0514D0987b539498d07DBB8D6C75d4cA33Adc5f",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "StandAloneContracts": [
@@ -2302,7 +2320,7 @@
           {
             "name": "GenericSchemeMultiCall",
             "address": "0xa0514D0987b539498d07DBB8D6C75d4cA33Adc5f",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           },
           {
             "name": "ActionMock",
@@ -2312,15 +2330,75 @@
           {
             "name": "DxDaoSchemeConstraints",
             "address": "0x9a56B2Fa2d204Ffe1419EC62BeAC31dddD760351",
-            "arcVersion": "0.0.1-rc.47"
+            "arcVersion": "0.0.1-rc.48"
           }
         ],
         "arcVersion": "0.0.1-rc.47"
+      },
+      "0.0.1-rc.48": {
+        "name": "Guileless Silversmith",
+        "Avatar": "0x43d99b48A017532c60C0Ce77f30274Dd15f2CC5d",
+        "DAOToken": "0xc6346393Cd6b2a8dCe542b867fE96a8956ce8BDE",
+        "Reputation": "0xC374a2A7ceCFe14dbd9B47143eB25c92628D6739",
+        "Controller": "0x97126022BCB374BF7b294a92D2eC6f8004Bfb3aD",
+        "Schemes": [
+          {
+            "name": "GenericScheme",
+            "alias": "GenericSchemeAlias",
+            "address": "0x2D5F6D9A3864DD3052705180F9E03972dfdA9B3d",
+            "arcVersion": "0.0.1-rc.48"
+          },
+          {
+            "name": "ContributionRewardExt",
+            "alias": "ContributionRewardExt",
+            "address": "0xb2cc5d415cBadd9094391751648533CedEE0EA99",
+            "arcVersion": "0.0.1-rc.43"
+          },
+          {
+            "name": "GenericSchemeMultiCall",
+            "alias": "GenericSchemeMultiCall",
+            "address": "0x05FECC497755B665a2E2dB3CE1b7FE1Cba958797",
+            "arcVersion": "0.0.1-rc.48"
+          }
+        ],
+        "StandAloneContracts": [
+          {
+            "name": "Wallet",
+            "address": "0x3CC93dC99C1ee399644766D9cCCFbF1304006731",
+            "arcVersion": "0.0.1-rc.48"
+          },
+          {
+            "name": "ContributionRewardExt",
+            "address": "0xb2cc5d415cBadd9094391751648533CedEE0EA99",
+            "arcVersion": "0.0.1-rc.43"
+          },
+          {
+            "name": "Competition",
+            "address": "0xb687FE699059a5d42Ab54ef2c6e0505c6101e70b",
+            "arcVersion": "0.0.1-rc.43"
+          },
+          {
+            "name": "GenericSchemeMultiCall",
+            "address": "0x05FECC497755B665a2E2dB3CE1b7FE1Cba958797",
+            "arcVersion": "0.0.1-rc.48"
+          },
+          {
+            "name": "ActionMock",
+            "address": "0x7583Ad8a097bA3044e77160862270ab5B3f0AcBf",
+            "arcVersion": "0.0.1-rc.48"
+          },
+          {
+            "name": "DxDaoSchemeConstraints",
+            "address": "0x1a084A9fCCd17C679089BA604251f37ED23a8389",
+            "arcVersion": "0.0.1-rc.48"
+          }
+        ],
+        "arcVersion": "0.0.1-rc.48"
       }
     },
     "test": {
       "0.0.1-rc.16": {
-        "name": "Didactic Plumber",
+        "name": "Endemic Circus",
         "Controller": "0x5fD287667AC7D13161648e82dA6e8B8A3C9Bc432",
         "Avatar": "0x86e9Fe552E75e4Fc51f46E4efc128628eCd5ada7",
         "DAOToken": "0xeA4eB8B837F0f5B4d43259e5FAB1Ce3761869D2A",
@@ -2338,7 +2416,7 @@
         }
       },
       "0.0.1-rc.17": {
-        "name": "Jocular Circus",
+        "name": "Taciturn Bunny",
         "Controller": "0x978E72494102E2D4d040Dd3B6F65977ef1f504AC",
         "Avatar": "0x6AfF07151a76e9e67055B58aF2777467E926DDBD",
         "DAOToken": "0xfa830D8e8Cf3Aec026Bf108d5E49267AA87Fe63B",
@@ -2356,7 +2434,7 @@
         }
       },
       "0.0.1-rc.18": {
-        "name": "Serpentine Carousel",
+        "name": "Rhadamanthine Colorist",
         "Controller": "0x514e79A445d2f358106009541Bbd383858feD5a8",
         "Avatar": "0x4Ac66664B76E98802f2Bd709a0C6178E722Db1f8",
         "DAOToken": "0xB01ce1a18576746bf7065C719F39faA0d9d040e9",
@@ -2374,7 +2452,7 @@
         }
       },
       "0.0.1-rc.19": {
-        "name": "Recalcitant Rainbows",
+        "name": "Irksome Unicorn",
         "Controller": "0x96e8123C95781e8B453a40a8db6F271A1e1c7961",
         "Avatar": "0x440CF55A8eA880a49Bd31c97eF2132a9b80335e1",
         "DAOToken": "0x6Cd758B8A05F42ed4491D1F88936B47d9f56a7be",
@@ -2392,7 +2470,7 @@
         }
       },
       "0.0.1-rc.21": {
-        "name": "Didactic Stick figures",
+        "name": "Pendulous Gnomes",
         "Controller": "0x89Bc0b4C51D336a3169985c7A8f254F782b1828f",
         "Avatar": "0x1fC01DA280F6752FFF4dff1A1f83DB51E8eE179F",
         "DAOToken": "0x7Ecf84c567e121bFA943F4bD459DeE7D978eCDE7",
@@ -2410,7 +2488,7 @@
         }
       },
       "0.0.1-rc.22": {
-        "name": "Concomitant Senor",
+        "name": "Invidious Snakes",
         "Controller": "0x6dF8266EB98a54Bf7b81daDc26eB17A05962a30D",
         "Avatar": "0x0a2059b17970AbAe2385B500B0cF50f079Caab57",
         "DAOToken": "0x3338fD977f6aD6Ea55695e6EF7bBb3Bc228448C1",
@@ -2428,7 +2506,7 @@
         }
       },
       "0.0.1-rc.23": {
-        "name": "Insolent Apples",
+        "name": "Munificent Locomotive",
         "Controller": "0xCe11888F5694D433E17B61B14fF25159cBb2dF15",
         "Avatar": "0x4cfe5Cb19d8f5DA2603a7e0b685BC5a9d5f3485C",
         "DAOToken": "0xeE92Cad9f6d60219aa09Ff3DD88f138CEB0cadDB",
@@ -2446,7 +2524,7 @@
         }
       },
       "0.0.1-rc.24": {
-        "name": "Endemic Jellybeans",
+        "name": "Rebarbative Coppersmith",
         "Controller": "0xb883a40AcBBE85Ea048088621E8ad38d5749bDe7",
         "Avatar": "0x905bbc9B1aF2da08ba9e0454a3B96383BCafD410",
         "DAOToken": "0x8762EB58a8bd40Ae6e7b28D960627B977f5a17fb",
@@ -2464,7 +2542,7 @@
         }
       },
       "0.0.1-rc.25": {
-        "name": "Propitious Chair",
+        "name": "Dowdy Soaper",
         "Controller": "0x540ccC3DEF32fB5719735Be5335892575D4C3A39",
         "Avatar": "0x1869f08DfDB4db12a3075eA057F7642Edeed08e6",
         "DAOToken": "0x3C14078525460f69845B7b56d753909916f43e02",
@@ -2482,7 +2560,7 @@
         }
       },
       "0.0.1-rc.27": {
-        "name": "Calamitous Cupcake",
+        "name": "Querulous Salad",
         "Controller": "0xdA3cea3DDBe72B324206A2b48315014eB280E123",
         "Avatar": "0xaA74Eb1AAc6aCCB9E15A68b35A195b31b3a941DA",
         "DAOToken": "0x8DA68b49dE4bb5D96571E61D403FfE043969e53A",
@@ -2500,7 +2578,7 @@
         }
       },
       "0.0.1-rc.28": {
-        "name": "Parsimonious Circus",
+        "name": "Nefarious Designer",
         "Controller": "0xFF28dF1D9815C136641fE9761C41f061125692E0",
         "Avatar": "0x2241a57F4B081bC7Be217fAdC34a445b719B40ea",
         "DAOToken": "0xcC4A0Dc6A1F2D48d96BaF15047107BFc6d8b0e17",
@@ -2518,7 +2596,7 @@
         }
       },
       "0.0.1-rc.29": {
-        "name": "Pervasive Woodworkers",
+        "name": "Histrionic Chair",
         "Controller": "0x6C59C0B339a68f738D9C3C223342dEFbdB1Cab5c",
         "Avatar": "0x29615a9ab5DB49Cf9fFd15Cffc41511491CD5fA4",
         "DAOToken": "0x41387A771d65a7cb7B9D863d8ce25A7eD95E6A24",
@@ -2536,7 +2614,7 @@
         }
       },
       "0.0.1-rc.30": {
-        "name": "Egregious Mermaid eggs",
+        "name": "Pernicious Locomotive",
         "Controller": "0x365883D9603f8be8D28d8326c666d6FeF776a3bB",
         "Avatar": "0xE499BaBfc277b676D4B67B4a1bEa68A0D3b63529",
         "DAOToken": "0xD62Cf8816886B8d26ceC75945885B90fFd0c16c3",
@@ -2554,7 +2632,7 @@
         }
       },
       "0.0.1-rc.31": {
-        "name": "Contumacious Carousel",
+        "name": "Petulant Dolls",
         "Controller": "0x423e872e7801a490752248f3B41399A10E5c0a84",
         "Avatar": "0x39f1f0BDb1c50f5DD5Cc11C8251590dd7bA84E07",
         "DAOToken": "0x00721Ce485e83b6BbdFCa9B7538CBCa488dE9701",
@@ -2572,7 +2650,7 @@
         }
       },
       "0.0.1-rc.32": {
-        "name": "Egregious Artist",
+        "name": "Incendiary Engineering",
         "Controller": "0xe71ff40c0A32B11fE182C25dDd873d189F0a25ac",
         "Avatar": "0xeAd4Bbe688Ea2d122761EF890f0aC9F313eCc9A6",
         "DAOToken": "0x504478885b7D2521bF067c1742073dd066Df1b91",
@@ -2590,7 +2668,7 @@
         }
       },
       "0.0.1-rc.33": {
-        "name": "Fecund Carousel",
+        "name": "Corpulent Leadman",
         "Controller": "0x5cA8d82D38C6F130671D66b0EcDe8A68f6b96811",
         "Avatar": "0x0cB91528cBeA9f3e7999605539589a554bc4A942",
         "DAOToken": "0x0CAc43f21FC324ef1638AFD57e5D7715A82a7E2d",
@@ -2608,7 +2686,7 @@
         }
       },
       "0.0.1-rc.34": {
-        "name": "Equanimous Cookies",
+        "name": "Pendulous Scenographer",
         "Controller": "0xF17a5B7230e449C37e7eF5341D06B8D97a7ED709",
         "Avatar": "0xE6865E73156684e782988a94c117F87D3601D412",
         "DAOToken": "0xB7541D7cf4054c30f30260E138C4a475B16517b7",
@@ -2626,7 +2704,7 @@
         }
       },
       "0.0.1-rc.35": {
-        "name": "Meretricious Flatter",
+        "name": "Bellicose Salad",
         "Controller": "0x34eD81EF6A80407b16BF1860F9e253F7A20fddB2",
         "Avatar": "0xbaa311f782E85fc6CD01C77E1849f33f2b5E2400",
         "DAOToken": "0xB80dF20671D2f19D0f54f1Fc351dC9a91782930d",
@@ -2644,7 +2722,7 @@
         }
       },
       "0.0.1-rc.36": {
-        "name": "Dowdy Miller",
+        "name": "Feckless Engineering",
         "Controller": "0x507d62AfA59eB6DcA6D05A8Af1c0F6b8E88E4852",
         "Avatar": "0x8b1aA23Eeda4e1E0fE8d8A89f746dAa9F14D8c56",
         "DAOToken": "0x570b97722E508eeFe636eDE24F896efF0874Ba04",
@@ -2662,7 +2740,7 @@
         }
       },
       "0.0.1-rc.37": {
-        "name": "Recalcitant Opera singer",
+        "name": "Endemic Mechanic",
         "Controller": "0x7D3DF0DB4ead81a773E7251fefdb3EF82Ddb974A",
         "Avatar": "0x1c2eB52B9897696097b34C709392ac4C15fA5d3e",
         "DAOToken": "0x615c410CBe6e10eB937dF4107B902c3D035ceF37",
@@ -2680,7 +2758,7 @@
         }
       },
       "0.0.1-rc.38": {
-        "name": "Uxorious Banjo",
+        "name": "Corpulent Director",
         "Controller": "0xb2B687D7Eb16f7fBe3D27e0e6B2aa15F3eb6D257",
         "Avatar": "0x4d76ADe874BEf471fEa089f8ce0DDc4AB2227acF",
         "DAOToken": "0x613381bAbc87c51002097b8524CD5F1Cf1E6a062",
@@ -2698,7 +2776,7 @@
         }
       },
       "0.0.1-rc.39": {
-        "name": "Loquacious Plant operator",
+        "name": "Comely Beader",
         "Controller": "0x310258A9131a6450809a09c2cCc3400288F73888",
         "Avatar": "0x02981eC0aEfE7329442C39DfE5a52fb8781e7659",
         "DAOToken": "0x057D53A8EF8D0f328dE5a4270Ac2DD2344eCeFAA",
@@ -2716,7 +2794,7 @@
         }
       },
       "0.0.1-rc.40": {
-        "name": "Ubiquitous Woodworkers",
+        "name": "Adamant Salad",
         "Controller": "0x8c4755D4b33918C13F1E018873E8F3C3579fc942",
         "Avatar": "0x4C6e6F1644FcB118e2030738a4878Ce6e5452eDa",
         "DAOToken": "0x0eC53A48B77B2D607D12D50029EB19Fc5C5cCc60",
@@ -2734,7 +2812,7 @@
         }
       },
       "0.0.1-rc.41": {
-        "name": "Nefarious Snakes",
+        "name": "Puckish Chair",
         "Controller": "0x73ecC5931DEE0641821A4cbD3db6FdD9D5543aF8",
         "Avatar": "0xda7F30F0Dc754CCC33cbec0752d071054Ecf12f0",
         "DAOToken": "0x8c417373E619C77A880a019BfD50581662014a47",
@@ -2752,7 +2830,7 @@
         }
       },
       "0.0.1-rc.42": {
-        "name": "Cerulean Chair",
+        "name": "Comely Panel beater",
         "Controller": "0x61D6D67A45da092bF41B4B0DA7Ff2593d68483d4",
         "Avatar": "0x41475cC967d81CE568D886Ef133a2F64171668dc",
         "DAOToken": "0x8C461C6aaCbfC984D2Fe0eB32BB1cEB725506A76",
@@ -2770,7 +2848,7 @@
         }
       },
       "0.0.1-rc.43": {
-        "name": "Judicious Engineering",
+        "name": "Puckish Musician",
         "Controller": "0xDc84BC09a3240d10b003286eDc757027E8A3bE61",
         "Avatar": "0xe74CA08eEe46D220b5862a8628E96FA823b8Ab01",
         "DAOToken": "0x4d78696440C203DC6D2A056c525C2865AE812200",
@@ -2788,7 +2866,7 @@
         }
       },
       "0.0.1-rc.44": {
-        "name": "Jocular Sawfiler",
+        "name": "Cerulean Miller",
         "Controller": "0x9372b87edb0FdcDcF26F802D390224553Abb1D1f",
         "Avatar": "0xe329da55F5B8A0A16BC6d799096fc90b45c1a2BC",
         "DAOToken": "0xD695FfAf899D1dc5601d2b34E182a016a6D87e25",
@@ -2806,7 +2884,7 @@
         }
       },
       "0.0.1-rc.45": {
-        "name": "Nefarious Model",
+        "name": "Sagacious Teacher",
         "Controller": "0xbb54Ea54fa31da95FA4371B3b73Db7A929435E72",
         "Avatar": "0xa55751cf32200602cf1D2c8766AE450A7A0e88d5",
         "DAOToken": "0x8EDc766D3CCc62c1992246D61C499282eD1A2BC2",
@@ -2824,7 +2902,7 @@
         }
       },
       "0.0.1-rc.46": {
-        "name": "Tenacious Leadman",
+        "name": "Wheedling Cupcake",
         "Controller": "0xC8827D5dF9D3c9C2AeA183B937B7B61428553374",
         "Avatar": "0x6Ba5729Fd0910CA75B7afB72a5678Db4FAD65Cb5",
         "DAOToken": "0xEC7bb39f0BD420dcD83394615671E5daD9A14367",
@@ -2842,7 +2920,7 @@
         }
       },
       "0.0.1-rc.47": {
-        "name": "Puckish Rainbows",
+        "name": "Amatory Animator",
         "Controller": "0xaa370faefee376E36cbA0d7ac7DfD99054717beE",
         "Avatar": "0x4F7b6FC0d15C0C276EA5BC482744132fe16fe8BE",
         "DAOToken": "0x5A44b0dE4BB02e5074B837EF8BB642934646309f",
@@ -2857,6 +2935,24 @@
           "DemoAvatar": "0x01F03EBb889E2bc13E455DA706afF26DcEA76D3F",
           "DemoDAOToken": "0x20E0e78E91D6b3a4F1dAC7AD9802C4e7466A5dB6",
           "DemoReputation": "0x46f5C82262Cfc092C33Ec91cb82EF8A0Dc8432a1"
+        }
+      },
+      "0.0.1-rc.48": {
+        "name": "Voracious Carousel",
+        "Controller": "0x9Ca8074C410C5bEDfDDf47C9bA64F1918Cd711da",
+        "Avatar": "0xfF869D94f3a8a98c600d700AaD30a64617fA1DC9",
+        "DAOToken": "0xE019Fe5BF30Be90e8901C43460120e3Fc4F3eC41",
+        "Reputation": "0x2de7d6B247c2003c98F47b71d8CAA58fc071f0f3",
+        "ActionMock": "0x34D0f3A1F661088E94ebf42cdb74EcB2099ad872",
+        "gsProposalId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "queuedProposalId": "0xa7b241430b7ee6e1ecc44d601f9c28d9bee77894562c738e7eec27d1ef6959c9",
+        "preBoostedProposalId": "0xf185bbd3824b0fbc71c626096c9e386b8786aa4676f1b7424f12ee9e6a87e606",
+        "boostedProposalId": "0x50756571543fddb7f7afd9a74d818ef1ff9bcf9707ff2ba0d760b65cd96df867",
+        "executedProposalId": "0xbca760e22f90836edc332c0cd59ccb53aabce0c7928b7af9b58583f783554e54",
+        "organs": {
+          "DemoAvatar": "0x2f4836eCb3EF9bdae20efCe92499084984be12aB",
+          "DemoDAOToken": "0x8a7DFF724DA8B33FC00e8ed6C1977790De7F757b",
+          "DemoReputation": "0x3CdfDBe708F5D8314611575747A3b1019BAfd349"
         }
       }
     }
@@ -3050,6 +3146,24 @@
         "Redeemer": "0xb28AaBFCc0Dff1e1780AD3651cA53cC9f9bf610a"
       },
       "0.0.1-rc.47": {
+        "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
+        "DAORegistry": "0xf7f490C714Cd5920eB5de0a060EE2D5962450401",
+        "DAOTracker": "0x9aE391cb415f2CEdBb5Ce98dA64d4824FE36c2d7",
+        "ControllerCreator": "0x62E4770005792FbE5B04380430BC6fDA830DD075",
+        "DaoCreator": "0xe9dc32e11cf9Dd2fe5F43dbE01D7E5dc5999dFe0",
+        "GenesisProtocol": "0x953FBF5Fc33D2cC8eb3752976F0F8e92f1dB5F67",
+        "SchemeRegistrar": "0xf49a981f09709F6a379edc584D4Bc5b7709Ef5D3",
+        "UpgradeScheme": "0xff557C1DAC4E20B32524796e6875Eca4Cd7Bb1d6",
+        "GlobalConstraintRegistrar": "0xA3386dE0ac95d66417f920235dbE50e8a8F9bE1c",
+        "ContributionReward": "0x39e61528Fba9D7E396E411580BcE6A2605111446",
+        "AbsoluteVote": "0x7a8C5737Ad729ddf4306de00AEF12abBef901c3A",
+        "QuorumVote": "0xFddE6F2Fe9D8EB2E9d07370f0157D734A67D5664",
+        "TokenCapGC": "0x59Db3D0883c6b3aDcA2672323762F396BF711F46",
+        "VoteInOrganizationScheme": "0x0b93d3fee524103Ec4a9f52283C3619b8850A4dC",
+        "OrganizationRegister": "0x6225488a34773A4D94A45bEE76b2ed41B5DAa360",
+        "Redeemer": "0xb28AaBFCc0Dff1e1780AD3651cA53cC9f9bf610a"
+      },
+      "0.0.1-rc.48": {
         "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
         "DAORegistry": "0xf7f490C714Cd5920eB5de0a060EE2D5962450401",
         "DAOTracker": "0x9aE391cb415f2CEdBb5Ce98dA64d4824FE36c2d7",
@@ -3758,6 +3872,24 @@
         "VoteInOrganizationScheme": "0x0Dbd944CBF33470147CD4824800103eE92F53D47",
         "OrganizationRegister": "0x60241685A94D6D3AFe30d6BF7C27842Bf3B70056",
         "Redeemer": "0x4Ae35b2ACb4b85Cfc7936e13497E8b3862e050E9"
+      },
+      "0.0.1-rc.48": {
+        "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
+        "DAORegistry": "0xE9f949fee2ae09a408C9b902031bC2A1BFF3AEe2",
+        "DAOTracker": "0xdB11c65265b8baDC1f9f9Dc5eDb61b625547059C",
+        "ControllerCreator": "0x5d7C21e25e47F0aEE00cF05d3b6fA1d0365e7aF7",
+        "DaoCreator": "0xBc628F820c255b892d119B4ECEcF34cb5cc29C5e",
+        "GenesisProtocol": "0xF4D96486b20CF4D27e5f95a4dB6CDc274Dc1404E",
+        "SchemeRegistrar": "0x2548A6d43fD5b9604D7A883BD567D6961fB5Ef6F",
+        "UpgradeScheme": "0x801C2F37F6Ccba422FE0121621F64a4EE8f16D63",
+        "GlobalConstraintRegistrar": "0xA7D292895b9A066A340f32627D7de6b64593fc40",
+        "ContributionReward": "0xc5cC78E279aC61694a03617818316Ca2e32c353F",
+        "AbsoluteVote": "0xA606DD759e33A67490c1fee2D0176478f75858Fc",
+        "QuorumVote": "0x09A1feE7c98684f93212805bb84A2C5f531bfB75",
+        "TokenCapGC": "0xD3E7226CA84dA5Fe128379e8402Cb406333E1e27",
+        "VoteInOrganizationScheme": "0x0Dbd944CBF33470147CD4824800103eE92F53D47",
+        "OrganizationRegister": "0x60241685A94D6D3AFe30d6BF7C27842Bf3B70056",
+        "Redeemer": "0x4Ae35b2ACb4b85Cfc7936e13497E8b3862e050E9"
       }
     },
     "dao": {
@@ -4441,6 +4573,24 @@
         "VoteInOrganizationScheme": "0x0Cb30BBaD937211583847d2F840254158590C7FD",
         "OrganizationRegister": "0x3E6622C763860F728CCAD49ce9678eAadB736F47",
         "Redeemer": "0x406bfD9cDb247432fEEA52edD218F2a4Bd238C9b"
+      },
+      "0.0.1-rc.48": {
+        "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
+        "DAORegistry": "0x41C24232452057b9c812A94f84b8643Ee0253C44",
+        "DAOTracker": "0xBD4E6034e3a6736cD4bFe1e60365c2cB198F1EB8",
+        "ControllerCreator": "0x90d5099ac8b0bcd39091345f5e3da3c22e296c31",
+        "DaoCreator": "0xCA192Bec3f2fC3a45A729317ace552FcfE9A7706",
+        "GenesisProtocol": "0x336EEC25264e209fC0CFAe5abCB3e5A86b4c3049",
+        "SchemeRegistrar": "0x0d8C9617B01bABE8ED65b968342f1bae6793B30e",
+        "UpgradeScheme": "0xDfd0D543e96DB4b267D1b11349cef7506c38aa77",
+        "GlobalConstraintRegistrar": "0xd75B99ef999f3Cc66CF196B7B5264b8bBa6d4871",
+        "ContributionReward": "0xc775aC32E7F3fEE16F268EB013F462491c3D9a1C",
+        "AbsoluteVote": "0xE8007d90572549114c5B598dd8064e33f2adb74d",
+        "QuorumVote": "0xE6a2443b5433550E885a0c475f4Fb454Fbd456f0",
+        "TokenCapGC": "0x4bd43b06A1B56372c742222471fFb1AB5225F490",
+        "VoteInOrganizationScheme": "0x0Cb30BBaD937211583847d2F840254158590C7FD",
+        "OrganizationRegister": "0x3E6622C763860F728CCAD49ce9678eAadB736F47",
+        "Redeemer": "0x406bfD9cDb247432fEEA52edD218F2a4Bd238C9b"
       }
     },
     "dao": {
@@ -4608,6 +4758,24 @@
         "Redeemer": "0xD2Cc17817c0d4CFC6819510B2E5288512122D71C"
       },
       "0.0.1-rc.47": {
+        "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
+        "DAORegistry": "0x870CcB43aB901979A82D1281F9bE1F1825ad3D21",
+        "DAOTracker": "0x9A78a27785a916a95fdAa3267aA6249cB0219379",
+        "ControllerCreator": "0x50d895Df2ea26b4C3aBbFa22906197458F56bAe9",
+        "DaoCreator": "0x63F411E7cA67CB296FE2c7B875E072E82A609436",
+        "GenesisProtocol": "0xDA309aDF1c84242Bb446F7CDBa96B570E901D4CF",
+        "SchemeRegistrar": "0x22Ac81BE75cF76281D88A0F3A8Ae59b9abbE9da1",
+        "UpgradeScheme": "0xA1593E80093146833275ec36B5FCDa5FB1CbA931",
+        "GlobalConstraintRegistrar": "0x012F72e891c2DD475761767E248Dc43D30FccFcB",
+        "ContributionReward": "0x016Bf002D361bf5563c76230D19B4DaB4d66Bda4",
+        "AbsoluteVote": "0xe426B591B8f072B1Ca140C01729Cd0761D60b111",
+        "QuorumVote": "0xF07A8B67094d1f19be1c417380B8F22381b169C2",
+        "TokenCapGC": "0x67E05D52FB3a7002930DA01D280B483664ACE666",
+        "VoteInOrganizationScheme": "0x9cA99a550047B0aE25980dEBE091f19bA8c2F4c7",
+        "OrganizationRegister": "0x073Ed364f9b83Df11d77b2B08cae5B956dc1D69a",
+        "Redeemer": "0xD2Cc17817c0d4CFC6819510B2E5288512122D71C"
+      },
+      "0.0.1-rc.48": {
         "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
         "DAORegistry": "0x870CcB43aB901979A82D1281F9bE1F1825ad3D21",
         "DAOTracker": "0x9A78a27785a916a95fdAa3267aA6249cB0219379",

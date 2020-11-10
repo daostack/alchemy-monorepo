@@ -32,7 +32,7 @@
     {
       "name": "GenericSchemeMultiCall",
       "fromArc": true,
-      "arcVersion": "0.0.1-rc.47"
+      "arcVersion": "0.0.1-rc.48"
     },
     {
       "name": "ActionMock",
@@ -50,7 +50,7 @@
         ["0x0000000000000000000000000000000000000000"],
         { "StandAloneContract": 3 }
       ],
-      "arcVersion": "0.0.1-rc.47"
+      "arcVersion": "0.0.1-rc.48"
     }
   ],
   "VotingMachinesParams": [
@@ -117,7 +117,7 @@
       "permissions": "0x00000010",
       "alias": "GenericSchemeMultiCall",
       "fromArc": true,
-      "arcVersion": "0.0.1-rc.47"
+      "arcVersion": "0.0.1-rc.48"
   }
   ],
   "unregisterOwner": true,
