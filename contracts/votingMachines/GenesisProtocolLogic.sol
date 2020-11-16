@@ -264,6 +264,12 @@ contract GenesisProtocolLogic is IntVoteInterface {
         require(_params[9] > 0, "daoBountyConst should be > 0");
 
         bytes32 paramsHash = getParametersHash(_params, _voteOnBehalf);
+
+        if (parameters[paramsHash].queuedVoteRequiredPercentage > 0) {
+            //parameters already been set
+            return paramsHash;
+        }
+
         //set a limit for power for a given alpha to prevent overflow
         uint256 limitExponent = 172;//for alpha less or equal 2
         uint256 j = 2;
