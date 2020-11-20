@@ -122,14 +122,6 @@ contract('QuorumVote', accounts => {
 
   it("Invalid inputs shouldn't work (precReq, vote)", async function () {
 
-    // Lets try to create a proposal with precReq=-1
-    try {
-      quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, -1);
-      throw 'an error'; // make sure that an error is thrown
-    } catch (error) {
-      helpers.assertVMException(error);
-    }
-
     // Lets try to create a proposal with precReq=200
     try {
       quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 200);
@@ -143,16 +135,6 @@ contract('QuorumVote', accounts => {
       let quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 22);
       const paramsHash = await quorumVote.getParametersHash( 22, helpers.NULL_ADDRESS);
       await absoluteVoteExecuteMock.propose(99, paramsHash, accounts[1],accounts[0],helpers.NULL_ADDRESS);
-      throw 'an error'; // make sure that an error is thrown
-    } catch (error) {
-      helpers.assertVMException(error);
-    }
-
-    // Lets try to create a proposal with numOfChoices=-1
-    try {
-      let quorumVote = await setupQuorumVote(accounts,helpers.NULL_ADDRESS, 22);
-      const paramsHash = await quorumVote.getParametersHash( 22, helpers.NULL_ADDRESS);
-      await absoluteVoteExecuteMock.propose(-1, paramsHash, accounts[1],accounts[0],helpers.NULL_ADDRESS);
       throw 'an error'; // make sure that an error is thrown
     } catch (error) {
       helpers.assertVMException(error);
@@ -173,13 +155,6 @@ contract('QuorumVote', accounts => {
       helpers.assertVMException(error);
     }
 
-    // Lets try to vote with the -1 (invalid vote)
-    try {
-      await quorumVote.vote(proposalId, -1,0,helpers.NULL_ADDRESS);
-      throw 'an error'; // make sure that an error is thrown
-    } catch (error) {
-      helpers.assertVMException(error);
-    }
   });
 
   it("All options can be voted (0-9)", async function() {
@@ -476,14 +451,6 @@ contract('QuorumVote', accounts => {
     var repVoted = await helpers.getValueFromLogs(tx, "_reputation");
 
     assert.equal(repVoted, reputationArray[0] / 10, 'Should vote with specified amount');
-
-    // Vote with negative reputation - exception should be raised
-    try {
-      await quorumVote.vote(proposalId, 1, -100,helpers.NULL_ADDRESS);
-      assert(false, 'Vote with -100 reputation voting shouldn\'t work');
-    } catch (ex) {
-      helpers.assertVMException(ex);
-    }
 
     // Vote with more reputation that i own - exception should be raised
     try {

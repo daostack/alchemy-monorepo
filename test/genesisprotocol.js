@@ -1,6 +1,5 @@
 const helpers = require('./helpers');
 const constants = require('./constants');
-import { getValueFromLogs } from './helpers';
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 const ERC827TokenMock = artifacts.require('./test/ERC827TokenMock.sol');
 const GenesisProtocolCallbacks = artifacts.require("./GenesisProtocolCallbacksMock.sol");
@@ -8,7 +7,7 @@ var ethereumjs = require('ethereumjs-abi');
 const Reputation = artifacts.require("./Reputation.sol");
 const BigNumber = require('bignumber.js');
 
-export class GenesisProtocolParams {
+class GenesisProtocolParams {
   constructor() {
   }
 }
@@ -70,7 +69,8 @@ const setup = async function (accounts,
                               _daoBountyConst=1000,
                               _activationTime=0) {
    var testSetup = new helpers.TestSetup();
-   testSetup.stakingToken = await ERC827TokenMock.new(accounts[0],web3.utils.toWei(((new BigNumber(2)).pow(200)).toString(10)));
+   let initBalance = ((new BigNumber(2)).toPower(200)).toString(10);
+   testSetup.stakingToken = await ERC827TokenMock.new(accounts[0], initBalance);
    testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.stakingToken.address,{gas:constants.GAS_LIMIT});
    testSetup.reputationArray = [200, 100, 700 ];
    testSetup.org = {};
@@ -187,7 +187,7 @@ const propose = async function(_testSetup,_proposer = 0) {
                                                                 _testSetup.genesisProtocolCallbacks.address,
                                                                 _proposer,
                                                                  helpers.NULL_ADDRESS);
-      const proposalId = await getValueFromLogs(tx, '_proposalId');
+      const proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
       assert.equal(tx.logs.length, 2);
       assert.equal(tx.logs[0].event, "NewProposal");
       assert.equal(tx.logs[0].args._proposalId, proposalId);
@@ -210,6 +210,23 @@ const score = async function(_testSetup,proposalId) {
 };
 
 const signatureType = 1;
+function fixSignature (signature) {
+  // in geth its always 27/28, in ganache its 0/1. Change to 27/28 to prevent
+  // signature malleability if version is 0/1
+  // see https://github.com/ethereum/go-ethereum/blob/v1.8.23/internal/ethapi/api.go#L465
+  let v = parseInt(signature.slice(130, 132), 16);
+  if (v < 27) {
+    v += 27;
+  }
+  const vHex = v.toString(16);
+  return signature.slice(0, 130) + vHex;
+}
+
+// signs message in node (ganache auto-applies "Ethereum Signed Message" prefix)
+async function signMessage (signer, messageHex = '0x') {
+  return fixSignature(await web3.eth.sign(messageHex, signer));
+}
+
 const stake = async function(_testSetup,_proposalId,_vote,_amount,_staker,eventName = 'Stake') {
   var nonce =  (await _testSetup.genesisProtocol.stakesNonce(_staker)).toString();
   var textMsg = "0x"+ethereumjs.soliditySHA3(
@@ -217,20 +234,17 @@ const stake = async function(_testSetup,_proposalId,_vote,_amount,_staker,eventN
     [_testSetup.genesisProtocol.address, _proposalId,_vote,_amount, nonce]
   ).toString("hex");
   //https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethsign
-  let signature = await web3.eth.sign(textMsg, _staker);
-  const subSignature =  signature.substring(0, signature.length-2);
-  var v = signature.substring(signature.length-2, signature.length);
-
-  if (v === '00') {
-   signature = subSignature+'1b';
- } else {
-   signature = subSignature+'1c';
- }
+  let signature = await signMessage(_staker,textMsg);
   const encodeABI = await new web3.eth.Contract(_testSetup.genesisProtocol.abi).methods.stakeWithSignature(_proposalId,_vote,_amount,nonce,signatureType,signature).encodeABI();
+  var transaction;
+  try {
+    transaction = await _testSetup.stakingToken.approveAndCall(
+      _testSetup.genesisProtocol.address, _amount, encodeABI ,{from : _staker}
+    );
+    } catch (ex) {
+      return "revert";
+    }
 
-  const transaction = await _testSetup.stakingToken.approveAndCall(
-    _testSetup.genesisProtocol.address, _amount, encodeABI ,{from : _staker}
-  );
   var stakeLog;
   await _testSetup.genesisProtocol.getPastEvents(eventName,
           {_proposalId: _proposalId},
@@ -242,7 +256,6 @@ const stake = async function(_testSetup,_proposalId,_vote,_amount,_staker,eventN
 
   return stakeLog;
 };
-
 
 
 //use this method to approve and call stake with GEN token
@@ -589,7 +602,7 @@ contract('GenesisProtocol', accounts => {
 
     testSetup = await setup(accounts);
     var tx = await testSetup.genesisProtocolCallbacks.propose(2, testSetup.genesisProtocolParams.paramsHash,helpers.NULL_ADDRESS,accounts[0],helpers.NULL_ADDRESS);
-    proposalId = await getValueFromLogs(tx, '_proposalId');
+    proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
 
     // Option 2
     await testSetup.genesisProtocol.vote(proposalId, 2,0,helpers.NULL_ADDRESS);
@@ -654,7 +667,7 @@ contract('GenesisProtocol', accounts => {
     }
 
     try {
-      await setup(accounts,helpers.NULL_ADDRESS,-50);
+      await setup(accounts,helpers.NULL_ADDRESS,0);
       assert(false, "setParameters was supposed to throw but didn't.");
     } catch(error) {
       helpers.assertVMException(error);
@@ -727,14 +740,6 @@ contract('GenesisProtocol', accounts => {
     try {
       await testSetup.genesisProtocolCallbacks.propose(3, helpers.NULL_HASH, testSetup.genesisProtocolCallbacks.address,accounts[0],helpers.NULL_ADDRESS);
       assert(false, 'Tried to create a proposal with 3 options - max is 2');
-    } catch (ex) {
-      helpers.assertVMException(ex);
-    }
-
-    // -5 options - exception should be raised
-    try {
-      await testSetup.genesisProtocolCallbacks.propose(-5, helpers.NULL_HASH, testSetup.genesisProtocolCallbacks.address,accounts[0],helpers.NULL_ADDRESS);
-      assert(false, 'Tried to create an absolute vote with negative number of options');
     } catch (ex) {
       helpers.assertVMException(ex);
     }
@@ -850,14 +855,7 @@ contract('GenesisProtocol', accounts => {
     var proposalId = await propose(testSetup);
 
     let maxTotalStakeAllowed = ((new BigNumber(2)).toPower(128)).sub(15);
-
-    try {
-        await stake(testSetup,proposalId,1,maxTotalStakeAllowed.add(1).toString(10),accounts[0]);
-        assert(false, 'stake more than allowed should revert');
-      } catch (ex) {
-        helpers.assertVMException(ex);
-      }
-
+    assert.equal(await stake(testSetup,proposalId,1,maxTotalStakeAllowed.add(1).toString(10),accounts[0]),"revert");
     var tx = await stake(testSetup,proposalId,1,maxTotalStakeAllowed.toString(10),accounts[0]);
     assert.equal(tx.length, 1);
     assert.equal(tx[0].event, "Stake");
@@ -1007,13 +1005,7 @@ contract('GenesisProtocol', accounts => {
 
     var proposalId = await propose(testSetup);
 
-
-    try {
-      await stake(testSetup,proposalId,1,0,accounts[0]);
-      assert(false, 'stake with zero amount should revert');
-    } catch (ex) {
-      helpers.assertVMException(ex);
-    }
+    assert.equal("revert",await stake(testSetup,proposalId,1,0,accounts[0]));
 
   });
 
@@ -1199,12 +1191,7 @@ contract('GenesisProtocol', accounts => {
     //vote with majority. state is executed
     await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS, { from: accounts[2] });
 
-    try {
-      await stake(testSetup,proposalId,1,0,accounts[0]);
-      assert(false, 'stake on executed phase should revert');
-    } catch (ex) {
-      helpers.assertVMException(ex);
-    }
+    assert.equal("revert",await stake(testSetup,proposalId,1,0,accounts[0]));
 
   });
 
@@ -1554,7 +1541,7 @@ contract('GenesisProtocol', accounts => {
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewProposal");
       assert.equal(tx.logs[0].args._organization,accounts[1]);
-      var proposalId = await getValueFromLogs(tx, '_proposalId');
+      var proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
       var proposal = await testSetup.genesisProtocol.proposals(proposalId);
       assert.equal(proposal[0],await web3.utils.soliditySha3(accounts[0],accounts[1]));
 
@@ -1563,7 +1550,7 @@ contract('GenesisProtocol', accounts => {
       assert.equal(tx.logs.length, 1);
       assert.equal(tx.logs[0].event, "NewProposal");
       assert.equal(tx.logs[0].args._organization,accounts[1]);
-      proposalId = await getValueFromLogs(tx, '_proposalId');
+      proposalId = await helpers.getValueFromLogs(tx, '_proposalId');
       proposal = await testSetup.genesisProtocol.proposals(proposalId);
       assert.equal(proposal[0],await web3.utils.soliditySha3(accounts[1],accounts[1]));
   });
@@ -1786,7 +1773,14 @@ contract('GenesisProtocol', accounts => {
     var addTime =15 ;
     await helpers.increaseTime(60+addTime);
     var tx = await testSetup.genesisProtocol.executeBoosted(proposalId);
-    var expectedBounty = (((addTime/15)/10)/100) * userStake;
+    var secondsFromTimeOutTillExecuteBoosted =
+(await testSetup.genesisProtocol.proposals(proposalId)).secondsFromTimeOutTillExecuteBoosted;
+// please note that due to the need of calling two separate ganache methods and rpc calls overhead
+// it's hard to increase time precisely to a target point
+assert.equal(((secondsFromTimeOutTillExecuteBoosted.toNumber() === addTime)||
+              (secondsFromTimeOutTillExecuteBoosted.toNumber() === (addTime+1)) ||
+              (secondsFromTimeOutTillExecuteBoosted.toNumber() === (addTime+2))),true);
+    var expectedBounty = Math.floor((((secondsFromTimeOutTillExecuteBoosted/15)/10)/100) * userStake);
     assert.equal(tx.logs[3].event, "ExpirationCallBounty");
     assert.equal(tx.logs[3].args._proposalId, proposalId);
     assert.equal(tx.logs[3].args._beneficiary, accounts[0]);
@@ -1794,17 +1788,19 @@ contract('GenesisProtocol', accounts => {
 
     var redeemRewards = await testSetup.genesisProtocol.redeem.call(proposalId,accounts[0]);
     var redeemToken = redeemRewards[0];
-
-    var proposalInfo =  await testSetup.genesisProtocol.proposals(proposalId);
-    var secondsFromTimeOutTillExecuteBoosted = proposalInfo[11];
-    assert.equal(secondsFromTimeOutTillExecuteBoosted,addTime);
     var daoBounty =  new web3.utils.BN(minimumDaoBounty);
     var totalStakes = (new web3.utils.BN(userStake)).add(daoBounty);
     var totalStakesLeftAfterCallBounty = totalStakes.sub(new web3.utils.BN(expectedBounty));
     var _totalStakes = totalStakesLeftAfterCallBounty - daoBounty;
-    assert.equal(redeemToken.toString(),_totalStakes.toString());
+    if (secondsFromTimeOutTillExecuteBoosted.toNumber() === addTime) {
+        //increase time accurate
+        assert.equal(redeemToken.toString(),_totalStakes.toString());
+    } else {
+        assert.equal(redeemToken.toString().substring(0, 15),_totalStakes.toString().substring(0, 15));
+    }
+
     await testSetup.genesisProtocol.redeem(proposalId,accounts[0]);
-    proposalInfo =  await testSetup.genesisProtocol.proposals(proposalId);
+    var proposalInfo =  await testSetup.genesisProtocol.proposals(proposalId);
     assert.equal(proposalInfo.totalStakes,0);
     assert.equal(await testSetup.stakingToken.balanceOf(testSetup.genesisProtocol.address),0);
   });
@@ -1847,11 +1843,11 @@ contract('GenesisProtocol', accounts => {
     addTime = (await testSetup.genesisProtocol.proposals(proposalId)).secondsFromTimeOutTillExecuteBoosted.toNumber();
     //check the time is in a resonable range
     assert.equal(((addTime <= 18) && (addTime >=15)),true);
-    var expectedBounty = new web3.utils.BN((addTime*user2Stake/15000).toString());
+    var expectedBounty = new web3.utils.BN(Math.floor(addTime*user2Stake/15000).toString());
     assert.equal(tx.logs[3].event, "ExpirationCallBounty");
     assert.equal(tx.logs[3].args._proposalId, proposalId);
     assert.equal(tx.logs[3].args._beneficiary, accounts[0]);
-    assert.equal(tx.logs[3].args._amount.toString(), expectedBounty.toString());
+    assert.equal(tx.logs[3].args._amount.toString().substring(0,15), expectedBounty.toString().substring(0,15));
     assert.equal((await testSetup.genesisProtocol.proposals(proposalId)).secondsFromTimeOutTillExecuteBoosted.toNumber(),addTime);
     var totalStakesLeftAfterCallBounty = (new web3.utils.BN(totalStakes)).sub(expectedBounty);
     assert.equal((await testSetup.stakingToken.balanceOf(testSetup.genesisProtocol.address)).eq(totalStakesLeftAfterCallBounty),true);

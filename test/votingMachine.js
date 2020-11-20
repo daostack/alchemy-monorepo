@@ -58,7 +58,7 @@ const setupGenesisProtocol = async function (accounts,_voteOnBehalf = helpers.NU
 };
 
 
-export class GenesisProtocolParams {
+class GenesisProtocolParams {
   constructor() {
   }
 }

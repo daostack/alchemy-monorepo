@@ -45,9 +45,9 @@ contract Reputation is Ownable {
       /// @return True if the reputation are generated correctly
     function mint(address _user, uint256 _amount) public onlyOwner returns (bool) {
         uint256 curTotalSupply = totalSupply();
-        require(curTotalSupply + _amount >= curTotalSupply); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply, "total supply overflow"); // Check for overflow
         uint256 previousBalanceTo = balanceOf(_user);
-        require(previousBalanceTo + _amount >= previousBalanceTo); // Check for overflow
+        require(previousBalanceTo + _amount >= previousBalanceTo, "balace overflow"); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
         updateValueAtNow(balances[_user], previousBalanceTo + _amount);
         emit Mint(_user, _amount);
@@ -154,7 +154,7 @@ contract Reputation is Ownable {
       /// @param checkpoints The history of data being updated
       /// @param _value The new number of reputation
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint256 _value) internal {
-        require(uint128(_value) == _value); //check value is in the 128 bits bounderies
+        require(uint128(_value) == _value, "reputation overflow"); //check value is in the 128 bits bounderies
         if ((checkpoints.length == 0) || (checkpoints[checkpoints.length - 1].fromBlock < block.number)) {
             Checkpoint storage newCheckPoint = checkpoints[checkpoints.length++];
             newCheckPoint.fromBlock = uint128(block.number);

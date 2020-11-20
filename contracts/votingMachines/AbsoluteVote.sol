@@ -45,7 +45,7 @@ contract AbsoluteVote is IntVoteInterface {
    * @dev Check that the proposal is votable (open and not executed yet)
    */
     modifier votable(bytes32 _proposalId) {
-        require(proposals[_proposalId].open);
+        require(proposals[_proposalId].open, "proposal is not votable");
         _;
     }
 
@@ -62,8 +62,8 @@ contract AbsoluteVote is IntVoteInterface {
         returns(bytes32)
     {
         // Check valid params and number of choices:
-        require(parameters[_paramsHash].precReq > 0);
-        require(_numOfChoices > 0 && _numOfChoices <= MAX_NUM_OF_CHOICES);
+        require(parameters[_paramsHash].precReq > 0, "no setParameters been called");
+        require(_numOfChoices > 0 && _numOfChoices <= MAX_NUM_OF_CHOICES, "numOfChoices out of range");
         // Generate a unique ID:
         bytes32 proposalId = keccak256(abi.encodePacked(this, proposalsCnt));
         proposalsCnt = proposalsCnt.add(1);
@@ -109,7 +109,7 @@ contract AbsoluteVote is IntVoteInterface {
         Parameters memory params = parameters[proposal.paramsHash];
         address voter;
         if (params.voteOnBehalf != address(0)) {
-            require(msg.sender == params.voteOnBehalf);
+            require(msg.sender == params.voteOnBehalf, "msg.sender is not authorized to vote");
             voter = _voter;
         } else {
             voter = msg.sender;
@@ -198,7 +198,7 @@ contract AbsoluteVote is IntVoteInterface {
      * @dev hash the parameters, save them if necessary, and return the hash value
     */
     function setParameters(uint256 _precReq, address _voteOnBehalf) public returns(bytes32) {
-        require(_precReq <= 100 && _precReq > 0);
+        require(_precReq <= 100 && _precReq > 0, "wrong precReq");
         bytes32 hashedParameters = getParametersHash(_precReq, _voteOnBehalf);
         parameters[hashedParameters] = Parameters({
             precReq: _precReq,
@@ -266,11 +266,11 @@ contract AbsoluteVote is IntVoteInterface {
     function internalVote(bytes32 _proposalId, address _voter, uint256 _vote, uint256 _rep) internal returns(bool) {
         Proposal storage proposal = proposals[_proposalId];
         // Check valid vote:
-        require(_vote <= proposal.numOfChoices);
+        require(_vote <= proposal.numOfChoices, "vote is out of range");
         // Check voter has enough reputation:
         uint256 reputation = VotingMachineCallbacksInterface(proposal.callbacks).reputationOf(_voter, _proposalId);
         require(reputation > 0, "_voter must have reputation");
-        require(reputation >= _rep);
+        require(reputation >= _rep, "cannot vote with more reputation voter has");
         uint256 rep = _rep;
         if (rep == 0) {
             rep = reputation;

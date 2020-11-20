@@ -415,12 +415,6 @@ contract('AbsoluteVote', accounts => {
       helpers.assertVMException(error);
     }
 
-    try {
-      absoluteVote = await setupAbsoluteVote(accounts,helpers.NULL_ADDRESS, -50);
-      assert(false, "setParameters(we call it here: test/absolutevote.js:setupAbsoluteVote()) was supposed to throw but didn't.");
-    } catch(error) {
-      helpers.assertVMException(error);
-    }
   });
 
   it("Proposal voting or cancelling shouldn't be able after proposal has been executed", async function () {
@@ -585,14 +579,6 @@ contract('AbsoluteVote', accounts => {
       helpers.assertVMException(ex);
     }
 
-    // -5 options - exception should be raised
-    try {
-      await absoluteVoteExecuteMock.propose(-5, paramsHash, absoluteVoteExecuteMock.address, helpers.NULL_ADDRESS,helpers.NULL_ADDRESS);
-      assert(false, 'Tried to create an absolute vote with negative number of options');
-    } catch (ex) {
-      helpers.assertVMException(ex);
-    }
-
     // 0 options - exception should be raised
     try {
       await absoluteVoteExecuteMock.propose(0, paramsHash, absoluteVoteExecuteMock.address, helpers.NULL_ADDRESS,helpers.NULL_ADDRESS);
@@ -618,13 +604,6 @@ contract('AbsoluteVote', accounts => {
     var repVoted = await helpers.getValueFromLogs(tx, "_reputation");
 
     assert.equal(repVoted, reputationArray[0] / 10, 'Should vote with specified amount');
-    // Vote with negative reputation - exception should be raised
-    try {
-      await absoluteVote.vote(proposalId, 1, -100,helpers.NULL_ADDRESS);
-      assert(false, 'Vote with -100 reputation voting shouldn\'t work');
-    } catch (ex) {
-      helpers.assertVMException(ex);
-    }
 
     // Vote with more reputation that i own - exception should be raised
     try {

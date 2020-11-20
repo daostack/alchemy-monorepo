@@ -97,7 +97,7 @@ contract GenesisProtocol is IntVoteInterface, GenesisProtocolLogic {
         address staker = delegationDigest.recover(_signature);
         //a garbage staker address due to wrong signature will revert due to lack of approval and funds.
         require(staker != address(0), "staker address cannot be 0");
-        require(stakesNonce[staker] == _nonce);
+        require(stakesNonce[staker] == _nonce, "wrong nonce");
         stakesNonce[staker] = stakesNonce[staker].add(1);
         return _stake(_proposalId, _vote, _amount, staker);
     }
@@ -119,7 +119,7 @@ contract GenesisProtocol is IntVoteInterface, GenesisProtocolLogic {
         Parameters memory params = parameters[proposal.paramsHash];
         address voter;
         if (params.voteOnBehalf != address(0)) {
-            require(msg.sender == params.voteOnBehalf);
+            require(msg.sender == params.voteOnBehalf, "msg.sender is not authorized to vote");
             voter = _voter;
         } else {
             voter = msg.sender;

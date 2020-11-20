@@ -8,3 +8,10 @@ node_modules/
 .vscode/
 site/
 yarn*
+cache/
+artifacts/
+.DS_Store
+report*
+coverage/
+coverage.json
+.covera*

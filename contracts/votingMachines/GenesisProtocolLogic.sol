@@ -156,7 +156,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
    *  PreBoosted,Boosted,QuietEndingPeriod or Queued
    */
     modifier votable(bytes32 _proposalId) {
-        require(_isVotable(_proposalId));
+        require(_isVotable(_proposalId), "proposal is not votable");
         _;
     }
 
@@ -174,7 +174,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
       // solhint-disable-next-line not-rely-on-time
         require(now > parameters[_paramsHash].activationTime, "not active yet");
         //Check parameters existence.
-        require(parameters[_paramsHash].queuedVoteRequiredPercentage >= 50);
+        require(parameters[_paramsHash].queuedVoteRequiredPercentage >= 50, "no parameters exist");
         // Generate a unique ID:
         bytes32 proposalId = keccak256(abi.encodePacked(this, proposalsCnt));
         proposalsCnt = proposalsCnt.add(1);
@@ -404,7 +404,7 @@ contract GenesisProtocolLogic is IntVoteInterface {
     public
     returns(uint256 redeemedAmount, uint256 potentialAmount) {
         Proposal storage proposal = proposals[_proposalId];
-        require(proposal.state == ProposalState.Executed);
+        require(proposal.state == ProposalState.Executed, "proposal state must be executed");
         uint256 totalWinningStakes = proposal.stakes[proposal.winningVote];
         Staker storage staker = proposal.stakers[_beneficiary];
         if (
@@ -422,7 +422,8 @@ contract GenesisProtocolLogic is IntVoteInterface {
             proposal.daoBountyRemain = proposal.daoBountyRemain.sub(potentialAmount);
             require(
             VotingMachineCallbacksInterface(proposal.callbacks)
-            .stakingTokenTransfer(stakingToken, _beneficiary, potentialAmount, _proposalId));
+            .stakingTokenTransfer(stakingToken, _beneficiary, potentialAmount, _proposalId),
+            "failed at stakingTokenTransfer");
             redeemedAmount = potentialAmount;
             emit RedeemDaoBounty(_proposalId, organizations[proposal.organizationId], _beneficiary, redeemedAmount);
         }

@@ -1,37 +1,20 @@
 /**
     helpers for tests
 */
+const { promisify } = require('util');
+const BN = web3.utils.BN;
+const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
+const SOME_HASH = '0x1000000000000000000000000000000000000000000000000000000000000000';
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
 
-export const NULL_HASH = '0x0000000000000000000000000000000000000000000000000000000000000000';
-export const SOME_HASH = '0x1000000000000000000000000000000000000000000000000000000000000000';
-export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
-export const SOME_ADDRESS = '0x1000000000000000000000000000000000000000';
 
-
-export class TestSetup {
+class TestSetup {
   constructor() {
   }
 }
 
-export class VotingMachine {
-  constructor() {
-  }
-}
-
-export class Organization {
-  constructor() {
-  }
-}
-
-export function getProposalAddress(tx) {
-    // helper function that returns a proposal object from the ProposalCreated event
-    // in the logs of tx
-    assert.equal(tx.logs[0].event, 'ProposalCreated');
-    const proposalAddress = tx.logs[0].args.proposaladdress;
-    return proposalAddress;
-}
-
-export function getValueFromLogs(tx, arg, eventName, index=0) {
+function getValueFromLogs(tx, arg, eventName, index=0) {
   /**
    *
    * tx.logs look like this:
@@ -74,7 +57,7 @@ export function getValueFromLogs(tx, arg, eventName, index=0) {
   return result;
 }
 
-export async function getProposalId(tx,contract,eventName) {
+async function getProposalId(tx,contract,eventName) {
   var proposalId;
   await contract.getPastEvents(eventName, {
             fromBlock: tx.blockNumber,
@@ -86,7 +69,7 @@ export async function getProposalId(tx,contract,eventName) {
   return proposalId;
 }
 
-export async function getOrganization(tx,contract,eventName) {
+async function getOrganization(tx,contract,eventName) {
   var organization;
   await contract.getPastEvents(eventName, {
             fromBlock: tx.blockNumber,
@@ -98,11 +81,7 @@ export async function getOrganization(tx,contract,eventName) {
   return organization;
 }
 
-export async function getProposal(tx) {
-    return await Proposal.at(getProposalAddress(tx));
-}
-
-export async function etherForEveryone() {
+async function etherForEveryone() {
     // give all web3.eth.accounts some ether
     let accounts = web3.eth.accounts;
     for (let i=0; i < 10; i++) {
@@ -110,35 +89,21 @@ export async function etherForEveryone() {
     }
 }
 
-export const outOfGasMessage = 'VM Exception while processing transaction: out of gas';
-
-export function assertJumpOrOutOfGas(error) {
+function assertVMException(error) {
     let condition = (
-        error.message === outOfGasMessage ||
-        error.message.search('invalid JUMP') > -1
-    );
-    assert.isTrue(condition, 'Expected an out-of-gas error or an invalid JUMP error, got this instead: ' + error.message);
-}
-
-export function assertVMException(error) {
-    let condition = (
-        error.message.search('VM Exception') > -1
+        error.message.search('VM Exception') > -1 || error.message.search('Transaction reverted') > -1
     );
     assert.isTrue(condition, 'Expected a VM Exception, got this instead:' + error.message);
 }
 
-export function assertInternalFunctionException(error) {
+function assertInternalFunctionException(error) {
     let condition = (
         error.message.search('is not a function') > -1
     );
     assert.isTrue(condition, 'Expected a function not found Exception, got this instead:' + error.message);
 }
 
-export function assertJump(error) {
-  assert.isAbove(error.message.search('invalid JUMP'), -1, 'Invalid JUMP error must be returned' + error.message);
-}
-
-export const checkVoteInfo = async function(absoluteVote,proposalId, voterAddress, _voteInfo) {
+const checkVoteInfo = async function(absoluteVote,proposalId, voterAddress, _voteInfo) {
   let voteInfo;
   voteInfo = await absoluteVote.voteInfo(proposalId, voterAddress);
   // voteInfo has the following structure
@@ -149,7 +114,7 @@ export const checkVoteInfo = async function(absoluteVote,proposalId, voterAddres
 };
 
 
-export const checkVotesStatus = async function(proposalId, _votesStatus,votingMachine){
+const checkVotesStatus = async function(proposalId, _votesStatus,votingMachine){
 
   let voteStatus;
   for (var i = 0; i < _votesStatus.length; i++) {
@@ -158,27 +123,44 @@ export const checkVotesStatus = async function(proposalId, _votesStatus,votingMa
   }
 };
 
-
-// Increases testrpc time by the passed duration in seconds
-export const increaseTime = async function(duration) {
-  const id = Date.now();
-  web3.providers.HttpProvider.prototype.sendAsync = web3.providers.HttpProvider.prototype.send;
-  return new Promise((resolve, reject) => {
-    web3.currentProvider.sendAsync({
-      jsonrpc: '2.0',
-      method: 'evm_increaseTime',
-      params: [duration],
-      id: id,
-    }, err1 => {
-      if (err1) return reject(err1);
-
-      web3.currentProvider.sendAsync({
-        jsonrpc: '2.0',
-        method: 'evm_mine',
-        id: id + 1,
-      }, (err2, res) => {
-        return err2 ? reject(err2) : resolve(res);
-      });
-    });
+function advanceBlock () {
+  return promisify(web3.currentProvider.send.bind(web3.currentProvider))({
+    jsonrpc: '2.0',
+    method: 'evm_mine',
+    id: new Date().getTime(),
   });
+}
+
+// Increases ganache time by the passed duration in seconds
+const increaseTime = async function(duration) {
+  if (!BN.isBN(duration)) {
+    duration = new BN(duration);
+  }
+
+  if (duration.isNeg()) throw Error(`Cannot increase time by a negative amount (${duration})`);
+
+  await promisify(web3.currentProvider.send.bind(web3.currentProvider))({
+    jsonrpc: '2.0',
+    method: 'evm_increaseTime',
+    params: [duration.toNumber()],
+    id: new Date().getTime(),
+  });
+
+  await advanceBlock();
 };
+
+module.exports = {
+  NULL_HASH,
+ SOME_HASH,
+ NULL_ADDRESS,
+ SOME_ADDRESS,
+ TestSetup,
+ assertVMException,
+ getValueFromLogs,
+ increaseTime,
+ etherForEveryone,
+ checkVoteInfo,
+ getProposalId,
+checkVotesStatus,
+assertInternalFunctionException,
+getOrganization};
