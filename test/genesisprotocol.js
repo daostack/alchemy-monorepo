@@ -1,5 +1,4 @@
 const helpers = require('./helpers');
-const constants = require('./constants');
 const GenesisProtocol = artifacts.require("./GenesisProtocol.sol");
 const ERC827TokenMock = artifacts.require('./test/ERC827TokenMock.sol');
 const GenesisProtocolCallbacks = artifacts.require("./GenesisProtocolCallbacksMock.sol");
@@ -71,7 +70,7 @@ const setup = async function (accounts,
    var testSetup = new helpers.TestSetup();
    let initBalance = ((new BigNumber(2)).toPower(200)).toString(10);
    testSetup.stakingToken = await ERC827TokenMock.new(accounts[0], initBalance);
-   testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.stakingToken.address,{gas:constants.GAS_LIMIT});
+   testSetup.genesisProtocol = await GenesisProtocol.new(testSetup.stakingToken.address);
    testSetup.reputationArray = [200, 100, 700 ];
    testSetup.org = {};
    //let reputationMinimeTokenFactory = await ReputationMinimeTokenFactory.new();
@@ -302,6 +301,8 @@ contract('GenesisProtocol', accounts => {
   it("staking token address", async() => {
     var testSetup = await setup(accounts);
     assert.equal(await testSetup.genesisProtocol.stakingToken(),testSetup.stakingToken.address);
+    assert.equal(await testSetup.genesisProtocol.getNumberOfChoices.call(helpers.NULL_HASH),2);
+    assert.equal(await testSetup.genesisProtocol.isAbstainAllow.call(),false);
   });
 
   it("Sanity checks", async function () {
@@ -566,10 +567,10 @@ contract('GenesisProtocol', accounts => {
     var testSetup = await setup(accounts,helpers.NULL_ADDRESS,50,2);
 
     const proposalId = await propose(testSetup);
-
-
     // now lets vote with a minority reputation
     await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS);
+    //do nothing
+    await testSetup.genesisProtocol.cancelVote(proposalId);
     await helpers.increaseTime(3);
     // the decisive vote is cast now and the proposal will be executed
     var tx = await testSetup.genesisProtocol.vote(proposalId, 1,0,helpers.NULL_ADDRESS, { from: accounts[2] });
@@ -1225,6 +1226,46 @@ contract('GenesisProtocol', accounts => {
     assert.equal(tx.logs[0].args._amount, redeemToken);
     assert.equal(accounts0Balance.eq(await testSetup.stakingToken.balanceOf(accounts[0])),true);
     assert.equal(await testSetup.stakingToken.balanceOf(testSetup.genesisProtocol.address),0);
+  });
+
+  it("redeem expieredInQue ", async () => {
+
+  var testSetup = await setup(accounts);
+  var proposalId = await propose(testSetup);
+  await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS);
+  assert.equal(await testSetup.genesisProtocol.shouldBoost(proposalId),false);
+  var accounts0Balance = await testSetup.stakingToken.balanceOf(accounts[0]);
+  await stake(testSetup,proposalId,YES,10,accounts[0]);
+  await helpers.increaseTime(61);
+  await testSetup.genesisProtocol.execute(proposalId);
+  var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
+  assert.equal(proposalInfo.state,1);//expieredInQue
+  var redeemRewards = await testSetup.genesisProtocol.redeem.call(proposalId,accounts[0]);
+  var redeemToken = redeemRewards[0].toNumber();
+  assert.equal(redeemToken,10);
+  await testSetup.genesisProtocol.redeem(proposalId,accounts[0]);
+  assert.equal((await testSetup.stakingToken.balanceOf(accounts[0])).toString(),accounts0Balance.toString());
+});
+
+it("preboost bar crossed  ", async () => {
+
+    var preBoostedVotePeriodLimit = 60;
+    var testSetup = await setup(accounts,helpers.NULL_ADDRESS,50,60,60,preBoostedVotePeriodLimit);
+    var proposalId = await propose(testSetup);
+
+    await stake(testSetup,proposalId,YES,100,accounts[0]);
+
+    var proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
+    assert.equal(proposalInfo[proposalTotalStakesIndex],100); //totalStakes
+
+    assert.equal(proposalInfo[proposalStateIndex],preBoostedState);   //state pre boosted
+
+    var tx = await testSetup.genesisProtocol.vote(proposalId,YES,0,helpers.NULL_ADDRESS,{from:accounts[2]});
+
+    proposalInfo = await testSetup.genesisProtocol.proposals(proposalId);
+    assert.equal(proposalInfo[proposalStateIndex],2);   //state boosted
+    assert.equal(tx.logs[2].event, "GPExecuteProposal");
+    assert.equal(tx.logs[2].args._executionState, 3);
   });
 
   it("redeem without execution should revert", async () => {
