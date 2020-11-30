@@ -57,6 +57,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     ContributionReward,
     UGenericScheme,
     GenericScheme,
+    GenericSchemeMultiCallFactory,
     GenesisProtocol,
     GlobalConstraintRegistrar,
     UpgradeScheme
@@ -109,6 +110,15 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     GenesisProtocol,
     opts
   )
+
+  let genericSchemeMultiCallFactory
+  if (getArcVersionNumber(arcVersion) >= 51) {
+    genericSchemeMultiCallFactory = new web3.eth.Contract(
+      utils.importAbi(`./${contractsDir}/${arcVersion}/GenericSchemeMultiCallFactory.json`).abi,
+      GenericSchemeMultiCallFactory,
+      opts
+    )
+  }
 
   let randomName = utils.generateRnadomName()
 
@@ -774,7 +784,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
       let abi = contractJson.abi
       let bytecode = contractJson.bytecode
       let schemeContract
-      if (customeScheme.address === undefined) {
+      if (customeScheme.address === undefined && customeScheme.fromFactory !== true) {
         const SchemeContract = new web3.eth.Contract(abi, undefined, opts)
         let { receipt, result } = await sendTx(SchemeContract.deploy({
           data: bytecode,
@@ -782,7 +792,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
         }), `Migrating ${customeScheme.name}...`)
         schemeContract = result
         await logTx(receipt, `${schemeContract.options.address} => ${customeScheme.name}`)
-      } else {
+      } else if (customeScheme.fromFactory !== true) {
         if (customeScheme.address.StandAloneContract !== undefined) {
           customeScheme.address = deploymentState.StandAloneContracts[customeScheme.address.StandAloneContract].address
         }
@@ -815,7 +825,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
           schemeParamsHash + '\nParameters:\n' +
           schemeParams.toString().replace(/,/g, ',\n')
         )
-      } else if (schemeContract.methods.initialize !== undefined) {
+      } else {
         let schemeParams = [avatar.options.address]
         for (let i in customeScheme.params) {
           if (customeScheme.params[i].voteParams !== undefined) {
@@ -834,15 +844,28 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
             schemeParams.push(customeScheme.params[i])
           }
         }
-        const schemeSetParams = schemeContract.methods.initialize(...schemeParams)
-        schemeParamsHash = await schemeSetParams.call()
-        if (schemeParamsHash.Result === undefined) {
-          schemeParamsHash = '0x0000000000000000000000000000000000000000000000000000000000000000'
+        if (customeScheme.fromFactory !== true && schemeContract.methods.initialize !== undefined) {
+          const schemeSetParams = schemeContract.methods.initialize(...schemeParams)
+          schemeParamsHash = await schemeSetParams.call()
+          if (schemeParamsHash.Result === undefined) {
+            schemeParamsHash = '0x0000000000000000000000000000000000000000000000000000000000000000'
+          }
+          tx = (await sendTx(schemeSetParams, `Initializing ${customeScheme.name}...`)).receipt
+          await logTx(tx, `${customeScheme.name} initialized.`)
+        } else if (customeScheme.fromFactory === true) {
+          if (customeScheme.schemeName === 'GenericSchemeMultiCall') {
+            const createGSMC = genericSchemeMultiCallFactory.methods.createGenericSchemeMultiCallSimple(...schemeParams)
+            const gsmcAddress = await createGSMC.call()
+            schemeContract = new web3.eth.Contract(abi, gsmcAddress, opts)
+            schemeParamsHash = '0x0000000000000000000000000000000000000000000000000000000000000000'
+            tx = (await sendTx(createGSMC, `Deploying GenericSchemeMultiCall with Factory...`)).receipt
+            await logTx(tx, `Deployed GenericSchemeMultiCall with Factory.`)
+          } else {
+            continue
+          }
+        } else {
+          continue
         }
-        tx = (await sendTx(schemeSetParams, `Initializing ${customeScheme.name}...`)).receipt
-        await logTx(tx, `${customeScheme.name} initialized.`)
-      } else {
-        continue
       }
 
       await runFunctions(customeScheme, schemeContract)

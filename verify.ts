@@ -189,9 +189,7 @@ const processContracts = async (): Promise<any> => {
           fs.writeFileSync(path.join(options.outputFlattened, `flattened.${contractName}.sol`), flattened);
         }
 
-        let version =
-          require(`${foundIn}/build/contracts/${contractName}.json`).compiler.version;
-        version = `v${version.substr(0, version.indexOf('Emscripten') - 1)}`;
+        const version = 'v0.5.17+commit.d19bba13';
 
         const apiConfig = {
           action: 'verifysourcecode',
