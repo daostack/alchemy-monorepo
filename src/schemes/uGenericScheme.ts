@@ -1,3 +1,4 @@
+import BN = require('bn.js')
 import { Arc } from '../arc'
 import { Proposal } from '../proposal'
 import { Address } from '../types'
@@ -18,7 +19,7 @@ export interface IUGenericScheme {
 
 export interface IProposalCreateOptionsGS {
   callData?: string
-  value?: number
+  value?: BN | number | string
 }
 export enum IProposalType {
   GenericScheme = 'UGenericScheme'
@@ -38,7 +39,7 @@ export function createTransaction(options: any, context: Arc) {
     const transaction = genericScheme.methods.proposeCall(
       options.dao,
       options.callData,
-      options.value,
+      options.value.toString(),
       options.descriptionHash
     )
     return transaction

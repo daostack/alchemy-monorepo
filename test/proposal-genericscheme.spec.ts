@@ -44,7 +44,7 @@ describe('Proposal', () => {
       callData,
       scheme: genericScheme.address,
       schemeToRegister: actionMock.options.address,
-      value: '1'
+      value: new BN('1000000000000000000')
     })
     expect(proposal).toBeInstanceOf(Proposal)
 
@@ -58,7 +58,7 @@ describe('Proposal', () => {
       callData,
       executed: false,
       returnValue: null,
-      value: new BN('1')
+      value: new BN('1000000000000000000')
     })
 
     // accept the proposal by voting the hell out of it

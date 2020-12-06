@@ -43,6 +43,12 @@ describe('Competition Proposal', () => {
   let suggestion4: any
   const ethReward = new BN('300')
   const reputationReward = new BN('10111')
+  const competitionDuration = 25
+  const suggestionsStart = 3
+  const suggestionsEnd = 10
+  const votingStart = 11
+  const competitionEnd = competitionDuration
+  const votingDuration = competitionEnd - votingStart
   // let snapshotId: any
 
   function addSeconds(date: Date, seconds: number) {
@@ -55,12 +61,12 @@ describe('Competition Proposal', () => {
   }
 
   async function getPosition(suggestion: CompetitionSuggestion) {
-    const state = await suggestion.state({ fetchPolicy: 'no-cache'}).pipe(first()).toPromise()
+    const state = await suggestion.state({ fetchPolicy: 'no-cache' }).pipe(first()).toPromise()
     return state.positionInWinnerList
   }
 
   async function isWinner(suggestion: CompetitionSuggestion) {
-    const state = await suggestion.state({fetchPolicy: 'no-cache'}).pipe(first()).toPromise()
+    const state = await suggestion.state({ fetchPolicy: 'no-cache' }).pipe(first()).toPromise()
     return state.isWinner
   }
 
@@ -74,7 +80,7 @@ describe('Competition Proposal', () => {
     // we'll get a `ContributionRewardExt` contract
     // find the corresponding scheme object
     const ARC_VERSION = '0.0.1-rc.43'
-    const contributionRewardExtContract  = arc.getContractInfoByName(`ContributionRewardExt`, ARC_VERSION)
+    const contributionRewardExtContract = arc.getContractInfoByName(`ContributionRewardExt`, ARC_VERSION)
     const contributionRewardExtAddres = contributionRewardExtContract.address
     // const contributionRewardExtAddres = '0x68c29524E583380aF7896f7e63463740225Ac026'.toLowerCase()
     const contributionRewardExts = await arc
@@ -91,11 +97,12 @@ describe('Competition Proposal', () => {
   afterEach(async () => {
     // await revertToSnapShot(snapshotId)
   })
+
   async function createCompetition(options: {
-      rewardSplit?: number[],
-      proposerIsAdmin?: boolean
-    }  = {}) {
-    const scheme = new  CompetitionScheme(contributionRewardExt.id, arc)
+    rewardSplit?: number[],
+    proposerIsAdmin?: boolean
+  } = {}) {
+    const scheme = new CompetitionScheme(contributionRewardExt.id, arc)
     // make sure that the DAO has enough Ether to pay forthe reward
     await arc.web3.eth.sendTransaction({
       gas: 4000000,
@@ -106,11 +113,11 @@ describe('Competition Proposal', () => {
     const externalTokenReward = new BN(0)
     const nativeTokenReward = new BN(0)
     const now = await getBlockTime(arc.web3)
-    const startTime = addSeconds(now, 2)
+    const startTime = addSeconds(now, suggestionsStart)
     const rewardSplit = options.rewardSplit || [80, 20]
-    const proposalOptions  = {
+    const proposalOptions = {
       dao: dao.id,
-      endTime: addSeconds(startTime, 200),
+      endTime: addSeconds(startTime, competitionEnd),
       ethReward,
       externalTokenAddress: undefined,
       externalTokenReward,
@@ -121,9 +128,9 @@ describe('Competition Proposal', () => {
       reputationReward,
       rewardSplit,
       startTime,
-      suggestionsEndTime: addSeconds(startTime, 100),
+      suggestionsEndTime: addSeconds(startTime, suggestionsEnd),
       value: 0,
-      votingStartTime: addSeconds(startTime, 0)
+      votingStartTime: addSeconds(startTime, votingStart)
     }
 
     // CREATE PROPOSAL
@@ -135,21 +142,23 @@ describe('Competition Proposal', () => {
     await proposal.claimRewards().send()
 
     // find the competition
-    const competitions = await scheme.competitions({ where: {id: proposal.id}}).pipe(first()).toPromise()
+    const competitions = await scheme.competitions({ where: { id: proposal.id } }).pipe(first()).toPromise()
     const competition = competitions[0]
 
     // lets create some suggestions
     const suggestion1Options = {
       beneficiary: address1,
-      description: 'descxription',
+      description: 'description',
       proposal: proposal.id,
       // tags: ['tag1', 'tag2'],
       title: 'title',
       url: 'https://somewhere.some.place'
     }
-    const suggestion2Options = { ...suggestion1Options, beneficiary: address1, title: 'suggestion nr 2'}
-    const suggestion3Options = { ...suggestion1Options, beneficiary: address1, title: 'suggestion nr 3'}
-    const suggestion4Options = { ...suggestion1Options, beneficiary: address0, title: 'suggestion nr 4'}
+    const suggestion2Options = { ...suggestion1Options, beneficiary: address1, title: 'suggestion nr 2' }
+    const suggestion3Options = { ...suggestion1Options, beneficiary: address1, title: 'suggestion nr 3' }
+    const suggestion4Options = { ...suggestion1Options, beneficiary: address0, title: 'suggestion nr 4' }
+
+    await advanceTimeAndBlock(suggestionsStart)
 
     const receipt1 = await competition.createSuggestion(suggestion1Options).send()
     suggestion1 = receipt1.result
@@ -165,7 +174,7 @@ describe('Competition Proposal', () => {
       .subscribe((ls: CompetitionSuggestion[]) => {
         suggestionIds = ls.map((x: CompetitionSuggestion) => x.id)
       }
-    )
+      )
 
     await waitUntilTrue(() => suggestionIds.indexOf(suggestion2.id) > -1)
     await waitUntilTrue(() => suggestionIds.indexOf(suggestion3.id) > -1)
@@ -193,10 +202,10 @@ describe('Competition Proposal', () => {
     // - all args are present
     // - order of times
     const now = await getBlockTime(arc.web3)
-    const startTime = addSeconds(now, 3)
+    const startTime = addSeconds(now, suggestionsStart)
     const proposalOptions = {
       dao: dao.id,
-      endTime: addSeconds(startTime, 2000),
+      endTime: addSeconds(startTime, competitionEnd),
       ethReward,
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
@@ -206,9 +215,9 @@ describe('Competition Proposal', () => {
       reputationReward,
       rewardSplit: [1, 2, 97],
       startTime: null,
-      suggestionsEndTime: addSeconds(startTime, 1000),
+      suggestionsEndTime: addSeconds(startTime, suggestionsEnd),
       value: 0,
-      votingStartTime: addSeconds(startTime, 200)
+      votingStartTime: addSeconds(startTime, votingStart)
     }
 
     // CREATE PROPOSAL
@@ -229,7 +238,7 @@ describe('Competition Proposal', () => {
     expect((lastState().competition as ICompetitionProposalState).startTime).toBeDefined()
   })
 
-  it('Create a competition proposal, compete, win the competition..', async () => {
+  it('Create a competition proposal, compete, win the competition', async () => {
     // const scheme = new CompetitionScheme(contributionRewardExtState.id, arc)
     expect(contributionRewardExt).toBeInstanceOf(CompetitionScheme)
     const scheme = new CompetitionScheme(contributionRewardExt.id, arc)
@@ -248,10 +257,10 @@ describe('Competition Proposal', () => {
     // - all args are present
     // - order of times
     const now = await getBlockTime(arc.web3)
-    const startTime = addSeconds(now, 3)
+    const startTime = addSeconds(now, suggestionsStart)
     const proposalOptions = {
       dao: dao.id,
-      endTime: addSeconds(startTime, 500),
+      endTime: addSeconds(startTime, competitionEnd),
       ethReward,
       externalTokenAddress: undefined,
       externalTokenReward,
@@ -261,9 +270,9 @@ describe('Competition Proposal', () => {
       reputationReward,
       rewardSplit: [1, 2, 97],
       startTime,
-      suggestionsEndTime: addSeconds(startTime, 100),
+      suggestionsEndTime: addSeconds(startTime, suggestionsEnd),
       value: 0,
-      votingStartTime: addSeconds(startTime, 0)
+      votingStartTime: addSeconds(startTime, votingStart)
     }
 
     const schemeState = await scheme.state().pipe(first()).toPromise()
@@ -304,7 +313,7 @@ describe('Competition Proposal', () => {
       // name: 'Competition'
     })
 
-    // accept the proposal by voting for et
+    // accept the proposal by voting for it
     await voteToPassProposal(proposal)
 
     await waitUntilTrue(() => (lastState().stage === IProposalStage.Executed))
@@ -328,12 +337,14 @@ describe('Competition Proposal', () => {
     // lets create some suggestions
     const suggestion1Options = {
       beneficiary: address1,
-      description: 'descxription',
+      description: 'description',
       proposal: proposal.id,
       tags: ['tag1', 'tag2'],
       title: 'title',
       url: 'https://somewhere.some.place'
     }
+
+    await advanceTimeAndBlock(suggestionsStart)
 
     const receipt1 = await competition.createSuggestion(suggestion1Options).send()
     suggestion1 = receipt1.result
@@ -382,6 +393,8 @@ describe('Competition Proposal', () => {
         .pipe(first()).toPromise()).length)
       .toEqual(1)
 
+    await advanceTimeAndBlock(votingStart)
+
     // // and lets vote for the first suggestion
     const voteReceipt = await scheme.voteSuggestion({ suggestionId: suggestion2.suggestionId }).send()
     const vote = voteReceipt.result
@@ -412,7 +425,8 @@ describe('Competition Proposal', () => {
     await expect(suggestion1.redeem().send()).rejects.toThrow(
       /competition is still on/i
     )
-    await advanceTimeAndBlock(2000)
+
+    await advanceTimeAndBlock(votingDuration)
 
     // get the current balance of addres1 (who we will send the rewards to)
     const balanceBefore = new BN(await arc.web3.eth.getBalance(address1))
@@ -422,7 +436,7 @@ describe('Competition Proposal', () => {
     expect(balanceDelta.toString()).not.toEqual('0')
   })
 
-  it.skip(`Rewards left are updated correctdly`, async () => {
+  it(`Rewards left are updated correctly`, async () => {
     // before any votes are cast, all suggesitons are winnners
     const competition = await createCompetition()
     const proposal = new Proposal(competition.id, arc)
@@ -452,8 +466,10 @@ describe('Competition Proposal', () => {
     })
   })
 
-  it.skip('Vote state works', async () => {
+  it('Vote state works', async () => {
     const competition = await createCompetition()
+
+    await advanceTimeAndBlock(votingStart)
 
     await suggestion1.vote().send()
     let voteIsIndexed = false
@@ -472,21 +488,23 @@ describe('Competition Proposal', () => {
       proposal: competition.id,
       suggestion: suggestion1.id
     })
-
   })
+
   it(`No votes is no winners`, async () => {
     // before any votes are cast, all suggesitons are winnners
     await createCompetition()
     expect(await getPosition(suggestion1)).toEqual(null)
     expect(await getPosition(suggestion4)).toEqual(null)
     // let's try to redeem
-    await advanceTimeAndBlock(2000)
+    await advanceTimeAndBlock(competitionDuration + 1)
     expect(suggestion1.redeem().send()).rejects.toThrow('not in winners list')
   })
 
-  it.skip('position is calculated correctly and redemptions work', async () => {
+  it('position is calculated correctly and redemptions work', async () => {
     let voteIsIndexed: boolean
     await createCompetition()
+
+    await advanceTimeAndBlock(votingStart)
 
     // vote and wait until it is indexed
     await suggestion1.vote().send()
@@ -512,7 +530,7 @@ describe('Competition Proposal', () => {
     expect(await getPosition(suggestion3)).toEqual(null)
     expect(await getPosition(suggestion4)).toEqual(null)
 
-    await advanceTimeAndBlock(2000)
+    await advanceTimeAndBlock(votingDuration)
 
     const crextContractAddress = contributionRewardExtState.address
     const crExtBalanceBefore = await arc.web3.eth.getBalance(crextContractAddress)
@@ -544,6 +562,9 @@ describe('Competition Proposal', () => {
 
   it.skip('position is calculated correctly (2)', async () => {
     const competition = await createCompetition()
+
+    await advanceTimeAndBlock(votingStart)
+
     await suggestion1.vote().send()
     arc.setAccount(address0)
     await suggestion3.vote().send()
@@ -559,14 +580,12 @@ describe('Competition Proposal', () => {
     })
     await waitUntilTrue(() => voteIsIndexed)
 
-    await waitUntilTrue(() => voteIsIndexed)
-
     expect(await getPosition(suggestion2)).toEqual(1)
     expect(await getPosition(suggestion1)).toEqual(1)
     expect(await getPosition(suggestion3)).toEqual(0)
     expect(await getPosition(suggestion4)).toEqual(null)
 
-    await advanceTimeAndBlock(2000)
+    await advanceTimeAndBlock(votingDuration)
 
     const beneficiary = address1
 
@@ -597,8 +616,11 @@ describe('Competition Proposal', () => {
 
   })
 
-  it.skip('winner is identified correctly also if there are less actual than possible winners', async () => {
+  it('winner is identified correctly even if there are less actual than possible winners', async () => {
     await createCompetition({ rewardSplit: [40, 40, 20] })
+
+    await advanceTimeAndBlock(votingStart)
+
     await suggestion1.vote().send()
     // wait until the vote is indexed
     let voteIsIndexed = false
@@ -639,12 +661,12 @@ describe('Competition Proposal', () => {
     expect(scheme).toBeInstanceOf(CompetitionScheme)
   })
 
-  it.skip('Can create a propsal using dao.createProposal', async () => {
+  it('Can create a propsal using dao.createProposal', async () => {
     const now = await getBlockTime(arc.web3)
-    const startTime = addSeconds(now, 3)
+    const startTime = addSeconds(now, suggestionsStart)
     const proposalOptions = {
       dao: dao.id,
-      endTime: addSeconds(startTime, 3000),
+      endTime: addSeconds(startTime, competitionDuration),
       ethReward,
       externalTokenAddress: undefined,
       externalTokenReward: toWei('0'),
@@ -655,9 +677,9 @@ describe('Competition Proposal', () => {
       rewardSplit: [10, 10, 80],
       scheme: contributionRewardExtState.address,
       startTime,
-      suggestionsEndTime: addSeconds(startTime, 100),
+      suggestionsEndTime: addSeconds(startTime, suggestionsEnd),
       value: 0,
-      votingStartTime: addSeconds(startTime, 0)
+      votingStartTime: addSeconds(startTime, votingStart)
     }
 
     const tx = await dao.createProposal(proposalOptions).send()
@@ -668,21 +690,20 @@ describe('Competition Proposal', () => {
 
   it(`Beneficiary is recognized and different from suggestor`, async () => {
     // lets create some suggestions
-    const competition =  await createCompetition()
+    const competition = await createCompetition()
     const suggestionOptions = {
       beneficiary: address1,
-      description: 'descxription',
+      description: 'description',
       proposal: competition.id,
       tags: ['tag1', 'tag2'],
       title: 'title',
       url: 'https://somewhere.some.place'
     }
-
     const receipt1 = await competition.createSuggestion(suggestionOptions).send()
     const suggestion = receipt1.result
     // wait until suggestion is indexed
 
-    let suggestionState: ICompetitionSuggestionState|null = null
+    let suggestionState: ICompetitionSuggestionState | null = null
     suggestion.state().subscribe((s: ICompetitionSuggestionState) => suggestionState = s)
     await waitUntilTrue(() => !!suggestionState)
     expect(suggestionState).toMatchObject({
@@ -696,13 +717,13 @@ describe('Competition Proposal', () => {
   })
 
   it(`proposerIsAdmin behaves as expected`, async () => {
-    const competition =  await createCompetition({proposerIsAdmin: true})
+    const competition = await createCompetition({ proposerIsAdmin: true })
     // accounts other than proposer cannot suggest
 
     arc.setAccount(address1)
     const suggestionOptions = {
       beneficiary: address1,
-      description: 'descxription',
+      description: 'description',
       title: 'title',
       url: 'https://somewhere.some.place'
     }
@@ -714,17 +735,17 @@ describe('Competition Proposal', () => {
   describe('pre-fetching competition.suggestions part 1', () => {
     it.skip('pre-fetching competition.suggestions works', async () => {
       // find a proposal in a scheme that has > 1 votes
-      const competition =  await createCompetition()
+      const competition = await createCompetition()
       // check if the competition has indeed some suggestions
 
       const suggestions = await competition.suggestions().pipe(first()).toPromise()
       expect(suggestions.length).toBeGreaterThan(0)
 
-        // now we have our objects, reset the cache
+      // now we have our objects, reset the cache
       await (arc.apolloClient as any).cache.reset()
       expect((arc.apolloClient as any).cache.data.data).toEqual({})
 
-        // // construct our superquery that will fill the cache
+      // // construct our superquery that will fill the cache
       const query = gql`query {
           proposals (where: { id: "${competition.id}"}) {
             ...ProposalFields
@@ -744,14 +765,14 @@ describe('Competition Proposal', () => {
 
       await arc.sendQuery(query)
 
-        // now see if we can get our informatino directly from the cache
-      const cachedSuggestions = await competition.suggestions({}, { fetchPolicy: 'cache-only'})
-          .pipe(first()).toPromise()
+      // now see if we can get our informatino directly from the cache
+      const cachedSuggestions = await competition.suggestions({}, { fetchPolicy: 'cache-only' })
+        .pipe(first()).toPromise()
       expect(cachedSuggestions.map((v: CompetitionSuggestion) => v.id))
-          .toEqual(suggestions.map((v: CompetitionSuggestion) => v.id))
+        .toEqual(suggestions.map((v: CompetitionSuggestion) => v.id))
 
       const cachedSuggestionState = await cachedSuggestions[0]
-        .state({ fetchPolicy: 'cache-only'}).pipe(first()).toPromise()
+        .state({ fetchPolicy: 'cache-only' }).pipe(first()).toPromise()
       expect(cachedSuggestionState.id).toEqual(cachedSuggestions[0].id)
 
     })
@@ -760,14 +781,14 @@ describe('Competition Proposal', () => {
   describe('pre-fetching competition.suggestions part 2', () => {
     it.skip('pre-fetching competition.suggestions works also without resetting the cache', async () => {
       // find a proposal in a scheme that has > 1 votes
-      const competition =  await createCompetition()
+      const competition = await createCompetition()
       // check if the competition has indeed some suggestions
 
       const suggestions = await competition.suggestions().pipe(first()).toPromise()
       expect(suggestions.length).toBeGreaterThan(0)
 
       // add some exiting data to the cache to seeif we can mess things up
-      await  arc.proposal(competition.id).state().pipe(first()).toPromise()
+      await arc.proposal(competition.id).state().pipe(first()).toPromise()
 
       // construct our superquery that will fill the cache
       const query = gql`query {
@@ -789,23 +810,25 @@ describe('Competition Proposal', () => {
 
       await arc.sendQuery(query)
 
-        // now see if we can get our informatino directly from the cache
-      const cachedSuggestions = await competition.suggestions({}, { fetchPolicy: 'cache-only'})
-          .pipe(first()).toPromise()
+      // now see if we can get our informatino directly from the cache
+      const cachedSuggestions = await competition.suggestions({}, { fetchPolicy: 'cache-only' })
+        .pipe(first()).toPromise()
       expect(cachedSuggestions.map((v: CompetitionSuggestion) => v.id))
-          .toEqual(suggestions.map((v: CompetitionSuggestion) => v.id))
+        .toEqual(suggestions.map((v: CompetitionSuggestion) => v.id))
 
       const cachedSuggestionState = await cachedSuggestions[0]
-        .state({ fetchPolicy: 'cache-only'}).pipe(first()).toPromise()
+        .state({ fetchPolicy: 'cache-only' }).pipe(first()).toPromise()
       expect(cachedSuggestionState.id).toEqual(cachedSuggestions[0].id)
 
     })
   })
 
   describe('pre-fetching suggestion.votes', () => {
-    it('pre-fetching suggestion.votes works', async () => {
+    it.skip('pre-fetching suggestion.votes works', async () => {
       // find a proposal in a scheme that has > 1 votes
       await createCompetition()
+
+      await advanceTimeAndBlock(votingStart)
 
       await suggestion1.vote().send()
       let voteIsIndexed = false
@@ -841,12 +864,12 @@ describe('Competition Proposal', () => {
 
       await arc.sendQuery(query)
 
-      const cachedVotes = await suggestion1.votes({}, { fetchPolicy: 'cache-only'})
+      const cachedVotes = await suggestion1.votes({}, { fetchPolicy: 'cache-only' })
         .pipe(first()).toPromise()
       expect(cachedVotes.map((v: CompetitionVote) => v.id))
         .toEqual(votes.map((v: CompetitionVote) => v.id))
 
-      const cachedVoteState = await cachedVotes[0].state({ fetchPolicy: 'cache-only'})
+      const cachedVoteState = await cachedVotes[0].state({ fetchPolicy: 'cache-only' })
         .pipe(first()).toPromise()
       expect(cachedVoteState.id).toEqual(cachedVotes[0].id)
     })
