@@ -27,6 +27,15 @@ describe('Proposal', () => {
     const schemeToRegister = arc.web3.eth.accounts.create().address.toLowerCase()
     const proposalToAddStates: IProposalState[] = []
     const lastProposalToAddState = (): IProposalState => proposalToAddStates[proposalToAddStates.length - 1]
+    //false because no schemename is undefined and scheme does not exist in contractInfo
+    expect(await arc.verifyParametersHash(schemeToRegister,'0x0000000000000000000000000000000000000000000000000000000000001234')).toBe(false)
+   //true because no "dummyscheme" not exist
+    expect(await arc.verifyParametersHash(schemeToRegister,'0x0000000000000000000000000000000000000000000000000000000000001234',"dummyscheme")).toBe(true)
+    //false because parametersHash is not set in this scheme
+    expect(await arc.verifyParametersHash(getTestAddresses(arc).base.SchemeRegistrar,'0x0000000000000000000000000000000000000000000000000000000000001234')).toBe(false)
+    //true because all is fine
+    expect(await arc.verifyParametersHash(getTestAddresses(arc).base.SchemeRegistrar,'0xb8ba347e9b4e9912eb12487e91b9dabd0aaead43120329237ad9eaba3d88a03b')).toBe(true)
+
 
     const proposalToAdd = await createAProposal(dao, {
       descriptionHash: '',

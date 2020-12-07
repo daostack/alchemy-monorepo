@@ -40,7 +40,7 @@ export class Arc extends GraphNodeObserver {
    */
   public contractInfos: IContractInfo[]
   public contracts: { [key: string]: any } = {} // a cache for the contracts
-  public contractsR: { [key: string]: any } = {} // a cache for teh "read-only" contracts
+  public contractsR: { [key: string]: any } = {} // a cache for teh 'read-only' contracts
 
   // accounts observed by ethBalance
   public blockHeaderSubscription: Subscription | undefined = undefined
@@ -379,6 +379,55 @@ export class Arc extends GraphNodeObserver {
     }
   }
 
+  /**
+   * verify scheme parametersHash
+   * @param  address address of the scheme to verify its params hash
+   * @param  schemeParametersHash the scheme params hash
+   * @param  schemeName optional
+   * @return true if :
+   *   scheme is not one of the following:
+   *    'SchemeRegistrar','ContributionReward','GenericScheme','GenericSchemeMultiCall'
+   *   or
+   *    parameters are verified for this scheme,
+   *  otherwise - will return false
+   */
+  public async verifyParametersHash(address: Address, schemeParametersHash: string, schemeName?: string) {
+    let contractInfo
+    if (!schemeName) {
+        try {
+           contractInfo = this.getContractInfo(address)
+           schemeName = contractInfo.name
+        } catch (error) {
+           return false
+        }
+    }
+    let contract
+    try {
+      contract = await this.getContract(address)
+    } catch (error) {
+       return true
+    }
+
+    if (schemeName === 'SchemeRegistrar' || schemeName === 'ContributionReward') {
+      const parameters = await contract.methods.parameters(schemeParametersHash).call()
+      switch (schemeName) {
+        case 'SchemeRegistrar':
+          return (this.validateGenesisProtocolParams(parameters[2], parameters[0]) &&
+                  this.validateGenesisProtocolParams(parameters[2], parameters[1]))
+        case 'ContributionReward':
+          return this.validateGenesisProtocolParams(parameters[1], parameters[0])
+     }
+   }
+    if (schemeName === 'GenericScheme' ||
+       schemeName === 'GenericSchemeMultiCall' ||
+       schemeName === 'ContributionRewardExt') {
+      const votingMachine = await contract.methods.votingMachine().call()
+      const voteParams = await contract.methods.voteParams().call()
+      return this.validateGenesisProtocolParams(votingMachine, voteParams)
+    }
+    return true
+ }
+
   public getAccount(): Observable<Address> {
     // this complex logic is to get the correct account both from the Web3 as well as from the Metamaask provider
     // This polls for changes. But polling is Evil!
@@ -476,6 +525,18 @@ export class Arc extends GraphNodeObserver {
     }
     Logger.debug(`Data saved successfully as ${descriptionHash}`)
     return descriptionHash
+  }
+
+  private async validateGenesisProtocolParams(gpAddress: Address, parametersHash: string) {
+      let genesisProtocol
+      try {
+         isAddress(gpAddress)
+         genesisProtocol = await this.getContract(gpAddress)
+      } catch (error) {
+         return false
+      }
+      const parameters = await genesisProtocol.methods.parameters(parametersHash).call()
+      return parameters[0] >= 50
   }
 }
 
