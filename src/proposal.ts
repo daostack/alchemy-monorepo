@@ -897,6 +897,22 @@ export class Proposal implements IStateful<IProposalState> {
   }
 
   /**
+   * [executeCalls description] execute the actual proposals call of a GenericScheme or
+   * GenericSchemeMultiCall
+   * @return  an Operation
+   */
+  public executeCalls(): Operation<boolean> {
+    const observable = this.state().pipe(
+      first(),
+      concatMap((state) => {
+          const transaction = (this.context.getContract(state.scheme.address)).methods.execute(this.id)
+          return this.context.sendTransaction(transaction, () => true)
+        })
+    )
+    return toIOperationObservable(observable)
+  }
+
+  /**
    * calll the 'execute()' function on the votingMachine.
    * the main purpose of this function is to set the stage of the proposals
    * this call may (or may not) "execute" the proposal itself (i.e. do what the proposal proposes)
