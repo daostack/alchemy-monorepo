@@ -631,11 +631,30 @@
         "OrganizationRegister": "0x181a6eB341F31623bb345521ca7b4D3b3c3Ce448",
         "Redeemer": "0x4F9B8F42EEE4BA4Bf7472E79BaaA6Db1bFCfaC0d",
         "GenericSchemeMultiCallFactory": "0xc97f482344f570f4C9FF9f1a203383d1B81Cff24"
+      },
+      "0.0.1-rc.52": {
+        "GEN": "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
+        "DAORegistry": "0x5c838428fEE0590D2d2d3082126f2af16E9c5330",
+        "DAOTracker": "0xd5c1E22e8E6A384Cb64f90A16eC82B9456B838Ce",
+        "ControllerCreator": "0xDbA4d163ba4Ef722FaE4CE249f6b82e0324Ef9E4",
+        "DaoCreator": "0x1587382118E6C0D8E4eBaBd96d707f6894d365cC",
+        "GenesisProtocol": "0x8653e7Af120C619c0536b25aD348ebedfB5Cf4B1",
+        "SchemeRegistrar": "0xb3Ded000608408d4c096f1c8477478F0352758A1",
+        "UpgradeScheme": "0xf77054DC0286B27f6C041A93BD306365c39D9b42",
+        "GlobalConstraintRegistrar": "0x9369C1024432f77D7C350e1F18838Ee1Bcf4b6B9",
+        "ContributionReward": "0x0A38f550A5E259979A7784563fDc4d2C71F91eaC",
+        "AbsoluteVote": "0xF04492a6e60A5b6D8B286BB1baF363Ba8aB65946",
+        "QuorumVote": "0x71663442e2D0D2F8E82908ff9d1423385cd08fde",
+        "TokenCapGC": "0xd83CCd7B4B1A2b22e5a6C6fD1bBf9b8cB6ea26a8",
+        "VoteInOrganizationScheme": "0x658add34ED06983A3690b68399c80332085cDf8A",
+        "OrganizationRegister": "0xB859970d1559cBf40248acd2309e4F7064f4d80e",
+        "Redeemer": "0xeF68b6c82fB37BAff70d5a27E534a2FB67Ec21Cb",
+        "GenericSchemeMultiCallFactory": "0x50994CE07198E3b632B5dDd8cE42fcB9FE4c55a9"
       }
     },
     "dao": {
       "0.0.1-rc.16": {
-        "name": "Effulgent Toilet",
+        "name": "Pendulous Mechanic",
         "Avatar": "0xE7A2C59e134ee81D4035Ae6DB2254f79308e334f",
         "DAOToken": "0xcDbe8b52A6c60A5f101d4A0F1f049f19a9e1D35F",
         "Reputation": "0x93cdbf39fB9e13BD253CA5819247D52fbabf0F2f",
@@ -689,7 +708,7 @@
         "arcVersion": "0.0.1-rc.16"
       },
       "0.0.1-rc.17": {
-        "name": "Ruminative Ukulele",
+        "name": "Obtuse Bushes",
         "Avatar": "0xc3E4EDA3c2Da722e7b143773EEd77249584B1782",
         "DAOToken": "0xe93194815959Fb5879daC1283b912AD78c3D13c3",
         "Reputation": "0xe5A79611891527028aa43faE7fAEE1671fFd3618",
@@ -743,7 +762,7 @@
         "arcVersion": "0.0.1-rc.17"
       },
       "0.0.1-rc.18": {
-        "name": "Gustatory Dolls",
+        "name": "Noxious Chair",
         "Avatar": "0x326284469fbC5D8E73fC23FBc19C6c378Bf36c16",
         "DAOToken": "0x6f01e10ED5B5b077348470a3a8BE5795d5805407",
         "Reputation": "0x5A090529FFAC76f56f7d4286f4dAd3127113CD50",
@@ -797,7 +816,7 @@
         "arcVersion": "0.0.1-rc.18"
       },
       "0.0.1-rc.19": {
-        "name": "Contumacious Patternmaker",
+        "name": "Lachrymose Plant operator",
         "Avatar": "0xAf6F348C0af707B0D9C23fb4e07ceDA5d9AaC465",
         "DAOToken": "0x6258F90A25c4fB7B8ee6331903767edD49De44e0",
         "Reputation": "0x76016A8076aA1CD967b946708C01A8274b75Fe4C",
@@ -851,7 +870,7 @@
         "arcVersion": "0.0.1-rc.19"
       },
       "0.0.1-rc.21": {
-        "name": "Crapulous Designer",
+        "name": "Histrionic Hot air balloon",
         "Avatar": "0xc16cC0eAA81e7db273C6FA043490187F88AC95A3",
         "DAOToken": "0x5b2551e046FD23470d9547e9f9750a294F5b7314",
         "Reputation": "0x31d43Fe0eD9d8226a7Ab36d3A98eF4cd26705A59",
@@ -905,7 +924,7 @@
         "arcVersion": "0.0.1-rc.21"
       },
       "0.0.1-rc.22": {
-        "name": "Amatory Plant operator",
+        "name": "Rhadamanthine Ukulele",
         "Avatar": "0x1d254E2079253f40250EA1ef4a1F6b2e10A0FFd3",
         "DAOToken": "0x347DEfE8eA9F7fA353183316e93a37528E88Ccf5",
         "Reputation": "0x06BfB68477aC38d5C7Da32f98Edede4d25456e0B",
@@ -959,7 +978,7 @@
         "arcVersion": "0.0.1-rc.22"
       },
       "0.0.1-rc.23": {
-        "name": "Serpentine Banjo",
+        "name": "Quiescent Apples",
         "Avatar": "0xF19157e4177eBbEfbd6ac73b3BACD1A02C033e75",
         "DAOToken": "0x7131784aaB27D21786e0100C8a02d3e49ea30AdA",
         "Reputation": "0xdBb1905de98C28d83132Ee2c50263A71f6a16130",
@@ -1013,7 +1032,7 @@
         "arcVersion": "0.0.1-rc.23"
       },
       "0.0.1-rc.24": {
-        "name": "Jejune Stylist",
+        "name": "Tenacious Silversmith",
         "Avatar": "0xADd5Df9945832672dd269F743e70E2abf4098141",
         "DAOToken": "0x2197DaE917b95CFa554C15EFB884e50b6ee3eb98",
         "Reputation": "0xF8E62eC7b04C5bd07C9d495B887C4d22B445EcA6",
@@ -1073,7 +1092,7 @@
         "arcVersion": "0.0.1-rc.24"
       },
       "0.0.1-rc.25": {
-        "name": "Dowdy Sea barnacles",
+        "name": "Pervasive Carnival",
         "Avatar": "0xdb6157B31435f1a2379BffFBA3120Bb061ab5f1E",
         "DAOToken": "0xAf83A1008cf6587632C2DD6570460bDE9c862A56",
         "Reputation": "0x59C6A5A48B956fa76b807697Eb6275B7dB03D809",
@@ -1133,7 +1152,7 @@
         "arcVersion": "0.0.1-rc.25"
       },
       "0.0.1-rc.27": {
-        "name": "Efficacious Chair",
+        "name": "Gustatory Leadman",
         "Avatar": "0x8730E5158F1eC3BCC888d3B9eE975DF2CC653fED",
         "DAOToken": "0x76Fd8c50ebc56C8Ec6A62948C6d53b8Bc2783e43",
         "Reputation": "0x5B4eE31cA73943B8592cd2c46E356075AFa1064a",
@@ -1193,7 +1212,7 @@
         "arcVersion": "0.0.1-rc.27"
       },
       "0.0.1-rc.28": {
-        "name": "Pendulous Carrot",
+        "name": "Minatory Beader",
         "Avatar": "0xa8F4230327c686b191f957a60bD18DE9750E4338",
         "DAOToken": "0x69D396820cdb361Fb9974282a8cfE3a78332a213",
         "Reputation": "0xEF70c1e291BbE2E9529bD68C0d9692A3517f5141",
@@ -1253,7 +1272,7 @@
         "arcVersion": "0.0.1-rc.28"
       },
       "0.0.1-rc.29": {
-        "name": "Obtuse Mermaid eggs",
+        "name": "Incendiary Stick figures",
         "Avatar": "0x50e1A76F37F5eF894fC959825bBDF8DC7dCB1F50",
         "DAOToken": "0x526f9aFCA1F147d17fB53138E314e147413b953f",
         "Reputation": "0xd5A32109fc12AAB72a3A1d5A92BEA856f680F3B3",
@@ -1313,7 +1332,7 @@
         "arcVersion": "0.0.1-rc.29"
       },
       "0.0.1-rc.30": {
-        "name": "Insolent Captain",
+        "name": "Jocular Stylist",
         "Avatar": "0x92203805A40019eaEa3b67166f13d694E61eca14",
         "DAOToken": "0x1E9f3F2cc302FE79fD82CE39D17F24F3517Acf87",
         "Reputation": "0xDA39B067929bEECD51A064116110d6aF40A284B1",
@@ -1373,7 +1392,7 @@
         "arcVersion": "0.0.1-rc.30"
       },
       "0.0.1-rc.31": {
-        "name": "Equanimous Apples",
+        "name": "Jejune Mermaid eggs",
         "Avatar": "0x98CcB5051fD767e2E89567bCCCA4Efc532250544",
         "DAOToken": "0x30dB4905b474aff3e1EAfc60394ece85dC524A92",
         "Reputation": "0x4992595a747d772bF291f64112735064BFc8878f",
@@ -1433,7 +1452,7 @@
         "arcVersion": "0.0.1-rc.31"
       },
       "0.0.1-rc.32": {
-        "name": "Antic Opera singer",
+        "name": "Egregious Foreman",
         "Avatar": "0x6621372fFA1B23808886b1fb1BbB6F235603eEB0",
         "DAOToken": "0x8ffD5653a0a4d6FEcF912d8aF214C0a3063306c2",
         "Reputation": "0x587C9DF9Fd5252D223DA0F455Bc7858AADc4678d",
@@ -1493,7 +1512,7 @@
         "arcVersion": "0.0.1-rc.32"
       },
       "0.0.1-rc.33": {
-        "name": "Didactic Colorist",
+        "name": "Strident Potato",
         "Avatar": "0x57F909211c361AE0A11E269b74Dca470078c6e67",
         "DAOToken": "0xE9A11C4C015D142D090CFF82dEd1Deea5B824185",
         "Reputation": "0xCf9dB88B2bef5f498de16327b051C10A17bC6132",
@@ -1553,7 +1572,7 @@
         "arcVersion": "0.0.1-rc.33"
       },
       "0.0.1-rc.34": {
-        "name": "Endemic Statue",
+        "name": "Irksome Stylist",
         "Avatar": "0xAEe1d5e81f35bA953CdA00F21F34F7408A1A070D",
         "DAOToken": "0x864f2858EFEE96734A8F7f399AF1945ad3f00704",
         "Reputation": "0xea94EBee42A794871Fef7734ED6dF0cF5C6433Dd",
@@ -1613,7 +1632,7 @@
         "arcVersion": "0.0.1-rc.34"
       },
       "0.0.1-rc.35": {
-        "name": "Serpentine Dragons",
+        "name": "Lachrymose Banjo",
         "Avatar": "0xDF7f67F1BcA6FBBc1b9EbD6F76d14726b40a6F40",
         "DAOToken": "0xb98870a1D3b0ed4452320845427936761c01CA9c",
         "Reputation": "0xedB100980FC543aB3e17A3F2E14F297b442f6bA9",
@@ -1673,7 +1692,7 @@
         "arcVersion": "0.0.1-rc.35"
       },
       "0.0.1-rc.36": {
-        "name": "Inveterate Nibblets",
+        "name": "Trenchant Leadman",
         "Avatar": "0x3801027AC57598bf6e3E0d54a072f7A68AAB26F7",
         "DAOToken": "0xaf14C94420751ac650B46362F94b9db653daA6E5",
         "Reputation": "0x9AC9dd25c95eD41Da85aB6055f50C1E7CbC1DBFa",
@@ -1733,7 +1752,7 @@
         "arcVersion": "0.0.1-rc.36"
       },
       "0.0.1-rc.37": {
-        "name": "Uxorious Snakes",
+        "name": "Voluble Laser",
         "Avatar": "0xF6E9dB99831815A181754bCf25ad98e7745e0ee8",
         "DAOToken": "0xCd17aC56cb74470d97BB92AE88cfb96a369689eE",
         "Reputation": "0x30FF9B1454f67Cc7A1D2907d35fC2354b726da89",
@@ -1793,7 +1812,7 @@
         "arcVersion": "0.0.1-rc.37"
       },
       "0.0.1-rc.38": {
-        "name": "Corpulent Ninja",
+        "name": "Animistic Dolls",
         "Avatar": "0xB4f03a5Af1eee9789ecC1072ac1433E29953E5e0",
         "DAOToken": "0x3E700CD1281560Eb5B681038f1e39562C8F9C956",
         "Reputation": "0x8652FaE53c9e0827b4028fdf02d04bC62A9d7ab4",
@@ -1853,7 +1872,7 @@
         "arcVersion": "0.0.1-rc.38"
       },
       "0.0.1-rc.39": {
-        "name": "Turbulent Bunny",
+        "name": "Arcadian Dragons",
         "Avatar": "0x5951c93dCb47068fcbe1AcE235B2ea625d9823a5",
         "DAOToken": "0x820FbBC729B157f91CA5C2659aF2971C766e6A4b",
         "Reputation": "0xADb82bc43A7e402f40E1F166FC238c849791A928",
@@ -1913,7 +1932,7 @@
         "arcVersion": "0.0.1-rc.39"
       },
       "0.0.1-rc.40": {
-        "name": "Contumacious Carrot",
+        "name": "Withering Woodworkers",
         "Avatar": "0x63580Cd6d1c5C9d20d3A7710FbB6eB02c4DA928d",
         "DAOToken": "0x09b7F50aD63a1CEd9E9a6F0d14e57daba3E2b49E",
         "Reputation": "0x74CD5Da957841cbD25fd5bDafDe84a48701289Af",
@@ -1973,7 +1992,7 @@
         "arcVersion": "0.0.1-rc.40"
       },
       "0.0.1-rc.41": {
-        "name": "Strident Sea barnacles",
+        "name": "Trenchant Gnomes",
         "Avatar": "0xde1837963BCa0cBDE1214c6ca83Ac8dCde7Cfe63",
         "DAOToken": "0x66688d72B4d3834Ed24b448D2894dA0D83e18f28",
         "Reputation": "0xa26d9ccFA2978Bb87F9De3705Ed0c1a126046E45",
@@ -2033,7 +2052,7 @@
         "arcVersion": "0.0.1-rc.41"
       },
       "0.0.1-rc.42": {
-        "name": "Spasmodic Sawfiler",
+        "name": "Meretricious Senor",
         "Avatar": "0x638628f49E7697aC8712EAb836c9e3079AfA9216",
         "DAOToken": "0x7B2f5E1C477947Ed38376Ac68FCa8EB0f86bD202",
         "Reputation": "0x205D6BE1EE94f8F5c95E96a45713F9349D8F98b4",
@@ -2093,7 +2112,7 @@
         "arcVersion": "0.0.1-rc.42"
       },
       "0.0.1-rc.43": {
-        "name": "Fulsome Miller",
+        "name": "Sclerotic Make-up artist",
         "Avatar": "0xD2C4B60755127fce58a2646583B99885a980610c",
         "DAOToken": "0x108fa94a7B94B8b1A6719D6F15852E3FE33653C6",
         "Reputation": "0x3CC4B7516362bDCAC4e51CAf457B35A647739A61",
@@ -2153,7 +2172,7 @@
         "arcVersion": "0.0.1-rc.43"
       },
       "0.0.1-rc.44": {
-        "name": "Trenchant Artisan",
+        "name": "Judicious Exorcism",
         "Avatar": "0xAaB3c194A57597f02B9d32bE26a5507E102eBb6B",
         "DAOToken": "0x068b8d836b52D93b3B52f954A3c2E86e8c84D9dB",
         "Reputation": "0xed988e629b89Bd91DBecB703F987be50F0C53CDb",
@@ -2213,7 +2232,7 @@
         "arcVersion": "0.0.1-rc.44"
       },
       "0.0.1-rc.45": {
-        "name": "Platitudinous Statue",
+        "name": "Wheedling Director",
         "Avatar": "0x2F41E4044469c3F061546d68F2FE81B96f81A17D",
         "DAOToken": "0x2E32AE73bDC7d8ea72A1623f6E3884C987580364",
         "Reputation": "0x92E3db4056b252ad5D3698141d7793703E10ed66",
@@ -2273,7 +2292,7 @@
         "arcVersion": "0.0.1-rc.45"
       },
       "0.0.1-rc.46": {
-        "name": "Adamant Musician",
+        "name": "Jocular Ukulele",
         "Avatar": "0xdFF215aEEC70AD95469AF6A4Bd2DAFAa8C43D644",
         "DAOToken": "0x0F933e6588359f289A7d1887A3f4B5f57dCa216c",
         "Reputation": "0x09D4560D468240c79a7Ff616d04E14cfbA638326",
@@ -2333,7 +2352,7 @@
         "arcVersion": "0.0.1-rc.46"
       },
       "0.0.1-rc.47": {
-        "name": "Ubiquitous Locomotive",
+        "name": "Cerulean Circus",
         "Avatar": "0x3d9E3F230E8ad18fBE7A8f9131e30579Be01fCD1",
         "DAOToken": "0x9ac1CE3fF16241B40F1B04AFFbede8dBAA3E3A57",
         "Reputation": "0xF135846012087e68DaC55A4C11550A1306875478",
@@ -2393,7 +2412,7 @@
         "arcVersion": "0.0.1-rc.47"
       },
       "0.0.1-rc.48": {
-        "name": "Irksome Ninja",
+        "name": "Caustic Senor",
         "Avatar": "0x43d99b48A017532c60C0Ce77f30274Dd15f2CC5d",
         "DAOToken": "0xc6346393Cd6b2a8dCe542b867fE96a8956ce8BDE",
         "Reputation": "0xC374a2A7ceCFe14dbd9B47143eB25c92628D6739",
@@ -2453,7 +2472,7 @@
         "arcVersion": "0.0.1-rc.48"
       },
       "0.0.1-rc.49": {
-        "name": "Voracious Ukulele",
+        "name": "Voracious Patternmaker",
         "Avatar": "0xCe827FFBcBb5c3fCf7550FB8d98c2A5D40680767",
         "DAOToken": "0x12264Eca7ac02f5895dAFaF74D0Cd1d1ab658474",
         "Reputation": "0xEcFC8fE8A621bEd7Ca1cB076D7B7525597E1e641",
@@ -2513,7 +2532,7 @@
         "arcVersion": "0.0.1-rc.49"
       },
       "0.0.1-rc.50": {
-        "name": "Feckless Limner",
+        "name": "Voracious Senor",
         "Avatar": "0x0fd2BA90Db43Be70FbDCab2EEe8B6372d817ABd7",
         "DAOToken": "0x19619Ff1Eb8a0052B8E83d337795E769A830262B",
         "Reputation": "0x8bc5694aC89E0EC39CAd348004c8450661f5854A",
@@ -2573,7 +2592,7 @@
         "arcVersion": "0.0.1-rc.50"
       },
       "0.0.1-rc.51": {
-        "name": "Efficacious Silversmith",
+        "name": "Defamatory Toejam",
         "Avatar": "0x8fFef3D3fFfA65d0DCf72a9459142a2bF082Fd04",
         "DAOToken": "0xbA631df769cdE2cDb0B429c3Fe050f14785F6806",
         "Reputation": "0x78D6Cc7960fbE46026e6160a665D8c8d336008b2",
@@ -2631,11 +2650,71 @@
           }
         ],
         "arcVersion": "0.0.1-rc.51"
+      },
+      "0.0.1-rc.52": {
+        "name": "Obtuse Toejam",
+        "Avatar": "0x7f1Df616b7f7A84393379a1f6A60578225Cbe337",
+        "DAOToken": "0xD7e097e17536F3595da3DbB5Da7274C6fE49b0df",
+        "Reputation": "0xfc30EFf7A19EDd2D1DeF985808F8B29DfAC7bE79",
+        "Controller": "0x2e65865b23A2b40d49DbC09fB9EFF67d6fC22FdA",
+        "Schemes": [
+          {
+            "name": "GenericScheme",
+            "alias": "GenericSchemeAlias",
+            "address": "0xAF7C73b6eaF926DCC46b57cB2714Ae3B6ce6d4C2",
+            "arcVersion": "0.0.1-rc.52"
+          },
+          {
+            "name": "ContributionRewardExt",
+            "alias": "ContributionRewardExt",
+            "address": "0xBb4E4856CB0FB1Abd45E5E898A77a595e30A9D69",
+            "arcVersion": "0.0.1-rc.43"
+          },
+          {
+            "name": "GenericSchemeMultiCall",
+            "alias": "GenericSchemeMultiCall",
+            "address": "0x9a4F9D5a759EDC4cfa1C41687629A3d3B9E42aB2",
+            "arcVersion": "0.0.1-rc.51"
+          }
+        ],
+        "StandAloneContracts": [
+          {
+            "name": "Wallet",
+            "address": "0x07e4a5C580f4bFBE05b4070Fa3Ac0aBB977462a2",
+            "arcVersion": "0.0.1-rc.52"
+          },
+          {
+            "name": "ContributionRewardExt",
+            "address": "0xBb4E4856CB0FB1Abd45E5E898A77a595e30A9D69",
+            "arcVersion": "0.0.1-rc.43"
+          },
+          {
+            "name": "Competition",
+            "address": "0xD9EaAA1Fd1664d0C1C9914E2B194D2CDcAE36080",
+            "arcVersion": "0.0.1-rc.43"
+          },
+          {
+            "name": "GenericSchemeMultiCall",
+            "address": "0x9a4F9D5a759EDC4cfa1C41687629A3d3B9E42aB2",
+            "arcVersion": "0.0.1-rc.51"
+          },
+          {
+            "name": "ActionMock",
+            "address": "0x7811930B6b72CE6BB0601626f4F3585d147d9014",
+            "arcVersion": "0.0.1-rc.52"
+          },
+          {
+            "name": "DxDaoSchemeConstraints",
+            "address": "0xb8eEbE0a6dD16cce3D5529CA55dc9cF813314c54",
+            "arcVersion": "0.0.1-rc.51"
+          }
+        ],
+        "arcVersion": "0.0.1-rc.52"
       }
     },
     "test": {
       "0.0.1-rc.16": {
-        "name": "Guileless Inker",
+        "name": "Pernicious Kazoo",
         "Controller": "0x5fD287667AC7D13161648e82dA6e8B8A3C9Bc432",
         "Avatar": "0x86e9Fe552E75e4Fc51f46E4efc128628eCd5ada7",
         "DAOToken": "0xeA4eB8B837F0f5B4d43259e5FAB1Ce3761869D2A",
@@ -2653,7 +2732,7 @@
         }
       },
       "0.0.1-rc.17": {
-        "name": "Munificent Kazoo",
+        "name": "Endemic Animator",
         "Controller": "0x978E72494102E2D4d040Dd3B6F65977ef1f504AC",
         "Avatar": "0x6AfF07151a76e9e67055B58aF2777467E926DDBD",
         "DAOToken": "0xfa830D8e8Cf3Aec026Bf108d5E49267AA87Fe63B",
@@ -2671,7 +2750,7 @@
         }
       },
       "0.0.1-rc.18": {
-        "name": "Salubrious Kazoo",
+        "name": "Animistic Designer",
         "Controller": "0x514e79A445d2f358106009541Bbd383858feD5a8",
         "Avatar": "0x4Ac66664B76E98802f2Bd709a0C6178E722Db1f8",
         "DAOToken": "0xB01ce1a18576746bf7065C719F39faA0d9d040e9",
@@ -2689,7 +2768,7 @@
         }
       },
       "0.0.1-rc.19": {
-        "name": "Defamatory Toejam",
+        "name": "Minatory Plant operator",
         "Controller": "0x96e8123C95781e8B453a40a8db6F271A1e1c7961",
         "Avatar": "0x440CF55A8eA880a49Bd31c97eF2132a9b80335e1",
         "DAOToken": "0x6Cd758B8A05F42ed4491D1F88936B47d9f56a7be",
@@ -2707,7 +2786,7 @@
         }
       },
       "0.0.1-rc.21": {
-        "name": "Incendiary Potato",
+        "name": "Limpid Animator",
         "Controller": "0x89Bc0b4C51D336a3169985c7A8f254F782b1828f",
         "Avatar": "0x1fC01DA280F6752FFF4dff1A1f83DB51E8eE179F",
         "DAOToken": "0x7Ecf84c567e121bFA943F4bD459DeE7D978eCDE7",
@@ -2725,7 +2804,7 @@
         }
       },
       "0.0.1-rc.22": {
-        "name": "Cerulean Plumber",
+        "name": "Baleful Wheelwright",
         "Controller": "0x6dF8266EB98a54Bf7b81daDc26eB17A05962a30D",
         "Avatar": "0x0a2059b17970AbAe2385B500B0cF50f079Caab57",
         "DAOToken": "0x3338fD977f6aD6Ea55695e6EF7bBb3Bc228448C1",
@@ -2743,7 +2822,7 @@
         }
       },
       "0.0.1-rc.23": {
-        "name": "Obtuse Carnival",
+        "name": "Puckish Ninja",
         "Controller": "0xCe11888F5694D433E17B61B14fF25159cBb2dF15",
         "Avatar": "0x4cfe5Cb19d8f5DA2603a7e0b685BC5a9d5f3485C",
         "DAOToken": "0xeE92Cad9f6d60219aa09Ff3DD88f138CEB0cadDB",
@@ -2761,7 +2840,7 @@
         }
       },
       "0.0.1-rc.24": {
-        "name": "Judicious Moldmaker",
+        "name": "Didactic Scenographer",
         "Controller": "0xb883a40AcBBE85Ea048088621E8ad38d5749bDe7",
         "Avatar": "0x905bbc9B1aF2da08ba9e0454a3B96383BCafD410",
         "DAOToken": "0x8762EB58a8bd40Ae6e7b28D960627B977f5a17fb",
@@ -2779,7 +2858,7 @@
         }
       },
       "0.0.1-rc.25": {
-        "name": "Strident Cupcake",
+        "name": "Dilatory Exorcism",
         "Controller": "0x540ccC3DEF32fB5719735Be5335892575D4C3A39",
         "Avatar": "0x1869f08DfDB4db12a3075eA057F7642Edeed08e6",
         "DAOToken": "0x3C14078525460f69845B7b56d753909916f43e02",
@@ -2797,7 +2876,7 @@
         }
       },
       "0.0.1-rc.27": {
-        "name": "Platitudinous Curtains",
+        "name": "Heuristic Maintenance",
         "Controller": "0xdA3cea3DDBe72B324206A2b48315014eB280E123",
         "Avatar": "0xaA74Eb1AAc6aCCB9E15A68b35A195b31b3a941DA",
         "DAOToken": "0x8DA68b49dE4bb5D96571E61D403FfE043969e53A",
@@ -2815,7 +2894,7 @@
         }
       },
       "0.0.1-rc.28": {
-        "name": "Wheedling Hot air balloon",
+        "name": "Adroit Opera singer",
         "Controller": "0xFF28dF1D9815C136641fE9761C41f061125692E0",
         "Avatar": "0x2241a57F4B081bC7Be217fAdC34a445b719B40ea",
         "DAOToken": "0xcC4A0Dc6A1F2D48d96BaF15047107BFc6d8b0e17",
@@ -2833,7 +2912,7 @@
         }
       },
       "0.0.1-rc.29": {
-        "name": "Redolent Designer",
+        "name": "Adamant Gnomes",
         "Controller": "0x6C59C0B339a68f738D9C3C223342dEFbdB1Cab5c",
         "Avatar": "0x29615a9ab5DB49Cf9fFd15Cffc41511491CD5fA4",
         "DAOToken": "0x41387A771d65a7cb7B9D863d8ce25A7eD95E6A24",
@@ -2851,7 +2930,7 @@
         }
       },
       "0.0.1-rc.30": {
-        "name": "Uxorious Toejam",
+        "name": "Turbulent Model",
         "Controller": "0x365883D9603f8be8D28d8326c666d6FeF776a3bB",
         "Avatar": "0xE499BaBfc277b676D4B67B4a1bEa68A0D3b63529",
         "DAOToken": "0xD62Cf8816886B8d26ceC75945885B90fFd0c16c3",
@@ -2869,7 +2948,7 @@
         }
       },
       "0.0.1-rc.31": {
-        "name": "Contumacious Panel beater",
+        "name": "Turgid Opera singer",
         "Controller": "0x423e872e7801a490752248f3B41399A10E5c0a84",
         "Avatar": "0x39f1f0BDb1c50f5DD5Cc11C8251590dd7bA84E07",
         "DAOToken": "0x00721Ce485e83b6BbdFCa9B7538CBCa488dE9701",
@@ -2887,7 +2966,7 @@
         }
       },
       "0.0.1-rc.32": {
-        "name": "Munificent Trampoline",
+        "name": "Sclerotic Musician",
         "Controller": "0xe71ff40c0A32B11fE182C25dDd873d189F0a25ac",
         "Avatar": "0xeAd4Bbe688Ea2d122761EF890f0aC9F313eCc9A6",
         "DAOToken": "0x504478885b7D2521bF067c1742073dd066Df1b91",
@@ -2905,7 +2984,7 @@
         }
       },
       "0.0.1-rc.33": {
-        "name": "Endemic Ninja",
+        "name": "Minatory Artist",
         "Controller": "0x5cA8d82D38C6F130671D66b0EcDe8A68f6b96811",
         "Avatar": "0x0cB91528cBeA9f3e7999605539589a554bc4A942",
         "DAOToken": "0x0CAc43f21FC324ef1638AFD57e5D7715A82a7E2d",
@@ -2923,7 +3002,7 @@
         }
       },
       "0.0.1-rc.34": {
-        "name": "Obtuse Toilet",
+        "name": "Endemic Trampoline",
         "Controller": "0xF17a5B7230e449C37e7eF5341D06B8D97a7ED709",
         "Avatar": "0xE6865E73156684e782988a94c117F87D3601D412",
         "DAOToken": "0xB7541D7cf4054c30f30260E138C4a475B16517b7",
@@ -2941,7 +3020,7 @@
         }
       },
       "0.0.1-rc.35": {
-        "name": "Mendacious Dolls",
+        "name": "Platitudinous Circus",
         "Controller": "0x34eD81EF6A80407b16BF1860F9e253F7A20fddB2",
         "Avatar": "0xbaa311f782E85fc6CD01C77E1849f33f2b5E2400",
         "DAOToken": "0xB80dF20671D2f19D0f54f1Fc351dC9a91782930d",
@@ -2959,7 +3038,7 @@
         }
       },
       "0.0.1-rc.36": {
-        "name": "Salubrious Engineering",
+        "name": "Redolent Producer",
         "Controller": "0x507d62AfA59eB6DcA6D05A8Af1c0F6b8E88E4852",
         "Avatar": "0x8b1aA23Eeda4e1E0fE8d8A89f746dAa9F14D8c56",
         "DAOToken": "0x570b97722E508eeFe636eDE24F896efF0874Ba04",
@@ -2977,7 +3056,7 @@
         }
       },
       "0.0.1-rc.37": {
-        "name": "Propitious Musician",
+        "name": "Precipitate Animator",
         "Controller": "0x7D3DF0DB4ead81a773E7251fefdb3EF82Ddb974A",
         "Avatar": "0x1c2eB52B9897696097b34C709392ac4C15fA5d3e",
         "DAOToken": "0x615c410CBe6e10eB937dF4107B902c3D035ceF37",
@@ -2995,7 +3074,7 @@
         }
       },
       "0.0.1-rc.38": {
-        "name": "Caustic Silversmith",
+        "name": "Precipitate Penciller",
         "Controller": "0xb2B687D7Eb16f7fBe3D27e0e6B2aa15F3eb6D257",
         "Avatar": "0x4d76ADe874BEf471fEa089f8ce0DDc4AB2227acF",
         "DAOToken": "0x613381bAbc87c51002097b8524CD5F1Cf1E6a062",
@@ -3013,7 +3092,7 @@
         }
       },
       "0.0.1-rc.39": {
-        "name": "Turgid Plant operator",
+        "name": "Jejune Locomotive",
         "Controller": "0x310258A9131a6450809a09c2cCc3400288F73888",
         "Avatar": "0x02981eC0aEfE7329442C39DfE5a52fb8781e7659",
         "DAOToken": "0x057D53A8EF8D0f328dE5a4270Ac2DD2344eCeFAA",
@@ -3031,7 +3110,7 @@
         }
       },
       "0.0.1-rc.40": {
-        "name": "Meretricious Colorist",
+        "name": "Lachrymose Stick figures",
         "Controller": "0x8c4755D4b33918C13F1E018873E8F3C3579fc942",
         "Avatar": "0x4C6e6F1644FcB118e2030738a4878Ce6e5452eDa",
         "DAOToken": "0x0eC53A48B77B2D607D12D50029EB19Fc5C5cCc60",
@@ -3049,7 +3128,7 @@
         }
       },
       "0.0.1-rc.41": {
-        "name": "Incendiary Ninja",
+        "name": "Rebarbative Plant operator",
         "Controller": "0x73ecC5931DEE0641821A4cbD3db6FdD9D5543aF8",
         "Avatar": "0xda7F30F0Dc754CCC33cbec0752d071054Ecf12f0",
         "DAOToken": "0x8c417373E619C77A880a019BfD50581662014a47",
@@ -3067,7 +3146,7 @@
         }
       },
       "0.0.1-rc.42": {
-        "name": "Arcadian Engineering",
+        "name": "Irksome Rainbows",
         "Controller": "0x61D6D67A45da092bF41B4B0DA7Ff2593d68483d4",
         "Avatar": "0x41475cC967d81CE568D886Ef133a2F64171668dc",
         "DAOToken": "0x8C461C6aaCbfC984D2Fe0eB32BB1cEB725506A76",
@@ -3085,7 +3164,7 @@
         }
       },
       "0.0.1-rc.43": {
-        "name": "Effulgent Snakes",
+        "name": "Bellicose Glitter",
         "Controller": "0xDc84BC09a3240d10b003286eDc757027E8A3bE61",
         "Avatar": "0xe74CA08eEe46D220b5862a8628E96FA823b8Ab01",
         "DAOToken": "0x4d78696440C203DC6D2A056c525C2865AE812200",
@@ -3103,7 +3182,7 @@
         }
       },
       "0.0.1-rc.44": {
-        "name": "Precipitate Soaper",
+        "name": "Incendiary Designer",
         "Controller": "0x9372b87edb0FdcDcF26F802D390224553Abb1D1f",
         "Avatar": "0xe329da55F5B8A0A16BC6d799096fc90b45c1a2BC",
         "DAOToken": "0xD695FfAf899D1dc5601d2b34E182a016a6D87e25",
@@ -3121,7 +3200,7 @@
         }
       },
       "0.0.1-rc.45": {
-        "name": "Amatory Foreman",
+        "name": "Voluble Beader",
         "Controller": "0xbb54Ea54fa31da95FA4371B3b73Db7A929435E72",
         "Avatar": "0xa55751cf32200602cf1D2c8766AE450A7A0e88d5",
         "DAOToken": "0x8EDc766D3CCc62c1992246D61C499282eD1A2BC2",
@@ -3139,7 +3218,7 @@
         }
       },
       "0.0.1-rc.46": {
-        "name": "Irksome Snakes",
+        "name": "Cerulean Cookies",
         "Controller": "0xC8827D5dF9D3c9C2AeA183B937B7B61428553374",
         "Avatar": "0x6Ba5729Fd0910CA75B7afB72a5678Db4FAD65Cb5",
         "DAOToken": "0xEC7bb39f0BD420dcD83394615671E5daD9A14367",
@@ -3157,7 +3236,7 @@
         }
       },
       "0.0.1-rc.47": {
-        "name": "Garrulous Exorcism",
+        "name": "Pendulous Sea barnacles",
         "Controller": "0xaa370faefee376E36cbA0d7ac7DfD99054717beE",
         "Avatar": "0x4F7b6FC0d15C0C276EA5BC482744132fe16fe8BE",
         "DAOToken": "0x5A44b0dE4BB02e5074B837EF8BB642934646309f",
@@ -3175,7 +3254,7 @@
         }
       },
       "0.0.1-rc.48": {
-        "name": "Quiescent Mermaid eggs",
+        "name": "Friable Statue",
         "Controller": "0x9Ca8074C410C5bEDfDDf47C9bA64F1918Cd711da",
         "Avatar": "0xfF869D94f3a8a98c600d700AaD30a64617fA1DC9",
         "DAOToken": "0xE019Fe5BF30Be90e8901C43460120e3Fc4F3eC41",
@@ -3193,7 +3272,7 @@
         }
       },
       "0.0.1-rc.49": {
-        "name": "Voluble Bushes",
+        "name": "Lachrymose Mechanic",
         "Controller": "0x8C363124e92c826b806be84560C09f2188804ECA",
         "Avatar": "0xfC9aEeC4C5D1c8Fe1615B6DD341a7DE970c07beb",
         "DAOToken": "0x4B26Ed0E2bDe6C3168e55dCdfF758F8d385910f2",
@@ -3211,7 +3290,7 @@
         }
       },
       "0.0.1-rc.50": {
-        "name": "Bilious Limner",
+        "name": "Inveterate Colorist",
         "Controller": "0xB48D4a549D3BAbdA92bEf79b0Fe10021EAa990a9",
         "Avatar": "0x6301C772f5613b9a5923ecD5F0EA55Af6dD6ff3e",
         "DAOToken": "0x0102BE956737c0C7c0422A81d8ab9DB83F07D19A",
@@ -3229,7 +3308,7 @@
         }
       },
       "0.0.1-rc.51": {
-        "name": "Didactic Designer",
+        "name": "Dilatory Soaper",
         "Controller": "0x7a355932eE3C29c7267e1779D996F0d24336f6C3",
         "Avatar": "0xB5D4936243E69E017bE2937B9D56F02274C30d06",
         "DAOToken": "0xfb06D946B84C7B9306B4dCA0bAb62C46E11Ae01A",
@@ -3244,6 +3323,24 @@
           "DemoAvatar": "0xD4ad841Fe4198650DB3BaEd82fBCDf2Fe869dfE2",
           "DemoDAOToken": "0x40f72aE701ecCfa3a8Fda5a3A33014e2DD0EEb7A",
           "DemoReputation": "0xaFb1540e65a7Ef17257D5f61Ac4547972ee03C6E"
+        }
+      },
+      "0.0.1-rc.52": {
+        "name": "Salubrious Locomotive",
+        "Controller": "0x62031402779116a2acEd64B03Ad66575Ff2DeB4B",
+        "Avatar": "0xE3f1b6F8BFef1a66AD3CABB8fEF5358db8eD9E47",
+        "DAOToken": "0x4358fbA209a51CA1da573fEFe73A2A3F6dDAeB92",
+        "Reputation": "0x9D8ad5E006FDc509a2a265eea8A9345c88779A46",
+        "ActionMock": "0x062689aCC834a1875a7709767b48980EA1857C87",
+        "gsProposalId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "queuedProposalId": "0x3c01d787d310d5e6044acc92b502b9014f702b35d4c73879b59fa124c7fae8ac",
+        "preBoostedProposalId": "0xdb5521bd60524fcfa52d068b05a0346226339eacffa4905eae31376db120d10d",
+        "boostedProposalId": "0x8ba11c01cf0a1f5fb1f6ccfba4961c83f4ec2e5d83a30ad680f655f9ad9a6068",
+        "executedProposalId": "0x8badbeae06370f7665b29cfd7959a70149cc236608836e8869d1df02c5f528ed",
+        "organs": {
+          "DemoAvatar": "0xE011227CBd4d04C3B5F3AD2f7fafc02CfAB6ef80",
+          "DemoDAOToken": "0x29762d2804D67Fb59876347BdAdAe6347E5481C7",
+          "DemoReputation": "0x09020bf3fE1082aCA05550dF4dC44A901938eCA7"
         }
       }
     }
@@ -3508,6 +3605,25 @@
         "VoteInOrganizationScheme": "0x1946897AfcaDa89c85F8729b8c1d0C6A89d70d07",
         "OrganizationRegister": "0x42D9b123cDB73085272805eCaFD781a5fc0bFcFd",
         "Redeemer": "0xDbB0e75821898Fe29f688C4fE6d2FB7df0f0E8b4",
+        "GenericSchemeMultiCallFactory": "0x9E77Ae4Df36A78C9805103FE0d2c4c37FB7c99E3"
+      },
+      "0.0.1-rc.52": {
+        "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
+        "DAORegistry": "0xf7f490C714Cd5920eB5de0a060EE2D5962450401",
+        "DAOTracker": "0x0D6C70163d29Df62e59832A99dB55EDA452d967C",
+        "ControllerCreator": "0x6C2bD989C0D0d4a361062d95426eB32aCd7Cd138",
+        "DaoCreator": "0x116B10f72c0055dd88F539Fe044C537dDcc975eC",
+        "GenesisProtocol": "0x4abD71aA290d772919a1E837b1a15a745D65713c",
+        "SchemeRegistrar": "0x59B755D11fDe9c98E3552b7D9a279084b804F726",
+        "UpgradeScheme": "0x9eDa438eff653995E307e778c7A2207f05D1E2C8",
+        "GlobalConstraintRegistrar": "0xd45807004E5ae4e7b3e6238830747E8a6A48bdfF",
+        "ContributionReward": "0x16dea149815D5EDFE2cE3aE2EBc79967C6C17c45",
+        "AbsoluteVote": "0x6944b397Ea8A2BF11d51ab324eF26366802B338E",
+        "QuorumVote": "0x3BE62fDaf511e16098f98a4dd60F9c73F704C7f5",
+        "TokenCapGC": "0x62E0F9b7AFc7395c9B73144E61fd3377Bc1a1ED6",
+        "VoteInOrganizationScheme": "0x1946897AfcaDa89c85F8729b8c1d0C6A89d70d07",
+        "OrganizationRegister": "0x42D9b123cDB73085272805eCaFD781a5fc0bFcFd",
+        "Redeemer": "0x195AcF643a581C3b3C8F8818fF1CBB2ef24934e2",
         "GenericSchemeMultiCallFactory": "0x9E77Ae4Df36A78C9805103FE0d2c4c37FB7c99E3"
       }
     },
@@ -4257,6 +4373,25 @@
         "OrganizationRegister": "0x9059d97bD27B27C5f9E22b0bec9BFda4897F59be",
         "Redeemer": "0x9C42f52818aa323B26dd633E281F528bfC84D67E",
         "GenericSchemeMultiCallFactory": "0x5e758CA1F282502790DcBEC17cBF5Cf8F031752B"
+      },
+      "0.0.1-rc.52": {
+        "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
+        "DAORegistry": "0xE9f949fee2ae09a408C9b902031bC2A1BFF3AEe2",
+        "DAOTracker": "0x0CDA08edB47414536D515B0e66aBEBD01f13DBDA",
+        "ControllerCreator": "0x8A548263c634Cc2ffAd9360b39E00b6166b71118",
+        "DaoCreator": "0x438e317b0F0280736d63DD3002eF55643beD2A73",
+        "GenesisProtocol": "0x37D93C4cE04e9E9C22478482C8b41894aa59d27D",
+        "SchemeRegistrar": "0x3B6D2cF8f38168BA9B5C87FdbEA98372447D3A51",
+        "UpgradeScheme": "0xe2565e1A0647CaFbE00C0bfa0B0b603F5381C022",
+        "GlobalConstraintRegistrar": "0xb1Da7A3626d4AF7F3e687168261A9f1795ac4B3C",
+        "ContributionReward": "0x981A559536bC31b6903c3D847B84165AFa483599",
+        "AbsoluteVote": "0x02Dce537a7c9DfB12B81b1d3142e49DcC172418e",
+        "QuorumVote": "0x5b1e36E5dB4Dc072010dc5314e9bb4b2224316e4",
+        "TokenCapGC": "0x88a69337461A3AbB66b8d35CcB009282e9F6B59F",
+        "VoteInOrganizationScheme": "0xbE3320B1D3bFf94651639C041D1608b52eB65802",
+        "OrganizationRegister": "0x9059d97bD27B27C5f9E22b0bec9BFda4897F59be",
+        "Redeemer": "0xF0346eb95232c43f831AD26Bd4eF1061F96360aE",
+        "GenericSchemeMultiCallFactory": "0x5e758CA1F282502790DcBEC17cBF5Cf8F031752B"
       }
     },
     "dao": {
@@ -4996,6 +5131,25 @@
         "OrganizationRegister": "0xA66a3e281b3dc8EE926dCBDBeb878cF5C54046Fe",
         "Redeemer": "0xa57fD9c2E4B7BAF9022942ca38b677909D1EfF96",
         "GenericSchemeMultiCallFactory": "0x02CF3E5759C9150B65C8476D0121f2BB66BFfFcd"
+      },
+      "0.0.1-rc.52": {
+        "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
+        "DAORegistry": "0x41C24232452057b9c812A94f84b8643Ee0253C44",
+        "DAOTracker": "0xe89625Ef4174D3dE05D4Ba4945773d7A6D27fC0D",
+        "ControllerCreator": "0xAA3Cd873E5076DFac9D42e2837Cc260452F51271",
+        "DaoCreator": "0x16D0132814b4D427381c96Cf1F4741A32315f31B",
+        "GenesisProtocol": "0xB99f1936CFeAb1Aa9C2c6C3520D89e223227F23f",
+        "SchemeRegistrar": "0x4F7a0b98CCFab5f723c5001e92ea0ac3A02E78a7",
+        "UpgradeScheme": "0xA461dc2850d68040785cC846Fd637D0427B3AbD9",
+        "GlobalConstraintRegistrar": "0xe375C85d475ebaaCCEc2Bc4c39DcdC23EcF58246",
+        "ContributionReward": "0x8D3b1f439b7C1e25ebE5e19123d0451EaDDCe407",
+        "AbsoluteVote": "0x718a138868a76436ec038B1AcC2aA70097578299",
+        "QuorumVote": "0x160a66E2834F4484dEBC4a59C0Ea7E1eb25Aaf87",
+        "TokenCapGC": "0x5Ca9Aa78E1A11F1577D274d536b015D8fDF9146A",
+        "VoteInOrganizationScheme": "0x66B96E7928D5D85D0360B8FdAF1B5C80168FAE6A",
+        "OrganizationRegister": "0xA66a3e281b3dc8EE926dCBDBeb878cF5C54046Fe",
+        "Redeemer": "0x4301ACE195B1797d9035113e679489c53280a019",
+        "GenericSchemeMultiCallFactory": "0x02CF3E5759C9150B65C8476D0121f2BB66BFfFcd"
       }
     },
     "dao": {
@@ -5234,6 +5388,25 @@
         "VoteInOrganizationScheme": "0xcAcc791F489909EBa4Dd5E65c98403E117c43d33",
         "OrganizationRegister": "0xBBEaF0fc7B527B674Bae8d81944D1Dea5c032010",
         "Redeemer": "0xC8eFf7D403C2c1D6b98F77EEEE462241052dF899",
+        "GenericSchemeMultiCallFactory": "0x99e226ff96C96C9ec8e4908b152fD334B2ABEBCC"
+      },
+      "0.0.1-rc.52": {
+        "GEN": "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
+        "DAORegistry": "0x870CcB43aB901979A82D1281F9bE1F1825ad3D21",
+        "DAOTracker": "0x4a48e656cB9D6a34bC6D30130Cb6A07eeb89a208",
+        "ControllerCreator": "0x7468D6ea1D43FC4AB52f958a3C53b812a0Dc5bb5",
+        "DaoCreator": "0xA0b72D6c1869fACb77BD074AeD41A4D56baB5b82",
+        "GenesisProtocol": "0x70a886eB4a044C58e283ea43DD87739fbeC68880",
+        "SchemeRegistrar": "0x1F42b0605C33B6757e07d6ed477f081b066b0949",
+        "UpgradeScheme": "0xdBD43BdA8e7D3ea7867FB921276dE10e4380f1D9",
+        "GlobalConstraintRegistrar": "0xda31AfF37b6dC4a5EcDd14ce56a9C8539010339d",
+        "ContributionReward": "0xD0384b6d88Ea290B60AdBc9aA1993B23FF715412",
+        "AbsoluteVote": "0x11A992913961169228071037D3155aaCEf132Ef7",
+        "QuorumVote": "0x1E04D1E5c4731Fc26B8C4A836cF47ad3cE77AC52",
+        "TokenCapGC": "0xFB4Bbe8d65A94d0F67B7C7BaC660A203b61A3e39",
+        "VoteInOrganizationScheme": "0xcAcc791F489909EBa4Dd5E65c98403E117c43d33",
+        "OrganizationRegister": "0xBBEaF0fc7B527B674Bae8d81944D1Dea5c032010",
+        "Redeemer": "0xA83CEC88B3843c042B0bf9a572F78A2cA87FB8c9",
         "GenericSchemeMultiCallFactory": "0x99e226ff96C96C9ec8e4908b152fD334B2ABEBCC"
       }
     },
