@@ -118,6 +118,27 @@
       "alias": "GenericSchemeMultiCall",
       "fromArc": true,
       "arcVersion": "0.0.1-rc.51"
+  },
+  {
+    "name":"ContinuousLocking4Reputation",
+    "schemeName":"ContinuousLocking4Reputation",
+    "isUniversal":false,
+    "params":[
+      850000,
+      0,
+      20,
+      20,
+      12,
+      85000,
+      900,
+      100,
+      "DAOTokenAddress",
+      "0x0000000000000000000000000000000000000001"
+    ],
+    "permissions":"0x00000010",
+    "alias":"ContinuousLocking4Reputation",
+    "fromArc":true,
+    "arcVersion": "0.0.1-rc.51"
   }
   ],
   "unregisterOwner": true,
