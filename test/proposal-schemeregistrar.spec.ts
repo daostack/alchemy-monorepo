@@ -9,6 +9,7 @@ import { Scheme } from '../src/scheme'
 import { ISchemeRegistrar } from '../src/schemes/schemeRegistrar'
 import { createAProposal, firstResult, getTestAddresses, getTestDAO,
   newArc, voteToPassProposal, waitUntilTrue } from './utils'
+import { first } from 'rxjs/operators'
 
 jest.setTimeout(60000)
 
@@ -34,7 +35,12 @@ describe('Proposal', () => {
     //false because parametersHash is not set in this scheme
     expect(await arc.verifyParametersHash(getTestAddresses(arc).base.SchemeRegistrar,'0x0000000000000000000000000000000000000000000000000000000000001234')).toBe(false)
     //true because all is fine
-    expect(await arc.verifyParametersHash(getTestAddresses(arc).base.SchemeRegistrar,'0xb8ba347e9b4e9912eb12487e91b9dabd0aaead43120329237ad9eaba3d88a03b')).toBe(true)
+
+    const result = await Scheme
+      .search(arc, {where: {address:getTestAddresses(arc).base.SchemeRegistrar,dao_in:[dao.id]}})
+      .pipe(first()).toPromise()
+
+    expect(await arc.verifyParametersHash(getTestAddresses(arc).base.SchemeRegistrar,(result[0].staticState as any).paramsHash)).toBe(true)
 
 
     const proposalToAdd = await createAProposal(dao, {
