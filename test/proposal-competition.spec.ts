@@ -644,12 +644,8 @@ describe('Competition Proposal', () => {
 
   it('CompetionScheme is recognized', async () => {
     // we'll get a `ContributionRewardExt` contract that has a Compietion contract as a rewarder
-    const ARC_VERSION = '0.0.1-rc.43'
-    const contributionRewardExtContract = arc.getContractInfoByName(`ContributionRewardExt`, ARC_VERSION)
-    // find the corresponding scheme object
     const contributionRewardExts = await arc
-      .schemes({ where: { address: contributionRewardExtContract.address } }).pipe(first()).toPromise()
-    expect(contributionRewardExts.length).toEqual(1)
+      .schemes({ where: { name: `ContributionRewardExt` } }).pipe(first()).toPromise()
     const scheme = contributionRewardExts[0]
     expect(scheme).toBeInstanceOf(CompetitionScheme)
   })
