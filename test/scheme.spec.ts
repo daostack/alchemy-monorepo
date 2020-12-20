@@ -123,7 +123,7 @@ describe('Scheme', () => {
 
   it('Scheme.state() is working for GenericScheme schemes', async () => {
     const result = await Scheme
-      .search(arc, {where: {name: 'GenericScheme'}})
+      .search(arc, {where: {genericSchemeParams_not_in:["null"]}})
       .pipe(first()).toPromise()
 
     const scheme = result[0]
@@ -132,7 +132,7 @@ describe('Scheme', () => {
       id: scheme.id,
       name: 'GenericScheme'
     })
-
+    
     expect(state.genericSchemeParams).toEqual(state.schemeParams)
   })
 

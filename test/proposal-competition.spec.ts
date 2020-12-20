@@ -77,17 +77,9 @@ describe('Competition Proposal', () => {
 
   beforeAll(async () => {
     arc = await newArc()
-    // we'll get a `ContributionRewardExt` contract
-    // find the corresponding scheme object
-    const ARC_VERSION = '0.0.1-rc.43'
-    const contributionRewardExtContract = arc.getContractInfoByName(`ContributionRewardExt`, ARC_VERSION)
-    const contributionRewardExtAddres = contributionRewardExtContract.address
-    // const contributionRewardExtAddres = '0x68c29524E583380aF7896f7e63463740225Ac026'.toLowerCase()
     const contributionRewardExts = await arc
-      .schemes({ where: { address: contributionRewardExtAddres } }).pipe(first()).toPromise()
-
+      .schemes({ where: { name: `ContributionRewardExt` } }).pipe(first()).toPromise()
     contributionRewardExt = contributionRewardExts[0] as CompetitionScheme
-
     contributionRewardExtState = await contributionRewardExt.state().pipe(first()).toPromise()
     dao = new DAO(contributionRewardExtState.dao, arc)
     address0 = arc.web3.eth.accounts.wallet[0].address.toLowerCase()
@@ -203,6 +195,7 @@ describe('Competition Proposal', () => {
     // - order of times
     const now = await getBlockTime(arc.web3)
     const startTime = addSeconds(now, suggestionsStart)
+
     const proposalOptions = {
       dao: dao.id,
       endTime: addSeconds(startTime, competitionEnd),
@@ -651,12 +644,8 @@ describe('Competition Proposal', () => {
 
   it('CompetionScheme is recognized', async () => {
     // we'll get a `ContributionRewardExt` contract that has a Compietion contract as a rewarder
-    const ARC_VERSION = '0.0.1-rc.43'
-    const contributionRewardExtContract = arc.getContractInfoByName(`ContributionRewardExt`, ARC_VERSION)
-    // find the corresponding scheme object
     const contributionRewardExts = await arc
-      .schemes({ where: { address: contributionRewardExtContract.address } }).pipe(first()).toPromise()
-    expect(contributionRewardExts.length).toEqual(1)
+      .schemes({ where: { name: `ContributionRewardExt` } }).pipe(first()).toPromise()
     const scheme = contributionRewardExts[0]
     expect(scheme).toBeInstanceOf(CompetitionScheme)
   })
