@@ -590,7 +590,7 @@ export class Proposal implements IStateful<IProposalState> {
       const queueState: IQueueState = {
         dao: item.dao.id,
         id: gpQueue.id,
-        name: schemeState.name,
+        name: schemeState?.name,
         scheme: schemeState,
         threshold,
         votingMachine: gpQueue.votingMachine
