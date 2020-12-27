@@ -138,7 +138,7 @@
     "permissions":"0x00000010",
     "alias":"ContinuousLocking4Reputation",
     "fromArc":true,
-    "arcVersion": "0.0.1-rc.51"
+    "arcVersion": "0.0.1-rc.55"
   }
   ],
   "unregisterOwner": true,

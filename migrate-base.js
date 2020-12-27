@@ -205,6 +205,12 @@ async function migrateBase ({ arcVersion, web3, spinner, confirm, opts, logTx, p
   if (getArcVersionNumber(arcVersion) >= 49) {
     await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/GenericSchemeMultiCallFactory.json`))
   }
+  if (getArcVersionNumber(arcVersion) >= 54) {
+    await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/CompetitionFactory.json`))
+  }
+  if (getArcVersionNumber(arcVersion) >= 55) {
+    await deploy(utils.importAbi(`./${contractsDir}/${arcVersion}/ContinuousLocking4ReputationFactory.json`))
+  }
   let migration = { 'base': previousMigration.base || {} }
   migration.base[arcVersion] = addresses
   return migration

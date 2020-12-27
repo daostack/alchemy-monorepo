@@ -58,6 +58,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     UGenericScheme,
     GenericScheme,
     GenericSchemeMultiCallFactory,
+    ContinuousLocking4ReputationFactory,
     GenesisProtocol,
     GlobalConstraintRegistrar,
     UpgradeScheme
@@ -116,6 +117,15 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     genericSchemeMultiCallFactory = new web3.eth.Contract(
       utils.importAbi(`./${contractsDir}/${arcVersion}/GenericSchemeMultiCallFactory.json`).abi,
       GenericSchemeMultiCallFactory,
+      opts
+    )
+  }
+
+  let continuousLocking4ReputationFactory
+  if (getArcVersionNumber(arcVersion) >= 55) {
+    continuousLocking4ReputationFactory = new web3.eth.Contract(
+      utils.importAbi(`./${contractsDir}/${arcVersion}/ContinuousLocking4ReputationFactory.json`).abi,
+      ContinuousLocking4ReputationFactory,
       opts
     )
   }
@@ -860,6 +870,13 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
             schemeParamsHash = '0x0000000000000000000000000000000000000000000000000000000000000000'
             tx = (await sendTx(createGSMC, `Deploying GenericSchemeMultiCall with Factory...`)).receipt
             await logTx(tx, `Deployed GenericSchemeMultiCall with Factory.`)
+          } else if (customeScheme.schemeName === 'ContinuousLocking4Reputation') {
+            const createCL4R = continuousLocking4ReputationFactory.methods.createCL4R(...schemeParams)
+            const cl4rAddress = await createCL4R.call()
+            schemeContract = new web3.eth.Contract(abi, cl4rAddress, opts)
+            schemeParamsHash = '0x0000000000000000000000000000000000000000000000000000000000000000'
+            tx = (await sendTx(createCL4R, `Deploying ContinuousLocking4Reputation with Factory...`)).receipt
+            await logTx(tx, `Deployed ContinuousLocking4Reputation with Factory.`)
           } else {
             continue
           }
