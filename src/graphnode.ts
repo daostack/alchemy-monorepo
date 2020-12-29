@@ -41,6 +41,8 @@ export function createApolloClient(options: {
     uri: options.graphqlHttpProvider
   })
 
+  // 'lazy: true' and 'reconnect: false' are temporary fixes to avoid unnecessary web socket calls from the graph.
+  // See https://github.com/daostack/arc.js/pull/573
   const wsLink = new WebSocketLink({
     options: {
       lazy: true,
