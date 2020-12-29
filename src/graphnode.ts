@@ -43,7 +43,8 @@ export function createApolloClient(options: {
 
   const wsLink = new WebSocketLink({
     options: {
-      reconnect: true
+      reconnect: false,
+      lazy: true
     },
     uri: options.graphqlWsProvider,
     webSocketImpl: WebSocket
