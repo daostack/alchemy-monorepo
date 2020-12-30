@@ -59,6 +59,7 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     GenericScheme,
     GenericSchemeMultiCallFactory,
     ContinuousLocking4ReputationFactory,
+    CompetitionFactory,
     GenesisProtocol,
     GlobalConstraintRegistrar,
     UpgradeScheme
@@ -126,6 +127,15 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
     continuousLocking4ReputationFactory = new web3.eth.Contract(
       utils.importAbi(`./${contractsDir}/${arcVersion}/ContinuousLocking4ReputationFactory.json`).abi,
       ContinuousLocking4ReputationFactory,
+      opts
+    )
+  }
+
+  let competitionFactory
+  if (getArcVersionNumber(arcVersion) >= 55) {
+    competitionFactory = new web3.eth.Contract(
+      utils.importAbi(`./${contractsDir}/${arcVersion}/CompetitionFactory.json`).abi,
+      CompetitionFactory,
       opts
     )
   }
@@ -876,6 +886,24 @@ async function migrateDAO ({ arcVersion, web3, spinner, confirm, opts, migration
             schemeContract = new web3.eth.Contract(abi, cl4rAddress, opts)
             schemeParamsHash = '0x0000000000000000000000000000000000000000000000000000000000000000'
             tx = (await sendTx(createCL4R, `Deploying ContinuousLocking4Reputation with Factory...`)).receipt
+            await logTx(tx, `Deployed ContinuousLocking4Reputation with Factory.`)
+          } else if (customeScheme.schemeName === 'ContributionRewardExt') {
+            console.log(schemeParams)
+            const createCompetition = competitionFactory.methods.createCompetition(...schemeParams)
+            const competitionFactoryAddresses = await createCompetition.call()
+            const competitionAddress = competitionFactoryAddresses['0']
+            const creAddress = competitionFactoryAddresses['1']
+            schemeContract = new web3.eth.Contract(abi, creAddress, opts)
+            schemeParamsHash = '0x0000000000000000000000000000000000000000000000000000000000000000'
+            tx = (await sendTx(createCompetition, `Deploying ContinuousLocking4Reputation with Factory...`)).receipt
+            deploymentState.StandAloneContracts.push(
+              {
+                name: 'Competition',
+                alias: 'Competition',
+                address: competitionAddress,
+                arcVersion: (customeScheme.arcVersion ? customeScheme.arcVersion : arcVersion)
+              }
+            )
             await logTx(tx, `Deployed ContinuousLocking4Reputation with Factory.`)
           } else {
             continue
