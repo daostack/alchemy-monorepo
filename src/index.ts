@@ -12,6 +12,7 @@ export { Reputation, IReputationState, IReputationQueryOptions } from './reputat
 export { Reward, IRewardState, IRewardStaticState, IRewardQueryOptions } from './reward'
 export { Scheme, ISchemeState, ISchemeStaticState, ISchemeQueryOptions } from './scheme'
 export { ReputationFromTokenScheme } from './schemes/reputationFromToken'
+export { CTL4RScheme } from './schemes/ctl4rep'
 export { IContributionReward} from './schemes/contributionReward'
 export { hasCompetitionContract, isCompetitionScheme,
     IProposalCreateOptionsCompetition,

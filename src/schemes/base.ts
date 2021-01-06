@@ -8,6 +8,7 @@ import {
   IProposalCreateOptions,
   IProposalQueryOptions, Proposal } from '../proposal'
 import { Address, ICommonQueryOptions, IStateful } from '../types'
+import { CTL4RScheme } from './ctl4rep'
 import { ReputationFromTokenScheme } from './reputationFromToken'
 
 export interface ISchemeStaticState {
@@ -248,6 +249,7 @@ export abstract class SchemeBase implements IStateful<ISchemeState> {
   public id: Address
   public staticState: ISchemeStaticState | null = null
   public ReputationFromToken: ReputationFromTokenScheme | null = null
+  public CTL4R: CTL4RScheme | null = null
 
   constructor(idOrOpts: Address | ISchemeStaticState, public context: Arc) {
     this.context = context
@@ -282,6 +284,9 @@ export abstract class SchemeBase implements IStateful<ISchemeState> {
       }
       if (this.staticState.name ===  'ReputationFromToken') {
         this.ReputationFromToken = new ReputationFromTokenScheme(this)
+      }
+      if (this.staticState.name ===  'ContinuousLocking4Reputation') {
+        this.CTL4R = new CTL4RScheme(this)
       }
       return state
     }
