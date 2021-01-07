@@ -23,6 +23,20 @@ export class CTL4RScheme {
     return result
   }
 
+  public async getReputationRewardForLockingIds(lockingIds: number[],
+                                                batchIndex: number,
+                                                repuationRewardForPeriod: BN)
+                                                : Promise<BN> {
+    let reputation = new BN('0')
+    const contract = await this.getContract()
+    const lockingTotalScore = new BN(await contract.methods.batches(batchIndex).call())
+    for (const lockingId of lockingIds) {
+      const lockingIdScore = new BN(await contract.methods.getLockingIdScore(batchIndex, lockingId).call())
+      reputation = reputation.add(lockingIdScore.div(lockingTotalScore).mul(repuationRewardForPeriod))
+    }
+    return reputation
+  }
+
   public lock(amount: BN, period: number, batchIndexToLockIn: number, agreementHash: string): Operation<any> {
     const mapReceipt = (receipt: any) => {
       return receipt

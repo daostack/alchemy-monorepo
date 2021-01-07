@@ -112,6 +112,9 @@ describe('Scheme', () => {
     await ctl4r.lock(lockAmount,1,0,agreementHash).send()
     const lockCounterAfter = await continuousLocking4ReputationContract.methods.lockCounter().call()
     expect(Number(lockCounterBefore)+1).toEqual(Number(lockCounterAfter))
+    const reputationRewardPerPeriod = new BN('85000')
+    const repreward = await ctl4r.getReputationRewardForLockingIds([lockCounterAfter],0,reputationRewardPerPeriod)
+    expect(repreward).toEqual(reputationRewardPerPeriod)
     await ctl4r.extendLocking(2,0,lockCounterAfter,agreementHash).send()
 
   })

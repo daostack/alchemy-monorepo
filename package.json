@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc.js",
-  "version": "0.2.83",
+  "version": "0.2.84",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -33,6 +33,7 @@
     "test": "jest --runInBand --forceExit",
     "test:watch": "jest --watch",
     "tslint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "lint-fix": "tslint --fix --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "test-env-up": "./test-env-up.sh"
   },
   "jest": {
