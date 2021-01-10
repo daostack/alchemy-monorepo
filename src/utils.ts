@@ -94,6 +94,12 @@ export function realMathToNumber(t: BN): number {
   return t.shrn(REAL_FBITS).toNumber() + fraction
 }
 
+export function realMathToBN(t: BN): BN {
+  const REAL_FBITS = 40
+  const fraction = t.maskn(REAL_FBITS).div((new BN('2')).pow(new BN(REAL_FBITS.toString())))
+  return t.shrn(REAL_FBITS).add(fraction)
+}
+
 export const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 /**

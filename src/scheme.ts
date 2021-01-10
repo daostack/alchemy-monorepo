@@ -6,11 +6,11 @@ import { mapGenesisProtocolParams } from './genesisProtocol'
 import { Operation, toIOperationObservable } from './operation'
 import { IProposalCreateOptions, IProposalQueryOptions, Proposal } from './proposal'
 import { ISchemeQueryOptions, ISchemeState, ISchemeStaticState, SchemeBase } from './schemes/base'
+import { CL4RScheme } from './schemes/cl4rep'
 import { CompetitionScheme, isCompetitionScheme } from './schemes/competition'
 import * as Competition from './schemes/competition'
 import * as ContributionReward from './schemes/contributionReward'
 import * as ContributionRewardExt from './schemes/contributionRewardExt'
-import { CTL4RScheme } from './schemes/ctl4rep'
 import * as GenericScheme from './schemes/genericScheme'
 import * as GenericSchemeMultiCall from './schemes/genericSchemeMultiCall'
 import { ReputationFromTokenScheme } from './schemes/reputationFromToken'
@@ -185,7 +185,7 @@ export class Scheme extends SchemeBase  {
   public id: Address
   public staticState: ISchemeStaticState | null = null
   public ReputationFromToken: ReputationFromTokenScheme | null = null
-  public CTL4R: CTL4RScheme | null = null
+  public CTL4R: CL4RScheme | null = null
 
   constructor(idOrOpts: Address | ISchemeStaticState, public context: Arc) {
     super(idOrOpts, context)
@@ -205,7 +205,7 @@ export class Scheme extends SchemeBase  {
       this.ReputationFromToken = new ReputationFromTokenScheme(this)
     }
     if (this.staticState.name ===  'ContinuousLocking4Reputation') {
-      this.CTL4R = new CTL4RScheme(this)
+      this.CTL4R = new CL4RScheme(this)
     }
   }
 

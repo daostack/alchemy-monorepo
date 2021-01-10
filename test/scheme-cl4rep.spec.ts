@@ -1,7 +1,8 @@
 import { first } from 'rxjs/operators'
-import { Arc, CTL4RScheme } from '../src'
+import { Arc, CL4RScheme } from '../src'
 import { newArc } from './utils'
 import BN = require('bn.js')
+import {Decimal} from 'decimal.js';
 import { createAProposal, getTestAddresses, getTestDAO, voteToPassProposal, waitUntilTrue} from './utils'
 import {
   IProposalState,
@@ -22,6 +23,7 @@ describe('Scheme', () => {
   let dao : any
   let proposalToAdd :any
   let token :any
+  const REP_CONST_A = '85000000000000000000000'
   beforeAll(async () => {
     arc = await newArc()
     token = arc.GENToken()
@@ -47,12 +49,12 @@ describe('Scheme', () => {
 
     continuousLocking4ReputationAddress = await continuousLocking4ReputationFactory.methods.createCL4R(
       dao.id,
-      new BN('10000000'),
+      new BN('10000000000000000000000000'),
       startTime,
       new BN('1000'),
       redeemEnableTime,
       new BN('12'),
-      new BN('85000'),
+      new BN(REP_CONST_A),
       new BN('900'),
       new BN('5'),
       token.address,
@@ -61,12 +63,12 @@ describe('Scheme', () => {
 
     await continuousLocking4ReputationFactory.methods.createCL4R(
       dao.id,
-      new BN('10000000'),
+      new BN('10000000000000000000000000'),
       startTime,
       new BN('1000'),
       redeemEnableTime,
       new BN('12'),
-      new BN('85000'),
+      new BN(REP_CONST_A),
       new BN('900'),
       new BN('5'),
       token.address,
@@ -100,22 +102,25 @@ describe('Scheme', () => {
     const schemes = await dao.schemes({ where: { address: continuousLocking4ReputationAddress.toLowerCase() } }).pipe(first()).toPromise()
     const scheme = schemes[0]
     expect(scheme.CTL4R).not.toBeFalsy()
-    const ctl4r = scheme.CTL4R as CTL4RScheme
-    await ctl4r.getScheme().context.fetchContractInfos({fetchPolicy: 'network-only'})
-    expect(await ctl4r.getAgreementHash()).toEqual(agreementHash)
+    const cl4r = scheme.CTL4R as CL4RScheme
+    await cl4r.getScheme().context.fetchContractInfos({fetchPolicy: 'network-only'})
+    expect(await cl4r.getAgreementHash()).toEqual(agreementHash)
     const lockAmount = new BN('300')
     await token.approveForStaking(continuousLocking4ReputationAddress.toLowerCase(), lockAmount).send()
     await token.mint(accounts[0].address, lockAmount).send()
     await arc.fetchContractInfos({fetchPolicy: 'network-only'})
     const continuousLocking4ReputationContract = arc.getContract(continuousLocking4ReputationAddress.toLowerCase())
     const lockCounterBefore = await continuousLocking4ReputationContract.methods.lockCounter().call()
-    await ctl4r.lock(lockAmount,1,0,agreementHash).send()
+    await cl4r.lock(lockAmount,1,0,agreementHash).send()
     const lockCounterAfter = await continuousLocking4ReputationContract.methods.lockCounter().call()
     expect(Number(lockCounterBefore)+1).toEqual(Number(lockCounterAfter))
-    const reputationRewardPerPeriod = new BN('85000')
-    const repreward = await ctl4r.getReputationRewardForLockingIds([lockCounterAfter],0,reputationRewardPerPeriod)
+    const reputationRewardPerPeriod = new Decimal(REP_CONST_A)
+    const A = await continuousLocking4ReputationContract.methods.repRewardConstA().call()
+    const B = await continuousLocking4ReputationContract.methods.repRewardConstB().call()
+    const repreward = await cl4r.getReputationRewardForLockingIds([lockCounterAfter],0,reputationRewardPerPeriod)
     expect(repreward).toEqual(reputationRewardPerPeriod)
-    await ctl4r.extendLocking(2,0,lockCounterAfter,agreementHash).send()
+    expect(await cl4r.getRepuationRewardForBatch(A,B,0)).toEqual(reputationRewardPerPeriod)
+    await cl4r.extendLocking(2,0,lockCounterAfter,agreementHash).send()
 
   })
 })

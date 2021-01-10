@@ -1,6 +1,8 @@
 import BN = require('bn.js')
+import {Decimal} from 'decimal.js'
 import { from } from 'rxjs'
 import { concatMap } from 'rxjs/operators'
+import { realMathToBN, realMathToNumber } from '../utils'
 
 import {
   Operation,
@@ -11,9 +13,28 @@ import { Address } from '../types'
 
 import { Scheme } from '../scheme'
 
-export class CTL4RScheme {
+export class CL4RScheme {
 
   constructor(public scheme: Scheme) {
+
+  }
+
+  /**
+   * getRepuationRewardForBatch
+   * according to the formula
+   * repPerBatch = _repRewardConstA * ((_repRewardConstB/1000) ** batchIndex)
+   * @param  repRewardConstA
+   * @param  repRewardConstB
+   * @param  batchIndex the batchIndex to calculate
+   * @return     RepuationRewardForBatch
+   */
+  public async getRepuationRewardForBatch(repRewardConstA: string,
+                                          repRewardConstB: string,
+                                          batchIndex: number)
+                                          : Promise<Decimal> {
+    const constB = new Decimal(realMathToNumber(new BN(repRewardConstB)))
+    const constA = new Decimal(realMathToBN(new BN(repRewardConstA)).toString())
+    return constA.times(constB.toPower(batchIndex))
 
   }
 
@@ -25,13 +46,17 @@ export class CTL4RScheme {
 
   public async getReputationRewardForLockingIds(lockingIds: number[],
                                                 batchIndex: number,
-                                                repuationRewardForPeriod: BN)
-                                                : Promise<BN> {
-    let reputation = new BN('0')
+                                                repuationRewardForPeriod: Decimal)
+                                                : Promise<Decimal> {
+    let reputation = new Decimal('0')
     const contract = await this.getContract()
-    const lockingTotalScore = new BN(await contract.methods.batches(batchIndex).call())
+    const lockingTotalScore = new Decimal(await contract.methods.batches(batchIndex).call())
+
+    if (lockingTotalScore.isZero()) {
+      return lockingTotalScore
+    }
     for (const lockingId of lockingIds) {
-      const lockingIdScore = new BN(await contract.methods.getLockingIdScore(batchIndex, lockingId).call())
+      const lockingIdScore = new Decimal(await contract.methods.getLockingIdScore(batchIndex, lockingId).call())
       reputation = reputation.add(lockingIdScore.div(lockingTotalScore).mul(repuationRewardForPeriod))
     }
     return reputation

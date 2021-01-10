@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc.js",
-  "version": "0.2.84",
+  "version": "0.2.85",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -112,6 +112,7 @@
     "apollo-link-http": "^1.5.15",
     "apollo-link-retry": "^2.2.15",
     "apollo-link-ws": "^1.0.18",
+    "decimal.js": "^10.2.1",
     "form-data": "^3.0.0",
     "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",
