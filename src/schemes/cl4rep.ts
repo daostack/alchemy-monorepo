@@ -35,7 +35,6 @@ export class CL4RScheme {
     const constB = new Decimal(realMathToNumber(new BN(repRewardConstB)))
     const constA = new Decimal(realMathToBN(new BN(repRewardConstA)).toString())
     return constA.times(constB.toPower(batchIndex))
-
   }
 
   public async getAgreementHash(): Promise<string> {
@@ -132,6 +131,33 @@ export class CL4RScheme {
         concatMap((contract) => {
           let transaction: any
           transaction = contract.methods.release(
+            beneficiary,
+            lockingId
+          )
+          const errorHandler = async (error: Error) => {
+            try {
+              await transaction.call()
+            } catch (err) {
+              throw err
+            }
+            return error
+          }
+          return this.scheme.context.sendTransaction(transaction, mapReceipt, errorHandler)
+        })
+      )
+      return toIOperationObservable(observable)
+    }
+
+    public redeem(beneficiary: Address, lockingId: number): Operation<any> {
+      const mapReceipt = (receipt: any) => {
+        return receipt
+      }
+
+      const observable = from(this.getContract())
+        .pipe(
+        concatMap((contract) => {
+          let transaction: any
+          transaction = contract.methods.redeem(
             beneficiary,
             lockingId
           )
