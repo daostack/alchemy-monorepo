@@ -121,6 +121,5 @@ describe('Scheme', () => {
     expect(repreward).toEqual(reputationRewardPerPeriod)
     expect(await cl4r.getRepuationRewardForBatch(A,B,0)).toEqual(reputationRewardPerPeriod)
     await cl4r.extendLocking(2,0,lockCounterAfter,agreementHash).send()
-
   })
 })
