@@ -171,6 +171,8 @@ const wrapCommand = fn => async options => {
           let state = JSON.parse(fs.readFileSync(stateFile))
           state[network] = {}
           if (!objectExists(state.private) &&
+          !objectExists(state.xdai) &&
+          !objectExists(state.sokol) &&
           !objectExists(state.rinkeby) &&
           !objectExists(state.kovan) &&
           !objectExists(state.mainnet)) {
