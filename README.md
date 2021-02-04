@@ -1,4 +1,6 @@
-# alchemy-monorepo
+![alchemy logo](./assets/logo.png)
+
+
 
 
 
