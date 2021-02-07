@@ -1,0 +1,64 @@
+# A composition of services that are needed to run the tests of the client
+# This is for DEVELOPMENT, not production
+
+version: "3"
+services:
+  alchemy:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    links:
+      - graph-node
+    working_dir: /alchemy/
+    volumes:
+      - ./src:/alchemy/src
+      - ./scripts:/alchemy/scripts
+      - ./test:/alchemy/test
+      - ./package.json:/alchemy/package.json
+      - ./package-lock.json:/alchemy/package-lock.json
+      - ./webpack.base.config.js:/alchemy/webpack.base.config.js
+      - ./app.json:/alchemy/app.json
+      - ./webpack.dev.config.js:/alchemy/webpack.dev.config.js
+      - ./webpack.docker.config.js:/alchemy/webpack.docker.config.js
+      - ./entry.sh:/entry.sh
+      - ./config:/alchemy/config
+    ports:
+      - 3000:3000
+
+  graph-node:
+    image: 'graphprotocol/graph-node:v0.18.0'
+    ports:
+      - 8000:8000
+      - 8001:8001
+      - 8020:8020
+    links:
+      - ipfs
+      - postgres
+      - ganache
+    environment:
+      postgres_host: postgres:5432
+      postgres_user: postgres
+      postgres_pass: 'letmein'
+      postgres_db: postgres
+      ipfs: ipfs:5001
+      ethereum: private:http://ganache:8545
+      GRAPH_LOG: "graph.log"
+      GRAPH_GRAPHQL_MAX_FIRST: 1000
+      GRAPH_MAX_IPFS_FILE_BYTES: 900000
+
+  ipfs:
+    image: daostack/test-env-ipfs:3.0.42
+    ports:
+      - 5001:5001
+
+  postgres:
+    image: daostack/test-env-postgres:3.0.42
+    ports:
+      - 9432:5432
+    environment:
+      POSTGRES_PASSWORD: 'letmein'
+
+  ganache:
+    image: daostack/test-env-ganache:3.0.42
+    ports:
+      - 8545:8545

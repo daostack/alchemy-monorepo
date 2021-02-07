@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "outDir": "dist",
+    "lib": [
+      "es2019",
+      "dom",
+      "esnext.asynciterable"
+    ],
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "target": "es6",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "baseUrl": "src",
+    "rootDirs": [
+      "src",
+      "stories"
+    ],
+    "skipLibCheck": true,
+    "noUnusedLocals": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "typings/**/*.d.ts"
+  ]
+}
