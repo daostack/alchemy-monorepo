@@ -1,0 +1,101 @@
+{
+   "orgName": "COVDAO",
+   "tokenName": "COVDAO",
+   "tokenSymbol": "COV",
+   "ContributionReward": [{}],
+   "SchemeRegistrar": [{  
+     "voteRegisterParams": 1,
+     "voteRemoveParams": 1
+   }],
+   "StandAloneContracts": [
+     {
+       "name": "ContributionRewardExt",
+       "fromArc": true,
+       "arcVersion": "0.0.1-rc.41"
+     },
+     {
+       "name": "Competition",
+       "fromArc": true,
+       "params": [{ "StandAloneContract": 0 }],
+       "arcVersion": "0.0.1-rc.41"
+     }
+   ],
+   "VotingMachinesParams": [
+     {
+       "boostedVotePeriodLimit": 86400,
+       "daoBountyConst": 10,
+       "minimumDaoBounty": 50,
+       "queuedVotePeriodLimit": 604800,
+       "queuedVoteRequiredPercentage": 50,
+       "preBoostedVotePeriodLimit": 86400,
+       "proposingRepReward": 100,
+       "quietEndingPeriod": 57600,
+       "thresholdConst": 2000,
+       "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+       "votersReputationLossRatio": 1,
+       "activationTime": 0
+     },
+     {
+       "boostedVotePeriodLimit": 345600,
+       "daoBountyConst": 10,
+       "minimumDaoBounty": 400,
+       "queuedVotePeriodLimit": 1209600,
+       "queuedVoteRequiredPercentage": 50,
+       "preBoostedVotePeriodLimit": 345600,
+       "proposingRepReward": 100,
+       "quietEndingPeriod": 172800,
+       "thresholdConst": 2000,
+       "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+       "votersReputationLossRatio": 4,
+       "activationTime": 0
+     }
+   ],
+   "schemes": {
+     "ContributionReward": true,
+     "SchemeRegistrar": true
+   },
+   "CustomSchemes": [
+     {
+       "name": "ContributionRewardExt",
+       "schemeName": "ContributionRewardExt",
+       "address": { "StandAloneContract": 0 },
+       "isUniversal": false,
+       "params": [
+         "GenesisProtocolAddress",
+         { "voteParams": 0 },
+         { "StandAloneContract": 1 }
+       ],
+       "permissions": "0x00000000",
+       "alias": "ContributionRewardExt",
+       "fromArc": true,
+       "arcVersion": "0.0.1-rc.41"
+     },
+     {
+       "name": "ReputationAdmin",
+       "schemeName": "ReputationAdmin",
+       "isUniversal": false,
+       "params": [0, 1614764214000, 0],
+       "runFunctions": [
+         {
+           "functionName": "transferOwnership",
+           "params": [
+             "0x06044b5359D8dF7886366c22C61c7ecd29BECac7"
+           ]
+         }
+       ],
+       "permissions": "0x00000000",
+       "alias": "ReputationAdmin",
+       "fromArc": true,
+       "arcVersion": "0.0.1-rc.41"
+     }
+   ],
+   "useDaoCreator": true,
+   "founders": [
+     {
+       "address": "0x06044b5359D8dF7886366c22C61c7ecd29BECac7",
+       "tokens": 0,
+       "reputation": 1000
+     }
+   ],
+   "arcVersion": "0.0.1-rc.41"
+ }

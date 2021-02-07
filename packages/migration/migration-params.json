@@ -1,0 +1,180 @@
+{
+  "ContributionReward": [{}],
+  "SchemeRegistrar": [{}],
+  "GlobalConstraintRegistrar": [{}],
+  "UpgradeScheme": [{}],
+  "StandAloneContracts":[
+    {
+       "name": "Wallet",
+       "fromArc": true,
+       "runFunctions": [
+          { 
+             "functionName": "transferOwnership",
+             "params": [
+                "AvatarAddress"
+             ]
+          }
+       ]
+    },
+    {
+      "name": "ContributionRewardExt",
+      "fromArc": true,
+      "arcVersion": "0.0.1-rc.43"
+    },
+    {
+      "name": "Competition",
+      "fromArc": true,
+      "params": [
+        { "StandAloneContract": 1 }
+      ],
+      "arcVersion": "0.0.1-rc.43"
+    },
+    {
+      "name": "GenericSchemeMultiCall",
+      "fromArc": true,
+      "arcVersion": "0.0.1-rc.51"
+    },
+    {
+      "name": "ActionMock",
+      "fromArc": true
+    },
+    {
+      "name": "DxDaoSchemeConstraints",
+      "fromArc": true,
+      "params": [
+        "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1",
+        100000,
+        100000,
+        ["0x0000000000000000000000000000000000000000"],
+        [1000],
+        ["0x0000000000000000000000000000000000000000"],
+        { "StandAloneContract": 3 }
+      ],
+      "arcVersion": "0.0.1-rc.51"
+    }
+  ],
+  "VotingMachinesParams": [
+    {
+      "boostedVotePeriodLimit": 600,
+      "daoBountyConst": 10,
+      "minimumDaoBounty": 100,
+      "queuedVotePeriodLimit": 1800,
+      "queuedVoteRequiredPercentage": 50,
+      "preBoostedVotePeriodLimit": 600,
+      "proposingRepReward": 5,
+      "quietEndingPeriod": 300,
+      "thresholdConst": 2000,
+      "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+      "votersReputationLossRatio": 1,
+      "activationTime": 0
+    }
+  ],
+  "schemes": {
+    "ContributionReward": true,
+    "SchemeRegistrar": true,
+    "GlobalConstraintRegistrar": true,
+    "UpgradeScheme": true
+  },
+  "CustomSchemes": [
+     {
+      "name": "GenericScheme",
+      "schemeName":"GenericScheme",
+      "isUniversal":false,
+      "params": [
+        "GenesisProtocolAddress",
+        {"voteParams": 0},
+        { "StandAloneContract": 5 }
+      ],
+      "permissions": "0x00000010",
+      "alias" : "GenericSchemeAlias",
+      "fromArc": true
+    },
+    {
+      "name":"ContributionRewardExt",
+      "schemeName":"ContributionRewardExt",
+      "address": { "StandAloneContract": 1 },
+      "isUniversal":false,
+      "params":[
+         "GenesisProtocolAddress",
+         { "voteParams":0 },
+         { "StandAloneContract": 2 }
+      ],
+      "permissions":"0x00000000",
+      "alias":"ContributionRewardExt",
+      "fromArc":true,
+      "arcVersion": "0.0.1-rc.43"
+   },
+   {
+      "name":"GenericSchemeMultiCall",
+      "schemeName":"GenericSchemeMultiCall",
+      "isUniversal":false,
+      "address": { "StandAloneContract": 3 },
+      "params":[
+        "GenesisProtocolAddress",
+        { "voteParams":0 },
+        { "StandAloneContract": 5 }
+      ],
+      "permissions": "0x00000010",
+      "alias": "GenericSchemeMultiCall",
+      "fromArc": true,
+      "arcVersion": "0.0.1-rc.51"
+  },
+  {
+    "name":"ContinuousLocking4Reputation",
+    "schemeName":"ContinuousLocking4Reputation",
+    "isUniversal":false,
+    "params":[
+      850000,
+      0,
+      20,
+      20,
+      12,
+      85000,
+      900,
+      100,
+      "DAOTokenAddress",
+      "0x0000000000000000000000000000000000000001"
+    ],
+    "permissions":"0x00000010",
+    "alias":"ContinuousLocking4Reputation",
+    "fromArc":true,
+    "arcVersion": "0.0.1-rc.55"
+  }
+  ],
+  "unregisterOwner": true,
+  "useUController": false,
+  "useDaoCreator": true,
+  "noTrack": false,
+  "founders": [
+    {
+      "address": "0x90f8bf6a479f320ead074411a4b0e7944ea8c9c1",
+      "tokens": 1000,
+      "reputation": 1000
+    },
+    {
+      "address": "0xffcf8fdee72ac11b5c542428b35eef5769c409f0",
+      "tokens": 1000,
+      "reputation": 1000
+    },
+    {
+      "address": "0x22d491bde2303f2f43325b2108d26f1eaba1e32b",
+      "tokens": 1000,
+      "reputation": 1000
+    },
+    {
+      "address": "0xe11ba2b4d45eaed5996cd0823791e0c93114882d",
+      "tokens": 1000,
+      "reputation": 1000
+    },
+    {
+      "address": "0xd03ea8624c8c5987235048901fb614fdca89b117",
+      "tokens": 1000,
+      "reputation": 1000
+    },
+    {
+      "address": "0x95ced938f7991cd0dfcb48f0a06a40fa1af46ebc",
+      "tokens": 1000,
+      "reputation": 1000
+    }
+  ]
+}

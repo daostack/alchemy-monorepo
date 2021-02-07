@@ -1,0 +1,64 @@
+{
+   "orgName":"DAOfund Manager",
+   "tokenName":"InvestmentToken",
+   "tokenSymbol":"ITKN",
+   "ContributionReward":{
+   },
+   "GenericScheme":{
+      "targetContract":"0x0000000000000000000000000000000000000000"
+   },
+   "SchemeRegistrar":{  
+       "voteRegisterParams": 1,
+       "voteRemoveParams": 1
+   },
+   "UpgradeScheme":{
+       "voteParams": 1
+   },
+   "VotingMachinesParams":[
+      {
+         "activationTime": 0,
+         "boostedVotePeriodLimit": 691200,
+         "daoBountyConst": 10,
+         "minimumDaoBounty": 300,
+         "preBoostedVotePeriodLimit": 345600,
+         "proposingRepReward": 0,
+         "queuedVotePeriodLimit": 2592000,
+         "queuedVoteRequiredPercentage": 50,
+         "quietEndingPeriod": 259200,
+         "thresholdConst": 1200,
+         "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+         "votersReputationLossRatio": 0
+      },
+      {
+         "activationTime": 0,
+         "boostedVotePeriodLimit": 691200,
+         "daoBountyConst":10,
+         "minimumDaoBounty": 300,
+         "preBoostedVotePeriodLimit": 691200,
+         "proposingRepReward": 0,
+         "queuedVotePeriodLimit": 2592000,
+         "queuedVoteRequiredPercentage": 50,
+         "quietEndingPeriod": 259200,
+         "thresholdConst": 1500,
+         "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+         "votersReputationLossRatio": 0
+      }
+   ],
+   "schemes":{
+      "ContributionReward":true,
+      "GenericScheme":false,
+      "SchemeRegistrar":true,
+      "GlobalConstraintRegistrar": false,
+      "UpgradeScheme":true
+   },
+   "unregisterOwner":true,
+   "useUController":false,
+   "useDaoCreator":true,
+   "founders":[
+      {
+         "address":"0xa15Ca74e65bf72730811ABF95163E89aD9b9DFF6",
+         "tokens":100,
+         "reputation":100
+      }
+   ]
+}
