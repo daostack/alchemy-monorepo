@@ -1,0 +1,17 @@
+*sublime*
+*.pyc
+build/
+logs/
+node_modules/
+.node-xmlhttprequest-sync*
+*.tgz
+.vscode/
+site/
+yarn*
+cache/
+artifacts/
+.DS_Store
+report*
+coverage/
+coverage.json
+.covera*

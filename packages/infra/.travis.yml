@@ -1,0 +1,33 @@
+dist: trusty
+
+language: node_js
+
+node_js:
+  - "14.5.0"
+
+before_install:
+
+install:
+  - npm ci
+  - rm -rf build/ # remove any remaining artifacts from a previous build
+  - npx buidler --version
+  - npx buidler clean
+
+jobs:
+  include:
+      - stage: tests
+        name: "Unit tests"
+        script: npx buidler test
+
+      - stage: tests
+        name: "Solidity Lint"
+        script: npx buidler check
+
+      - stage: tests
+        name: "JS Lint"
+        script: npx eslint .
+
+      - stage: coverage
+        name: "Solidity Test Coverage"
+        if: branch = master
+        script: npm run coveralls
