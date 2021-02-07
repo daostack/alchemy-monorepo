@@ -1,0 +1,66 @@
+{
+  "name": "Judicious Dolls",
+  "Avatar": "0x79587259c3141bDc79f5AEfFDFE219fcBA2c5740",
+  "DAOToken": "0xbFE4cE5729a4E9e193EFABB538F95556A3fC5f5d",
+  "Reputation": "0xFffCE877f57272F13f0Dc606B9525c0dF72AA78d",
+  "Controller": "0x7FD71ac36939150Fd7cabbf22B6E1333fC736D0f",
+  "Schemes": [
+    {
+      "name": "GenericScheme",
+      "alias": "GenericSchemeAlias",
+      "address": "0x8933Ef44518714033a357753BE9A4f90a1c58a28",
+      "arcVersion": "0.0.1-rc.41"
+    },
+    {
+      "name": "ContributionRewardExt",
+      "alias": "ContributionRewardExt",
+      "address": "0x1c0c66C9298cf0FFF3EC94Af7C487fA28dE31afC",
+      "arcVersion": "0.0.1-rc.43"
+    },
+    {
+      "name": "GenericSchemeMultiCall",
+      "alias": "GenericSchemeMultiCall",
+      "address": "0xa58Acd9F7513762D70c84baE883464A0466E3367",
+      "arcVersion": "0.0.1-rc.51"
+    },
+    {
+      "name": "ContinuousLocking4Reputation",
+      "alias": "ContinuousLocking4Reputation",
+      "address": "0x03f40E33bdc51750B24bab0DB5B38E50227261D1",
+      "arcVersion": "0.0.1-rc.55"
+    }
+  ],
+  "StandAloneContracts": [
+    {
+      "name": "Wallet",
+      "address": "0xFfd967913f3691CBecCB85FF11ef3De6eC84e092",
+      "arcVersion": "0.0.1-rc.41"
+    },
+    {
+      "name": "ContributionRewardExt",
+      "address": "0x1c0c66C9298cf0FFF3EC94Af7C487fA28dE31afC",
+      "arcVersion": "0.0.1-rc.43"
+    },
+    {
+      "name": "Competition",
+      "address": "0xB1Eb7eF857cE5CE05bC014293c671b6B2f8BF872",
+      "arcVersion": "0.0.1-rc.43"
+    },
+    {
+      "name": "GenericSchemeMultiCall",
+      "address": "0xa58Acd9F7513762D70c84baE883464A0466E3367",
+      "arcVersion": "0.0.1-rc.51"
+    },
+    {
+      "name": "ActionMock",
+      "address": "0x3E3b213A690f070B36251f9c1c55fb9006c671f9",
+      "arcVersion": "0.0.1-rc.41"
+    },
+    {
+      "name": "DxDaoSchemeConstraints",
+      "address": "0x6216151F14944b809D6A70541a2b4B5450553CCb",
+      "arcVersion": "0.0.1-rc.51"
+    }
+  ],
+  "arcVersion": "0.0.1-rc.41"
+}

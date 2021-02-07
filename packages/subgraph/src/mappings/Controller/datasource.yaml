@@ -1,0 +1,34 @@
+abis:
+  - Controller
+  - Avatar
+  - Reputation
+  - DAOToken
+  - SchemeRegistrar
+  - ContinuousLocking4Reputation
+  - ContributionReward
+  - ContributionRewardExt
+  - GenericScheme
+  - GenericSchemeMultiCall
+  - UGenericScheme
+  - GenesisProtocol
+  - SchemeConstraints
+entities:
+  - ControllerOrganization
+  - ControllerScheme
+  - ControllerGlobalConstraint
+  - ControllerRegisterScheme
+  - ControllerUnregisterScheme
+  - ControllerUpgradeController
+  - ControllerAddGlobalConstraint
+  - ControllerRemoveGlobalConstraint
+eventHandlers:
+  - event: RegisterScheme(indexed address,indexed address)
+    handler: handleRegisterScheme
+  - event: UnregisterScheme(indexed address,indexed address)
+    handler: handleUnregisterScheme
+  - event: UpgradeController(indexed address,address)
+    handler: handleUpgradeController
+  - event: AddGlobalConstraint(indexed address,bytes32,uint8)
+    handler: handleAddGlobalConstraint
+  - event: RemoveGlobalConstraint(indexed address,uint256,bool)
+    handler: handleRemoveGlobalConstraint
