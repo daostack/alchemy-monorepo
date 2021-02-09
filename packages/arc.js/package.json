@@ -34,7 +34,8 @@
     "test:watch": "jest --watch",
     "tslint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "lint-fix": "tslint --fix --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
-    "test-env-up": "./test-env-up.sh"
+    "test-env-up": "./test-env-up.sh",
+    "test-ci": "./test-ci.sh"
   },
   "jest": {
     "transform": {

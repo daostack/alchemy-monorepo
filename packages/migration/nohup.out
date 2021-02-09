@@ -1,0 +1,58 @@
+
+> @daostack/migration@0.0.1-rc.56-v0 ganache /Users/benkaufman/Documents/Work/DAOstack/alchemy-monorepo/packages/migration
+> mkdirp db && ganache-cli --db=./db -l 8000000 --networkId 1512051714758 --deterministic --hostname=0.0.0.0
+
+sh: mkdirp: command not found
+npm ERR! code ELIFECYCLE
+npm ERR! syscall spawn
+npm ERR! file sh
+npm ERR! errno ENOENT
+npm ERR! @daostack/migration@0.0.1-rc.56-v0 ganache: `mkdirp db && ganache-cli --db=./db -l 8000000 --networkId 1512051714758 --deterministic --hostname=0.0.0.0`
+npm ERR! spawn ENOENT
+npm ERR! 
+npm ERR! Failed at the @daostack/migration@0.0.1-rc.56-v0 ganache script.
+npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /Users/benkaufman/.npm/_logs/2021-02-09T12_54_49_770Z-debug.log
+
+> @daostack/migration@0.0.1-rc.56-v0 ganache /Users/benkaufman/Documents/Work/DAOstack/alchemy-monorepo/packages/migration
+> mkdirp db && ganache-cli --db=./db -l 8000000 --networkId 1512051714758 --deterministic --hostname=0.0.0.0
+
+sh: mkdirp: command not found
+npm ERR! code ELIFECYCLE
+npm ERR! syscall spawn
+npm ERR! file sh
+npm ERR! errno ENOENT
+npm ERR! @daostack/migration@0.0.1-rc.56-v0 ganache: `mkdirp db && ganache-cli --db=./db -l 8000000 --networkId 1512051714758 --deterministic --hostname=0.0.0.0`
+npm ERR! spawn ENOENT
+npm ERR! 
+npm ERR! Failed at the @daostack/migration@0.0.1-rc.56-v0 ganache script.
+npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /Users/benkaufman/.npm/_logs/2021-02-09T12_55_22_967Z-debug.log
+
+> @daostack/migration@0.0.1-rc.56-v0 ganache /Users/benkaufman/Documents/Work/DAOstack/alchemy-monorepo/packages/migration
+> mkdirp db && ganache-cli --db=./db -l 8000000 --networkId 1512051714758 --deterministic --hostname=0.0.0.0
+
+Ganache CLI v6.9.0 (ganache-core: 2.10.1)
+Error: listen EADDRINUSE: address already in use 0.0.0.0:8545
+    at Server.setupListenHandle [as _listen2] (net.js:1294:14)
+    at listenInCluster (net.js:1342:12)
+    at doListen (net.js:1480:7)
+    at internalTickCallback (internal/process/next_tick.js:72:19)
+    at process._tickCallback (internal/process/next_tick.js:47:5)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:778:11)
+    at startup (internal/bootstrap/node.js:300:19)
+    at bootstrapNodeJSCore (internal/bootstrap/node.js:826:3)
+npm ERR! code ELIFECYCLE
+npm ERR! errno 1
+npm ERR! @daostack/migration@0.0.1-rc.56-v0 ganache: `mkdirp db && ganache-cli --db=./db -l 8000000 --networkId 1512051714758 --deterministic --hostname=0.0.0.0`
+npm ERR! Exit status 1
+npm ERR! 
+npm ERR! Failed at the @daostack/migration@0.0.1-rc.56-v0 ganache script.
+npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /Users/benkaufman/.npm/_logs/2021-02-09T12_57_26_258Z-debug.log
