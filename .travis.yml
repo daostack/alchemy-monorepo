@@ -13,8 +13,6 @@ addons:
       - docker-ce
       - libsecret-1-dev
 
-install:
-  - yarn install
-
 script:
-  - yarn run lerna run test-ci --since origin/main
+  - yarn install
+  - yarn run lerna run test-ci --since main
