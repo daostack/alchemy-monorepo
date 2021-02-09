@@ -15,4 +15,5 @@ addons:
 
 script:
   - yarn install
+  - yarn run lerna bootstrap
   - yarn run lerna run test-ci --since main
