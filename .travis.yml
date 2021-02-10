@@ -17,4 +17,4 @@ script:
   - git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
   - yarn install
   - yarn run lerna bootstrap
-  - yarn run lerna run test-ci --since dev
+  - yarn run lerna run test-ci --since origin/main
