@@ -1,5 +1,6 @@
 rm -rf node_modules/ # remove any remaining artifacts from a previous build
 npm i
+npm install --save-dev hardhat
 rm -rf build/ # remove any remaining artifacts from a previous build
 npx hardhat --version
 npx hardhat clean
