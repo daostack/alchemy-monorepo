@@ -25,13 +25,14 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - run: yarn install
+    - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
     - name: Coveralls
       working-directory: ./packages/infra
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-    - run: yarn install
-    - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
-    - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/infra/" > /dev/null; then cd packages/infra && ./test-ci.sh && cd ../..;fi
+      run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/infra/" > /dev/null; then ./test-ci.sh;fi
+      
     # - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/arc/" > /dev/null; then cd packages/arc && ./test-ci.sh && cd ../..;fi
           
