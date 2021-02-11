@@ -20,12 +20,14 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - name: Use Node.js ${{ matrix.node-version }}
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-    - uses: coverallsapp/github-action@master
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
     - run: yarn install
     - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
