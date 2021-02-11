@@ -20,12 +20,15 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+    - uses: coverallsapp/github-action@master
       with:
         node-version: ${{ matrix.node-version }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
     - run: yarn install
     - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
     - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/infra/" > /dev/null; then cd packages/infra && ./test-ci.sh && cd ../..;fi
     # - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/arc/" > /dev/null; then cd packages/arc && ./test-ci.sh && cd ../..;fi
+          
