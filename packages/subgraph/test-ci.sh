@@ -1,3 +1,4 @@
+npm run docker:stop
 docker --version
 docker-compose --version
 
@@ -16,7 +17,7 @@ docker images --digests | grep graph-node
 docker-compose exec graph-node graph-node --version
   # - docker-compose logs graph-node
 echo -en 'travis_fold:end:script.2\\r'
-sleep 120
+sleep 180
 
 npm run lint
 npm run jest
