@@ -28,6 +28,7 @@ jobs:
     - run: yarn install
     - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
     - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/infra/" > /dev/null; then cd packages/infra && ./test-ci.sh && cd ../..;fi
+    - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/arc/" > /dev/null; then cd packages/arc && ./test-ci.sh && cd ../..;fi
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:

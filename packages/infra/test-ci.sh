@@ -7,4 +7,4 @@ npx buidler test
 npx buidler check
 npx eslint .
 # TODO: If branch is master
-npm run coveralls
+# npm run coveralls
