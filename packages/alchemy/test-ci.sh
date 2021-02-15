@@ -1,3 +1,5 @@
+npm i -g eslint
+npm i -g jest
 npm ci
 sudo apt-get install -y libsecret-1-dev curl
 docker-compose logs ganache
