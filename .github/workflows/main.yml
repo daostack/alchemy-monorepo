@@ -22,7 +22,7 @@ jobs:
         node-version: '14.5'
     - run: yarn install
     - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
-    - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/infra/" > /dev/null; then cd packages/infra && ./test-ci.sh && npm run coveralls && cd ../..;fi
+    - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/infra/" > /dev/null; then cd packages/infra && ./test-ci.sh && cd ../..;fi
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
@@ -79,3 +79,17 @@ jobs:
     - run: yarn install
     - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
     - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/subgraph/" > /dev/null; then cd packages/subgraph && ./test-ci.sh && cd ../..;fi
+
+  arcjs:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 10.14.1
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.14.1'
+    - run: yarn install
+    - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+    - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/arc.js/" > /dev/null; then cd packages/arc.js && ./test-ci.sh && cd ../..;fi
