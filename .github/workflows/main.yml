@@ -99,15 +99,20 @@ jobs:
   alchemy:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/alchemy
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js 10.14.1
+
+    - name: Use Node.js 12.18.4
       uses: actions/setup-node@v1
       with:
-        node-version: '10.14.1'
-    - run: yarn install
-    - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
-    - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/alchemy/" > /dev/null; then cd packages/alchemy && ./test-ci.sh && cd ../..;fi
+        node-version: '12.18.4'
+
+#    - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+#    - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/alchemy/" > /dev/null; then cd packages/alchemy && yarn && ./test-ci.sh && cd ../..;fi
+    - run: ./test-ci.sh
 
 
