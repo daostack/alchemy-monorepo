@@ -1,0 +1,117 @@
+{
+    "orgName": "Psychedelic Society DAO",
+    "tokenName": "Psychedelic Society Token",
+    "tokenSymbol": "PST",
+    "ContributionReward": {
+    },
+    "SchemeRegistrar": {
+      "voteRegisterParams": 1,
+      "voteRemoveParams": 1
+    },
+    "VotingMachinesParams": [
+      {
+        "boostedVotePeriodLimit": 345600,
+        "daoBountyConst": 10,
+        "minimumDaoBounty": 150,
+        "queuedVotePeriodLimit": 2592000,
+        "queuedVoteRequiredPercentage": 50,
+        "preBoostedVotePeriodLimit": 86400,
+        "proposingRepReward": 50,
+        "quietEndingPeriod": 172800,
+        "thresholdConst": 1200,
+        "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+        "votersReputationLossRatio": 4,
+        "activationTime": 0
+      },
+      {
+        "boostedVotePeriodLimit": 691200,
+        "daoBountyConst": 10,
+        "minimumDaoBounty": 500,
+        "queuedVotePeriodLimit": 5184000,
+        "queuedVoteRequiredPercentage": 50,
+        "preBoostedVotePeriodLimit": 172800,
+        "proposingRepReward": 200,
+        "quietEndingPeriod": 345600,
+        "thresholdConst": 1500,
+        "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+        "votersReputationLossRatio": 4,
+        "activationTime": 0
+      }
+    ],
+    "schemes": {
+      "ContributionReward": true,
+      "GenericScheme": false,
+      "SchemeRegistrar": true,
+      "GlobalConstraintRegistrar": false,
+      "UpgradeScheme": false
+    },
+    "unregisterOwner": true,
+    "useUController": false,
+    "useDaoCreator": true,
+    "founders": [
+      {
+        "address": "0x72e1638bd8cd371bfb04cf665b749a0e4ae38324",
+        "reputation": 6250
+      },
+      {
+        "address": "0x9f23e8541259c1F3Bb658763a9fEd4A37338d88B",
+        "reputation": 6250
+      },
+      {
+        "address": "0x29c22C922B71Df08ECaB97Dc41f1398045f18f5e",
+        "reputation": 6250
+      },
+      {
+        "address": "0x52091702A7B669594dBf2723Af931CF78deb2de4",
+        "reputation": 6250
+      },
+      {
+        "address": "0x2EE705EF300E2d5A07B6bA61fccbD7B54CA5756f",
+        "reputation": 6250
+      },{
+        "address": "0x54DE82C8E0e35985bbadE360315FeC517f3135cA",
+        "reputation": 6250
+      },
+      {
+        "address": "0x6dC61006B08BAd7991DFC3aD917785b0FB2652ac",
+        "reputation": 6250
+      },
+      {
+        "address": "0x2cC059B1063F3EA8de3617819CC319fD518429e9",
+        "reputation": 6250
+      },
+      {
+        "address": "0x18dBFb1C3348E9BEb4512907582A81AD59b638CE",
+        "reputation": 6250
+      },
+      {
+        "address": "0x3220F59a089F6b68011b0214339Ed1C902bA6012",
+        "reputation": 6250
+      },
+      {
+        "address": "0x066579fd5691C04736436c63385FC63c92A6f16E",
+        "reputation": 6250
+      },
+      {
+        "address": "0xC33CCb77B7Be234411AECE814023cBE95f013223",
+        "reputation": 6250
+      },
+      {
+        "address": "0x6fAb193BCAaa5DebaC6619E2302c9f068d2Ba468",
+        "reputation": 6250
+      },
+      {
+        "address": "0x166C50D012935B8434647A87FBd00ac176DB1aC5",
+        "reputation": 6250
+      },
+      {
+        "address": "0x1bb6821b8AedA87186F68036BCeAbd0deAE2B6DA",
+        "reputation": 6250
+      },
+      {
+        "address": "0xd03D048089B469A8dc399ad306aA125b58Deb7fa",
+        "reputation": 6250
+      }
+    ]
+  }
+  

@@ -1,0 +1,37 @@
+{
+  "contractName": "GenesisProtocolInterface",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "uint256[11]",
+          "name": "_params",
+          "type": "uint256[11]"
+        },
+        {
+          "internalType": "address",
+          "name": "_voteOnBehalf",
+          "type": "address"
+        }
+      ],
+      "name": "setParameters",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.17+commit.d19bba13.Emscripten.clang"
+  }
+}

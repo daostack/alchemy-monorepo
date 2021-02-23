@@ -1,0 +1,183 @@
+.body {
+  text-align: center;
+}
+
+.voteBreakdown {
+  position: relative;
+  display: inline-block;
+  float: left;
+}
+
+.voteBreakDown.voteUp, .voteBreakdown.voteDown {
+  width: 100px;
+  height: 100px;
+  display: inline-block;
+}
+
+.voteBreakdown.voteDown {
+  margin-left: 50px;
+}
+
+.voteBreakdown.voteUp {
+  margin-right: 50px;
+}
+
+.summary {
+  padding-top: 20px;
+  padding-bottom: 5px;
+  width: fit-content;
+  display: inline-block;
+}
+
+.summary::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.graphContainer {
+  width: 100px;
+  height: 100px;
+  display: inline-block;
+  text-align: center;
+  float: left;
+}
+
+.voteUp {
+  position: relative;
+}
+
+.voteDown {
+  position: relative;
+}
+
+.upvoted, .downvoted {
+  display: none;
+}
+
+.votedFor .upvote, .votedAgainst .downvote  {
+  display: none;
+}
+
+.votedFor .upvoted, .votedAgainst .downvoted {
+  display: inline;
+}
+
+.account {
+  position: relative;
+  z-index: 15;
+  background-color: white;
+  display: inline-block;
+  display: flex;
+  align-items: center;
+
+  .accountAddress {
+    padding-left: 10px;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.reputation {
+  position: relative;
+  top: 20px;
+
+  img {
+    margin-right: 8px;
+    position: relative;
+    top: 3px;
+  }
+
+  .reputationTitle {
+    font-size: 16px;
+  }
+
+  p {
+    margin-top: 4px;
+    font-size: 13px;
+    color: rgba(154, 169, 181, 1.000);
+  }
+}
+
+.voters {
+  border-top: 1px solid rgba(244, 246, 249, 1.000);
+  border-bottom: 1px solid rgba(244, 246, 249, 1.000);
+  font-family: "Open Sans", sans-serif;
+  text-align: center;
+  display: table;
+  width: 97%;
+  margin-left: 8px;
+  margin-right: 8px;
+
+  .yesVotes {
+    border-right: 1px solid rgba(244, 246, 249, 1.000);
+  }
+
+  .container {
+    &.notAnyVotes {
+      text-align: center;
+
+      .notAnyVotes {
+        display: inline-block;
+        font-size: 13px;
+        margin-top: 12px;
+      }
+    }
+  }
+
+  .yesVotes, .noVotes {
+    display: table-cell;
+    text-align: left;
+    vertical-align: top;
+
+    .container {
+      display: inline-block;
+      max-height: 250px;
+      width: 100%;
+      overflow-y: auto;
+
+      .voteRow {
+        position: relative;
+        vertical-align: top;
+
+        .voteRowContainer {
+          padding: 10px 10px 7px 10px;
+          font-size: 13px;
+          color: rgba(80, 97, 118, 1.000);
+          font-weight: normal;
+          display: flex;
+          justify-content: space-between;
+
+          a {
+            color: rgba(80, 97, 118, 1.000);
+            text-decoration: none;
+          }
+
+          img {
+            width: 18px;
+            height: 18px;
+            border-radius: 2px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.footer {
+  text-align: right;
+
+  button {
+    border-radius: 15px;
+    height: 30px;
+    background-color: rgba(5, 118, 255, 1.000);
+    border: 0;
+    font-size: 13px;
+    outline: none;
+    margin-right: 10px;
+    line-height: 30px;
+    padding: 0 30px;
+    color: white;
+  }
+}

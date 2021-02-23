@@ -1,0 +1,160 @@
+{
+  "contractName": "GlobalConstraintMock",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "currentCallPhase",
+      "outputs": [
+        {
+          "internalType": "enum GlobalConstraintInterface.CallPhase",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "testParams",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "pre",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "post",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "method",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bool",
+          "name": "pre",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "post",
+          "type": "bool"
+        }
+      ],
+      "name": "setConstraint",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "method",
+          "type": "bytes32"
+        }
+      ],
+      "name": "pre",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "method",
+          "type": "bytes32"
+        }
+      ],
+      "name": "post",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "when",
+      "outputs": [
+        {
+          "internalType": "enum GlobalConstraintInterface.CallPhase",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b50610297806100206000396000f3fe608060405234801561001057600080fd5b50600436106100625760003560e01c80632414112b14610067578063696a72531461009357806373d2ea39146100d45780638043154d1461010c578063c1786ab21461013e578063e2b0caef14610170575b600080fd5b61006f610178565b6040518082600281111561007f57fe5b60ff16815260200191505060405180910390f35b6100c0600480360360608110156100a957600080fd5b508035906020810135151590604001351515610181565b604080519115158252519081900360200190f35b6100f1600480360360208110156100ea57600080fd5b5035610206565b60408051921515835290151560208301528051918290030190f35b6100c06004803603606081101561012257600080fd5b506001600160a01b038135169060208101359060400135610224565b6100c06004803603606081101561015457600080fd5b506001600160a01b038135169060208101359060400135610241565b61006f610259565b60015460ff1681565b6000838152602081905260408120805460ff19168415801591821761ff00191661010086151502179092556101b4575081155b156101d257600180546002919060ff191681835b02179055506101fc565b826101ea57600180546000919060ff191681836101c8565b816101fc576001805460ff1916811790555b5060019392505050565b60006020819052908152604090205460ff8082169161010090041682565b600090815260208190526040902054610100900460ff1692915050565b60009081526020819052604090205460ff1692915050565b60015460ff169056fea265627a7a72315820aeee3ce767c6775202854e01b8f641780fccf60101fb48c17b5acee6535e561c64736f6c634300050b0032",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100625760003560e01c80632414112b14610067578063696a72531461009357806373d2ea39146100d45780638043154d1461010c578063c1786ab21461013e578063e2b0caef14610170575b600080fd5b61006f610178565b6040518082600281111561007f57fe5b60ff16815260200191505060405180910390f35b6100c0600480360360608110156100a957600080fd5b508035906020810135151590604001351515610181565b604080519115158252519081900360200190f35b6100f1600480360360208110156100ea57600080fd5b5035610206565b60408051921515835290151560208301528051918290030190f35b6100c06004803603606081101561012257600080fd5b506001600160a01b038135169060208101359060400135610224565b6100c06004803603606081101561015457600080fd5b506001600160a01b038135169060208101359060400135610241565b61006f610259565b60015460ff1681565b6000838152602081905260408120805460ff19168415801591821761ff00191661010086151502179092556101b4575081155b156101d257600180546002919060ff191681835b02179055506101fc565b826101ea57600180546000919060ff191681836101c8565b816101fc576001805460ff1916811790555b5060019392505050565b60006020819052908152604090205460ff8082169161010090041682565b600090815260208190526040902054610100900460ff1692915050565b60009081526020819052604090205460ff1692915050565b60015460ff169056fea265627a7a72315820aeee3ce767c6775202854e01b8f641780fccf60101fb48c17b5acee6535e561c64736f6c634300050b0032",
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.11+commit.c082d0b4.Emscripten.clang"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "contractName": "UniversalSchemeInterface",
+  "abi": [],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.11+commit.c082d0b4.Emscripten.clang"
+  }
+}

@@ -1,0 +1,5 @@
+import:
+  - source: .travis/pr.yml
+    if: type = pull_request
+  - source: .travis/branch.yml
+    if: type = push

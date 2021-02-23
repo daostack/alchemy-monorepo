@@ -1,0 +1,120 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  infra:
+
+    runs-on: ubuntu-latest
+
+    env:
+      COVERALLS_REPO_TOKEN: JSb4W0aTkLE2jYkJCW6nj5IRx7IQ028sT 
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 14.5
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14.5'
+    - run: yarn install
+    - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+    - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/infra/" > /dev/null; then cd packages/infra && ./test-ci.sh && cd ../..;fi
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ${{ github.workspace }}/packages/infra/coverage/lcov.info
+        flag-name: 'Infra'
+        base-path: ${{ github.workspace }}/packages/infra
+
+  arc:
+
+    runs-on: ubuntu-latest
+
+    env:
+      COVERALLS_REPO_TOKEN: JSb4W0aTkLE2jYkJCW6nj5IRx7IQ028sT 
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 14.5
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14.5'
+    - run: yarn install
+    - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+    - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/arc/" > /dev/null; then cd packages/arc && ./test-ci.sh && cd ../..;fi
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ${{ github.workspace }}/packages/arc/coverage/lcov.info
+        flag-name: 'Arc'
+        base-path: ${{ github.workspace }}/packages/arc
+  
+  migration:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 10.5
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.5'
+    - run: yarn install
+    - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+    - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/migration/" > /dev/null; then cd packages/migration && ./test-ci.sh && cd ../..;fi
+
+  subgraph:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 10.16
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.16'
+    - run: yarn install
+    - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+    - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/subgraph/" > /dev/null; then cd packages/subgraph && ./test-ci.sh && cd ../..;fi
+
+  arcjs:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 10.14.1
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.14.1'
+    - run: yarn install
+    - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+    - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/arc.js/" > /dev/null; then cd packages/arc.js && ./test-ci.sh && cd ../..;fi
+  
+  alchemy:
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/alchemy
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js 12.18.4
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.18.4'
+
+#    - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+#    - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/alchemy/" > /dev/null; then cd packages/alchemy && yarn && ./test-ci.sh && cd ../..;fi
+    - run: ./test-ci.sh
+
+

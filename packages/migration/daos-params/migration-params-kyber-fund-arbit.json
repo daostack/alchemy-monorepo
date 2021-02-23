@@ -1,0 +1,71 @@
+{
+  "orgName": "Kyber Fund Arbitrator",
+  "tokenName": "KFA token",
+  "tokenSymbol": "KFAT",
+  "ContributionReward": {
+    "voteParams": 0
+  },
+  "GenericScheme": {
+    "targetContract": "0x0000000000000000000000000000000000000000"
+  },
+  "SchemeRegistrar": {
+      "voteRegisterParams": 1,
+      "voteRemoveParams": 1
+  },
+  "GlobalConstraintRegistrar": {
+  },
+  "UpgradeScheme": {
+  },
+  "ReputationFromToken": {
+    "tokenContract":"0xE121FfA1Fee7d8be1627d2C93037Cd0d674760dd",
+    "curve":"0x0000000000000000000000000000000000000000"
+  },
+  "VotingMachinesParams": [
+    {
+      "boostedVotePeriodLimit": 86400,
+      "daoBountyConst": 10,
+      "minimumDaoBounty": 10,
+      "queuedVotePeriodLimit": 345600,
+      "queuedVoteRequiredPercentage": 50,
+      "preBoostedVotePeriodLimit": 86400,
+      "proposingRepReward": 5,
+      "quietEndingPeriod": 43200,
+      "thresholdConst": 1100,
+      "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+      "votersReputationLossRatio": 0,
+      "activationTime": 1563408000
+    },
+    {
+      "boostedVotePeriodLimit": 1209600,
+      "daoBountyConst": 10,
+      "minimumDaoBounty": 500,
+      "queuedVotePeriodLimit": 3888000,
+      "queuedVoteRequiredPercentage": 50,
+      "preBoostedVotePeriodLimit": 172800,
+      "proposingRepReward": 300,
+      "quietEndingPeriod": 345600,
+      "thresholdConst": 2000,
+      "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+      "votersReputationLossRatio": 4,
+      "activationTime": 1563408000
+    }
+  ],
+  "schemes": {
+    "ContributionReward": true,
+    "GenericScheme": false,
+    "SchemeRegistrar": true,
+    "GlobalConstraintRegistrar": false,
+    "UpgradeScheme": false,
+    "ReputationFromToken": true
+  },
+  "unregisterOwner": true,
+  "useUController": false,
+  "useDaoCreator": true,
+  "founders": [
+      {
+        "address": "0x14d06788090769F669427B6AEA1c0240d2321f34",
+        "tokens": 0,
+        "reputation": 0
+      }
+    ]
+}

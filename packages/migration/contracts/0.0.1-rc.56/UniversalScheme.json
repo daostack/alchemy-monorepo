@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "UniversalScheme",
+  "sourceName": "contracts/universalSchemes/UniversalScheme.sol",
+  "abi": [],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603e80601d6000396000f3fe6080604052600080fdfea265627a7a72315820643471e9ccc7c66c3e13c1f207c9df276a92096fd3236fa009e0e782bb37590c64736f6c63430005110032",
+  "deployedBytecode": "0x6080604052600080fdfea265627a7a72315820643471e9ccc7c66c3e13c1f207c9df276a92096fd3236fa009e0e782bb37590c64736f6c63430005110032",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

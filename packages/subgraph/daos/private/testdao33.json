@@ -1,0 +1,66 @@
+{
+  "name": "Adamant Animator",
+  "Avatar": "0x31e897BBc421b5D233BC343B7d88121589fc0513",
+  "DAOToken": "0x56B720e202A2ef253c5968e0e0f5661c1f7408c2",
+  "Reputation": "0x1a1BDc2581D4bC796dfbB500A77Cc86A7b44CC87",
+  "Controller": "0xa4E77b5d894f76B8A50C5B808598C0894794e195",
+  "Schemes": [
+    {
+      "name": "GenericScheme",
+      "alias": "GenericSchemeAlias",
+      "address": "0xEAE767D5D670826Bf531c2692335c52c6cA7010B",
+      "arcVersion": "0.0.1-rc.33"
+    },
+    {
+      "name": "ContributionRewardExt",
+      "alias": "ContributionRewardExt",
+      "address": "0xAb682420d99CcB96d1F8b39B5FDe43810D159b67",
+      "arcVersion": "0.0.1-rc.43"
+    },
+    {
+      "name": "GenericSchemeMultiCall",
+      "alias": "GenericSchemeMultiCall",
+      "address": "0x185efa089A3D10a56c971fa8036b9468bB540f72",
+      "arcVersion": "0.0.1-rc.51"
+    },
+    {
+      "name": "ContinuousLocking4Reputation",
+      "alias": "ContinuousLocking4Reputation",
+      "address": "0xb9e3Dd112BCc6e89546c46ABb1573cf9c62C3241",
+      "arcVersion": "0.0.1-rc.55"
+    }
+  ],
+  "StandAloneContracts": [
+    {
+      "name": "Wallet",
+      "address": "0x37446F84f72519553C739036E301a0CdCcC8c069",
+      "arcVersion": "0.0.1-rc.33"
+    },
+    {
+      "name": "ContributionRewardExt",
+      "address": "0xAb682420d99CcB96d1F8b39B5FDe43810D159b67",
+      "arcVersion": "0.0.1-rc.43"
+    },
+    {
+      "name": "Competition",
+      "address": "0x02C74b5249D989F9A24714a2E2101926CE8cd873",
+      "arcVersion": "0.0.1-rc.43"
+    },
+    {
+      "name": "GenericSchemeMultiCall",
+      "address": "0x185efa089A3D10a56c971fa8036b9468bB540f72",
+      "arcVersion": "0.0.1-rc.51"
+    },
+    {
+      "name": "ActionMock",
+      "address": "0xC3862Bc375bad786d51989a431E0cc734F350Ac3",
+      "arcVersion": "0.0.1-rc.33"
+    },
+    {
+      "name": "DxDaoSchemeConstraints",
+      "address": "0x28F56A97e4a493762b4507EB41Ca54D3Ae678DEE",
+      "arcVersion": "0.0.1-rc.51"
+    }
+  ],
+  "arcVersion": "0.0.1-rc.33"
+}

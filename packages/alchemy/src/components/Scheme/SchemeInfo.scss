@@ -1,0 +1,149 @@
+.pageButton {
+  border: 1px solid $accent-4;
+  height: 40px;
+  display: inline-block;
+  line-height: 30px;
+  margin: 0 auto;
+  color: $accent-4;
+  font-weight: normal;
+  font-size: $body;
+  padding: 0 15px;
+  font-family: $body-font;
+  transition: all 0.25s ease;
+  background-color: rgba(200, 200, 200, 0);
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.pageSelectionContainer {
+  flex: 1;
+  display: "flex";
+  flex-direction: "row";
+  justify-content: "space-around";
+}
+
+.schemeInfoContainer {
+  background-color: rgba(252, 253, 255, 1);
+  color: rgba(78, 97, 118, 1);
+  font-size: 11px;
+  font-family: "Open Sans";
+  font-weight: normal;
+  border-radius: 14px 14px 14px 14px;
+  min-width: 340px;
+  margin-bottom: 10px;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-family: "AccordBold";
+    border-bottom: 1px solid #e9eef4;
+    padding: 15px;
+  }
+
+  .infoCardContent {
+    padding: 15px;
+    width: 100%;
+  }
+
+  .infoRowsContainer,
+  .gpRowsContainer {
+    display: grid;
+    column-gap: 16px;
+    row-gap: 4px;
+    // > div {
+    //   white-space: nowrap;
+    // }
+
+    > div:nth-child(odd) {
+      font-weight: bold;
+    }
+  }
+
+  .infoRowsContainer {
+    grid-template-columns: 1fr 2fr;
+
+    .addressHash {
+      display: inline-block;
+      margin-right: 6px;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      // width of address, so we'll only truncate hashes
+      max-width: 250px;
+    }
+
+    img {
+      height: 11px;
+    }
+  }
+
+  .gpRowsContainer {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+.ellipsis {
+  position: relative;
+  width: 75%;
+
+  span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  img {
+    position: absolute;
+    right: -15px;
+    top: 0;
+    cursor: pointer;
+  }
+}
+
+.timeSection {
+  display: inline-block;
+
+  strong {
+    font-weight: normal;
+    font-family: $body-font;
+  }
+
+  .colon {
+    display: inline-block;
+    margin-left: 6px;
+    margin-right: 6px;
+  }
+}
+
+@media only screen and (max-width: 820px) {
+  .schemeInfoContainer {
+    min-width: unset;
+    width: 100%;
+    margin-left: 10px;
+    margin-right: 10px;
+
+    .infoRowsContainer,
+    .gpRowsContainer {
+      grid-template-columns: 1fr;
+
+      > div:nth-child(even) {
+        margin-bottom: 8px;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 425px) {
+  .schemeInfoContainer {
+    width: calc(100vw - 20px);
+  }
+
+  .ellipsis {
+    position: relative;
+    width: 35%;
+  }
+}

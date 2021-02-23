@@ -1,0 +1,109 @@
+.wrapper {
+  position: relative;
+  display: flex;
+
+  button {
+    background-color: rgba(0, 118, 255, 1);
+    border-radius: 10px;
+    height: 20px;
+    line-height: 20px;
+    font-size: 11px;
+    padding: 0 6px;
+    color: $white;
+    border: none;
+    transition: all 0.25s ease;
+    margin: 0;
+    display: inline-block;
+    overflow: hidden;
+    width: 20px;
+    cursor: pointer;
+    outline: none;
+
+    span {
+      display: inline-block;
+      padding-left: 6px;
+    }
+  }
+
+  button:hover,
+  &.expanded button {
+    width: auto;
+  }
+
+  button.boostButton:hover,
+  &.expanded button.boostButton {
+    width: 67px;
+  }
+
+}
+
+.wrapper.detailView {
+  button.boostButton:hover {
+    width: auto;
+  }
+}
+
+.preboostButton,
+.unboostButton,
+.boostButton,
+.executeButton {
+  position: relative;
+}
+
+.unboostButton {
+  img {
+    transform: rotate(180deg);
+  }
+}
+
+/**
+ * Container for Tooltip child for when you need the child to show a tooltip even when disabled.
+ * Better would be to create a Tooltip component (like we did with TrainingTooltip) that
+ * does this automatically for all Tooltips.
+*/
+div.tooltipWhenDisabledContainer {
+  display: "inline-block";
+  cursor: "not-allowed";
+  margin: 0px 5px;
+}
+
+.redeemButton {
+  white-space: nowrap;
+
+  &:disabled {
+    background-color: rgba(200, 200, 200, 0.5);
+    color: rgba(75, 75, 75, 1);
+  }
+
+  img {
+    margin-left: -1px;
+    margin-right: 1px;
+  }
+
+  &.pending {
+    border: 1px solid $black-tenthtone;
+    color: $black-halftone;
+
+    img {
+      display: inline-block;
+      height: 16px;
+      position: relative;
+      top: 4px;
+      margin-left: 5px;
+      margin-top: -6px;
+    }
+  }
+}
+
+.detailView button {
+  width: auto;
+  height: 30px;
+  border-radius: 30px;
+  background-color: #0376ff;
+  color: $white;
+  line-height: 30px;
+  padding: 0 15px;
+  margin: 0px 5px;
+  font-size: 13px;
+  font-weight: bold;
+}
