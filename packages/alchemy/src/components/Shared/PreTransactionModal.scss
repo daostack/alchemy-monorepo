@@ -1,0 +1,767 @@
+.stakeFail,
+.stakePass,
+.voteDown,
+.voteUp {
+  display: block;
+}
+
+.yourStakeTitle {
+  position: absolute;
+  top: -13px;
+  background-color: white;
+  padding: 5px;
+  font-size: 11px;
+  color: rgba(80, 97, 118, 1);
+  display: inline-block;
+  left: 35px;
+}
+
+.genBalance {
+  font-size: 11px;
+}
+
+.metaMaskModal .modalWindow .transactionHeader.stakeFail .transactionIcon,
+.metaMaskModal .modalWindow .transactionHeader.stakePass .transactionIcon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  text-align: center;
+  background-color: $accent-2;
+  margin-right: 10px;
+  position: relative;
+  top: -3px;
+
+  img {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    top: -1px;
+    left: 1px;
+  }
+}
+
+.metaMaskModal .modalWindow .transactionHeader.stakePass .transactionIcon {
+  background-color: rgba(0, 190, 144, 1);
+  position: relative;
+  top: -3px;
+  background-color: $accent-3;
+
+  img {
+    left: 0;
+  }
+}
+
+.closeTransactionContainer {
+  display: inline-block;
+
+  button {
+    border-radius: 15px;
+    height: 30px;
+    background-color: rgba(225, 235, 247, 1);
+    border: 0;
+    outline: none;
+    margin-right: 10px;
+    line-height: 30px;
+    padding: 0 25px;
+    color: rgba(0, 113, 255, 1);
+  }
+}
+
+.helpButton {
+  display: none;
+  position: absolute;
+  top: 12px;
+  right: 20px;
+
+  button.hover {
+    color: rgba(18, 46, 91, 1);
+    background-color: rgba(0, 113, 255, 1);
+    width: 20px;
+    height: 20px;
+    border: 0;
+    font-size: 16px;
+    outline: none;
+    border-radius: 15px;
+
+    span {
+      position: relative;
+      top: -2px;
+      left: -1px;
+    }
+
+    span:nth-child(1) {
+      display: block;
+    }
+    span:nth-child(2) {
+      display: none;
+    }
+
+    b {
+      display: none;
+    }
+  }
+}
+
+.helpButton.open button.hover {
+  b {
+    display: block;
+    width: 50px;
+    position: absolute;
+    left: -60px;
+    color: white;
+    font-weight: normal;
+    font-size: 13px;
+  }
+
+  span:nth-child(1) {
+    display: none;
+  }
+  span:nth-child(2) {
+    display: block;
+  }
+}
+
+.launchMetaMask {
+  border-radius: 15px;
+  height: 30px;
+  background-color: rgba(0, 113, 255, 1);
+  color: $white;
+  border: 0;
+  outline: none;
+  line-height: 30px;
+  padding: 0 25px;
+  margin: 0 20px 20px 0;
+  display: inline-block;
+  float: right;
+
+  img {
+    position: relative;
+    left: -11px;
+    top: 3px;
+  }
+
+  .disabled {
+    cursor: not-allowed !important;
+  }
+}
+
+.xToBoost {
+  color: rgba(80, 97, 118, 1);
+  font-size: 11px;
+}
+
+.preTransactionBottom {
+  padding: 20px 0;
+  border-top: $gray-border-2;
+  text-align: right;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+.open {
+  position: absolute;
+  right: -330px;
+}
+
+.preTransactionContent {
+  position: relative;
+  background-color: $white;
+  border-left: 1px solid rgba(223, 230, 234, 1);
+}
+
+.genesisProtocolLink {
+  color: rgba(5, 113, 255, 1);
+  font-size: 11px;
+  margin: 0 0 25px 25px;
+  display: inline-block;
+}
+
+.passFailConditions {
+  color: rgba(80, 97, 118, 1);
+  font-size: 11px;
+  display: block;
+
+  .passCondition {
+    border-left: 2px solid rgba(0, 207, 160, 1);
+    display: block;
+    margin: 5px 25px 15px 25px;
+    padding-left: 10px;
+  }
+
+  .failCondition {
+    display: block;
+    margin: 0 25px 25px 25px;
+    padding-left: 10px;
+    border-left: 2px solid $accent-2;
+  }
+}
+
+.instructionsOpen {
+  display: block;
+}
+
+.metaMaskModal {
+  .decisionGraph {
+    position: relative;
+    top: -5px;
+    left: 10px;
+    float: left;
+
+    .forLabel {
+      color: $accent-1;
+      font-size: $small;
+    }
+
+    .againstLabel {
+      font-size: $small;
+      color: $accent-2;
+    }
+
+    .graphContainer {
+      width: 44%;
+      float: left;
+      padding: 30px 0;
+
+      div {
+        float: right;
+        margin-right: 20px;
+      }
+    }
+
+    .graphInfo {
+      float: left;
+      width: 50%;
+      padding: 33px 0 10px 0;
+
+      div {
+        padding-bottom: 15px;
+        font-size: 16px;
+        display: block;
+        width: 100%;
+        color: $gray-1;
+
+        img {
+          width: 20px;
+          margin-right: 7px;
+          position: relative;
+          top: 5px;
+        }
+
+        span {
+          font-weight: bold;
+          color: rgba(0, 28, 53, 1);
+        }
+      }
+    }
+  }
+
+  .graph {
+    background-color: rgba(235, 235, 235, 1);
+    box-shadow: inset 0 0 8px 0 rgba(0, 0, 0, 0.1);
+    height: 8px;
+    position: relative;
+
+    .forBar {
+      background-color: $accent-1;
+      height: 8px;
+    }
+
+    .againstBar {
+      background-color: $accent-2;
+      height: 8px;
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+
+    .divider {
+      height: 8px;
+      width: 1px;
+      border-left: 1px dotted rgba(151, 151, 151, 0.5);
+      position: absoluet;
+      left: 50%;
+      top: 0;
+    }
+  }
+  .help {
+    width: 340px;
+    height: 100%;
+    left: 500px;
+    opacity: 1;
+    position: absolute;
+    transition: all 0.25s ease;
+
+    .notification {
+      font-size: 11px;
+      color: $gray-1;
+      padding: 0px 25px 15px 25px;
+
+      img {
+        position: relative;
+        margin-right: 5px;
+        height: 11px;
+      }
+    }
+
+    img {
+      position: absolute;
+      z-index: 0;
+    }
+
+    .hover {
+      position: absolute;
+      z-index: 1;
+      opacity: 0;
+    }
+  }
+
+  .hidden {
+    width: 0px;
+    opacity: 0;
+    overflow: hidden;
+  }
+
+  .helpBox {
+    transition: all 0.25s ease;
+    width: 340px;
+    position: relative;
+    top: 0px;
+    height: 100%;
+    z-index: 10000;
+    border-left: $gray-border-2;
+
+    .bg {
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 1);
+      position: absolute;
+      z-index: 0;
+    }
+
+    .header {
+      position: absolute;
+      text-align: center;
+      height: 50px;
+      width: 100%;
+      background-color: #132e5b;
+      top: -51px;
+      padding-left: 15px;
+      left: -15px;
+      border-radius: 0 15px 0 0;
+    }
+
+    .body {
+      position: relative;
+      height: 100%;
+      overflow: scroll;
+
+      h2 {
+        margin: 0;
+        font-size: 22px;
+        padding-top: 30px;
+        font-weight: bold;
+        color: rgba(0, 26, 35, 1);
+      }
+
+      h3 {
+        margin: 0;
+        color: rgba(0, 26, 35, 1);
+        font-size: 11px;
+        text-align: left;
+        font-weight: normal;
+        padding: 0 30px 15px 30px;
+      }
+
+      p {
+        font-size: 13px;
+        color: rgba(80, 97, 118, 1);
+        padding: 0 25px 14px 25px;
+        margin: 0;
+      }
+    }
+  }
+
+  .instructionsOpen.modalWindow {
+    margin-left: -170px;
+  }
+
+  .modalWindow {
+    max-width: 500px;
+    width: 90vw;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.25s ease;
+    border-radius: 15px 15px 0 0;
+
+    .decisionGraph {
+      border-top: $gray-border-2;
+      width: 100%;
+      float: none;
+      left: auto;
+      top: auto;
+      position: relative;
+
+      h3 {
+        position: absolute;
+        top: -27px;
+        background-color: $white;
+        padding: 5px;
+        left: 15px;
+        font-size: 12px;
+        color: rgba(80, 97, 118, 1);
+        font-weight: normal;
+      }
+
+      .forLabel {
+        position: absolute;
+        top: 20px;
+        left: 8px;
+      }
+
+      .againstLabel {
+        position: absolute;
+        top: 20px;
+        right: 8px;
+      }
+
+      .graph {
+        width: 100%;
+        display: block;
+        margin: 0;
+        height: 15px;
+
+        .forBar {
+          height: 15px;
+          border-radius: 0 0 0 0;
+        }
+
+        .againstBar {
+          height: 15px;
+          border-radius: 0 0 0 0;
+        }
+
+        .divider {
+          height: 15px;
+        }
+      }
+    }
+
+    .incentives {
+      padding: 30px;
+      font-size: 11px;
+      border-top: $gray-border-2;
+      border-bottom: $gray-border-2;
+      margin-bottom: 20px;
+
+      .passIncentive {
+        display: inline-block;
+        padding: 0 12px 0 0;
+
+        strong {
+          color: $accent-1;
+          display: inline-block;
+          margin-right: 6px;
+        }
+        span {
+          opacity: 0.5;
+        }
+      }
+
+      .failIncentive {
+        span {
+          opacity: 0.5;
+        }
+        strong {
+          color: $accent-2;
+          margin-right: 6px;
+          display: inline-block;
+        }
+      }
+    }
+
+    .transactionHeader.voteUp .transactionIcon img,
+    .transactionHeader.voteDown .transactionIcon img {
+      height: 24px;
+    }
+
+    .transactionHeader {
+      background-color: rgba(18, 46, 91, 1);
+      padding: 12px 20px;
+      color: $white;
+      z-index: 100000;
+      position: relative;
+      border-radius: 15px 15px 0 0;
+
+      .transactionIcon {
+        display: inline;
+
+        img {
+          display: inline;
+          margin-bottom: -3px;
+          margin-right: 18px;
+        }
+      }
+
+      .transactionInfo {
+        position: relative;
+        top: -1px;
+        display: inline;
+
+        .titleSeparator {
+          display: inline-block;
+          margin: 6px;
+          position: relative;
+          bottom: 2px;
+        }
+
+        .transactionEffect {
+          font-size: 12px;
+          display: inline;
+          color: $gray-1;
+          opacity: 0.7;
+          position: relative;
+          bottom: 1px;
+
+          strong {
+            font-weight: normal;
+          }
+        }
+
+        .transactionType {
+          font-size: 21px;
+          margin-right: 6px;
+
+          .passVote {
+            color: $accent-3;
+          }
+
+          .failVote {
+            color: $accent-2;
+          }
+
+          .redeem {
+            color: $accent-3;
+          }
+        }
+
+        .secondaryHeader {
+          display: inline-block;
+          font-size: 14px;
+          opacity: 0.5;
+        }
+      }
+    }
+
+    .proposalInfo {
+      background: white;
+      padding: 30px 20px 35px 20px;
+
+      .proposalTitle {
+        padding: 0 0 20px 0;
+        font-size: 21px;
+        max-width: 430px;
+        margin: 0 auto;
+      }
+    }
+
+    .stakingInfo {
+      width: 100%;
+      border-top: 1px solid rgba(230, 235, 242, 1);
+      margin-top: 26px;
+    }
+
+    .currentPredictions {
+      float: left;
+      width: 50%;
+    }
+
+    .stakingForm {
+      position: relative;
+      padding: 30px 40px;
+
+      .formGroup {
+        line-height: 24px;
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        transform: none;
+        text-align: center;
+
+        margin-top: 7px;
+        width: 100%;
+
+        span {
+          font-size: $body;
+          padding-top: 5px;
+        }
+
+        &.stakeInputGroup {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+
+          .predictionAmount {
+            padding-right: 16px;
+
+            input {
+              background-color: transparent;
+              border: $gray-border-2;
+              width: 154px;
+              font-size: $body;
+              padding: 10px 13px;
+              font-family: $body-font;
+              margin-right: 6px;
+
+              &:focus {
+                outline: none;
+              }
+            }
+
+            .genLabel {
+              display: inline-block;
+              margin-bottom: 10px;
+
+              &.genSymbol {
+                opacity: 0.5;
+              }
+            }
+          }
+
+          .yourBalance {
+            color: rgba(80, 97, 118, 1);
+            font-size: 11px;
+            line-height: 1.2em;
+            text-align: left;
+
+            .balance {
+              display: inline-block;
+              margin-right: 6px;
+              margin-bottom: 4px;
+            }
+
+            .exchangeList {
+              color: rgba(5, 113, 255, 1);
+              font-size: 11px;
+              display: inline-block;
+              position: relative;
+
+              ul {
+                position: absolute;
+                top: -130px;
+                left: 0;
+                list-style: none;
+                box-shadow: $shadow-3;
+                margin: 0;
+                width: auto;
+                left: -1px;
+                padding: 10px 0;
+                opacity: 0;
+                transform: scale(0);
+                transition: all 0.25s ease;
+                background-color: rgba(255, 255, 255, 1);
+                border-radius: 0 10px 10px 0;
+
+                li {
+                  position: relative;
+                  white-space: nowrap;
+                  z-index: 100;
+                  text-align: left;
+                }
+
+                a {
+                  font-weight: bold;
+                  color: rgba(80, 97, 118, 1);
+                  display: block;
+                  padding: 5px 10px;
+
+                  b {
+                    display: inline-block;
+                    width: 30px;
+                    text-align: center;
+                  }
+
+                  img {
+                    height: 14px;
+                    margin-bottom: -3px;
+                  }
+
+                  span {
+                    font-size: 11px;
+                    font-family: "Open Sans";
+                    font-weight: normal;
+                  }
+
+                  &:hover {
+                    background-color: rgba(240, 245, 251, 1);
+                  }
+                }
+              }
+
+              &:hover {
+                cursor: pointer;
+                border-bottom: none;
+                text-decoration: underline;
+
+                ul {
+                  opacity: 1;
+                  transform: scale(1);
+                  top: -69px;
+                  left: 64px;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .placePrediction {
+        padding: 4px;
+        width: 120px;
+        margin-top: 8px;
+        border: 1px solid $accent-1;
+        color: $accent-1;
+      }
+
+      .genError {
+        color: $accent-2;
+        font-size: 14px;
+        font-family: $body-font;
+        font-weight: normal;
+
+        &.hidden {
+          display: none;
+        }
+      }
+    }
+
+    .transactionInstructions {
+      background-color: $white;
+      text-align: center;
+      color: $black;
+      padding-bottom: 30px;
+
+      p {
+        margin: 0;
+        padding: 30px;
+        font-size: $body;
+      }
+
+      a {
+        color: $accent-1;
+      }
+    }
+  }
+}

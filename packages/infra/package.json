@@ -1,0 +1,76 @@
+{
+  "name": "@daostack/infra",
+  "version": "0.0.1-rc.21",
+  "description": "Base layer DAO's components",
+  "files": [
+    "contracts/",
+    "docs/",
+    "build/contracts/",
+    "migrations/",
+    "test/",
+    "truffle.js",
+    "tsconfig.json"
+  ],
+  "config": {
+    "gasLimit": "6000000"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint --fix": "eslint --fix .",
+    "coveralls": "buidler coverage && cat coverage/lcov.info | coveralls",
+    "test-ci": "./test-ci.sh"
+  },
+  "devDependencies": {
+    "@nomiclabs/buidler": "^1.4.8",
+    "@nomiclabs/buidler-solhint": "^1.3.3",
+    "@nomiclabs/buidler-truffle5": "^1.3.4",
+    "@nomiclabs/buidler-web3": "^1.3.4",
+    "@babel/cli": "^7.2.3",
+    "babel-eslint": "^10.1.0",
+    "bignumber.js": "^5.0.0",
+    "coveralls": "^3.1.0",
+    "default-options": "^1.0.0",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "ethereumjs-abi": "^0.6.5",
+    "mocha": "^7.1.1",
+    "pm2": "^4.2.3",
+    "promisify": "^0.0.3",
+    "pug": "^2.0.0-rc.4",
+    "rimraf": "^2.6.2",
+    "run-with-ganache": "^0.1.1",
+    "solidity-coverage": "^0.7.9",
+    "uint32": "^0.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/daostack/infra.git"
+  },
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "smart",
+    "contracts",
+    "security",
+    "daostack",
+    "arc"
+  ],
+  "engines": {
+    "node": ">=12.16.1"
+  },
+  "author": "DAOstack (https://www.daostack.io)",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/daostack/infra/issues"
+  },
+  "homepage": "https://daostack.io",
+  "dependencies": {
+    "ethereumjs-abi": "^0.6.8",
+    "openzeppelin-solidity": "2.5.1",
+    "web3-utils": "^1.2.8"
+  }
+}

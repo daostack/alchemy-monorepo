@@ -1,0 +1,9 @@
+node_modules
+.env
+db
+.vscode
+verify.js.map
+verify.js
+flattened.*.sol
+deployment-state.json
+contracts-optimized

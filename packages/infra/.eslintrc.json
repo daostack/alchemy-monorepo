@@ -1,0 +1,18 @@
+{
+    "extends": "eslint:recommended",
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    },
+    "rules": {
+        "semi": 2,
+        "no-undef": "off",
+        "eol-last": 2,
+        "eqeqeq": "error"
+    },
+    "ignorePatterns": ["cache/", "node_modules/","coverage/"]
+}

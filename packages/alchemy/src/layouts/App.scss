@@ -1,0 +1,841 @@
+$header-height: 100px;
+
+@font-face {
+  font-family: "AccordBold";
+  src: url("/assets/fonts/Accord-Bold.ttf");
+  font-weight: regular;
+}
+
+@font-face {
+  font-family: "GaramondProDisplay";
+  src: url("/assets/fonts/GaramondPremrPro-Disp.woff");
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
+
+body {
+  font-family: "AccordBold", sans-serif;
+  font-weight: 300;
+
+  p {
+    font-family: "Open Sans";
+  }
+}
+
+.outer {
+  width: 100%;
+  height: 100%;
+  padding-top: 82px;
+
+  &.withDAO {
+    padding-top: 50px;
+  }
+}
+
+.container {
+  width: 100%;
+  z-index: 100;
+  position: relative;
+  height: 100%;
+}
+
+.sidebarWrapper {
+  position: relative;
+  width: 125px;
+}
+
+.withDAO .sidebarWrapper {
+  width: 250px;
+}
+
+.contentWrapper {
+  position: relative;
+  max-width: $max-width;
+  margin: 0 auto;
+}
+
+.background {
+  background-color: rgba(244, 244, 244, 1);
+}
+
+.fadeEnter {
+  opacity: 0.01;
+}
+
+.fadeEnter.fadeEnterActive {
+  opacity: 1;
+  transition: opacity 1000ms ease-in;
+}
+
+.fadeExit {
+  opacity: 1;
+}
+
+.web3ProviderLogin {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.web3ProviderLogin button {
+  height: 30px;
+  padding-left: 14px;
+  padding-right: 14px;
+  line-height: 30px;
+  font-weight: bold;
+  font-size: 12px;
+  background-color: rgba(5, 118, 255, 1);
+  border: none;
+  border-radius: 15px;
+  color: $white;
+  position: relative;
+  vertical-align: middle;
+  right: 10px;
+
+  img {
+    height: 12px;
+    position: relative;
+    top: 2px;
+    padding-left: 8px;
+  }
+}
+
+.web3ProviderLogin button:focus {
+  outline: none;
+}
+
+.fadeExit.fadeExitActive {
+  opacity: 0.01;
+  transition: opacity 1000ms ease-in;
+}
+
+.headerContainer {
+  .banner {
+    position: fixed;
+    display: none;
+    top: 0;
+    height: 32px;
+    width: 100%;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    text-align: center;
+    color: $black;
+    background-color: $banner-background;
+    z-index: 10;
+
+    &.show {
+      display: block;
+    }
+  }
+
+  .header {
+    width: 100%;
+    position: fixed;
+    vertical-align: middle;
+    background-color: $navy;
+    height: 50px;
+    z-index: 10;
+    top: 0;
+    color: rgba(255, 255, 255, 1);
+    display: flex;
+
+    /** the following is only meant to apply to the toggle button in the header **/
+    :global {
+      .react-toggle.react-toggle--checked .react-toggle-track {
+        background-color: #0076ff !important;
+      }
+
+      .react-toggle-thumb {
+        background-image: url(/assets/images/Icon/info-i.svg);
+        background-color: transparent !important;
+        background-size: 20px 20px;
+      }
+    }
+
+    .logoContainer {
+      margin: 0 auto;
+      width: 230px;
+    }
+
+    .menu {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      transition: all 0.25s ease;
+
+      img {
+        position: absolute;
+        z-index: 100;
+        left: 15px;
+        top: 10px;
+        height: 30px;
+        transition: all 0.25s ease;
+      }
+    }
+
+    .alchemyLogo {
+      float: left;
+      padding: 9px;
+
+      img {
+        height: 30px;
+      }
+    }
+
+    .version {
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 50px;
+
+      em {
+        font-style: normal;
+      }
+
+      span {
+        color: rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    .alert {
+      color: white;
+      background-color: #44aa44;
+      width: 100%;
+      top: 60px;
+      position: absolute;
+      text-align: center;
+      font-weight: bold;
+      padding: 2px 0;
+    }
+
+    .redemptionsButton {
+      margin: 13px 0 14px 20px;
+    }
+
+    .toggleButton {
+      margin: 13px 0 14px auto;
+    }
+
+    .accountInfoContainer {
+      display: inline-block;
+      padding: 0 15px;
+      height: 50px;
+      vertical-align: middle;
+    }
+
+    .accountInfo {
+      position: relative;
+      display: inline-block;
+      text-align: center;
+      width: auto;
+      padding: 0 20px;
+      transition: all 0.25s ease;
+      height: 50px;
+
+      .title {
+        font-weight: bold;
+        font-size: 13px;
+        color: #001d35;
+        margin-bottom: 2px;
+        font-family: 'AccordBold';
+      }
+
+      > span {
+        height: 50px;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .accountImage {
+        border: none;
+        background: transparent;
+        padding: 0;
+        margin: 0 0 0 0;
+        position: relative;
+        top: 14px;
+
+        &:hover {
+          cursor: pointer;
+        }
+
+        img {
+          width: 20px;
+          height: 20px;
+          border-radius: 3px;
+        }
+      }
+
+      .profileName {
+        text-align: left;
+        font-size: 13px;
+
+        a {
+          color: rgba(0, 29, 53, 1);
+          padding: 0 0 0 15px;
+        }
+      }
+
+      .wallet {
+        position: absolute;
+        width: 270px;
+        top: 50px;
+        transform: scaleY(0);
+        transform-origin: top;
+        transition: transform 0.25s ease;
+        right: 12px;
+        font-size: 12px;
+        color: rgba(78, 97, 118, 1);
+        background-color: rgba(252, 253, 255, 1);
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 2px 16px 0 rgba(133, 168, 208, 0.27);
+
+        .walletImage {
+          float: left;
+        }
+
+        .pointer {
+          width: 12px;
+          height: 12px;
+          transform: rotate(45deg);
+          background-color: rgba(252, 253, 255, 1);
+          position: absolute;
+          top: -3px;
+          right: 12px;
+        }
+
+        .walletDetails {
+          position: relative;
+          padding-bottom: 5px;
+          border-bottom: 1px solid rgba(229, 235, 242, 1);
+          padding: 25px;
+
+          .walletImage {
+            &.greyscale img {
+              filter: grayscale(100%);
+            }
+          }
+
+          .fullProfile {
+            text-align: left;
+
+            a {
+              padding: 5px 0 0 15px;
+              color: rgba(1, 112, 255, 1);
+              font-size: 11px;
+              font-weight: bold;
+              font-family: "Open Sans";
+            }
+          }
+        }
+
+        .balances {
+          text-align: left;
+          padding: 20px;
+          border-bottom: 1px solid $accent-6;
+          font-size: 11px;
+          color: $body-color;
+          font-weight: normal;
+          font-family: "Open Sans";
+
+          .repBalance {
+            display: flex;
+            flex-direction: column;
+            .heading {
+              font-size: 13px;
+              color: $black;
+              margin: 0;
+              margin-bottom: 3px;
+              font-weight: bold;
+            }
+          }
+
+          .noReputation {
+            font-size: 11px;
+            color: rgba(130, 144, 158, 1);
+          }
+
+          .repBalance {
+            font-size: 12px;
+            margin-bottom: 20px;
+            background-color: rgba(252, 253, 255, 1);
+            font-weight: normal;
+            font-family: "Open Sans";
+
+            .rep {
+              display: flex;
+
+              .underline {
+                flex-grow: 2;
+                border-bottom: 1px dashed $gray-2;
+                margin-left: 4px;
+                margin-right: 4px;
+              }
+            }
+          }
+
+          .holdingsBalace {
+            display: flex;
+            flex-direction: column;
+          }
+        }
+
+        .copyAddress {
+          margin: 2px 0 0 15px;
+          position: relative;
+          overflow: hidden;
+          text-align: right;
+
+          .accountAddress {
+            display: inline-block;
+            max-width: 136px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: rgba(78, 97, 118, 1);
+            font-family: "Open Sans";
+            font-size: 11px;
+          }
+        }
+
+        .testAccounts {
+          padding: 12px;
+          position: relative;
+        }
+
+        select {
+          margin-right: -5px;
+          border: none;
+          background: transparent;
+          position: absolute;
+          width: 177px;
+          top: 12px;
+          opacity: 0;
+          cursor: pointer;
+          z-index: 1;
+          height: 25px;
+        }
+
+        .selectTestAccount {
+          border: 1px solid $white-halftone;
+          padding: 5px 8px;
+          background: none;
+          color: rgba(0, 29, 53, 1);
+          display: block;
+          position: relative;
+          z-index: 0;
+          width: 100%;
+        }
+
+        .currentNetwork {
+          border-bottom: 1px solid $accent-6;
+          padding: 20px;
+          text-align: start;
+        }
+
+        .logoutButtonContainer {
+          padding-left: 2px;
+          padding-right: 17px;
+          padding-top: 15px;
+          padding-bottom: 18px;
+          text-align: right;
+
+          .web3ProviderLogoutSection {
+            display: flex;
+            padding-left: 18px;
+            align-items: center;
+
+            .provider {
+              text-align: left;
+              flex-grow: 1;
+
+              .name {
+                font-size: 11px;
+                color: #4e6176;
+                font-weight: normal;
+                font-family: "Open Sans";
+              }
+            }
+
+            .providerconfig {
+              flex-grow: 2;
+              text-align: left;
+            }
+
+            .web3ProviderLogInOut {
+              flex-grow: 1;
+            }
+          }
+        }
+
+        .web3ProviderLogInOut {
+          display: inline-block;
+
+          .text {
+            color: $accent-1;
+            white-space: nowrap;
+            cursor: pointer;
+            display: inline-block;
+            margin-right: 4px;
+          }
+
+          img {
+            top: 2px;
+            position: relative;
+            height: 12px;
+          }
+        }
+      }
+    }
+
+    .accountInfoContainer:hover {
+      background-color: rgba(10, 28, 61, 1);
+
+      + .wallet {
+        transform: scaleY(1);
+      }
+    }
+
+    .wallet:hover {
+      transform: scaleY(1);
+    }
+
+    .etherBalance {
+      display: inline;
+    }
+
+    .openTour {
+      position: relative;
+      top: 2px;
+      padding: 0 10px;
+      display: inline-block;
+      border: none;
+      outline: none;
+      background: none;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .profileLink {
+      display: inline-block;
+
+      .walletImage {
+        &.greyscale img {
+          filter: grayscale(100%);
+        }
+      }
+
+      a {
+        color: white;
+        font-size: 13px;
+        position: relative;
+        right: 12px;
+      }
+
+      &.noAccount {
+        margin-right: 10px;
+        opacity: 0.5;
+      }
+    }
+    &:after {
+      clear: both;
+      content: "";
+      display: table;
+    }
+  }
+}
+
+.pendingTransactions {
+  z-index: 1000000;
+  position: fixed;
+  bottom: 50px;
+  background-color: rgba(255, 255, 255, 1);
+  left: 20px;
+  width: 300px;
+  height: auto;
+  text-align: left;
+  box-shadow: 0 2px 7px 0 rgba(0, 25, 51, 0.16);
+}
+
+.modalContainer {
+  position: fixed;
+  z-index: 100000;
+  overflow: auto;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modalBody {
+  overflow: hidden;
+}
+
+.topInfo {
+  position: absolute;
+  left: 70px;
+  top: 16px;
+  font-size: 14px;
+
+  span span b {
+    font-weight: normal;
+    opacity: 0.7;
+    display: inline-block;
+    margin: 0 15px;
+  }
+
+  a,
+  a:visited {
+    color: $white;
+  }
+}
+
+.menuToggle {
+  display: none;
+}
+
+@media only screen and (max-device-width: 1024px) {
+  .modalBody {
+    position: fixed;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  .modalContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: translate3d(0, 0, 0);
+  }
+}
+/* EO Header */
+
+.cookieDisclaimerContainer {
+  padding-left: 12%;
+  padding-right: 12%;
+  text-align: center;
+  width: 76%;
+  position: fixed;
+  bottom: 0px;
+  z-index: 999999;
+  display: inline-block;
+
+  .cookieDisclaimer {
+    padding: 25px;
+    border-radius: 10px 10px 0px 0px;
+    box-shadow: 0 2px 16px 0 rgba(133, 168, 208, 0.15);
+    background-color: #132e5b;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+
+    .body {
+      text-align: left;
+      height: auto;
+      font-family: "Open Sans";
+      font-size: 13px;
+      font-weight: normal;
+      font-style: normal;
+      font-stretch: normal;
+      line-height: 1.54;
+      letter-spacing: 0.24px;
+      color: #ffffff;
+      display: inline-block;
+      width: 80%;
+      flex-grow: 2;
+      flex-basis: content;
+
+      a {
+        color: $accent-2;
+      }
+    }
+
+    .accept {
+      flex-grow: 1;
+      text-align: right;
+      display: inline-block;
+      white-space: nowrap;
+
+      a.blueButton {
+        position: relative;
+        top: 12px;
+        height: 30px;
+        line-height: 30px;
+        font-size: 13px;
+        color: white;
+        background-color: rgba(5, 118, 255, 1);
+        transition: all 0.25s ease;
+        border-radius: 15px;
+        display: inline-block;
+        padding: 0 30px;
+        font-weight: bold;
+        cursor: pointer;
+
+        img {
+          position: relative;
+          right: 9px;
+        }
+      }
+    }
+  }
+}
+
+.waitingToInitContainer {
+  padding-top: 4rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.waitingToInitMessage {
+  text-align: center;
+}
+
+/* This allow us to center content until screen is too small to
+   center content with width 1080 with DAO sidebar of width 250px */
+@media only screen and (max-width: 1580px) {
+  .withDAO {
+    .contentWrapper {
+      margin: 0 0 0 250px;
+    }
+  }
+}
+
+/* This allow us to center content until screen is too small to center
+   content with width 1080 with non DAO sidebar of width 125px */
+@media only screen and (max-width: 1330px) {
+  .contentWrapper {
+    margin: 0 0 0 125px;
+  }
+}
+
+@media only screen and (max-width: 425px) {
+  .contentWrapper {
+    margin: 0 !important;
+  }
+
+  .pendingTransactions {
+    bottom: 70px;
+    left: 15px;
+  }
+
+  .modal {
+    top: 0;
+    left: 0;
+    transform: translate(0, 0);
+    width: 100%;
+  }
+
+  .modalContainer {
+    position: fixed;
+    top: 50px;
+  }
+
+  .headerContainer {
+    z-index: 0;
+
+    &:hover {
+      z-index: 1000;
+    }
+
+    .header {
+      .menu {
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+      }
+
+      .redemptionsButton {
+        margin-left: 12px;
+      }
+
+      .toggleButton {
+        margin-left: 52px;
+      }
+
+      .accountInfo {
+        margin-left: auto;
+      }
+
+      .profileLink a {
+        display: none;
+      }
+    }
+  }
+
+  .outer {
+    z-index: 1000000;
+  }
+
+  .topInfo {
+    display: block;
+    position: absolute;
+    color: rgba(0, 28, 52, 1);
+    top: 50px;
+    left: 0px;
+    width: 100%;
+    text-align: center;
+    padding: 8px 0;
+    font-family: "Open Sans";
+    font-weight: normal;
+    font-size: 11px;
+    background-color: rgba(229, 235, 242, 1);
+
+    span {
+      opacity: 0.6;
+    }
+
+    b {
+      font-weight: normal;
+    }
+
+    a:visited {
+      color: rgba(0, 28, 52, 1);
+    }
+  }
+
+  .topInfo a,
+  .topInfo a:visited {
+    color: #001c34;
+  }
+
+  .web3ProviderLogin button {
+    span.connectButtonText {
+      display: none;
+    }
+
+    img {
+      padding-left: 0;
+    }
+  }
+
+  .menuToggle {
+    display: block;
+    position: absolute;
+    top: 16px;
+    left: 12px;
+  }
+
+  .cookieDisclaimerContainer {
+    .cookieDisclaimer {
+      display: inline-block;
+      padding-left: 20px;
+      padding-right: 20px;
+
+      .body {
+        display: block;
+        flex-grow: unset;
+        flex-basis: unset;
+        width: 100%;
+      }
+
+      .accept {
+        flex-grow: unset;
+      }
+    }
+  }
+}

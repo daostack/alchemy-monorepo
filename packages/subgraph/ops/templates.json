@@ -1,0 +1,44 @@
+{
+  "templates": [
+    {
+      "name": "Avatar",
+      "mapping": "Avatar",
+      "start_arcVersion": "0.0.1-rc.16"
+    },
+    {
+      "name": "Controller",
+      "mapping": "Controller",
+      "start_arcVersion": "0.0.1-rc.16"
+    },
+    {
+      "name": "DAOToken",
+      "mapping": "DAOToken",
+      "start_arcVersion": "0.0.1-rc.16"
+    },
+    {
+      "name": "Reputation",
+      "mapping": "Reputation",
+      "start_arcVersion": "0.0.1-rc.16"
+    },
+    {
+      "name": "GenericSchemeMultiCall",
+      "mapping": "GenericSchemeMultiCall",
+      "start_arcVersion": "0.0.1-rc.49"
+    },
+    {
+      "name": "ContinuousLocking4Reputation",
+      "mapping": "ContinuousLocking4Reputation",
+      "start_arcVersion": "0.0.1-rc.55"
+    },
+    {
+      "name": "Competition",
+      "mapping": "Competition",
+      "start_arcVersion": "0.0.1-rc.55"
+    },
+    {
+      "name": "ContributionRewardExt",
+      "mapping": "ContributionRewardExt",
+      "start_arcVersion": "0.0.1-rc.55"
+    }
+  ]
+}

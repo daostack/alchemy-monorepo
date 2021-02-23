@@ -1,0 +1,37 @@
+language: node_js
+node_js:
+  - "10.14.1"
+cache: npm
+
+sudo: required
+
+services:
+  - docker
+notifications:
+  email: false
+
+before_install:
+  - sudo apt-get install libsecret-1-dev
+script:
+  - echo 'npm ci:' && echo -en 'travis_fold:start:script.1\\r'
+  - npm ci
+  - echo -en 'travis_fold:end:script.1\\r'
+
+  - npm run test-env-up
+
+  - echo 'Debug info:' && echo -en 'travis_fold:start:script.3\\r'
+  - docker-compose logs ganache
+  - docker-compose logs graph-node
+  - echo -en 'travis_fold:end:script.3\\r'
+
+# sleep a bit to make sure the subgraph is ready
+  - sleep 15
+  - echo -en 'travis_fold:end:script.2\\r'
+  - npm run lint
+  - npm run test
+  - npm run build
+
+after_success:
+  # - npm run report-coverage
+  # - test $TRAVIS_BRANCH = "master" && npm run deploy-docs
+  # - test $TRAVIS_BRANCH = "master" && npm run semantic-release
