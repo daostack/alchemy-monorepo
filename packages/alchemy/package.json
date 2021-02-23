@@ -74,7 +74,8 @@
     "test": "wdio ./test/integration/wdio.conf.js",
     "test:integration": "wdio ./test/integration/wdio.conf.js --inspect",
     "test:integration:headless": "wdio ./test/integration/wdio-headless.conf.js",
-    "test:unit": "jest"
+    "test:unit": "jest",
+    "test-ci": "./test-ci.sh"
   },
   "dependencies": {
     "3box": "1.20.2",

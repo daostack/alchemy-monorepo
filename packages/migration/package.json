@@ -34,7 +34,8 @@
     "verify.help": "node verify.js -h",
     "verify.lint": "tslint -c tslint.json verify.ts",
     "verify.lint.andFix": "npm run verify.lint -- --fix",
-    "verify": "node verify.js"
+    "verify": "node verify.js",
+    "test-ci": "./test-ci.sh"
   },
   "repository": {
     "type": "git",
