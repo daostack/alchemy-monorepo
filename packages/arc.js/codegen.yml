@@ -1,0 +1,5 @@
+schema: http://localhost:8000/subgraphs/name/daostack
+generates:
+  ./src/types.d.ts:
+    plugins:
+      - typescript
