@@ -1,0 +1,396 @@
+a.historyView {
+  display: inline-block;
+  color: #506176;
+  font-size: 13px;
+  width: 90px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  height: 20px;
+  position: relative;
+}
+
+a.detailView {
+  position: relative;
+  font-size: 13px;
+  color: rgba(85, 85, 85, 1);
+  left: 2px;
+}
+
+.accountImage {
+  border-radius: 15%;
+  vertical-align: middle;
+}
+
+.socialProof {
+  display: block;
+}
+
+.targetAccount {
+  position: relative;
+  display: inline-block;
+  overflow: visible;
+  transition: all 0.25s ease;
+  margin-right: 6px;
+  vertical-align: middle;
+
+  .avatar {
+    z-index: 1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0);
+    transition: all 0.25s ease;
+
+    img {
+      transition: all 0.25s ease;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  .accountInfo {
+    position: absolute;
+    opacity: 0;
+    left: 50%;
+    top: -150px;
+    padding: 40px 0 0 0;
+    width: 190px;
+    font-size: $caption;
+    color: $black;
+    transform: translateX(-50%) scale(0);
+    background-color: $white;
+    border-radius: 3px;
+    transition: all 0.25s ease;
+    box-shadow: $shadow-3;
+    text-align: center;
+
+    .name {
+      font-size: 14px;
+    }
+
+    .beneficiaryAddress {
+      overflow: hidden;
+      width: 100%;
+      height: 42px; // for the copy icon
+      padding: 10px 30px 5px 10px;
+      position: relative;
+      text-align: left;
+      border-radius: 3px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+
+      .accountAddress {
+        display: inline-block;
+        width: 115px;
+        padding-left: 10px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
+
+    .socialButton {
+      padding: 5px 4px;
+      display: inline-block;
+
+      .icon {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .holdings {
+      padding: 20px 0;
+      margin-top: 10px;
+      text-align: center;
+      background-color: rgba(242, 242, 242, 1);
+
+      & > span {
+        font-size: $small;
+        color: $black-halftone;
+      }
+    }
+
+    .viewProfile {
+      border: 1px solid white;
+      background-color: transparent;
+      color: $white;
+      display: block;
+      margin: 30px auto 0 auto;
+      padding: 8px 10px;
+    }
+  }
+}
+
+a.accountName {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.targetAccount:hover {
+  z-index: 10000000;
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+
+    img {
+      width: 50px;
+      height: 50px;
+    }
+  }
+
+  .accountInfo {
+    opacity: 1;
+    top: 0px;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/***** Account Profile ******/
+.profileWrapper {
+  display: flex;
+  height: 100%;
+}
+
+.profileData {
+  flex-grow: 2;
+}
+
+.profileContainer {
+  max-width: 700px;
+  width: 100%;
+  border-radius: 15px;
+  margin: 0 auto;
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+
+  form {
+    padding: 40px;
+    background-color: $white;
+    border-radius: 15px;
+  }
+
+  .profileContent {
+    display: block;
+    position: relative;
+
+    .followButton {
+      margin-top: 10px;
+      margin-bottom: 16px;
+    }
+  }
+
+  .userAvatarContainer {
+    min-width: 100px;
+    max-width: 100px;
+    margin-bottom: 16px;
+  }
+
+  .saveProfile {
+    display: block;
+    text-align: right;
+  }
+
+  .profileDataContainer {
+    width: 100%;
+    display: flex;
+
+    label {
+      font-weight: normal;
+      font-size: 12px;
+      opacity: 0.7;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .charLimit {
+      font-size: 12px;
+      text-align: right;
+    }
+  }
+
+  .otherInfoContainer {
+    width: 100%;
+
+    span {
+      color: #76c9de;
+      font-weight: bold;
+    }
+
+    .tokens {
+      > div {
+        display: block;
+        width: 33%;
+      }
+    }
+
+    div {
+      margin-bottom: 20px;
+    }
+
+    p {
+      padding: 0;
+      margin-top: 5px;
+      font-size: 12px;
+    }
+  }
+
+  input,
+  textarea {
+    display: block;
+    border: 1px solid #d0d9e1;
+    padding: 15px;
+    width: 95%;
+    font-size: 14px;
+  }
+
+  .socialButton {
+    width: 33%;
+    display: block;
+
+    button {
+      border: none;
+
+      :hover {
+        color: #76c9de;
+      }
+    }
+
+    .icon {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+.profileContainer.withDao {
+  padding-left: 0px;
+}
+
+.socialLogins {
+  position: relative;
+  padding-bottom: 20px;
+  width: 100%;
+}
+
+.socialButtonAuthenticated {
+  .icon {
+    color: #76c9de;
+  }
+}
+
+input {
+  &.error {
+    border-bottom: 2px solid red;
+  }
+}
+
+.errorMessage {
+  position: relative;
+  color: red;
+}
+
+.submitButton {
+  height: 30px;
+  display: inline-block;
+  line-height: 30px;
+  font-weight: bold;
+  color: $white;
+  transition: all 0.25s ease;
+  background-color: rgba(3, 118, 255, 1);
+  border-radius: 30px;
+  border: none;
+  font-size: 14px;
+  padding: 0 15px;
+  margin-right: 45px;
+  margin-top: 30px;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  .loading {
+    width: 18px;
+    display: none;
+    margin: 0;
+    vertical-align: middle;
+  }
+}
+.submitButton:disabled .loading {
+  display: inline-block;
+}
+
+.submitButton:disabled {
+  background-color: rgba(200, 200, 200, 0.5);
+  border: 1px solid rgba(200, 200, 200, 1);
+  color: rgba(75, 75, 75, 1);
+}
+
+.submitButton:disabled .sendIcon {
+  display: none;
+}
+
+.alignCenter {
+  text-align: center;
+  margin-top: 30px;
+}
+
+@media only screen and (max-width: 1280px) {
+  a.historyView {
+    width: 55px;
+    font-size: 12px;
+  }
+}
+
+@media only screen and (max-width: 425px) {
+  .profileWrapper {
+    display: block;
+  }
+
+  .profileContainer {
+    width: auto;
+    padding: 0;
+
+    form {
+      border-radius: 0;
+      padding: 15px;
+    }
+
+    input,
+    textarea {
+      width: 88%;
+    }
+
+    .socialButton button {
+      background-color: transparent;
+    }
+
+    .profileDataContainer {
+      display: block;
+    }
+  }
+
+  .setupProfile {
+    padding: 15px;
+  }
+
+  .submitButton {
+    margin-right: 0;
+    margin-top: 15px;
+  }
+
+  .socialProof {
+    opacity: 0.6;
+    width: 77%;
+  }
+
+  a.historyView {
+    font-size: 11px;
+    width: auto;
+  }
+}

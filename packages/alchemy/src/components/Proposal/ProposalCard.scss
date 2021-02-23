@@ -1,0 +1,270 @@
+.hidden {
+  display: none;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.loading {
+  display: none;
+  position: absolute;
+  width: 80%;
+  height: 70%;
+  top: 15%;
+  left: 15%;
+  text-align: center;
+  z-index: 100000;
+  box-shadow: $shadow-2;
+  border-radius: 3px;
+  background-color: $white;
+
+  img {
+    height: 35px;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    left: 50%;
+  }
+}
+
+.proposalContainer {
+  max-width: $max-width;
+  background-color: $white;
+}
+
+.proposal {
+  width: 418px;
+  border-radius: 15px;
+  background-color: $white;
+  margin-right: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  display: inline-block;
+  position: relative;
+  box-shadow: 0 0 15px 0 rgba(133,168,208,.15);
+  transition: all .25s ease;
+  vertical-align: top;
+  z-index: 0;
+
+  .description, .url {
+    display: none;
+  }
+}
+
+.proposalInfo {
+  font-size: $body;
+  position: relative;
+  z-index: 1000000;
+  padding-bottom: 20px;
+
+  a {
+    color: $black;
+  }
+
+  strong a {
+    color: rgba(80, 97, 118, 1.000);
+  }
+
+  h3 {
+    font-size: $body;
+    margin: 4px 20px 6px 20px;
+  }
+
+  .closedTime {
+    position: relative;
+    display: block;
+    font-weight: $normal;
+    font-size: 11px;
+    color: $black-halftone;
+  }
+}
+
+.detailLink {
+  color: $black;
+
+  span {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
+    white-space: nowrap;
+    max-width: 350px;
+  }
+
+  img {
+    margin-left: 8px;
+    height: 12px;
+    opacity: .5;
+    position: relative;
+    top: -3px;
+  }
+}
+
+.summary {
+  margin: 0 20px 0px 20px;
+}
+
+.proposal:hover {
+  z-index: 9000;
+  box-shadow: 0 0 15px 0 rgba(49, 120, 202, .300);
+  overflow: visible;
+}
+
+.voteBox {
+  position: relative;
+  float: left;
+  border-right: 1px solid rgba(215, 225, 237, 1.000);
+  width: 49%;
+}
+
+.voteButtons {
+  padding-top: 9px;
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+.voteControls {
+  width: 100%;
+  text-align: center;
+  position: relative;
+  height: 70px;
+  z-index: 100;
+
+  .voteDivider {
+    width: 40%;
+    float: left;
+    text-align: right;
+    padding-top: 12px;
+    margin-right: 5px;
+  }
+}
+
+.predictions {
+  position: relative;
+  float: right;
+  width: 49%;
+  padding-top: 10px;
+}
+
+.predictionButtons {
+  padding-top: 4px;
+}
+
+.cardTop {
+  height: 20px;
+
+  .timer {
+    float: left;
+    width: 80%;
+    text-align: left;
+    font-size: 11px;
+
+    .content {
+      font-family: "Open Sans";
+      display: inline-block;
+      margin: 12px 0 0 18px;
+      opacity: .6;
+      color: rgba(104, 155, 214, 1.000);
+    }
+  }
+
+  .contextMenu {
+    text-align: center;
+    margin-left: 10px;
+    position:relative;
+
+    .menuIcon {
+      width: 18px;
+      height: 18px;
+      border-radius: 11px;
+      border: solid 1px #0076ff;
+
+      img {
+        height: 11px;
+        position: relative;
+        top: 3px;
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .menu {
+      width: 116px;
+      border-radius: 0 8px 8px 8px;
+      background-color: white;
+      padding: 5px 0;
+      box-shadow: 2px 2px 9px 0 rgba(12, 0, 51, 0.1);
+      position: absolute;
+      top: -7px;
+      left: 24px;
+      opacity: 0;
+      transition: all .25s ease;
+      z-index: 100;
+      visibility: hidden;
+
+      &.leftMenu {
+        left: -118px;
+      }
+    }
+
+    &:hover {
+      .menu {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    .followButton {
+      text-align: center;
+    }
+  }
+}
+
+.actionButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+}
+
+.proposalActions {
+  position: relative;
+  transition: all .25s ease;
+  border-top: 1px solid rgba(215, 225, 237, 1.000);
+  height: 64px;
+  overflow: hidden;
+}
+
+.createdBy {
+  font-size: $small;
+  color: $black-thirdtone;
+  margin: 15px 10px 5px 13px;
+  position: relative;
+  left: 7px;
+}
+
+.tagsContainer {
+  padding-left: 18px;
+  padding-bottom: 12px;
+}
+
+@media only screen and (max-width: 425px) {
+  .proposal {
+    width: 100%;
+  }
+
+  .cardTop .contextMenu {
+    z-index: 1000;
+
+    &:hover .menu {
+      left: auto;
+      right: 24px;
+    }
+
+    .menu {
+      border-radius: 8px 0 8px 8px;
+    }
+  }
+}

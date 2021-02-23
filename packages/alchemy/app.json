@@ -1,0 +1,39 @@
+{
+  "name": "alchemy",
+  "description": "",
+  "scripts": {},
+  "env": {
+    "NODE_OPTIONS": {
+      "required": true,
+      "value": "--max_old_space_size=2560"
+    },
+    "NODE_ENV": {
+      "required": true,
+      "value": "production"
+    },
+    "NETWORK": {
+      "required": true,
+      "value": "rinkeby"
+    },
+    "DISQUS_SITE": {
+      "required": true,
+      "value": "daostack-alchemy-staging"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [
+    "scheduler"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-apt"
+    }
+  ]
+}
