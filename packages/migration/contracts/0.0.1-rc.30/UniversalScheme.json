@@ -1,0 +1,10 @@
+{
+  "contractName": "UniversalScheme",
+  "abi": [],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603e80601d6000396000f3fe6080604052600080fdfea265627a7a723158203a5733df40ef878b62661afab32a95e5145be32adae653f6c6b32c7bcfc39a1064736f6c634300050b0032",
+  "deployedBytecode": "0x6080604052600080fdfea265627a7a723158203a5733df40ef878b62661afab32a95e5145be32adae653f6c6b32c7bcfc39a1064736f6c634300050b0032",
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.11+commit.c082d0b4.Emscripten.clang"
+  }
+}

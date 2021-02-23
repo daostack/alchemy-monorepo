@@ -1,0 +1,602 @@
+{
+    "orgName": "Genesis Alpha",
+    "tokenName": "Genesis Alpha Token",
+    "tokenSymbol": "GAT",
+    "ContributionReward": {
+    },
+    "SchemeRegistrar": {
+      "voteRegisterParams": 1,
+      "voteRemoveParams": 1
+    },
+    "VotingMachinesParams": [
+      {
+        "boostedVotePeriodLimit": 345600,
+        "daoBountyConst": 10,
+        "minimumDaoBountyGWei": 150000000000,
+        "queuedVotePeriodLimit": 2592000,
+        "queuedVoteRequiredPercentage": 50,
+        "preBoostedVotePeriodLimit": 86400,
+        "proposingRepRewardGwei": 50000000000,
+        "quietEndingPeriod": 172800,
+        "thresholdConst": 1200,
+        "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+        "votersReputationLossRatio": 4,
+        "activationTime": 0
+      },
+      {
+        "boostedVotePeriodLimit": 691200,
+        "daoBountyConst": 10,
+        "minimumDaoBountyGWei": 500000000000,
+        "queuedVotePeriodLimit": 5184000,
+        "queuedVoteRequiredPercentage": 50,
+        "preBoostedVotePeriodLimit": 172800,
+        "proposingRepRewardGwei": 200000000000,
+        "quietEndingPeriod": 345600,
+        "thresholdConst": 1500,
+        "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+        "votersReputationLossRatio": 4,
+        "activationTime": 0
+      }
+    ],
+    "schemes": {
+      "ContributionReward": true,
+      "GenericScheme": false,
+      "SchemeRegistrar": true,
+      "GlobalConstraintRegistrar": false,
+      "UpgradeScheme": false
+    },
+    "unregisterOwner": true,
+    "useUController": false,
+    "useDaoCreator": true,
+    "founders": [
+      {
+        "address": "0x133d93566f9699b3af46fe150daa8a67a9563ed6",
+        "reputation": 152.9
+      },
+      {
+        "address": "0x44ed6eabed21874c71c4d0a717a29784d78ed19c",
+        "reputation": 224.1
+      },
+      {
+        "address": "0xebec8c75c489ab7fab3e20ea556a2cf7e0da9b4b",
+        "reputation": 325.0
+      },
+      {
+        "address": "0x69019f5dc1f6bdfb7cfaf06a1ca59ebcdfd141f4",
+        "reputation": 156.0
+      },
+      {
+        "address": "0x4b7e11feede1cd022a2cdcfb28444594ba3db86b",
+        "reputation": 156.0
+      },
+      {
+        "address": "0x07baad937efcf9963bf32332a8c3a8e8a5628ed4",
+        "reputation": 156.0
+      },
+      {
+        "address": "0xffb566efa84fb4fdf953496b754bff28e9724660",
+        "reputation": 214.8
+      },
+      {
+        "address": "0x5928675ad8f2a5ec995d4787829892cb6df4a65b",
+        "reputation": 512.8
+      },
+      {
+        "address": "0xbad2280a4aba40be20ffec08b8cdf9f5d2a98151",
+        "reputation": 156.0
+      },
+      {
+        "address": "0x95d9bed31423eb7d5b68511e0352eae39a3cdd20",
+        "reputation": 156.0
+      },
+      {
+        "address": "0x1bc9e52baa93dab1a47c3168f6d82ed08856ec83",
+        "reputation": 339.8
+      },
+      {
+        "address": "0x0c5e8e7dfca5cf804e0b3221702b95a724595c3a",
+        "reputation": 156.0
+      },
+      {
+        "address": "0xc2fedac0de1c7f09582d248bc01dc603752d5739",
+        "reputation": 156.0
+      },
+      {
+        "address": "0x55d2841715897daec406625cd6c630c978901bcd",
+        "reputation": 156.0
+      },
+      {
+        "address": "0xc7b51a1637f86f130686eebd1aae67c051888351",
+        "reputation": 150.4
+      },
+      {
+        "address": "0x84861ab366c5d6450727bb411097b4bfbee6e6e5",
+        "reputation": 156.0
+      },
+      {
+        "address": "0x03c95f9a8242d87d0fb546a54f23fe5849f581d5",
+        "reputation": 156.0
+      },
+      {
+        "address": "0x49db499e1555380e0ad02a463cc557087851017f",
+        "reputation": 155.5
+      },
+      {
+        "address": "0xb5e407a8e9dfd7ddf2371ae465e3e1d4886418e0",
+        "reputation": 156.0
+      },
+      {
+        "address": "0xf5913759b449fae8900d61f7116d451d200c60f7",
+        "reputation": 154.5
+      },
+      {
+        "address": "0x7f1d234e281ff8421b2b0650a9b8f85b5d73bd59",
+        "reputation": 156.0
+      },
+      {
+        "address": "0xd47cdbb2085975e761ca2b16f4916a94dd984377",
+        "reputation": 156.0
+      },
+      {
+        "address": "0x155c176fed833371f7fa02ecf62daa9fd9c7c5f4",
+        "reputation": 156.0
+      },
+      {
+        "address": "0xc2536854fd70e80b57de8372146fc3ca04dde94d",
+        "reputation": 156.0
+      },
+      {
+        "address": "0x961d17419736d517754d886aaacc874711a3ff32",
+        "reputation": 156.0
+      },
+      {
+        "address": "0x144c4e5027b69f7798b2b162d924bcae5c149f15",
+        "reputation": 641.7
+      },
+      {
+        "address": "0x0fe3bb74d170095242b234106a2640b9f537987d",
+        "reputation": 156.0
+      },
+      {
+        "address": "0xcb701ede8e50395833c24401f5abd9c5681928a0",
+        "reputation": 156.0
+      },
+      {
+        "address": "0xefa21088f3830cd7d9f526ea268f7aaba34f785f",
+        "reputation": 156.0
+      },
+      {
+        "address": "0x379383e2d3ab8ce362cffbdd6f13d81213475786",
+        "reputation": 251.3
+      },
+      {
+        "address": "0xa75cb02c290e586b010888bd795f0beb01e1b6a2",
+        "reputation": 156.0
+      },
+      {
+        "address": "0x435cd42591cc503a909085c3d3d2899d17032f77",
+        "reputation": 192.3
+      },
+      {
+        "address": "0xd377b7a9e76fc735ad1a579254ac7dd35f8978dc",
+        "reputation": 190.4
+      },
+      {
+        "address": "0x7f5731762f2a1dd3224d7f4ebdb289a5c0c8543d",
+        "reputation": 192.3
+      },
+      {
+        "address": "0x0084fb1d84f2359cafd00f92b901c121521d6809",
+        "reputation": 342.3
+      },
+      {
+        "address": "0x6ac0a885ed84f4a2d062c60fb7daaf504fc8c47f",
+        "reputation": 199.2
+      },
+      {
+        "address": "0x7345e5285b2f5eb9383a484477cfb35c5f512905",
+        "reputation": 252.6
+      },
+      {
+        "address": "0xb1ba56fc6ed94d45ca47cc9e97df68f3df772d42",
+        "reputation": 282.3
+      },
+      {
+        "address": "0x64eb4dfcc14b96582d8d5095e9894b279e519b4b",
+        "reputation": 192.3
+      },
+      {
+        "address": "0x900d38bf3ae3e72f98f377111a9e9e1413974db4",
+        "reputation": 229.9
+      },
+      {
+        "address": "0x4171160db0e7e2c75a4973b7523b437c010dd9d4",
+        "reputation": 602.1
+      },
+      {
+        "address": "0xc16c8702a1d50a92669ed0f970d6e1f7dae74c44",
+        "reputation": 192.7
+      },
+      {
+        "address": "0xd6f2189c0d96bb2ae0e036d3d0922278e280a1c0",
+        "reputation": 192.3
+      },
+      {
+        "address": "0x2e39f2ef7ec1088b2e0e227d10b5248477bae327",
+        "reputation": 188.5
+      },
+      {
+        "address": "0xe7b81ae742fdc4cac5f6280aa91bc28d6df34a89",
+        "reputation": 422.6
+      },
+      {
+        "address": "0xc4d9d1a93068d311ab18e988244123430eb4f1cd",
+        "reputation": 517.6
+      },
+      {
+        "address": "0xb38698d1cf896ad6d3bbef3e6ee6b90a78837a1f",
+        "reputation": 280.4
+      },
+      {
+        "address": "0x346173fa66f95bfa53d4222c09321279365b8a85",
+        "reputation": 272.4
+      },
+      {
+        "address": "0x73db6408abbea97c5db8a2234c4027c315094936",
+        "reputation": 348.4
+      },
+      {
+        "address": "0x05f468df35bb2fb0d98c15a83ba340d11742a219",
+        "reputation": 283.1
+      },
+      {
+        "address": "0x7539a96097e5214da7336be510cddd415339949e",
+        "reputation": 273.5
+      },
+      {
+        "address": "0x0f07d407ac41d6dbb2cf237b0704c0ab5b9b8754",
+        "reputation": 296.1
+      },
+      {
+        "address": "0xf16294a979a027f297dace2f618cb57bc4bf5d16",
+        "reputation": 287.6
+      },
+      {
+        "address": "0x3839d0fae55c43054cbaea3ceeaa6beca4360246",
+        "reputation": 210.0
+      },
+      {
+        "address": "0xef99a29e66ca072b86d53bd16d6d150a03598b0e",
+        "reputation": 228.9
+      },
+      {
+        "address": "0xfa93c2c7d4a1c2579ad1be4add7f72cf37398f50",
+        "reputation": 96.1
+      },
+      {
+        "address": "0x7b2e78d4dfaaba045a167a70da285e30e8fca196",
+        "reputation": 208.6
+      },
+      {
+        "address": "0x3a00ac02bce2499c40519be4dcce93ece67ac0ad",
+        "reputation": 28.0
+      },
+      {
+        "address": "0xce7298e5ef1ae8af0573edc2ebd03ab0f837e214",
+        "reputation": 506.2
+      },
+      {
+        "address": "0x9e90f4e98b0bf0b4012b73dced91b8b9567e6c4e",
+        "reputation": 0.0
+      },
+      {
+        "address": "0x9dfc7173a925d33ecda397c8c62e3f3a999ae3f7",
+        "reputation": 100.0
+      },
+      {
+        "address": "0x4a56387886aca3deb6ce3e6817c77e165c8c5e6f",
+        "reputation": 202.0
+      },
+      {
+        "address": "0xb8a8e2425958ff0b3721540ac298bf8eed98efea",
+        "reputation": 136.5
+      },
+      {
+        "address": "0x339a7e719121ec4a580a43c9ad82bb27bb1b4f49",
+        "reputation": 56.3
+      },
+      {
+        "address": "0x76bc4c780dd85558bc4b24a4f262f4eb0be78ca7",
+        "reputation": 34.7
+      },
+      {
+        "address": "0xba527d8301178a03a6993ab5a08cab06b975d5ae",
+        "reputation": 16.8
+      },
+      {
+        "address": "0xada083a3c06ee526f827b43695f2dcff5c8c892b",
+        "reputation": 477.2
+      },
+      {
+        "address": "0x1057bea69c9add11c6e3de296866aff98366cfe3",
+        "reputation": 447.9
+      },
+      {
+        "address": "0xab787f725780f64ef2c56afa078d910a8aaa7aef",
+        "reputation": 295.5
+      },
+      {
+        "address": "0xb9205202f3b3c0ae071a58c1bc96bf48154b083c",
+        "reputation": 150.0
+      },
+      {
+        "address": "0x17f2f85f33b45b4fadaa68706e24c203b26d831e",
+        "reputation": 158.6
+      },
+      {
+        "address": "0x34f1f1b620f66a4919b4c2989d9a5e47fb587d50",
+        "reputation": 165.9
+      },
+      {
+        "address": "0xf8d1d34956cea24718cf8687588d6fedbc6d9aa6",
+        "reputation": 227.6
+      },
+      {
+        "address": "0x3735dd3dea51dff8f5b9b209143f68f852b4ca0c",
+        "reputation": 183.7
+      },
+      {
+        "address": "0x390409c2dfdffaa58e02085678fbacf7f40a5522",
+        "reputation": 234.3
+      },
+      {
+        "address": "0x24597c5c68687e816ffc0c69e064cb70bb62a9cd",
+        "reputation": 304.5
+      },
+      {
+        "address": "0x18ab212200ee4c631aca2a4a0ce23a495bd9385c",
+        "reputation": 225.8
+      },
+      {
+        "address": "0xf84925d007805f7ee043a81ba8a4d3a4b63d46e3",
+        "reputation": 180.0
+      },
+      {
+        "address": "0x5f3f639988efe64fea12fa992208184fcd1a081a",
+        "reputation": 190.3
+      },
+      {
+        "address": "0x9f7dfab2222a473284205cddf08a677726d786a0",
+        "reputation": 220.0
+      },
+      {
+        "address": "0x2b129bd5121dc6623c0f71552f52ea39444e22a5",
+        "reputation": 220.0
+      },
+      {
+        "address": "0x41e0a978cba3ed9290d59e4c6c4cf76d96a39ea6",
+        "reputation": 236.9
+      },
+      {
+        "address": "0xe3f820f4e22a0afe6a2ac30d5a81366198f3344e",
+        "reputation": 238.3
+      },
+      {
+        "address": "0x812cc11374013b7a24432525bac405967087a25e",
+        "reputation": 220.0
+      },
+      {
+        "address": "0x4b7b8d3d9a3b255009572e788cb053e1e01d9a4b",
+        "reputation": 237.7
+      },
+      {
+        "address": "0xac78927a0f35989be259622047388c0a1a99e4ad",
+        "reputation": 371.0
+      },
+      {
+        "address": "0xfcefee85b23fe340f3307759e14e87347f7758ee",
+        "reputation": 202.0
+      },
+      {
+        "address": "0xb1b7586656116d546033e3baff69bfcd6592225e",
+        "reputation": 211.3
+      },
+      {
+        "address": "0x774d556f7c2cae79f28a35b8e1f57371df8b8bca",
+        "reputation": 214.7
+      },
+      {
+        "address": "0x74b4d5f3b90772a7e86b1a46405884131a814434",
+        "reputation": 190.5
+      },
+      {
+        "address": "0xf3215bf9ad166213e2588baf81d7e932fda99d9e",
+        "reputation": 204.5
+      },
+      {
+        "address": "0x09850194162d1268b3c88a4b8e7d113f0528018a",
+        "reputation": 220.0
+      },
+      {
+        "address": "0xee30a8ee27f5fe862d5f83893561b2954b598c4f",
+        "reputation": 241.3
+      },
+      {
+        "address": "0x3eaa8cea2bf65b6a6114bf15f0d3b1469d242fcc",
+        "reputation": 27.1
+      },
+      {
+        "address": "0x30d0b48fa4cedfa0eca1e8f30a866e531b3901b8",
+        "reputation": 220.0
+      },
+      {
+        "address": "0xec50ad7052bd1bb900ff0c31338d306344d1999e",
+        "reputation": 220.0
+      },
+      {
+        "address": "0x595a9eb1db132d3e40b44eee729e14dd66f94210",
+        "reputation": 240.5
+      },
+      {
+        "address": "0xcaa9c1251dfdad81f4175edbd09ba9d9131aca77",
+        "reputation": 215.2
+      },
+      {
+        "address": "0x17d0d3cbe6b72df1ff13916f700266875b03e84a",
+        "reputation": 123.2
+      },
+      {
+        "address": "0xc6bf8b8116656ce800701c4d8b647cf68ffdae37",
+        "reputation": 120.4
+      },
+      {
+        "address": "0x757a2bb0cdc4006c5e1debf21639936b08dca630",
+        "reputation": 123.3
+      },
+      {
+        "address": "0x5aac52c0b1d1e74a3bb0d0da0c82e89637714146",
+        "reputation": 118.1
+      },
+      {
+        "address": "0x63a32f1595a68e811496d820680b74a5cca303c5",
+        "reputation": 150.0
+      },
+      {
+        "address": "0xda666fb849cfa3c44540c9a8897a49dea7e74d83",
+        "reputation": 242.2
+      },
+      {
+        "address": "0x4f35f3aa1a1b42932f4df5b242f22f1bcb14f0de",
+        "reputation": 100.0
+      },
+      {
+        "address": "0xdab36817e541330052811f67bb0e5f1a16f4f744",
+        "reputation": 122.0
+      },
+      {
+        "address": "0x8ba18dd1b6fbc58f3f9a35f7fc2e33fa991bfc83",
+        "reputation": 444.8
+      },
+      {
+        "address": "0xeff83fda3aeec0e775a03f42bb0af8972136b406",
+        "reputation": 237.9
+      },
+      {
+        "address": "0x778549eb292ac98a96a05e122967f22efa003707",
+        "reputation": 120.0
+      },
+      {
+        "address": "0xb950e0e108546743af96eb493d4ff2abc63816db",
+        "reputation": 224.8
+      },
+      {
+        "address": "0x8b166add384dce341f0c7c94cf5e65b495d33d6f",
+        "reputation": 117.6
+      },
+      {
+        "address": "0x6d1a4be65723355a9f5b12c446780a5000849461",
+        "reputation": 115.7
+      },
+      {
+        "address": "0x134bd70d85706adcf0dd37966669d18c0fa24ec6",
+        "reputation": 100.0
+      },
+      {
+        "address": "0xd0c838486120cda746ca514f76c70938bf708b90",
+        "reputation": 220.3
+      },
+      {
+        "address": "0xe33262a67d1c6472d6c9722ae4509f1b145998e1",
+        "reputation": 114.5
+      },
+      {
+        "address": "0xe4285287c4c418a502def4fc26afb784121c100d",
+        "reputation": 100.0
+      },
+      {
+        "address": "0x72e1638bd8cd371bfb04cf665b749a0e4ae38324",
+        "reputation": 106.2
+      },
+      {
+        "address": "0x0bba959486e1adde6027f078a82156d7a65f096e",
+        "reputation": 31.2
+      },
+      {
+        "address": "0x1a8d832a6c10013ddeb7340839b0c39bffc0bd13",
+        "reputation": 374.1
+      },
+      {
+        "address": "0x8940442e7f54e875c8c1c80213a4aee7eee4781c",
+        "reputation": 9.0
+      },
+      {
+        "address": "0x6375885ce997543cc7e057fe9af3e255d52fb4f4",
+        "reputation": 122.2
+      },
+      {
+        "address": "0x7f43706cb295a641f0e257c3d1920e063b5b4452",
+        "reputation": 116.1
+      },
+      {
+        "address": "0x4a7765c92149884dac1a7a60094efe5670af376a",
+        "reputation": 100.0
+      },
+      {
+        "address": "0x8712128bea09c9687df05a5d692f3750f8086c81",
+        "reputation": 119.2
+      },
+      {
+        "address": "0x76b5064b21a6ed77eac72ed58eb50bdea86ac836",
+        "reputation": 98.0
+      },
+      {
+        "address": "0xb6dacfc9e6443f2546e9285ba4ae6359cdc20727",
+        "reputation": 178.3
+      },
+      {
+        "address": "0xda0ace543580e80e13ec4991fd9576e19b98c608",
+        "reputation": 112.2
+      },
+      {
+        "address": "0xb6ca51ca72c689b720235aca37e579f821fa05ee",
+        "reputation": 100.0
+      },
+      {
+        "address": "0x4c7696346a5cb4b1e9f9ab248385c461f4f0bb66",
+        "reputation": 100.0
+      },
+      {
+        "address": "0xd71418fc2ca467e86b1aa28668932bee80feceb9",
+        "reputation": 111.8
+      },
+      {
+        "address": "0xe74f3c49c162c00ac18b022856e1a4ecc8947c42",
+        "reputation": 0.0
+      },
+      {
+        "address": "0xa15ca74e65bf72730811abf95163e89ad9b9dff6",
+        "reputation": 346.2
+      },
+      {
+        "address": "0x390eb69325be97a9c7c5ca0a98fee1e7bcbb6012",
+        "reputation": 110.6
+      },
+      {
+        "address": "0xde3669ac6ff1e45a4be3d669f0c18750c959c28d",
+        "reputation": 113.9
+      },
+      {
+        "address": "0x1de5366615bceb1bdb7274536bf3fc9f06aa9c2c",
+        "reputation": 116.6
+      },
+      {
+        "address": "0x9a94ac82b17e67f7dff81912de68eb74ca20e6c3",
+        "reputation": 163.8
+      },
+      {
+        "address": "0x79d3544bbe7821f2be4bd745d3df1f14ed211c30",
+        "reputation": 180.0
+      } 
+    ]
+  }
+  

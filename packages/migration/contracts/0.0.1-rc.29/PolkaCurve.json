@@ -1,0 +1,62 @@
+{
+  "contractName": "PolkaCurve",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "SUM_OF_SQRTS",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "TOTAL_REPUTATION",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_value",
+          "type": "uint256"
+        }
+      ],
+      "name": "calc",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "sqrt",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b5061010e806100206000396000f3fe6080604052348015600f57600080fd5b5060043610603c5760003560e01c806338c9027a1460415780633f4f781c14606d57806344cac103146073575b600080fd5b605b60048036036020811015605557600080fd5b50356079565b60408051918252519081900360200190f35b605b60cb565b605b60d2565b670de0b6b3a7640000810280600260018201045b8281101560b15780925060028182848160a257fe5b04018160aa57fe5b049050608d565b621a3722620c3500840204633b9aca000292505050919050565b621a372281565b620c35008156fea265627a7a72315820ecaaa2727db8cc81fa1203f39098f6d010824333675ddb0a5eb4c589e7ecfb9364736f6c634300050b0032",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b5060043610603c5760003560e01c806338c9027a1460415780633f4f781c14606d57806344cac103146073575b600080fd5b605b60048036036020811015605557600080fd5b50356079565b60408051918252519081900360200190f35b605b60cb565b605b60d2565b670de0b6b3a7640000810280600260018201045b8281101560b15780925060028182848160a257fe5b04018160aa57fe5b049050608d565b621a3722620c3500840204633b9aca000292505050919050565b621a372281565b620c35008156fea265627a7a72315820ecaaa2727db8cc81fa1203f39098f6d010824333675ddb0a5eb4c589e7ecfb9364736f6c634300050b0032",
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.11+commit.c082d0b4.Emscripten.clang"
+  }
+}

@@ -1,0 +1,81 @@
+{
+   "orgName": "The Illuminati",
+   "tokenName": "ILL",
+   "tokenSymbol": "ILL",
+   "ContributionReward": {
+   },
+   "GenericScheme": {
+     "targetContract": "0x0000000000000000000000000000000000000000"
+   },
+   "SchemeRegistrar": {
+   },
+   "UpgradeScheme": {
+   },
+   "VotingMachinesParams": [
+    {
+               "activationTime": 0,
+               "boostedVotePeriodLimit": 14400,
+               "daoBountyConst": 10,
+               "minimumDaoBounty": 500,
+               "preBoostedVotePeriodLimit": 10800,
+               "proposingRepReward": 0,
+               "queuedVotePeriodLimit": 162000,
+               "queuedVoteRequiredPercentage": 50,
+               "quietEndingPeriod": 7200,
+               "thresholdConst": 1200,
+               "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+               "votersReputationLossRatio": 0
+      },
+      {
+               "activationTime": 0,
+               "boostedVotePeriodLimit": 14400,
+               "daoBountyConst": 10,
+               "minimumDaoBounty": 500,
+               "preBoostedVotePeriodLimit": 10800,
+               "proposingRepReward": 0,
+               "queuedVotePeriodLimit": 162000,
+               "queuedVoteRequiredPercentage": 50,
+               "quietEndingPeriod": 7200,
+               "thresholdConst": 1500,
+               "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+               "votersReputationLossRatio": 0
+     }
+   ],
+   "schemes": {
+     "ContributionReward": true,
+     "GenericScheme": false,
+     "SchemeRegistrar": true,
+     "GlobalConstraintRegistrar": false,
+     "UpgradeScheme": true
+   },
+   "unregisterOwner": true,
+   "useUController": false,
+   "useDaoCreator": true,
+   "founders": [
+     {
+       "address": "0xc4d9d1a93068d311ab18e988244123430eb4f1cd",
+       "tokens": 0,
+       "reputation": 1000
+      },
+     {
+       "address": "0x86B515c9B1DEd092E13604fF9D831BCAbff98eB9", 
+       "tokens": 0,
+       "reputation": 1000
+      },
+      {
+       "address": "0xA558c22cC727d1D15825EfD1b74b2E8b49251daD", 
+       "tokens": 0,
+       "reputation": 1000
+      },
+      {
+       "address": "0x9aF0D7ca79a6d90a005e9FA2B17825a51EC72303",
+       "tokens": 0,
+       "reputation": 1000
+      },
+      {
+       "address": "0x17102711723D3cC400b876173ce205F71Ec6C04A",
+       "tokens": 0,
+       "reputation": 1000
+      }
+   ]
+ }

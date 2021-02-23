@@ -1,0 +1,120 @@
+{
+  "orgName": "Liberland DAO",
+  "tokenName": "Liberland DAO Token",
+  "tokenSymbol": "LDT",
+
+  "ContributionReward": {
+    "voteParams": 0
+  },
+  "SchemeRegistrar": {
+    "voteParams": 1
+  },
+  "VotingMachinesParams": [
+    {
+      "boostedVotePeriodLimit": 691200,
+      "daoBountyConst": 10,
+      "minimumDaoBounty": 150,
+      "queuedVotePeriodLimit": 3888000,
+      "queuedVoteRequiredPercentage": 50,
+      "preBoostedVotePeriodLimit": 86400,
+      "proposingRepReward": 500,
+      "quietEndingPeriod": 172800,
+      "thresholdConst": 1200,
+      "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+      "votersReputationLossRatio": 4,
+      "activationTime": 0
+    },
+    {
+      "boostedVotePeriodLimit": 1296000,
+      "daoBountyConst": 10,
+      "minimumDaoBounty": 500,
+      "queuedVotePeriodLimit": 7776000,
+      "queuedVoteRequiredPercentage": 50,
+      "preBoostedVotePeriodLimit": 172800,
+      "proposingRepReward": 2000,
+      "quietEndingPeriod": 345600,
+      "thresholdConst": 1300,
+      "voteOnBehalf": "0x0000000000000000000000000000000000000000",
+      "votersReputationLossRatio": 4,
+      "activationTime": 0
+    }
+  ],
+  "schemes": {
+    "ContributionReward": true,
+    "GenericScheme": false,
+    "SchemeRegistrar": true,
+    "GlobalConstraintRegistrar": false,
+    "UpgradeScheme": false
+  },
+  "unregisterOwner": true,
+  "useUController": false,
+  "useDaoCreator": true,
+
+  "founders": [
+    {
+      "address": "0xBf304ECfbfb2e68d088A88d5884dD30C144c9915",
+      "tokens": 0,
+      "reputation": 76900
+    },
+    {
+      "address": "0x73A1f3E0e90dF4b4bD11923D08591E342f4EE620",
+      "tokens": 0,
+      "reputation": 6800
+    },
+    {
+      "address": "0xd9887E95F1EEA2c14b4e33e3610Aa6535C570C8c",
+      "tokens": 0,
+      "reputation": 5000
+    },
+    {
+      "address": "0x8107D254B082F9Dc8a04f8CB35EF8E3bEf11c574",
+      "tokens": 0,
+      "reputation": 23847
+    },
+    {
+      "address": "0x2546105eF5178Cec163Fca83d85c4Bd536f5D3af",
+      "tokens": 0,
+      "reputation": 2418
+    },
+    {
+      "address": "0xeFE3d07Ab8E9993d5e5B60E82A25841e6439251a",
+      "tokens": 0,
+      "reputation": 32772
+    },
+    {
+      "address": "0x5DBfD2018f6EA867D47cAA8e2De46975315bA943",
+      "tokens": 0,
+      "reputation": 53750
+    },
+    {
+      "address": "0xE8021322ebb94a864bBBF68cc2b7d3BF4e54A838",
+      "tokens": 0,
+      "reputation": 37867
+    },
+    {
+      "address": "0x620D10a236b89Ad984c6dfd6Ade5A130e963207D",
+      "tokens": 0,
+      "reputation": 55171
+    },
+    {
+      "address": "0x31E5bdCDa346F86c615804fc8F134d3C73Be1b3A",
+      "tokens": 0,
+      "reputation": 33710
+    },
+    {
+      "address": "0x56D243B71767e71A81F11fc1b8a2b12280aFd44E",
+      "tokens": 0,
+      "reputation": 20090
+    },
+    {
+      "address": "0x61038029DB5b2EBAD45858dEa1f4e0201291205b",
+      "tokens": 0,
+      "reputation": 55000
+    },
+    {
+      "address": "0x15FE85722e908964C869C957166861066dEAd04C",
+      "tokens": 0,
+      "reputation": 100000
+    }
+  ]
+}
