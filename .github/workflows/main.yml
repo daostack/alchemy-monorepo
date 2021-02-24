@@ -16,6 +16,9 @@ jobs:
 
     env:
       COVERALLS_REPO_TOKEN: JSb4W0aTkLE2jYkJCW6nj5IRx7IQ028sT 
+    on: 
+      push:
+        paths: packages/infra
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js 14.5
