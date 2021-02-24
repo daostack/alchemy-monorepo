@@ -6,4 +6,5 @@ docker-compose logs graph-node
 sleep 15
 npm run lint -- --quiet
 npm run test:unit -- --forceExit
+npm run test:integration -- --forceExit
 npm run build
