@@ -1,0 +1,1 @@
+web: cd packages/alchemy && npm run start
