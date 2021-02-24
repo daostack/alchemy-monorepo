@@ -6,13 +6,20 @@ name: Node.js CI
 on:
   push:
     branches: [ dev ]
+    paths:
+    - 'packages/migration/**'
   pull_request:
     branches: [ dev ]
+    paths:
+    - 'packages/migration/**'
 
 jobs:
   migration:
-
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: packages/migration
 
     steps:
     - uses: actions/checkout@v2
@@ -21,5 +28,4 @@ jobs:
       with:
         node-version: '10.5'
     - run: yarn install
-    - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
-    - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/migration/" > /dev/null; then cd packages/migration && ./test-ci.sh && cd ../..;fi
+    - run: ./test-ci.sh 

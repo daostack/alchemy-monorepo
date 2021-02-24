@@ -15,8 +15,11 @@ on:
 
 jobs:
   arc:
-
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: packages/arc
 
     env:
       COVERALLS_REPO_TOKEN: JSb4W0aTkLE2jYkJCW6nj5IRx7IQ028sT 
@@ -27,7 +30,7 @@ jobs:
       with:
         node-version: '14.5'
     - run: yarn install
-    - run: cd packages/arc && ./test-ci.sh && cd ../..;
+    - run: ./test-ci.sh
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
