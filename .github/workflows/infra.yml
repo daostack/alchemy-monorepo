@@ -27,8 +27,7 @@ jobs:
       with:
         node-version: '14.5'
     - run: yarn install
-    - run: git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
-    - run: if git diff --name-only "origin/main" | sort -u | uniq | grep "packages/infra/" > /dev/null; then cd packages/infra && ./test-ci.sh && cd ../..;fi
+    - run: cd packages/infra && ./test-ci.sh
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
