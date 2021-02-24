@@ -1,14 +1,16 @@
 ## 1.0.7
   - Improvements
     - Use subgraph v41_10
+    - Better flow for connecting a wallet (Connect button and "ghost" account are now removed)
     - Copy to clipboard option near the selected contract in the multi-call scheme
-    - Vertical scrolling is added to the sidebar when content is hidden
     - Everything past the DAO dropdown list in the breadcrumb is now removed
     - Updates to the redemptions button
+    - Unnecessary plugin manager text is removed
   
   - Features Removed
     - Training tooltip
     - sentry.io
+    - zendesk support
 
 ## 1.0.6
   - Features Added
