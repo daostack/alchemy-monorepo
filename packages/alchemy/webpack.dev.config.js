@@ -17,7 +17,7 @@ module.exports = merge(baseConfig, {
     hot: true,
     publicPath: '/',
     historyApiFallback: true,
-    port: process.env.PORT | 3000,
+    port: 3000,
     host: '0.0.0.0'
   },
 

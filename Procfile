@@ -1,1 +1,1 @@
-web: cd packages/alchemy && npm run start
+web: cd packages/alchemy && node ./src/appInit.js 
