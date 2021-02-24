@@ -32,9 +32,9 @@ describe("Header redemptions button", () => {
       await browser.url("http://127.0.0.1:3000");
       // For some reason, the connect button shows up after refreshing, even
       // though we're already logged in.
-      const connectButton = await $("[data-test-id=\"connectButton\"]");
-      await connectButton.click();
-      await connectButton.waitForDisplayed(undefined);
+      const loginButton = await $("[data-test-id=\"loginButton\"]");
+      await loginButton.click();
+      await loginButton.waitForDisplayed(undefined);
 
       const redemptionsButton = await $("[data-test-id=\"redemptionsButton\"]");
       await redemptionsButton.click();
@@ -64,9 +64,9 @@ describe("Redemptions page", () => {
     await hideCookieAcceptWindow();
 
     await browser.url("http://127.0.0.1:3000/redemptions");
-    const connectButton = await $("*[data-test-id=\"connectButton\"]");
-    await connectButton.waitForDisplayed();
-    await connectButton.click();
+    const loginButton = await $("*[data-test-id=\"loginButton\"]");
+    await loginButton.waitForDisplayed();
+    await loginButton.click();
 
     const proposalId = testAddresses.test.executedProposalId;
     const proposalCard = await $(`[data-test-id="proposal-${proposalId}"]`);
