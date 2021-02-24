@@ -10,6 +10,8 @@ on:
     - 'packages/infra'
   pull_request:
     branches: [ dev ]
+    paths:
+    - 'packages/infra'
 
 jobs:
   infra:
