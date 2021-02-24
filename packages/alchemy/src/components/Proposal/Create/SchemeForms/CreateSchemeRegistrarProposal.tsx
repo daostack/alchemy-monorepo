@@ -268,8 +268,6 @@ class CreateSchemeRegistrarProposal extends React.Component<IProps, IState> {
                   currentTab === "addScheme" ?
                     <>
                       <p>You will soon be able to add plugins from this interface. Stay tuned!</p>
-                      <p>For now, <b>please contact us at</b> <a href="mailto:support@daostack.zendesk.com" target="_blank" rel="noopener noreferrer">support@daostack.zendesk.com</a> to get one of the following plugins added to your DAO, or to add a new custom plugin of your own creation.</p>
-
                       <h2>Available Plugins</h2>
                       <p><b>Funding and Voting Power Plugin</b> &mdash; Send token and Reputation rewards to any Ethereum address via proposal.</p>
                       <p><b>Plugin Manager</b> &mdash; Remove plugins via proposal (adding and editing plugins to be added soon).</p>
@@ -280,14 +278,11 @@ class CreateSchemeRegistrarProposal extends React.Component<IProps, IState> {
                       <p><b>Bounties Plugins</b> &mdash; Via proposal, create DAO-administered bounties on Bounties Network.</p>
                       <p><b>Join and Quit Plugins</b> &mdash; Allow anyone to join the DAO via a donation and quit anytime, reclaiming at least part of their original funds (“rage quit”). Coming soon.</p>
                       <p><b>NFT Plugins</b> &mdash; Allow the DAO to hold, send, mint, and sell NFTs (non-fungible tokens). Coming soon.</p>
-
-                      <p><b>Need help creating a plugin not on this list?</b> Contact us at <a href="mailto:support@daostack.zendesk.com">support@daostack.zendesk.com</a></p>
                     </>
 
                     :
                     <>
                       <p>You will soon be able to edit plugins in this interface. Stay tuned!</p>
-                      <p>For now, <b>please contact us at</b> <a href="mailto:support@daostack.zendesk.com" target="_blank" rel="noopener noreferrer">support@daostack.zendesk.com</a> to get help editing the parameters of this plugin.</p>
                     </>
                 }
 
