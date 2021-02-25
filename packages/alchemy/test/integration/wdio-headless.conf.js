@@ -8,7 +8,7 @@ exports.config = {
   capabilities: [{
     ...config.capabilities[0],
     "goog:chromeOptions": {
-      args: ["--headless", "--disable-gpu", "--window-size=1920,1080"],
+      args: ["--headless", "--disable-gpu", "--window-size=1920,1080", "--no-sandbox"],
     },
   }],
   services: [
