@@ -1,0 +1,1 @@
+web: cd packages/alchemy && node ./src/appInit.js 
