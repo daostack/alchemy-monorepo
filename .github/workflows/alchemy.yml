@@ -29,5 +29,6 @@ jobs:
         node-version: '12.18.4'
 
     - run: ./test-ci.sh
+    - run: npm run test:integration -- --forceExit
 
 
