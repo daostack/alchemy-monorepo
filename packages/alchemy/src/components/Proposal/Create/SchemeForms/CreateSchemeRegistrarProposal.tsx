@@ -1,11 +1,8 @@
 /* eslint-disable no-bitwise */
 import { enableWalletProvider, getArc } from "arc";
-
 import Loading from "components/Shared/Loading";
 import withSubscription, { ISubscriptionProps } from "components/Shared/withSubscription";
 import TagsSelector from "components/Proposal/Create/SchemeForms/TagsSelector";
-import TrainingTooltip from "components/Shared/TrainingTooltip";
-
 import { createProposal } from "@store/arc/arcActions";
 import { showNotification, NotificationStatus } from "@store/notifications/notifications.reducer";
 import Analytics from "lib/analytics";
@@ -238,7 +235,6 @@ class CreateSchemeRegistrarProposal extends React.Component<IProps, IState> {
 
     const isAddActive = getSchemeIsActive(this.props.scheme, GetSchemeIsActiveActions.Register);
     const isRemoveActive = getSchemeIsActive(this.props.scheme, GetSchemeIsActiveActions.Remove);
-    const fnDescription = () => (<span>Short description of the proposal.<ul><li>What are you proposing to do?</li><li>Why is it important?</li><li>How much will it cost the DAO?</li><li>When do you plan to deliver the work?</li></ul></span>);
 
     return (
       <div className={css.containerWithSidebar}>
@@ -272,8 +268,6 @@ class CreateSchemeRegistrarProposal extends React.Component<IProps, IState> {
                   currentTab === "addScheme" ?
                     <>
                       <p>You will soon be able to add plugins from this interface. Stay tuned!</p>
-                      <p>For now, <b>please contact us at</b> <a href="mailto:support@daostack.zendesk.com" target="_blank" rel="noopener noreferrer">support@daostack.zendesk.com</a> to get one of the following plugins added to your DAO, or to add a new custom plugin of your own creation.</p>
-
                       <h2>Available Plugins</h2>
                       <p><b>Funding and Voting Power Plugin</b> &mdash; Send token and Reputation rewards to any Ethereum address via proposal.</p>
                       <p><b>Plugin Manager</b> &mdash; Remove plugins via proposal (adding and editing plugins to be added soon).</p>
@@ -284,14 +278,11 @@ class CreateSchemeRegistrarProposal extends React.Component<IProps, IState> {
                       <p><b>Bounties Plugins</b> &mdash; Via proposal, create DAO-administered bounties on Bounties Network.</p>
                       <p><b>Join and Quit Plugins</b> &mdash; Allow anyone to join the DAO via a donation and quit anytime, reclaiming at least part of their original funds (“rage quit”). Coming soon.</p>
                       <p><b>NFT Plugins</b> &mdash; Allow the DAO to hold, send, mint, and sell NFTs (non-fungible tokens). Coming soon.</p>
-
-                      <p><b>Need help creating a plugin not on this list?</b> Contact us at <a href="mailto:support@daostack.zendesk.com">support@daostack.zendesk.com</a></p>
                     </>
 
                     :
                     <>
                       <p>You will soon be able to edit plugins in this interface. Stay tuned!</p>
-                      <p>For now, <b>please contact us at</b> <a href="mailto:support@daostack.zendesk.com" target="_blank" rel="noopener noreferrer">support@daostack.zendesk.com</a> to get help editing the parameters of this plugin.</p>
                     </>
                 }
 
@@ -362,13 +353,13 @@ class CreateSchemeRegistrarProposal extends React.Component<IProps, IState> {
                         (currentTab === "removeScheme") ?
                           <div className={css.description}>Create a proposal to remove a plugin from the DAO.</div> : ""
                     }
-                    <TrainingTooltip overlay="The title is the header of the proposal card and will be the first visible information about your proposal" placement="right">
-                      <label htmlFor="titleInput">
-                        <div className={css.requiredMarker}>*</div>
+
+                    <label htmlFor="titleInput">
+                      <div className={css.requiredMarker}>*</div>
                       Title
-                        <ErrorMessage name="title">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
-                      </label>
-                    </TrainingTooltip>
+                      <ErrorMessage name="title">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
+                    </label>
+
                     <Field
                       autoFocus
                       id="titleInput"
@@ -379,15 +370,14 @@ class CreateSchemeRegistrarProposal extends React.Component<IProps, IState> {
                       className={touched.title && errors.title ? css.error : null}
                     />
 
-                    <TrainingTooltip overlay={fnDescription} placement="right">
-                      <label htmlFor="descriptionInput">
-                        <div className={css.proposalDescriptionLabelText}>
-                          <div className={css.requiredMarker}>*</div>
-                          <div className={css.body}>Description</div><HelpButton text={HelpButton.helpTextProposalDescription} />
-                        </div>
-                        <ErrorMessage name="description">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
-                      </label>
-                    </TrainingTooltip>
+                    <label htmlFor="descriptionInput">
+                      <div className={css.proposalDescriptionLabelText}>
+                        <div className={css.requiredMarker}>*</div>
+                        <div className={css.body}>Description</div><HelpButton text={HelpButton.helpTextProposalDescription} />
+                      </div>
+                      <ErrorMessage name="description">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
+                    </label>
+
                     <Field
                       component={MarkdownField}
                       onChange={(value: any) => { setFieldValue("description", value); }}
@@ -397,22 +387,19 @@ class CreateSchemeRegistrarProposal extends React.Component<IProps, IState> {
                       className={touched.description && errors.description ? css.error : null}
                     />
 
-                    <TrainingTooltip overlay="Add some tags to give context about your proposal e.g. idea, signal, bounty, research, etc" placement="right">
-                      <label className={css.tagSelectorLabel}>
-                        Tags
-                      </label>
-                    </TrainingTooltip>
+                    <label className={css.tagSelectorLabel}>
+                      Tags
+                    </label>
 
                     <div className={css.tagSelectorContainer}>
                       <TagsSelector onChange={this.onTagsChange} tags={this.state.tags} arc={arc}></TagsSelector>
                     </div>
 
-                    <TrainingTooltip overlay="Link to the fully detailed description of your proposal" placement="right">
-                      <label htmlFor="urlInput">
-                        URL
-                        <ErrorMessage name="url">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
-                      </label>
-                    </TrainingTooltip>
+                    <label htmlFor="urlInput">
+                      URL
+                      <ErrorMessage name="url">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
+                    </label>
+
                     <Field
                       id="urlInput"
                       maxLength={120}
@@ -567,19 +554,11 @@ class CreateSchemeRegistrarProposal extends React.Component<IProps, IState> {
                     </div>
 
                     <div className={css.createProposalActions}>
-                      <TrainingTooltip overlay="Export proposal" placement="top">
-                        <button id="export-proposal" className={css.exportProposal} type="button" onClick={() => this.exportFormValues(values)}>
-                          <img src="/assets/images/Icon/share-blue.svg" />
-                        </button>
-                      </TrainingTooltip>
-                      <button className={css.exitProposalCreation} type="button" onClick={handleClose}>
-                        Cancel
+                      <button id="export-proposal" className={css.exportProposal} type="button" onClick={() => this.exportFormValues(values)}>
+                        <img src="/assets/images/Icon/share-blue.svg" />
                       </button>
-                      <TrainingTooltip overlay="Once the proposal is submitted it cannot be edited or deleted" placement="top">
-                        <button className={css.submitProposal} type="submit" disabled={isSubmitting}>
-                          Submit proposal
-                        </button>
-                      </TrainingTooltip>
+                      <button className={css.exitProposalCreation} type="button" onClick={handleClose}>Cancel</button>
+                      <button className={css.submitProposal} type="submit" disabled={isSubmitting}>Submit proposal</button>
                     </div>
                   </Form>
                 );
