@@ -1,0 +1,31 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Migration tests
+
+on:
+  push:
+    branches: [ dev ]
+    paths:
+    - 'packages/migration/**'
+  pull_request:
+    branches: [ dev ]
+    paths:
+    - 'packages/migration/**'
+
+jobs:
+  migration:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: packages/migration
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 10.5
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.5'
+    - run: yarn install
+    - run: ./test-ci.sh 
