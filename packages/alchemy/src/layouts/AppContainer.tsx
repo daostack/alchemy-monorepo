@@ -7,7 +7,7 @@ import Header from "layouts/Header";
 import SidebarMenu from "layouts/SidebarMenu";
 import { IRootState } from "@store";
 import { dismissNotification, INotificationsState, NotificationStatus, showNotification, INotification } from "@store/notifications/notifications.reducer";
-import { getCachedAccount, cacheWeb3Info, logout, pollForAccountChanges } from "arc";
+import { cacheWeb3Info, getCachedAccount } from "arc";
 import ErrorUncaught from "components/Errors/ErrorUncaught";
 import { parse } from "query-string";
 import * as React from "react";
@@ -18,7 +18,6 @@ import { matchPath, Link, Route, RouteComponentProps, Switch } from "react-route
 import { ModalContainer } from "react-router-modal";
 import { History } from "history";
 import classNames from "classnames";
-import { Address } from "@daostack/arc.js";
 import { sortedNotifications } from "@store/notifications/notifications";
 import * as css from "./App.scss";
 import SimpleMessagePopup, { ISimpleMessagePopupProps } from "components/Shared/SimpleMessagePopup";
@@ -114,9 +113,7 @@ class AppContainer extends React.Component<IProps, IState> {
      * not yet made available to the app.
      */
     const currentAddress = getCachedAccount();
-    let accountWasCached = false;
     if (currentAddress) {
-      accountWasCached = true;
       // eslint-disable-next-line no-console
       console.log(`using account from local storage: ${currentAddress}`);
     }
@@ -130,42 +127,12 @@ class AppContainer extends React.Component<IProps, IState> {
       window.ethereum.on("chainChanged", async (chainId: string) => {
         this.props.setCurrentAccount(getCachedAccount(), await getNetworkName(chainId));
       });
-      // TO DO: Listen to account changes in MetaMask instead of polling!
-      //window.ethereum.on("accountsChanged", (accounts: Array<any>) => {
-      // Handle the new accounts, or lack thereof.
-      // "accounts" will always be an array, but it can be empty.
-      // The current account is at accounts[0]
-      //});
-    }
 
-    /**
-     * Only supply currentAddress if it was obtained from a provider.  The poll
-     * is only comparing changes with respect to the provider state.  Passing it a cached state
-     * will only cause it to get the wrong impression and misbehave.
-     */
-    pollForAccountChanges(accountWasCached ? null : currentAddress).subscribe(
-      (newAddress: Address | null): void => {
-        // eslint-disable-next-line no-console
-        console.log(`new account: ${newAddress}`);
-        this.props.setCurrentAccount(newAddress);
-        if (newAddress) {
-          cacheWeb3Info(newAddress);
-        } else {
-          logout(this.props.showNotification);
-
-          // TODO: save the threebox for each profile separately so we dont have to logout here
-          this.props.threeBoxLogout();
-        }
+      window.ethereum.on("accountsChanged", (accounts: Array<any>) => {
+        this.props.setCurrentAccount(accounts[0]);
+        cacheWeb3Info(accounts[0]);
       });
-
-    /**
-     * display checking the subgraph.  It is falsely reporting that the subgraph is down.
-    pollSubgraphUpdating().subscribe(async (subgraphRunning: boolean) => {
-      if (!subgraphRunning) {
-        this.props.showNotification(NotificationStatus.Failure, "The subgraph is no longer updating, please refresh the page to see the latest data");
-      }
-    });
-     */
+    }
   }
 
   private clearError = () => {
