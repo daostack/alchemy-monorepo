@@ -37,7 +37,7 @@ export class App extends React.Component<{}, {
     };
   }
 
-  
+
   private getPdfHtml = (filename: string): any => {
     window.location.href = `${window.location.protocol}//${window.location.host}/assets/${filename}`;
     return null;
