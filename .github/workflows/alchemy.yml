@@ -17,6 +17,7 @@ jobs:
   lerna:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
     - name: Use Node.js 12.18.4
       uses: actions/setup-node@v1
       with:
@@ -25,8 +26,7 @@ jobs:
     - run: npm install --g lerna
     - run: pwd
     - run: ls 
-    - run: cd .. && ls 
-    - run: cd .. && lerna bootstrap
+    - run: lerna bootstrap
 
   alchemy:
     runs-on: ubuntu-latest
