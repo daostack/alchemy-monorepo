@@ -21,10 +21,9 @@ jobs:
         working-directory: packages/alchemy
 
     steps:
-    - uses: actions/checkout@v2
-
     - name: setup-chromedriver
-      uses: nanasess/setup-chromedriver@v1.0.1
+    - uses: actions/checkout@v2
+    - uses: nanasess/setup-chromedriver@v1.0.1
       with:
         # Optional: do not specify to match Chrome's version
         chromedriver-version: '89.0.4389.23'
