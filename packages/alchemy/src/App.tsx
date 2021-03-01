@@ -15,6 +15,7 @@ import { history, default as store } from "./configureStore";
 import { Networks, targetNetworks } from "./lib/util";
 import Arc from "@daostack/arc.js";
 
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/interface-name-prefix
   interface Window {
