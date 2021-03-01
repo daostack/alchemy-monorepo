@@ -20,8 +20,8 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '12.18.4'
-      run: yarn
-      run: yarn lerna bootstrap
+    - run: yarn
+    - run: yarn lerna bootstrap
 
   alchemy:
     runs-on: ubuntu-latest
