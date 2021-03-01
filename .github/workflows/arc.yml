@@ -23,8 +23,8 @@ jobs:
       with:
         node-version: '12.18.4'
 
-    - run: yarn
-    - run: yarn lerna bootstrap
+    - run: npm install
+    - run: npm run lerna bootstrap
 
   arc:
     runs-on: ubuntu-latest
