@@ -7,7 +7,6 @@ PRIVATE_README.md
 .DS_Store
 *.log*
 *sublime*
-yarn*
 .env
 .chrome
 .vscode
