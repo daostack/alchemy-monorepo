@@ -76,7 +76,7 @@
   },
   "homepage": "https://daostack.io",
   "dependencies": {
-    "@daostack/infra": "file:../infra",
+    "@daostack/infra": "0.0.1-rc.21",
     "math": "0.0.3",
     "openzeppelin-solidity": "2.4.0",
     "truffle-flattener": "^1.4.2"
