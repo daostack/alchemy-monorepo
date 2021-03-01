@@ -23,10 +23,8 @@ jobs:
       with:
         node-version: '12.18.4'
 
-    - run: npm install --g lerna
-    - run: pwd
-    - run: ls 
-    - run: lerna bootstrap
+    - run: yarn
+    - run: yarn lerna bootstrap
 
   alchemy:
     runs-on: ubuntu-latest
