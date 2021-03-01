@@ -69,7 +69,7 @@
     ]
   },
   "devDependencies": {
-    "@daostack/migration": "0.0.1-rc.55-v1",
+    "@daostack/migration": "file:../migration",
     "@daostack/subgraph-test-env": "0.0.39-8",
     "@types/graphql": "^14.2.2",
     "@types/isomorphic-fetch": "^0.0.34",

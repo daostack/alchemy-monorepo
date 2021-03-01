@@ -48,7 +48,7 @@
   },
   "homepage": "https://github.com/daostack/migration#readme",
   "dependencies": {
-    "@daostack/arc": "0.0.1-rc.56",
+    "@daostack/arc": "file:../arc",
     "@daostack/arc-hive": "0.0.1-rc.4",
     "ethereumjs-wallet": "^0.6.3",
     "fstream": "^1.0.12",
