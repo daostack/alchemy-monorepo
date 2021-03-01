@@ -28,6 +28,7 @@ jobs:
       with:
         node-version: '12.18.4'
 
+    - run: lerna bootstrap
     - run: ./test-ci.sh
 
 
