@@ -29,13 +29,8 @@ jobs:
         node-version: '10.14.1'
     - run: npm install
     # - run: ./test-ci.sh 
-
-    - name: Build JSDocs
-      uses: andstor/jsdoc-action@v1
-      with:
-        source_dir: ./src
-        recurse: true
-        output_dir: ./docs
+    - run: npm run build:docs
+      
     
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
