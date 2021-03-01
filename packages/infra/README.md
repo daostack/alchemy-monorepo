@@ -5,3 +5,5 @@
 Infra is the lowest layer of the [DAO stack](https://www.github.com/daostack). It contains base layer components for decentralized governance such as voting machines and DAOstack's Reputation system. Infra provides generalized these decision-making mechanisms for any use, DAO or otherwise.
 
 If you need basic voting or Reputation mechanics that aren't yet part of the stack, you can contribute to Infra by submitting pull requests or issues to this repo.
+
+For more documentation: https://www.notion.so/DAOstack-Documentation-ae5ea274d91e4132a1d48178aa52af06
