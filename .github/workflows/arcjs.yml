@@ -27,6 +27,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '10.14.1'
+    - run: npm install
     - run: ./test-ci.sh 
 
     - name: Build JSDocs
