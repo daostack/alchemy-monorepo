@@ -25,7 +25,6 @@ jobs:
     - run: npm install --g lerna
     - run: pwd
     - run: lerna bootstrap
-        working-directory: . 
 
   alchemy:
     runs-on: ubuntu-latest
