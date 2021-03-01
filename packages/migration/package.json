@@ -7,7 +7,7 @@
     "daostack-migrate": "migrate.js"
   },
   "engines": {
-    "node": ">=10.15.0"
+    "node": ">=12.16.1"
   },
   "scripts": {
     "generate-abis": "node ./generate-abis.js",
