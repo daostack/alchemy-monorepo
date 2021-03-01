@@ -3,7 +3,6 @@ dist
 *.log
 subgraph.yaml
 abis
-yarn.lock
 src/types
 /schema.graphql
 .env*
