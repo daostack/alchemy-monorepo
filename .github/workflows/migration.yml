@@ -39,6 +39,5 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '12.16.1'
-#    - run: yarn install
     - run: npm ci
     - run: ./test-ci.sh 

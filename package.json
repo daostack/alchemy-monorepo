@@ -5,7 +5,9 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "lerna": "lerna"
+    "lerna": "lerna",
+    "build": "lerna run 'build'",
+    "build:watch": "lerna run 'build:watch'"
   },
   "devDependencies": {
     "lerna": "^3.22.1"

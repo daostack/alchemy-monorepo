@@ -30,7 +30,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '14.5'
-    - run: yarn install
+    - run: npm ci
     - run: ./test-ci.sh
     - name: Coveralls
       uses: coverallsapp/github-action@master
