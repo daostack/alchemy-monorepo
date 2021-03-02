@@ -23,7 +23,7 @@ jobs:
       with:
         node-version: '12.18.4'
 
-    - run: npm
+    - run: npm install
     - run: npm lerna bootstrap
 
   alchemy:
