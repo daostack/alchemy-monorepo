@@ -42,6 +42,7 @@ jobs:
       with:
         node-version: '14.5'
 #    - run: yarn install
+    - run: npm install hardhat
     - run: ./test-ci.sh
     - name: Coveralls
       uses: coverallsapp/github-action@master
