@@ -1,6 +1,7 @@
 {
   "packages": [
-    "packages/*"
+    "packages/arc",
+    "packages/infra"
   ],
   "version": "0.0.0"
 }
