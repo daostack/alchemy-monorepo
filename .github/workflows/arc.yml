@@ -45,12 +45,11 @@ jobs:
     - run: ./test-ci.sh
 
 
-    # Temporarily disabled coveralls as it is problematic
-    # - name: Coveralls
-    #   uses: coverallsapp/github-action@master
-    #   with:
-    #     github-token: ${{ secrets.GITHUB_TOKEN }}
-    #     path-to-lcov: ${{ github.workspace }}/packages/arc/coverage/lcov.info
-    #     flag-name: 'Arc'
-    #     base-path: ${{ github.workspace }}/packages/arc
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ${{ github.workspace }}/packages/arc/coverage/lcov.info
+        flag-name: 'Arc'
+        base-path: ${{ github.workspace }}/packages/arc
   

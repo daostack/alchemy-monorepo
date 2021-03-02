@@ -20,8 +20,6 @@ jobs:
     defaults:
       run:
         working-directory: packages/infra
-
-
     env:
       COVERALLS_REPO_TOKEN: JSb4W0aTkLE2jYkJCW6nj5IRx7IQ028sT 
     steps:
@@ -32,6 +30,7 @@ jobs:
         node-version: '14.5'
     - run: npm ci
     - run: ./test-ci.sh
+    
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
