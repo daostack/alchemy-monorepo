@@ -15,7 +15,7 @@
     "node": "12.18.4",
     "npm": "6.14.6"
   },
-  "devDependencies": {
+  "dependencies": {
     "lerna": "^3.22.1"
   }
 }
