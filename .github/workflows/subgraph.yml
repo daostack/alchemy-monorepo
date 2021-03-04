@@ -24,9 +24,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js 10.16
+    - name: Use Node.js 12.16.1
       uses: actions/setup-node@v1
       with:
-        node-version: '10.16'
-    - run: yarn install
+        node-version: '12.16.1'
     - run: ./test-ci.sh

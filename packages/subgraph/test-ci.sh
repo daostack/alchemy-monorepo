@@ -5,11 +5,12 @@ docker-compose --version
 docker-compose up -d graph-node
 docker-compose logs graph-node
 
-echo 'npm ci:' && echo -en 'travis_fold:start:script.1\\r'
+#echo 'npm ci:' && echo -en 'travis_fold:start:script.1\\r'
+# we need to install the devdepencies in any case..
 npm ci
-echo -en 'travis_fold:end:script.1\\r'
+#echo -en 'travis_fold:end:script.1\\r'
 
-  # deploy contracts etc
+# deploy contracts etc
 npm run deploy
 
 echo 'Debug info:' && echo -en 'travis_fold:start:script.2\\r'
