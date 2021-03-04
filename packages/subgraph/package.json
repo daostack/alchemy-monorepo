@@ -10,7 +10,7 @@
     "url": "https://github.com/daostack/subgraph.git"
   },
   "engines": {
-    "node": ">=10.16.3"
+    "node": ">=12.16.1"
   },
   "scripts": {
     "codegen": "node ops/generate-abis.js && node ops/generate-schema.js && node ops/generate-subgraph.js && node ops/generate-daos-subgraph.js && node ops/generate-contractsinfo.js && node ops/graph-codegen.js",

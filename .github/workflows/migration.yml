@@ -14,18 +14,30 @@ on:
     - 'packages/migration/**'
 
 jobs:
+  lerna:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 12.18.4
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.18.4'
+
+    - run: npm install
+    - run: npm run lerna bootstrap
+
   migration:
     runs-on: ubuntu-latest
-
+    needs: lerna
     defaults:
       run:
         working-directory: packages/migration
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js 10.5
+    - name: Use Node.js 12.16.1
       uses: actions/setup-node@v1
       with:
-        node-version: '10.5'
-    - run: yarn install
+        node-version: '12.16.1'
+    - run: npm ci
     - run: ./test-ci.sh 
