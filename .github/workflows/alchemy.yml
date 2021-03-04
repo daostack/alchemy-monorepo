@@ -35,12 +35,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: nanasess/setup-chromedriver@master
+    - run: |
+        export DISPLAY=:99
+        chromedriver --url-base=/wd/hub &
+        sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
 
+    - uses: actions/checkout@v2
     - name: Use Node.js 12.18.4
       uses: actions/setup-node@v1
       with:
         node-version: '12.18.4'
 
     - run: ./test-ci.sh
-
-
+    - run: npm run test:integration -- --forceExit
