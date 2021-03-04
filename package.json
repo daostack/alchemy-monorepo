@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "lerna": "lerna",
-    "build": "lerna run 'build'",
+    "build": "lerna bootstrap && lerna run 'build'",
     "build:watch": "lerna run 'build:watch'"
   },
   "devDependencies": {

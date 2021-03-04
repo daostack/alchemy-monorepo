@@ -1,1 +1,1 @@
-web: npm run lerna boostrap && cd packages/alchemy && node ./src/appInit.js 
+web: cd packages/alchemy && node ./src/appInit.js 
