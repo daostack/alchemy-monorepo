@@ -16,7 +16,7 @@ const config: WebdriverIO.Config = {
       maxInstances: 1,
       browserName: "chrome",
       "goog:chromeOptions": {
-        args: ["window-size=1920,1080", "--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu", "--disable-extensions"],
+        args: ["window-size=1920,1080", "--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu", "--disable-extensions", "--remote-debugging-port=9222"],
       },
     },
   ],
