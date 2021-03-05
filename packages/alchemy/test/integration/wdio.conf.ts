@@ -49,6 +49,4 @@ const config: WebdriverIO.Config = {
   },
 };
 
-config.
-
 export { config };
