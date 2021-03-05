@@ -8,7 +8,7 @@ exports.config = {
   capabilities: [{
     ...config.capabilities[0],
     "goog:chromeOptions": {
-      args: ["--headless", "--disable-gpu", "--window-size=1920,1080", "--remote-debugging-port=9222"],
+      args: ["--no-sandbox", "--disable-dev-shm-usage", "--headless", "--disable-gpu", "--window-size=1920,1080", "--remote-debugging-port=9222"],
     },
   }],
   services: [

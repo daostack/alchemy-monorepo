@@ -16,7 +16,7 @@ const config: WebdriverIO.Config = {
       maxInstances: 1,
       browserName: "chrome",
       "goog:chromeOptions": {
-        args: ["window-size=1920,1080", "--remote-debugging-port=9222"],
+        args: ["--no-sandbox", "--disable-dev-shm-usage", "window-size=1920,1080", "--remote-debugging-port=9222"],
       },
     },
   ],
@@ -48,5 +48,7 @@ const config: WebdriverIO.Config = {
     chai.Should();
   },
 };
+
+config.
 
 export { config };
