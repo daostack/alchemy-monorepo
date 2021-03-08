@@ -43,6 +43,18 @@ jobs:
     - run: npm ci
 # TEMPORARILY DISABLED THIS TEST TO SAVE TIME; PLZ RESTORE :)
 #    - run: ./test-ci.sh
+    - run: docker -v
+    - run: docker-compose -v
+    # fail on error
+    # - set -e
+    - run: docker-compose build
+    - run: docker-compose up -d
+
+    # wait for alchemy (the slowest latest process to respond
+    - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' 127.0.0.1:3000)" != "200" ]]; do sleep 5; done'
+
+    # prin the status of the services
+    - run: npm run service-status
 
     - uses: nanasess/setup-chromedriver@master
       with:
@@ -53,16 +65,5 @@ jobs:
         chromedriver --url-base=/wd/hub &
         sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
 
-    - run: docker -v
-    - run: docker-compose -v
-    # fail on error
-    # - set -e
-    - run: docker-compose build
-    - run: docker-compose up -d
-
-    # wait for alchemy (the slowest latest process to respond
-    - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' 127.0.0.1:3000)" != "200" ]]; do sleep 5; done'
-    # prin the status of the services
-    - run: npm run service-status
 
     - run: npm run test:integration -- --forceExit
