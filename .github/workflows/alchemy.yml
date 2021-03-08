@@ -40,6 +40,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '12.18.4'
+    - run: npm ci
 
 #    - run: ./test-ci.sh
 
