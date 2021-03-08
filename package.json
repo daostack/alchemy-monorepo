@@ -7,7 +7,7 @@
   "scripts": {
     "lerna": "lerna",
     "build": "lerna bootstrap",
-    "heroku-postbuild": "npm install && lerna bootstrap && lerna run 'build' && rm -rf packages/arc.js/node_modules",
+    "heroku-postbuild": "npm install && lerna bootstrap && lerna run 'build' --stream && rm -rf packages/arc.js/node_modules",
     "build2": "lerna bootstrap && lerna run 'build'",
     "build:watch": "lerna run 'build:watch'"
   },

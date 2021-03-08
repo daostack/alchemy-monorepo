@@ -49,11 +49,13 @@ module.exports = {
         test: /\.js$/,
         loader: "source-map-loader",
         exclude: [
+          resolve("node_modules/@dorgtech"),
           resolve("node_modules/apollo-cache-inmemory"),
           resolve("node_modules/apollo-client"),
           resolve("node_modules/apollo-link"),
           resolve("node_modules/apollo-link-http"),
           resolve("node_modules/apollo-link-ws"),
+          resolve("node_modules/ethereumjs-abi"),
           resolve("node_modules/ethereumjs-common"),
           resolve("node_modules/ethereumjs-tx"),
           resolve("node_modules/ethereumjs-util"),
@@ -61,9 +63,9 @@ module.exports = {
           resolve("node_modules/https-did-resolver"),
           resolve("node_modules/rlp"),
           resolve("node_modules/subscriptions-transport-ws"),
+          resolve("node_modules/web3-provider"),
           resolve("node_modules/xhr2-cookies"),
-          resolve("node_modules/zen-observable-ts"),
-          resolve("node_modules/@dorgtech")
+          resolve("node_modules/zen-observable-ts")
         ]
       },
 
