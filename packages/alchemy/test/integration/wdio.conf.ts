@@ -3,7 +3,7 @@ const drivers = {
   // check for more recent versions of chrome driver here:
   // https://chromedriver.storage.googleapis.com/index.html
   chrome: {
-    version: "87.0.4280.20",
+    version: "89.0.4389.23",
     arch: process.arch,
   },
 };
@@ -16,7 +16,7 @@ const config: WebdriverIO.Config = {
       maxInstances: 1,
       browserName: "chrome",
       "goog:chromeOptions": {
-        args: ["window-size=1920,1080"],
+        args: ["--no-sandbox", "--disable-dev-shm-usage", "window-size=1920,1080", "--remote-debugging-port=9222"],
       },
     },
   ],

@@ -23,10 +23,10 @@ jobs:
       with:
         node-version: '12.18.4'
 
-    - run: npm install
-    - run: npm run lerna bootstrap
+    - run: npm ci
+    - run: npm run lerna bootstrap --ci
 
-  alchemy:
+  alchemy-test-ci:
     runs-on: ubuntu-latest
     needs: lerna
     defaults:
@@ -35,12 +35,47 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
+    - uses: actions/checkout@v2
     - name: Use Node.js 12.18.4
       uses: actions/setup-node@v1
       with:
         node-version: '12.18.4'
-
+    - run: npm ci
     - run: ./test-ci.sh
 
+  alchemy-integration:
+    runs-on: ubuntu-latest
+    needs: lerna
+    defaults:
+      run:
+        working-directory: packages/alchemy
 
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
+    - name: Use Node.js 12.18.4
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.18.4'
+    - run: npm ci
+    - run: docker -v
+    - run: docker-compose -v
+    - run: docker-compose build
+    - run: docker-compose up -d
+
+    # wait for alchemy (the slowest latest process to respond
+    - run: bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' 127.0.0.1:3000)" != "200" ]]; do sleep 5; done'
+
+    # prin the status of the services
+    - run: npm run service-status
+
+    - uses: nanasess/setup-chromedriver@master
+      with:
+        # Optional: do not specify to match Chrome's version
+        chromedriver-version: '88.0.4324.27'
+    - run: |
+        export DISPLAY=:99
+        chromedriver --url-base=/wd/hub &
+        sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
+    - run: npm run test:integration:headless -- --forceExit
+    
