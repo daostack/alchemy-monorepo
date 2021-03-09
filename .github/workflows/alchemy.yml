@@ -60,8 +60,6 @@ jobs:
     - run: npm ci
     - run: docker -v
     - run: docker-compose -v
-    # fail on error
-    # - set -e
     - run: docker-compose build
     - run: docker-compose up -d
 
@@ -80,4 +78,4 @@ jobs:
         chromedriver --url-base=/wd/hub &
         sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
 
-    - run: npm run test:integration -- --forceExit
+    - run: npm run test:integration:headless -- --forceExit
