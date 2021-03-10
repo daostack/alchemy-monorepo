@@ -22,7 +22,7 @@
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "build:docs": "typedoc --out docs --target commonjs --theme markdown --mode file --plugin typedoc-plugin-markdown src",
+    "build:docs": "typedoc --out docs --target commonjs --mode file src",
     "bundle": "rollup -c rollup.config.ts -w",
     "lint": "npm run tslint",
     "prepublish": "npm run copy-abis && npm run build",
@@ -101,7 +101,6 @@
     "tslint": "^5.18.0",
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.15.0",
-    "typedoc-plugin-markdown": "^2.2.4",
     "typescript": "^3.7.5",
     "u": "^0.1.0"
   },
