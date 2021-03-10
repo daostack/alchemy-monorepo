@@ -39,12 +39,8 @@ describe("Redemptions page", () => {
   });
 
   it("should redeem a reward", async () => {
-    await hideCookieAcceptWindow();
-
     await browser.url("http://127.0.0.1:3000/redemptions");
-    const loginButton = await $("*[data-test-id=\"loginButton\"]");
-    await loginButton.waitForDisplayed();
-    await loginButton.click();
+    await hideCookieAcceptWindow();
 
     const proposalId = testAddresses.test.executedProposalId;
     const proposalCard = await $(`[data-test-id="proposal-${proposalId}"]`);
