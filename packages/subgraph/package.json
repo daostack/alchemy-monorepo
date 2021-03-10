@@ -10,7 +10,7 @@
     "url": "https://github.com/daostack/subgraph.git"
   },
   "engines": {
-    "node": ">=10.16.3"
+    "node": ">=12.16.1"
   },
   "scripts": {
     "codegen": "node ops/generate-abis.js && node ops/generate-schema.js && node ops/generate-subgraph.js && node ops/generate-daos-subgraph.js && node ops/generate-contractsinfo.js && node ops/graph-codegen.js",
@@ -28,7 +28,7 @@
     "lint": "tslint -c tslint.json 'src//**/*.ts' -e 'src//types/**/*.ts' && tslint -c tslint.json 'test/**/*.ts'",
     "lint-fix": "tslint --fix -c tslint.json 'src//**/*.ts' -e 'src//types/**/*.ts' && tslint --fix -c tslint.json 'test/**/*.ts'",
     "migrate": "node ops/migrate.js",
-    "test": "npm run deploy && jest --runInBand --forceExit",
+    "test": "npm run deploy && sleep 300 && jest --runInBand --forceExit",
     "test:watch": "npm run test -- --watch",
     "test-ci": "./test-ci.sh"
   },

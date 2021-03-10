@@ -1,21 +1,17 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# This workflow will do a clean install of node dependencies, and build the documentation
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Arc.js tests
+name: Arc.js Publish Docs
 
 on:
   push:
-    branches: [ dev ]
-    paths:
-    - 'packages/arc.js/**'
-  pull_request:
-    branches: [ dev ]
+    branches: [ master ]
     paths:
     - 'packages/arc.js/**'
 
 jobs:
 
-  arcjs:
+  arcjs-docs:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -27,5 +23,12 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '10.14.1'
-    - run: ./test-ci.sh 
-
+    - run: npm install
+    - run: npm run build:docs
+      
+    
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./packages/arc.js/docs

@@ -179,10 +179,6 @@ class CreateSchemeRegistrarProposal extends React.Component<IProps, IState> {
     this.setState({ tags });
   }
 
-  private toggleShowForm = () => {
-    this.setState({ showForm: !this.state.showForm });
-  }
-
   public exportFormValues(values: IFormValues) {
     values = {
       ...values,
@@ -207,7 +203,7 @@ class CreateSchemeRegistrarProposal extends React.Component<IProps, IState> {
     const schemes = this.props.data;
     const { handleClose } = this.props;
 
-    const { currentTab, requiredPermissions, showForm } = this.state;
+    const { currentTab, requiredPermissions } = this.state;
 
     const arc = getArcByDAOAddress(this.props.daoAvatarAddress);
 
@@ -227,10 +223,6 @@ class CreateSchemeRegistrarProposal extends React.Component<IProps, IState> {
       [css.addScheme]: currentTab === "addScheme",
       [css.removeScheme]: currentTab === "removeScheme",
       [css.editScheme]: currentTab === "editScheme",
-    });
-
-    const formContentClass = classNames({
-      [css.hidden]: !showForm && currentTab !== "removeScheme",
     });
 
     const isAddActive = getSchemeIsActive(this.props.scheme, GetSchemeIsActiveActions.Register);
@@ -260,311 +252,277 @@ class CreateSchemeRegistrarProposal extends React.Component<IProps, IState> {
         </div>
 
         <div className={contentWrapperClass}>
-          {
-            currentTab !== "removeScheme" ?
+          <Formik
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            initialValues={this.initialFormValues}
+            // eslint-disable-next-line react/jsx-no-bind
+            validate={(values: IFormValues) => {
+              const errors: any = {};
 
-              <div className={css.helpText}>
-                {
-                  currentTab === "addScheme" ?
-                    <>
-                      <p>You will soon be able to add plugins from this interface. Stay tuned!</p>
-                      <h2>Available Plugins</h2>
-                      <p><b>Funding and Voting Power Plugin</b> &mdash; Send token and Reputation rewards to any Ethereum address via proposal.</p>
-                      <p><b>Plugin Manager</b> &mdash; Remove plugins via proposal (adding and editing plugins to be added soon).</p>
-                      <p><b>Competition Plugin</b> &mdash; Create competitions with prizes split between any number of winners. Competitions accept submissions from anyone, and Reputation-holders vote to decide the winners.</p>
-                      <p><b>ENS Plugins</b> &mdash; A set of plugins that enables the DAO to control Ethereum Name Service addresses via proposals.</p>
-                      <p><b>Reputation from Token</b> &mdash; Allow anyone to redeem Reputation using a token of your choice.</p>
-                      <p><b>Stake for Reputation Plugin</b> &mdash; Allow anyone to stake a token of your choice to earn voting power in your DAO.</p>
-                      <p><b>Bounties Plugins</b> &mdash; Via proposal, create DAO-administered bounties on Bounties Network.</p>
-                      <p><b>Join and Quit Plugins</b> &mdash; Allow anyone to join the DAO via a donation and quit anytime, reclaiming at least part of their original funds (“rage quit”). Coming soon.</p>
-                      <p><b>NFT Plugins</b> &mdash; Allow the DAO to hold, send, mint, and sell NFTs (non-fungible tokens). Coming soon.</p>
-                    </>
-
-                    :
-                    <>
-                      <p>You will soon be able to edit plugins in this interface. Stay tuned!</p>
-                    </>
+              const require = (name: string) => {
+                if (!(values as any)[name]) {
+                  errors[name] = "Required";
                 }
+              };
 
-                <button id="showFormButton" className={css.showFormButton} onClick={this.toggleShowForm}>{showForm ? "Hide" : "Show"} proposal form</button>
+              require("description");
+              require("title");
 
-              </div>
-              : ""
-          }
+              if (values.title.length > 120) {
+                errors.title = "Title is too long (max 120 characters)";
+              }
 
-          <div className={formContentClass}>
-            <Formik
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-              initialValues={this.initialFormValues}
-              // eslint-disable-next-line react/jsx-no-bind
-              validate={(values: IFormValues) => {
-                const errors: any = {};
+              if (currentTab === "addScheme") {
+                require("schemeToAdd");
+                require("parametersHash");
+              } else if (currentTab === "editScheme") {
+                require("schemeToEdit");
+                require("parametersHash");
+              } else if (currentTab === "removeScheme") {
+                require("schemeToRemove");
+              }
 
-                const require = (name: string) => {
-                  if (!(values as any)[name]) {
-                    errors[name] = "Required";
+              if (currentTab === "addScheme" && values.otherScheme && !arc.web3.utils.isAddress(values.otherScheme)) {
+                errors.otherScheme = "Invalid address";
+              }
+
+              if (!isValidUrl(values.url)) {
+                errors.url = "Invalid URL";
+              }
+
+              return errors;
+            }}
+            onSubmit={this.handleSubmit}
+            // eslint-disable-next-line react/jsx-no-bind
+            render={({
+              errors,
+              touched,
+              handleChange,
+              isSubmitting,
+              setFieldValue,
+              values,
+            }: FormikProps<IFormValues>) => {
+              return (
+                <Form noValidate>
+                  <br />
+                  {(currentTab === "addScheme") ?
+                    <div className={css.description}>Create a proposal to add a new plugin to the DAO. If this plugin is a universal scheme, you must also supply its param hash configuration.</div> :
+                    (currentTab === "editScheme") ?
+                      <div className={css.description}>Create a proposal to edit param hash configuration of a plugin.</div> :
+                      (currentTab === "removeScheme") ?
+                        <div className={css.description}>Create a proposal to remove a plugin from the DAO.</div> : ""
                   }
-                };
 
-                require("description");
-                require("title");
+                  <label htmlFor="titleInput">
+                    <div className={css.requiredMarker}>*</div>
+                    Title
+                    <ErrorMessage name="title">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
+                  </label>
 
-                if (values.title.length > 120) {
-                  errors.title = "Title is too long (max 120 characters)";
-                }
+                  <Field
+                    autoFocus
+                    id="titleInput"
+                    maxLength={120}
+                    placeholder="Summarize your proposal"
+                    name="title"
+                    type="text"
+                    className={touched.title && errors.title ? css.error : null}
+                  />
 
-                if (currentTab === "addScheme") {
-                  require("schemeToAdd");
-                  require("parametersHash");
-                } else if (currentTab === "editScheme") {
-                  require("schemeToEdit");
-                  require("parametersHash");
-                } else if (currentTab === "removeScheme") {
-                  require("schemeToRemove");
-                }
-
-                if (currentTab === "addScheme" && values.otherScheme && !arc.web3.utils.isAddress(values.otherScheme)) {
-                  errors.otherScheme = "Invalid address";
-                }
-
-                if (!isValidUrl(values.url)) {
-                  errors.url = "Invalid URL";
-                }
-
-                return errors;
-              }}
-              onSubmit={this.handleSubmit}
-              // eslint-disable-next-line react/jsx-no-bind
-              render={({
-                errors,
-                touched,
-                handleChange,
-                isSubmitting,
-                setFieldValue,
-                values,
-              }: FormikProps<IFormValues>) => {
-                return (
-                  <Form noValidate>
-                    <br />
-                    {(currentTab === "addScheme") ?
-                      <div className={css.description}>Create a proposal to add a new plugin to the DAO. If this plugin is a universal scheme, you must also supply its param hash configuration.</div> :
-                      (currentTab === "editScheme") ?
-                        <div className={css.description}>Create a proposal to edit param hash configuration of a plugin.</div> :
-                        (currentTab === "removeScheme") ?
-                          <div className={css.description}>Create a proposal to remove a plugin from the DAO.</div> : ""
-                    }
-
-                    <label htmlFor="titleInput">
+                  <label htmlFor="descriptionInput">
+                    <div className={css.proposalDescriptionLabelText}>
                       <div className={css.requiredMarker}>*</div>
-                      Title
-                      <ErrorMessage name="title">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
-                    </label>
+                      <div className={css.body}>Description</div><HelpButton text={HelpButton.helpTextProposalDescription} />
+                    </div>
+                    <ErrorMessage name="description">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
+                  </label>
 
-                    <Field
-                      autoFocus
-                      id="titleInput"
-                      maxLength={120}
-                      placeholder="Summarize your proposal"
-                      name="title"
-                      type="text"
-                      className={touched.title && errors.title ? css.error : null}
-                    />
+                  <Field
+                    component={MarkdownField}
+                    onChange={(value: any) => { setFieldValue("description", value); }}
+                    id="descriptionInput"
+                    placeholder="Describe your proposal in greater detail"
+                    name="description"
+                    className={touched.description && errors.description ? css.error : null}
+                  />
 
-                    <label htmlFor="descriptionInput">
-                      <div className={css.proposalDescriptionLabelText}>
+                  <label className={css.tagSelectorLabel}>
+                    Tags
+                  </label>
+
+                  <div className={css.tagSelectorContainer}>
+                    <TagsSelector onChange={this.onTagsChange} tags={this.state.tags} arc={arc}></TagsSelector>
+                  </div>
+
+                  <label htmlFor="urlInput">
+                    URL
+                    <ErrorMessage name="url">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
+                  </label>
+
+                  <Field
+                    id="urlInput"
+                    maxLength={120}
+                    placeholder="Description URL"
+                    name="url"
+                    type="text"
+                    className={touched.url && errors.url ? css.error : null}
+                  />
+
+                  <div className={css.addEditSchemeFields}>
+                    <div className={css.addSchemeSelectContainer}>
+                      <label htmlFor="schemeToAddInput">
                         <div className={css.requiredMarker}>*</div>
-                        <div className={css.body}>Description</div><HelpButton text={HelpButton.helpTextProposalDescription} />
-                      </div>
-                      <ErrorMessage name="description">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
-                    </label>
-
-                    <Field
-                      component={MarkdownField}
-                      onChange={(value: any) => { setFieldValue("description", value); }}
-                      id="descriptionInput"
-                      placeholder="Describe your proposal in greater detail"
-                      name="description"
-                      className={touched.description && errors.description ? css.error : null}
-                    />
-
-                    <label className={css.tagSelectorLabel}>
-                      Tags
-                    </label>
-
-                    <div className={css.tagSelectorContainer}>
-                      <TagsSelector onChange={this.onTagsChange} tags={this.state.tags} arc={arc}></TagsSelector>
+                        Plugin
+                        <ErrorMessage name="schemeToAdd">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
+                      </label>
+                      <Field
+                        id="schemeToAddInput"
+                        placeholder="Enter plugin address"
+                        name="schemeToAdd"
+                        onChange={(e: any) => {
+                          // call the built-in handleChange
+                          handleChange(e);
+                          this.handleChangeScheme(e);
+                        }}
+                      />
                     </div>
 
-                    <label htmlFor="urlInput">
-                      URL
-                      <ErrorMessage name="url">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
-                    </label>
+                    <div className={css.editSchemeSelectContainer}>
+                      <label htmlFor="schemeToEditInput">
+                        <div className={css.requiredMarker}>*</div>
+                        Plugin
+                        <ErrorMessage name="schemeToEdit">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
+                      </label>
+                      <Field
+                        id="schemeToEditInput"
+                        name="schemeToEdit"
+                        component="select"
+                        className={css.schemeSelect}
+                        onChange={(e: any) => {
+                          // call the built-in handleChange
+                          handleChange(e);
+                          this.handleChangeScheme(e);
+                        }}
+                      >
+                        <option value="">Select a plugin...</option>
+                        {schemes.map((scheme, _i) => {
+                          return <option key={`edit_scheme_${scheme.staticState.address}`} value={scheme.staticState.address}>{schemeNameAndAddress(scheme.staticState.address)}</option>;
+                        })}
+                      </Field>
+                    </div>
 
-                    <Field
-                      id="urlInput"
-                      maxLength={120}
-                      placeholder="Description URL"
-                      name="url"
-                      type="text"
-                      className={touched.url && errors.url ? css.error : null}
-                    />
+                    {currentTab !== "removeScheme" && <div className={css.parametersHash}>
+                      <label htmlFor="parametersHashInput">
+                        <div className={css.requiredMarker}>*</div>
+                        Parameters Hash
+                        <ErrorMessage name="parametersHash">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
+                      </label>
+                      <Field
+                        id="parametersHashInput"
+                        placeholder="e.g. 0x0000000000000000000000000000000000000000000000000000000000001234"
+                        name="parametersHash"
+                        className={touched.parametersHash && errors.parametersHash ? css.error : null}
+                        validate={async () => { return await this.verifyParametersHash(arc, values.schemeToAdd?values.schemeToAdd:values.schemeToEdit, values.parametersHash); }}
+                      />
+                    </div>}
 
-                    <div className={css.addEditSchemeFields}>
-                      <div className={css.addSchemeSelectContainer}>
-                        <label htmlFor="schemeToAddInput">
-                          <div className={css.requiredMarker}>*</div>
-                          Plugin
-                          <ErrorMessage name="schemeToAdd">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
-                        </label>
+                    <div className={css.permissions}>
+                      <div className={css.permissionsLabel}>
+                        Permissions
+                      </div>
+                      <div className={css.permissionCheckbox}>
                         <Field
-                          id="schemeToAddInput"
-                          placeholder="Enter plugin address"
-                          name="schemeToAdd"
-                          onChange={(e: any) => {
-                            // call the built-in handleChange
-                            handleChange(e);
-                            this.handleChangeScheme(e);
-                          }}
+                          id="registerOtherSchemesInput"
+                          type="checkbox"
+                          name="permissions.registerSchemes"
+                          checked={requiredPermissions & SchemePermissions.CanRegisterSchemes || values.permissions.registerSchemes}
+                          disabled={requiredPermissions & SchemePermissions.CanRegisterSchemes}
                         />
+                        <label htmlFor="registerOtherSchemesInput">
+                          Register other plugins
+                        </label>
                       </div>
 
-                      <div className={css.editSchemeSelectContainer}>
-                        <label htmlFor="schemeToEditInput">
-                          <div className={css.requiredMarker}>*</div>
-                          Plugin
-                          <ErrorMessage name="schemeToEdit">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
-                        </label>
+                      <div className={css.permissionCheckbox}>
                         <Field
-                          id="schemeToEditInput"
-                          name="schemeToEdit"
-                          component="select"
-                          className={css.schemeSelect}
-                          onChange={(e: any) => {
-                            // call the built-in handleChange
-                            handleChange(e);
-                            this.handleChangeScheme(e);
-                          }}
-                        >
-                          <option value="">Select a plugin...</option>
-                          {schemes.map((scheme, _i) => {
-                            return <option key={`edit_scheme_${scheme.staticState.address}`} value={scheme.staticState.address}>{schemeNameAndAddress(scheme.staticState.address)}</option>;
-                          })}
-                        </Field>
-                      </div>
-
-                      {currentTab !== "removeScheme" && <div className={css.parametersHash}>
-                        <label htmlFor="parametersHashInput">
-                          <div className={css.requiredMarker}>*</div>
-                          Parameters Hash
-                          <ErrorMessage name="parametersHash">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
-                        </label>
-                        <Field
-                          id="parametersHashInput"
-                          placeholder="e.g. 0x0000000000000000000000000000000000000000000000000000000000001234"
-                          name="parametersHash"
-                          className={touched.parametersHash && errors.parametersHash ? css.error : null}
-                          validate={async () => { return await this.verifyParametersHash(arc, values.schemeToAdd?values.schemeToAdd:values.schemeToEdit, values.parametersHash); }}
+                          id="changeConstraintsInput"
+                          type="checkbox"
+                          name="permissions.changeConstraints"
+                          checked={requiredPermissions & SchemePermissions.CanAddRemoveGlobalConstraints || values.permissions.changeConstraints}
+                          disabled={requiredPermissions & SchemePermissions.CanAddRemoveGlobalConstraints}
                         />
-                      </div>}
-
-                      <div className={css.permissions}>
-                        <div className={css.permissionsLabel}>
-                          Permissions
-                        </div>
-                        <div className={css.permissionCheckbox}>
-                          <Field
-                            id="registerOtherSchemesInput"
-                            type="checkbox"
-                            name="permissions.registerSchemes"
-                            checked={requiredPermissions & SchemePermissions.CanRegisterSchemes || values.permissions.registerSchemes}
-                            disabled={requiredPermissions & SchemePermissions.CanRegisterSchemes}
-                          />
-                          <label htmlFor="registerOtherSchemesInput">
-                            Register other plugins
-                          </label>
-                        </div>
-
-                        <div className={css.permissionCheckbox}>
-                          <Field
-                            id="changeConstraintsInput"
-                            type="checkbox"
-                            name="permissions.changeConstraints"
-                            checked={requiredPermissions & SchemePermissions.CanAddRemoveGlobalConstraints || values.permissions.changeConstraints}
-                            disabled={requiredPermissions & SchemePermissions.CanAddRemoveGlobalConstraints}
-                          />
-                          <label htmlFor="changeConstraintsInput">
-                            Add/remove global constraints
-                          </label>
-                        </div>
-
-                        <div className={css.permissionCheckbox}>
-                          <Field
-                            id="upgradeControllerInput"
-                            type="checkbox"
-                            name="permissions.upgradeController"
-                            checked={requiredPermissions & SchemePermissions.CanUpgradeController || values.permissions.upgradeController}
-                            disabled={requiredPermissions & SchemePermissions.CanUpgradeController}
-                          />
-                          <label htmlFor="upgradeControllerInput">
-                            Upgrade the controller
-                          </label>
-                        </div>
-
-                        <div className={css.permissionCheckbox}>
-                          <Field
-                            id="genericCallInput"
-                            type="checkbox"
-                            name="permissions.genericCall"
-                            checked={requiredPermissions & SchemePermissions.CanCallDelegateCall || values.permissions.genericCall}
-                            disabled={requiredPermissions & SchemePermissions.CanCallDelegateCall}
-                          />
-                          <label htmlFor="genericCallInput">
-                            Call genericCall on behalf of
-                          </label>
-                        </div>
-
-                        <div className={css.permissionCheckbox}>
-                          <Field id="mintBurnReputation" type="checkbox" name="mintBurnReputation" disabled="disabled" checked="checked" />
-                          <label htmlFor="mintBurnReputation">
-                            Mint and burn reputation, send ETH and external &amp; native tokens
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className={css.removeSchemeFields}>
-                      <div className={css.removeSchemeSelectContainer}>
-                        <label htmlFor="schemeToRemoveInput">
-                          <div className={css.requiredMarker}>*</div>
-                          Plugin
-                          <ErrorMessage name="schemeToRemove">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
+                        <label htmlFor="changeConstraintsInput">
+                          Add/remove global constraints
                         </label>
+                      </div>
+
+                      <div className={css.permissionCheckbox}>
                         <Field
-                          id="schemeToRemoveInput"
-                          name="schemeToRemove"
-                          component="select"
-                          className={css.schemeSelect}
-                        >
-                          <option value="">Select a plugin...</option>
-                          {schemes.map((scheme, _i) => {
-                            return <option key={`remove_scheme_${scheme.staticState.address}`} value={scheme.staticState.address}>{schemeNameAndAddress(scheme.staticState.address)}</option>;
-                          })}
-                        </Field>
+                          id="upgradeControllerInput"
+                          type="checkbox"
+                          name="permissions.upgradeController"
+                          checked={requiredPermissions & SchemePermissions.CanUpgradeController || values.permissions.upgradeController}
+                          disabled={requiredPermissions & SchemePermissions.CanUpgradeController}
+                        />
+                        <label htmlFor="upgradeControllerInput">
+                          Upgrade the controller
+                        </label>
+                      </div>
+
+                      <div className={css.permissionCheckbox}>
+                        <Field
+                          id="genericCallInput"
+                          type="checkbox"
+                          name="permissions.genericCall"
+                          checked={requiredPermissions & SchemePermissions.CanCallDelegateCall || values.permissions.genericCall}
+                          disabled={requiredPermissions & SchemePermissions.CanCallDelegateCall}
+                        />
+                        <label htmlFor="genericCallInput">
+                          Call genericCall on behalf of
+                        </label>
+                      </div>
+
+                      <div className={css.permissionCheckbox}>
+                        <Field id="mintBurnReputation" type="checkbox" name="mintBurnReputation" disabled="disabled" checked="checked" />
+                        <label htmlFor="mintBurnReputation">
+                          Mint and burn reputation, send ETH and external &amp; native tokens
+                        </label>
                       </div>
                     </div>
+                  </div>
 
-                    <div className={css.createProposalActions}>
-                      <button id="export-proposal" className={css.exportProposal} type="button" onClick={() => this.exportFormValues(values)}>
-                        <img src="/assets/images/Icon/share-blue.svg" />
-                      </button>
-                      <button className={css.exitProposalCreation} type="button" onClick={handleClose}>Cancel</button>
-                      <button className={css.submitProposal} type="submit" disabled={isSubmitting}>Submit proposal</button>
+                  <div className={css.removeSchemeFields}>
+                    <div className={css.removeSchemeSelectContainer}>
+                      <label htmlFor="schemeToRemoveInput">
+                        <div className={css.requiredMarker}>*</div>
+                        Plugin
+                        <ErrorMessage name="schemeToRemove">{(msg) => <span className={css.errorMessage}>{msg}</span>}</ErrorMessage>
+                      </label>
+                      <Field
+                        id="schemeToRemoveInput"
+                        name="schemeToRemove"
+                        component="select"
+                        className={css.schemeSelect}
+                      >
+                        <option value="">Select a plugin...</option>
+                        {schemes.map((scheme, _i) => {
+                          return <option key={`remove_scheme_${scheme.staticState.address}`} value={scheme.staticState.address}>{schemeNameAndAddress(scheme.staticState.address)}</option>;
+                        })}
+                      </Field>
                     </div>
-                  </Form>
-                );
-              }}
-            />
-          </div>
+                  </div>
+
+                  <div className={css.createProposalActions}>
+                    <button id="export-proposal" className={css.exportProposal} type="button" onClick={() => this.exportFormValues(values)}>
+                      <img src="/assets/images/Icon/share-blue.svg" />
+                    </button>
+                    <button className={css.exitProposalCreation} type="button" onClick={handleClose}>Cancel</button>
+                    <button className={css.submitProposal} type="submit" disabled={isSubmitting}>Submit proposal</button>
+                  </div>
+                </Form>
+              );
+            }}
+          />
         </div>
       </div>
     );
