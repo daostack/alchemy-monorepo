@@ -26,9 +26,6 @@ describe("SchemeRegistrar Proposals", () => {
     const tab = await $("*[data-test-id=\"tab-AddScheme\"]");
     await tab.click();
 
-    const showFormButton = await $("#showFormButton");
-    await showFormButton.click();
-
     const titleInput = await $("*[id=\"titleInput\"]");
     await titleInput.waitForExist();
 
@@ -73,9 +70,6 @@ describe("SchemeRegistrar Proposals", () => {
 
     const tab = await $("*[data-test-id=\"tab-EditScheme\"]");
     await tab.click();
-
-    const showFormButton = await $("#showFormButton");
-    await showFormButton.click();
 
     const titleInput = await $("*[id=\"titleInput\"]");
     await titleInput.waitForExist();
