@@ -1,0 +1,10 @@
+/packages/alchemy/test
+/packages/alchemy/docs
+/packages/alchemy/docker
+/packages/alchemy/.storybook
+/packages/alchemy/stories
+/packages/arc.js/docs
+/packages/arc.js/documentation
+/packages/arc
+/packages/infra
+/packages/subgraph

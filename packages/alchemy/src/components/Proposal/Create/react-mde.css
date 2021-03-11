@@ -199,7 +199,7 @@
     border: 0;
     padding: 10px;
     vertical-align: top;
-    resize: none;
+    resize: vertical;
     overflow-y: auto;
     font-size:  13px;
   }

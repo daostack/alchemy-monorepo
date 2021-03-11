@@ -147,11 +147,11 @@ Then follow this by logging into your Graph Explorer account using:
    graph_node="https://api.thegraph.com/deploy/"
    ipfs_node="https://api.thegraph.com/ipfs/"
    access_token=<YOUR_ACCESS_TOKEN>
+   start_block=<BLOCK_TO_START_INDEXING_FROM> # Optional
 
    # Not necessary for The Graph server
    postgres_password=<YOUR_PASSWORD>
    ethereum_node="https://<TARGET_NETWORK>.infura.io/<INFURA-KEY>"
-   start_block=<START INDEX BLOCK> (default is 0)
    ```
 
 3. Run: ``npm run deploy``

@@ -1,0 +1,38 @@
+
+> @daostack/migration@0.0.1-rc.56-v0 ganache
+> mkdirp db && ganache-cli --db=./db -l 8000000 --networkId 1512051714758 --deterministic --hostname=0.0.0.0
+
+Ganache CLI v6.9.0 (ganache-core: 2.10.1)
+Error: Callback was already called.
+    at /Users/jelle/daostack/alchemy-monorepo/packages/migration/node_modules/ganache-cli/build/ganache-core.node.cli.js:17:276
+    at s.<anonymous> (/Users/jelle/daostack/alchemy-monorepo/packages/migration/node_modules/ganache-cli/build/ganache-core.node.cli.js:17:2238)
+    at s.emit (node:events:379:20)
+    at s.destroy (/Users/jelle/daostack/alchemy-monorepo/packages/migration/node_modules/ganache-cli/build/ganache-core.node.cli.js:37:700062)
+    at finish (node:internal/streams/writable:768:14)
+    at processTicksAndRejections (node:internal/process/task_queues:81:21)
+npm ERR! code 1
+npm ERR! path /Users/jelle/daostack/alchemy-monorepo/packages/migration
+npm ERR! command failed
+npm ERR! command sh -c mkdirp db && ganache-cli --db=./db -l 8000000 --networkId 1512051714758 --deterministic --hostname=0.0.0.0
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /Users/jelle/.npm/_logs/2021-03-01T19_56_18_630Z-debug.log
+
+> @daostack/migration@0.0.1-rc.56-v0 ganache
+> mkdirp db && ganache-cli --db=./db -l 8000000 --networkId 1512051714758 --deterministic --hostname=0.0.0.0
+
+Ganache CLI v6.9.0 (ganache-core: 2.10.1)
+Error: Callback was already called.
+    at /Users/jelle/daostack/alchemy-monorepo/packages/migration/node_modules/ganache-cli/build/ganache-core.node.cli.js:17:276
+    at s.<anonymous> (/Users/jelle/daostack/alchemy-monorepo/packages/migration/node_modules/ganache-cli/build/ganache-core.node.cli.js:17:2238)
+    at s.emit (node:events:379:20)
+    at s.destroy (/Users/jelle/daostack/alchemy-monorepo/packages/migration/node_modules/ganache-cli/build/ganache-core.node.cli.js:37:700062)
+    at finish (node:internal/streams/writable:768:14)
+    at processTicksAndRejections (node:internal/process/task_queues:81:21)
+npm ERR! code 1
+npm ERR! path /Users/jelle/daostack/alchemy-monorepo/packages/migration
+npm ERR! command failed
+npm ERR! command sh -c mkdirp db && ganache-cli --db=./db -l 8000000 --networkId 1512051714758 --deterministic --hostname=0.0.0.0
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /Users/jelle/.npm/_logs/2021-03-01T19_56_31_228Z-debug.log
