@@ -3,7 +3,6 @@ import { getNetworkId, getNetworkName, targetedNetwork, targetNetworks, Networks
 import { settings } from "./settings";
 import { Address, Arc } from "@daostack/arc.js";
 import Web3Modal, { getProviderInfo, IProviderInfo } from "web3modal";
-import { Observable } from "rxjs";
 import gql from "graphql-tag";
 
 const Web3 = require("web3");
@@ -416,22 +415,6 @@ async function enableWeb3Provider(network?: Networks): Promise<void> {
 }
 
 /**
- * @return the current account address from Arc. Ignores any injected
- * account unless Arc knows about the provider.
- */
-async function getCurrentAccountFromProvider(): Promise<Address | null> {
-  if (!selectedProvider) {
-    /**
-     * though an account may actually be available via injection, we're not going
-     * to return it. The flow needs to start from a selected provider first,
-     * only then the current account.
-     */
-    return null;
-  }
-  return _getCurrentAccountFromProvider(await getNetworkName(selectedProvider.chainId));
-}
-
-/**
  * Logout, switch to readonly mode (effectively a logout).
  * Clear caches as every case where we're manually logging out
  * implies that the cache should be cleared
@@ -539,54 +522,6 @@ export async function enableWalletProvider(options: IEnableWalletProviderParams,
     return false;
   }
   return true;
-}
-
-// Polling is Evil!
-// TO DO: See https://github.com/daostack/alchemy/issues/2295.
-export function pollForAccountChanges(currentAccountAddress: Address | null, interval = 2000): Observable<Address> {
-  // eslint-disable-next-line no-console
-  console.log(`start polling for account changes from: ${currentAccountAddress}`);
-  return Observable.create((observer: any): () => void => {
-    let prevAccount = currentAccountAddress;
-    let running = false;
-
-    async function poll(): Promise<void> {
-
-      if (!running) {
-        running = true;
-        try {
-          await getCurrentAccountFromProvider()
-            .then(async (account: Address | null): Promise<void> => {
-              if (prevAccount !== account) {
-                if (account && initializedAccount && (account !== initializedAccount)) {
-                  /**
-                   * Handle when user changes account in MetaMask while already connected to Alchemy.
-                   * Also handles how the Burner provider switches from a Fortmatic address to the
-                   * burner address at the time of connecting.
-                   */
-                  await initializeArc(await getNetworkName(selectedProvider.chainId), selectedProvider);
-                }
-                observer.next(account);
-                // eslint-disable-next-line require-atomic-updates
-                prevAccount = account;
-              }
-            })
-            // eslint-disable-next-line no-console
-            .catch((err): void => {console.error(err ? err.message : "unknown error"); });
-        } catch (ex) {
-          // eslint-disable-next-line no-console
-          console.error(ex ? ex.message : "unknown error");
-        }
-        finally {
-          running = false;
-        }
-      }
-    }
-
-    poll();
-    const timeout = setInterval(poll, interval);
-    return (): void => { clearTimeout(timeout); };
-  });
 }
 
 /**
