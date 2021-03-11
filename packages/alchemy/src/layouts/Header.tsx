@@ -1,6 +1,6 @@
 import * as uiActions from "@store/ui/uiActions";
 import { threeBoxLogout } from "@store/profiles/profilesActions";
-import { enableWalletProvider, getAccountIsEnabled, logout, getWeb3ProviderInfo, getWeb3Provider, providerHasConfigUi, getArcs } from "arc";
+import { enableWalletProvider, getAccountIsEnabled, logout, getWeb3ProviderInfo, getWeb3Provider, providerHasConfigUi, getArcs, getCachedAccount } from "arc";
 import AccountImage from "components/Account/AccountImage";
 import AccountProfileName from "components/Account/AccountProfileName";
 import RedemptionsButton from "components/Redemptions/RedemptionsButton";
@@ -69,22 +69,18 @@ type IProps = IExternalProps & IStateProps & IDispatchProps & ISubscriptionProps
 
 class Header extends React.Component<IProps, null> {
 
-  constructor (props: IProps) {
+  constructor(props: IProps) {
     super(props);
   }
 
   public componentDidMount() {
     this.setState({ alchemyVersion: PACKAGE_VERSION ?? "Not found" });
+    if (getCachedAccount() && !getAccountIsEnabled()) {
+      this.handleClickLogin();
+    }
   }
 
-  public handleClickLogin = async (_event: any): Promise<void> => {
-    enableWalletProvider({
-      suppressNotifyOnSuccess: true,
-      showNotification: this.props.showNotification,
-    }, undefined);
-  }
-
-  public handleConnect = async (_event: any): Promise<void> => {
+  public handleClickLogin = async (_event?: any): Promise<void> => {
     enableWalletProvider({
       suppressNotifyOnSuccess: true,
       showNotification: this.props.showNotification,
@@ -139,10 +135,10 @@ class Header extends React.Component<IProps, null> {
             />
           </div>
           <div className={css.redemptionsButton}>
-            <RedemptionsButton currentAccountAddress={currentAccountAddress} />
+            {accountIsEnabled && <RedemptionsButton currentAccountAddress={currentAccountAddress} />}
           </div>
           <div className={css.accountInfo}>
-            {currentAccountAddress ?
+            {currentAccountAddress && accountIsEnabled ?
               <span>
                 <div className={css.accountInfoContainer}>
                   <div className={css.accountImage}>
@@ -176,45 +172,36 @@ class Header extends React.Component<IProps, null> {
                     </div>
                   </div>
                   {network &&
-                  <React.Fragment>
-                    <AccountBalances dao={dao ? dao : null} address={currentAccountAddress} network={network} arc={getArcs()[network]} />
-                    <div className={css.currentNetwork}>
-                      <div className={css.title}>Network</div>
-                      {network}
-                    </div>
-                  </React.Fragment>
+                    <React.Fragment>
+                      <AccountBalances dao={dao ? dao : null} address={currentAccountAddress} network={network} arc={getArcs()[network]} />
+                      <div className={css.currentNetwork}>
+                        <div className={css.title}>Network</div>
+                        {network}
+                      </div>
+                    </React.Fragment>
                   }
-                  <div className={css.logoutButtonContainer}>
-                    {accountIsEnabled ?
-                      <div className={css.web3ProviderLogoutSection}>
-                        <div className={css.provider}>
-                          <div className={css.title}>Provider</div>
-                          <div className={css.name}>{web3ProviderInfo.name}</div>
-                        </div>
-                        {providerHasConfigUi(web3Provider) ?
-                          <div className={css.providerconfig}><ProviderConfigButton provider={web3Provider} providerName={web3ProviderInfo.name}></ProviderConfigButton></div>
-                          : ""
-                        }
-                        <div className={css.web3ProviderLogInOut} onClick={this.handleClickLogout}><div className={css.text}>Log out</div> <img src="/assets/images/Icon/logout.svg" /></div>
-                      </div> :
-                      <div className={css.web3ProviderLogInOut} onClick={this.handleConnect}><div className={css.text}>Connect</div> <img src="/assets/images/Icon/login.svg" /></div>}
-                  </div>
+                  {accountIsEnabled && <div className={css.logoutButtonContainer}>
+                    <div className={css.web3ProviderLogoutSection}>
+                      <div className={css.provider}>
+                        <div className={css.title}>Provider</div>
+                        <div className={css.name}>{web3ProviderInfo.name}</div>
+                      </div>
+                      {
+                        providerHasConfigUi(web3Provider) &&
+                        <div className={css.providerconfig}><ProviderConfigButton provider={web3Provider} providerName={web3ProviderInfo.name}></ProviderConfigButton></div>
+                      }
+                      <div className={css.web3ProviderLogInOut} onClick={this.handleClickLogout}><div className={css.text}>Disconnect Wallet</div> <img src="/assets/images/Icon/logout.svg" /></div>
+                    </div>
+                  </div>}
                 </div>
               </span> : <span></span>
             }
-            {!currentAccountAddress ?
-              <div className={css.web3ProviderLogin}>
+            {
+              (!currentAccountAddress || !accountIsEnabled) && <div className={css.web3ProviderLogin}>
                 <button onClick={this.handleClickLogin} data-test-id="loginButton">
-                  Log in <img src="/assets/images/Icon/login-white.svg" />
+                  Connect Wallet
                 </button>
               </div>
-              : (!accountIsEnabled) ?
-                <div className={css.web3ProviderLogin}>
-                  <button onClick={this.handleConnect} data-test-id="connectButton">
-                    <span className={css.connectButtonText}>Connect</span><img src="/assets/images/Icon/login-white.svg" />
-                  </button>
-                </div>
-                : ""
             }
           </div>
         </nav>

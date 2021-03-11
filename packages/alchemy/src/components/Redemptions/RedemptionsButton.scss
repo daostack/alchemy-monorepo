@@ -10,13 +10,14 @@
     position: absolute;
     top: 11px;
     right: -11px;
-    width: 15px;
+    width: fit-content;
     height: 15px;
     border-radius: 20%;
     background-color: $accent-2;
     text-align: center;
     font-size: $caption;
     line-height: initial;
+    padding: 0px 3px;
   }
 }
 

@@ -310,7 +310,7 @@ body {
           background-color: rgba(252, 253, 255, 1);
           position: absolute;
           top: -3px;
-          right: 12px;
+          right: 25px;
         }
 
         .walletDetails {
@@ -540,6 +540,7 @@ body {
         font-size: 13px;
         position: relative;
         right: 12px;
+        padding-left: 13px;
       }
 
       &.noAccount {
