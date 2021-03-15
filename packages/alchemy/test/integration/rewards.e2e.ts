@@ -22,28 +22,6 @@ describe("Header redemptions button", () => {
     await viewAllRedemptionsLink.waitForDisplayed();
     await viewAllRedemptionsLink.click();
   });
-
-  it("should redirect us to the redemptions page on mobile devices", async () => {
-    await browser.setWindowSize(320, 640);
-    const actualWindowSize = await browser.getWindowSize();
-
-    // Skip test if the OS doesn't allow window to be resized
-    if (actualWindowSize.width === 320) {
-      await browser.url("http://127.0.0.1:3000");
-      // For some reason, the connect button shows up after refreshing, even
-      // though we're already logged in.
-      const connectButton = await $("[data-test-id=\"connectButton\"]");
-      await connectButton.click();
-      await connectButton.waitForDisplayed(undefined);
-
-      const redemptionsButton = await $("[data-test-id=\"redemptionsButton\"]");
-      await redemptionsButton.click();
-
-      (await browser.getUrl()).should.equal("http://127.0.0.1:3000/redemptions");
-    }
-
-    await browser.setWindowSize(1920, 1080);
-  });
 });
 
 describe("Redemptions page", () => {
@@ -61,12 +39,8 @@ describe("Redemptions page", () => {
   });
 
   it("should redeem a reward", async () => {
-    await hideCookieAcceptWindow();
-
     await browser.url("http://127.0.0.1:3000/redemptions");
-    const connectButton = await $("*[data-test-id=\"connectButton\"]");
-    await connectButton.waitForDisplayed();
-    await connectButton.click();
+    await hideCookieAcceptWindow();
 
     const proposalId = testAddresses.test.executedProposalId;
     const proposalCard = await $(`[data-test-id="proposal-${proposalId}"]`);
