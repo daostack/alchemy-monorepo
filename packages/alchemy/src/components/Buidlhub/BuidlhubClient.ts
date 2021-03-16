@@ -46,6 +46,7 @@ export default class BuidlhubClient implements IBuidlhubClient {
         "Accept": "application/json",
         "Content-Type": "application/json;charset=UTF-8",
         "x-referrer": window?.location?.hostname,
+        'No-Auth': 'True'
       },
       data: JSON.stringify(body),
     };

@@ -546,7 +546,7 @@ export async function enableWalletProvider(options: IEnableWalletProviderParams,
 export function pollForAccountChanges(currentAccountAddress: Address | null, interval = 2000): Observable<Address> {
   // eslint-disable-next-line no-console
   console.log(`start polling for account changes from: ${currentAccountAddress}`);
-  return Observable.create((observer: any): () => void => {
+  return new Observable((observer: any): () => void => {
     let prevAccount = currentAccountAddress;
     let running = false;
 
