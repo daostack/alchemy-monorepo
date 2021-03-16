@@ -211,6 +211,7 @@ const processContracts = async (): Promise<any> => {
             headers: {
               'Content-Length': encodedPostData.length,
               'Content-Type': 'application/x-www-form-urlencoded',
+              'No-Auth': 'True'
             },
           }
         );

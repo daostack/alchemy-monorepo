@@ -213,7 +213,7 @@ export class Arc extends GraphNodeObserver {
       return this.observedAccounts[owner].observable as Observable<BN>
     }
 
-    const observable = Observable.create((observer: Observer<BN>) => {
+    const observable = new Observable((observer: Observer<BN>) => {
       this.observedAccounts[owner].observer = observer
 
       // get the current balance and return it
@@ -432,7 +432,7 @@ export class Arc extends GraphNodeObserver {
     // this complex logic is to get the correct account both from the Web3 as well as from the Metamaask provider
     // This polls for changes. But polling is Evil!
     // cf. https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#ear-listening-for-selected-account-changes
-    return Observable.create((observer: any) => {
+    return new Observable((observer: any) => {
       const interval = 1000 /// poll once a second
       let account: any
       let prevAccount: any
