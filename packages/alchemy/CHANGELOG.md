@@ -9,7 +9,7 @@
     - Everything past the DAO dropdown list in the breadcrumb is now removed
     - Updates to the redemptions button
     - Unnecessary plugin manager text is removed
-    - WETH is added to xDai tokens
+    - WETH, WBTC, USDC and DPI is added to xDai tokens
     - Proposal description form field is now expandable
     - Simplified links in sidebar
   
