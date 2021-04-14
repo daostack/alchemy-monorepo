@@ -113,7 +113,7 @@ const wrapCommand = fn => async options => {
   const block = await web3.eth.getBlock('latest')
   const opts = {
     from: web3.eth.defaultAccount,
-    gas: block.gasLimit - 100000,
+    gas: block.gasLimit - 100000, // TODO: xDai seems to reject high gas limit, setting simply to 6000000 seems to be fine for it
     gasPrice: gasPrice ? web3.utils.toWei(gasPrice.toString(), 'gwei') : undefined
   }
 

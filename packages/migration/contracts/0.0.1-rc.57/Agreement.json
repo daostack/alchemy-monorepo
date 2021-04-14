@@ -1,0 +1,26 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Agreement",
+  "sourceName": "contracts/schemes/Agreement.sol",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getAgreementHash",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080604052348015600f57600080fd5b5060808061001e6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063696da92114602d575b600080fd5b60336045565b60408051918252519081900360200190f35b6000549056fea265627a7a723158202130c12733de1534096bd288bfa77b0daaf75c8b0a73559d119f5a5f3e6dba7564736f6c63430005110032",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c8063696da92114602d575b600080fd5b60336045565b60408051918252519081900360200190f35b6000549056fea265627a7a723158202130c12733de1534096bd288bfa77b0daaf75c8b0a73559d119f5a5f3e6dba7564736f6c63430005110032",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
