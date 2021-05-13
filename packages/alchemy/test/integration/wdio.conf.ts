@@ -3,7 +3,7 @@ const drivers = {
   // check for more recent versions of chrome driver here:
   // https://chromedriver.storage.googleapis.com/index.html
   chrome: {
-    version: "88.0.4324.27",
+    version: "90.0.4430.24",
     arch: process.arch,
   },
 };
