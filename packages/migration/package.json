@@ -1,6 +1,6 @@
 {
   "name": "@daostack/migration",
-  "version": "0.0.1-rc.56-v0",
+  "version": "0.0.1-rc.57-v1",
   "description": "A repo for handling DAOstack contract migrations",
   "main": "index.js",
   "bin": {
@@ -28,7 +28,7 @@
     "prepare-release": "./prepare-release.sh",
     "release": "./release.sh",
     "prune-arc-build": "node ./pruneArcBuild.js",
-    "xpostinstall": "npm run prune-arc-build && npm run generate-abis",
+    "postinstall": "npm run prune-arc-build && npm run generate-abis",
     "verify.initialize": "npm explore @daostack/arc -- npm install openzeppelin-solidity @daostack/infra --no-save && npm explore @daostack/infra -- npm install openzeppelin-solidity --no-save && npm explore @daostack/arc-hive -- npm install openzeppelin-solidity --no-save",
     "verify.build": "node node_modules/typescript/bin/tsc verify.ts -sourceMap",
     "verify.help": "node verify.js -h",
@@ -48,7 +48,7 @@
   },
   "homepage": "https://github.com/daostack/migration#readme",
   "dependencies": {
-    "@daostack/arc": "0.0.1-rc.56",
+    "@daostack/arc": "0.0.1-rc.57",
     "@daostack/arc-hive": "0.0.1-rc.4",
     "ethereumjs-wallet": "^0.6.3",
     "fstream": "^1.0.12",
