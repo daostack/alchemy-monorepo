@@ -39,7 +39,7 @@ const getUrl = (contractAddress: string, network: Networks): string => {
   }
   else {
     const prefix = (network === "main" || network === "ganache") ? "" : `-${network}`; // we consider 'ganache' as 'main'
-    return `https://api${prefix}.etherscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=${process.env.ETHERSCAN_API_KEY}`;
+    return `https://api${prefix}.etherscan.io/api?module=contract&action=getabi&address=${contractAddress}&apikey=REAM9V6TKK3CN4C3PT66V2648DJ7TGMFTG`;
   }
 };
 

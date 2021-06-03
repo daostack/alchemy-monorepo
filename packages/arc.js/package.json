@@ -1,6 +1,6 @@
 {
   "name": "@daostack/arc.js",
-  "version": "0.2.87",
+  "version": "0.2.88",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -69,7 +69,7 @@
     ]
   },
   "devDependencies": {
-    "@daostack/migration": "0.0.1-rc.56-v0",
+    "@daostack/migration": "0.0.1-rc.57-v1",
     "@daostack/subgraph-test-env": "0.0.39-8",
     "@types/graphql": "^14.2.2",
     "@types/isomorphic-fetch": "^0.0.34",
