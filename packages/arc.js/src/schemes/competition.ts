@@ -590,11 +590,12 @@ export class CompetitionSuggestion implements IStateful<ICompetitionSuggestionSt
     }
 
     // if we are looing for the suggestions of a particular proposal, we prime the cache..
+    // temp fix to fetch first 1000 instead of 100 default
     if (options.where && options.where.proposal && !options.where.id) {
       query = gql`query CompetitionSuggestionSearchByProposal
         {
           competitionProposal (id: "${options.where.proposal}") {
-              suggestions ${createGraphQlQuery({ where: { ...options.where, proposal: undefined } })} {
+              suggestions ${createGraphQlQuery({ first: 1000, where: { ...options.where, proposal: undefined } })} {
                 ...CompetitionSuggestionFields
               }
             }
