@@ -9,7 +9,7 @@ https://rinkeby.v1.alchemy.do - alchemy v1 on rinkeby
 
 https://kovan.v1.alchemy.do - alchemy v1 on kovan
 
-**Alchemy 2.0** - ⚠️ **Deprecated!**
+**Alchemy 2.0** - ⚠️ **Deprecated!** - please use Alchemy v1
 
 Alchemy 2.0 source code can be found [here](https://github.com/daostack/alchemy_2).
 
@@ -17,9 +17,9 @@ https://alchemy.do - alchemy 2.0 on mainnet
 
 https://xdai.alchemy.do - alchemy 2.0 on xdai 
 
-https://rinkeby.alchemy.do - alchemy 2.0 on kovan
+https://rinkeby.alchemy.do - alchemy 2.0 on rinkeby
 
-https://kovan.alchemy.do - alchemy 2.0 on rinkeby
+https://kovan.alchemy.do - alchemy 2.0 on kovan
 
 
 
