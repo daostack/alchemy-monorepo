@@ -3,11 +3,9 @@
 [![Build Status](https://travis-ci.org/daostack/alchemy.svg?branch=dev)](https://travis-ci.org/daostack/alchemy)
 
 ## URLs
-https://v1.alchemy.do or https://alchemy.daostack.io - alchemy v1 on mainnet and xdai
+https://alchemy.daostack.io - alchemy v1 on mainnet and xdai
 
-https://rinkeby.v1.alchemy.do - alchemy v1 on rinkeby
-
-https://kovan.v1.alchemy.do - alchemy v1 on kovan
+https://alchemy-dev-rinkeby.herokuapp.com/ - alchemy v1 on rinkeby
 
 **Alchemy 2.0** - ⚠️ **Deprecated!** - please use Alchemy v1
 
