@@ -37,21 +37,3 @@ npm lerna bootstrap
  ```
  cd packages/arc.js && npm run build:watch
  ```
-
-
-## Alchemy Development
-
-
-### Develop with Rinkeby
-
-To start a local server:
-
-```
-cd packages/alchemy && npm run start-staging
-```
-
-If you make changes in arc.js, the typescript files need to be recompiled:
-
-```
-cd packages/arc.js && npm run build:watch
-```
