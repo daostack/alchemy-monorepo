@@ -20,6 +20,7 @@ type ReputationMint @entity {
 	contract: Bytes!
 	address: Bytes!
 	amount: BigInt!
+	createdAt: BigInt!
 }
 
 type ReputationBurn @entity {
@@ -28,4 +29,5 @@ type ReputationBurn @entity {
 	contract: Bytes!
 	address: Bytes!
 	amount: BigInt!
+	createdAt: BigInt!
 }

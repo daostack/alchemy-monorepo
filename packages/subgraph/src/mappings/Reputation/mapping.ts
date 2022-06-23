@@ -75,6 +75,7 @@ export function handleMint(event: Mint): void {
   ent.contract = event.address;
   ent.address = event.params._to;
   ent.amount = event.params._amount;
+  ent.createdAt = event.block.timestamp;
 
   store.set('ReputationMint', ent.id, ent);
 }
@@ -88,6 +89,7 @@ export function handleBurn(event: Burn): void {
   ent.contract = event.address;
   ent.address = event.params._from;
   ent.amount = event.params._amount;
+  ent.createdAt = event.block.timestamp;
 
   store.set('ReputationBurn', ent.id, ent);
 }
